@@ -1,0 +1,4 @@
+/* Validation summary styles.*/
+.validation-summary li {
+  color: red;
+}

@@ -1,0 +1,54 @@
+<div class="box box-info">
+  <!-- Loading overlay -->
+  <div class="overlay"
+       *ngIf="bIsBusy">
+    <i class="fa fa-refresh fa-spin"></i>
+  </div>
+  <div class="box-header">
+    <b class="fa fa-folder"></b> <span>Category profile</span>
+  </div>
+  <div class="box-body" *ngIf="details">
+
+    <!--Category name-->
+    <div class="form-group">
+      <label>Category name</label>
+      <input class="form-control"
+             [(ngModel)]="details.name">
+    </div>
+
+    <!--Creator information-->
+    <div class="form-group">
+      <label>Creator information</label>
+      <input class="form-control"
+             [ngModel]="details.creator.email"
+             readonly>
+    </div>
+
+    <div class="form-group">
+      <label>Created time</label>
+      <div class="form-control disabled">
+        <span>{{ details.createdTime | amLocal | amDateFormat: 'YYYY-MM-DD HH:mm'}}</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Last modified time</label>
+      <div class="form-control">
+        {{ details.lastModifiedTime | amLocal | amDateFormat: 'YYYY-MM-DD HH:mm'}}
+      </div>
+    </div>
+  </div>
+  <div class="box-footer">
+    <div class="text-center">
+      <button class="btn btn-primary btn-flat"
+              (click)="eClickConfirm.emit(details)">
+        <span class="fa fa-check"></span>
+      </button>
+      <button class="btn btn-default btn-flat"
+              (click)="eClickCancel.emit(details)">
+        <span class="fa fa-times"></span>
+      </button>
+    </div>
+  </div>
+</div>
+

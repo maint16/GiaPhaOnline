@@ -1,0 +1,188 @@
+<section class="content-header">
+  <h1>
+    Category
+    <small>management</small>
+  </h1>
+</section>
+
+<section class="content">
+  <!-- List of categories -->
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="box box-default">
+        <!-- Loading overlay -->
+        <div class="overlay"
+             *ngIf="bIsBusy">
+          <i class="fa fa-refresh fa-spin"></i>
+        </div>
+
+        <div class="box-header">
+          <span class="fa fa-folder"></span> <span>Categories list</span>
+          <button type="button"
+                  class="btn btn-box-tool pull-right"
+                  (click)="categoryInitiatorBox.reset(); categoryInitiatorModal.show()">
+            <i class="fa fa-plus"></i>
+          </button>
+          <button type="button"
+                  class="btn btn-box-tool pull-right"
+                  (click)="categorySearchModal.show()">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+
+        <div class="box-body">
+          <div class="box box-default">
+            <div class="box-body">
+              <p-dataTable [value]="searchResult.records"
+                           [paginator]="false"
+                           [responsive]="true">
+                <p-column field="name" header="Name"></p-column>
+                <p-column field="creator" header="Creator">
+                  <ng-template let-col let-data="rowData" pTemplate="body">
+                    <a *ngIf="data[col.field]"
+                       href="javascript:void(0)" (click)="accountProfileBox.setProfile(data[col.field]); accountProfileModal.show()">
+                      {{data[col.field]['email']}}
+                    </a>
+                  </ng-template>
+                </p-column>
+                <p-column field="createdTime" header="Created time">
+                  <ng-template let-col let-data="rowData" pTemplate="body">
+                    <span>{{data[col.field] | amLocal | amDateFormat: 'YYYY-MM-DD HH:mm'}}</span>
+                  </ng-template>
+                </p-column>
+                <p-column field="lastModifiedTime" header="Last modified time">
+                  <ng-template let-col let-data="rowData" pTemplate="body">
+                    <span *ngIf="col.field && data[col.field]">{{data[col.field] | amLocal | amDateFormat: 'YYYY-MM-DD HH:mm'}}</span>
+                    <span *ngIf="!(col.field && data[col.field])">Not available</span>
+                  </ng-template>
+                </p-column>
+                <p-column>
+                  <ng-template pTemplate="body" let-category="rowData">
+                    <button class="btn btn-sm btn-flat btn-danger"
+                            (click)="categoryDeleteBox.setDetails(category); deleteCategoryModal.show()">
+                      <span class="fa fa-trash"></span>
+                    </button>
+
+                    <button class="btn btn-sm btn-flat btn-info"
+                            (click)="categoryProfileBox.setDetails(category); categoryProfileModal.show()">
+                      <span class="fa fa-edit"></span>
+                    </button>
+                  </ng-template>
+                </p-column>
+              </p-dataTable>
+            </div>
+          </div>
+        </div>
+
+        <div class="box-footer">
+          <div class="col-lg-12">
+            <div class="text-center">
+              <ngx-ordinary-pager [options]="configurationService.getPagerOptions()"
+                                  [page]="conditions.pagination.page"
+                                  [total-items]="searchResult.total"
+                                  (select-page)="selectPage($event)">
+              </ngx-ordinary-pager>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--Seach categories box-->
+<div bsModal
+     #categorySearchModal="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <category-search-box #categoryFindBox
+                           [conditions]="conditions"
+                           [is-busy]="bIsBusy"
+                           (close)="categorySearchModal.hide()"
+                           (search)="clickSearch()">
+      </category-search-box>
+    </div>
+  </div>
+</div>
+
+<!-- Delete category box -->
+<div bsModal
+     #deleteCategoryModal="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <category-delete-box #categoryDeleteBox="category-delete-box"
+                           (click-cancel)="deleteCategoryModal.hide()"
+                           (click-confirm)="deleteCategoryModal.hide(); deleteCategory($event)">
+      </category-delete-box>
+    </div>
+  </div>
+</div>
+
+<!-- Change category information box -->
+<div bsModal
+     #categoryProfileModal="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true"
+     [config]="{backdrop: 'static', keyboard: false}">
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <category-detail-box #categoryProfileBox="category-detail-box"
+                           (click-cancel)="categoryProfileModal.hide()"
+                           (click-confirm)="editCategoryProfile($event); categoryProfileModal.hide()">
+      </category-detail-box>
+    </div>
+  </div>
+</div>
+
+<!-- Account profile modal dialog -->
+<div bsModal
+     #accountProfileModal="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true"
+     [config]="{backdrop: 'static', keyboard: false}">
+
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <account-profile-box #accountProfileBox="account-profile-box" [is-readonly]="true"
+                           (click-confirm)="accountProfileModal.hide()"
+                           (click-close)="accountProfileModal.hide()">
+      </account-profile-box>
+    </div>
+  </div>
+</div>
+
+<!--Create category box-->
+<div bsModal
+     #categoryInitiatorModal="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true"
+     [config]="{backdrop: 'static', keyboard: false}">
+
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <category-initiate-box #categoryInitiatorBox="category-initiate-box"
+                             [is-busy]="bIsBusy"
+                             (click-confirm)="initiateCategory($event)"
+                             (click-cancel)="categoryInitiatorModal.hide()">
+      </category-initiate-box>
+
+    </div>
+  </div>
+</div>

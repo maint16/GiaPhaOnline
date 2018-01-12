@@ -1,0 +1,24 @@
+<div class="wrapper" ng-init="init()">
+
+    <!--Side bar rendering-->
+    <side-bar></side-bar>
+
+    <!--Navigation bar rendering-->
+    <navigation-bar></navigation-bar>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Dashboard
+                <small>Control panel</small>
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content" ui-view>
+        </section>
+    </div>
+    <!-- /.content-wrapper -->
+</div>

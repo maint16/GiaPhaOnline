@@ -1,0 +1,65 @@
+<aside class="main-sidebar">
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            <div class="pull-left image">
+                <img src="/assets/images/avatar.png" class="img-circle" alt="User Image">
+            </div>
+            <div class="pull-left info">
+                <p>Alexander Pierce</p>
+                <a href="javascript:void(0)"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+        </div>
+        <ul class="sidebar-menu" data-widget="tree">
+            <!--Home-->
+            <li class="treeview"
+                ui-sref-active="active"
+                ui-sref="{{urlStates.dashboard.name}}">
+                <a href="#">
+                    <i class="fa fa-dashboard"></i> <span>{{'Home' | translate}}</span>
+                </a>
+            </li>
+
+            <!--Categories-->
+            <li class="treeview"
+                ui-sref-active="active"
+                ui-sref="{{urlStates.dashboard.name}}">
+                <a href="javascript:void(0);">
+                    <i class="fa fa-folder"></i> <span>{{'Categories' | translate}}</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+            </li>
+
+            <li class="header">{{'User panel' | translate}}</li>
+
+            <!--Personal confessions-->
+            <li class="treeview"
+                ui-sref-active="active"
+                ui-sref="{{urlStates.dashboard.name}}">
+                <a href="javascript:void(0);">
+                    <i class="fa fa-newspaper-o"></i> <span>{{'Personal confessions' | translate}}</span>
+                </a>
+            </li>
+
+            <!--Personal comments-->
+            <li class="treeview"
+                ui-sref-active="active"
+                ui-sref="{{urlStates.dashboard.name}}">
+                <a href="javascript:void(0);">
+                    <i class="fa fa-comments"></i> <span>{{'Personal comments' | translate}}</span>
+                </a>
+            </li>
+
+            <!--Personal profile-->
+            <li class="treeview"
+                ui-sref-active="active"
+                ui-sref="{{urlStates.dashboard.name}}">
+                <a href="javascript:void(0);">
+                    <i class="fa fa-user"></i> <span>{{'Profile' | translate}}</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+</aside>
