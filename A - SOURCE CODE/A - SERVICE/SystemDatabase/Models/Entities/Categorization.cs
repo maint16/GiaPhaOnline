@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities

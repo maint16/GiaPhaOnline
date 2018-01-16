@@ -102,7 +102,7 @@ namespace Main.Controllers
             condition.Password.Value = _encryptionService.Md5Hash(parameters.Password);
             condition.Password.Mode = TextSearchMode.EqualIgnoreCase;
 
-            condition.Statuses = new[] { Statuses.Active };
+            condition.Statuses = new[] { AccountStatus.Active };
 
             // Find accounts with defined condition above.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
@@ -272,11 +272,11 @@ namespace Main.Controllers
 
             // Initiate token.
             var token = new Token();
-            token.OwnerIndex = account.Id;
+            token.OwnerId = account.Id;
             token.Type = TokenType.AccountReactiveCode;
             token.Code = Guid.NewGuid().ToString("D");
-            token.Issued = _systemTimeService.DateTimeUtcToUnix(systemTime);
-            token.Expired = _systemTimeService.DateTimeUtcToUnix(expiration);
+            token.IssuedTime = _systemTimeService.DateTimeUtcToUnix(systemTime);
+            token.ExpiredTime = _systemTimeService.DateTimeUtcToUnix(expiration);
 
             // Save token into database.
             _unitOfWork.RepositoryTokens.Insert(token);
@@ -329,7 +329,7 @@ namespace Main.Controllers
             // Find token.
             var result = from account in accounts
                          from token in tokens
-                         where account.Id == token.OwnerIndex && token.Expired < epochSystemTime
+                         where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
                          select new SearchAccountTokenResult
                          {
                              Token = token,

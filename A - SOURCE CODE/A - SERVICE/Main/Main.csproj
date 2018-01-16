@@ -2,10 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Configurations>Debug;Release;Allow anonymous</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;ALLOW_ANONYMOUS;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Allow anonymous|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;ALLOW ANONYMOUS;NETCOREAPP2_0;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +19,10 @@
 
   <ItemGroup>
     <PackageReference Include="GlobalExceptionHandler" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="2.4.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />

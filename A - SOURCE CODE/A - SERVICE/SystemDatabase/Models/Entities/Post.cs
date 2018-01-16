@@ -20,13 +20,8 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Who owns the post.
         /// </summary>
-        public int OwnerIndex { get; set; }
-
-        /// <summary>
-        ///     Which category the post belongs to.
-        /// </summary>
-        public int CategoryIndex { get; set; }
-
+        public int OwnerId { get; set; }
+        
         /// <summary>
         ///     Title of post.
         /// </summary>
@@ -65,15 +60,14 @@ namespace SystemDatabase.Models.Entities
         ///     Who create the post.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(OwnerIndex))]
+        [ForeignKey(nameof(OwnerId))]
         public Account Owner { get; set; }
 
         /// <summary>
         ///     Category which post belongs to.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(CategoryIndex))]
-        public Category Category { get; set; }
+        public virtual ICollection<Categorization> Categorizations { get; set; }
 
         /// <summary>
         ///     List of comment belongs to the post.
@@ -91,13 +85,13 @@ namespace SystemDatabase.Models.Entities
         ///     Which notification comment post belongs to.
         /// </summary>
         [JsonIgnore]
-        public ICollection<CommentNotification> NotificationComments { get; set; }
+        public virtual ICollection<CommentNotification> CommentNotifications { get; set; }
 
         /// <summary>
         ///     Which notification post the post belongs to.
         /// </summary>
         [JsonIgnore]
-        public ICollection<PostNotification> NotificationPosts { get; set; }
+        public virtual ICollection<PostNotification> PostNotifications { get; set; }
 
         /// <summary>
         ///     One post can have many reports about its comments.

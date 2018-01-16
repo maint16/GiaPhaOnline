@@ -13,7 +13,7 @@ namespace SystemDatabase.Models.Entities
         ///     One category have one owner.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(OwnerIndex))]
+        [ForeignKey(nameof(OwnerId))]
         public Account Owner { get; set; }
 
         #endregion
@@ -30,7 +30,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Who this token belongs to.
         /// </summary>
-        public int OwnerIndex { get; set; }
+        public int OwnerId { get; set; }
 
         /// <summary>
         ///     Type of Token.
@@ -45,12 +45,12 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Time when the token was issued.
         /// </summary>
-        public double Issued { get; set; }
+        public double IssuedTime { get; set; }
 
         /// <summary>
         ///     Time when the token should be expired.
         /// </summary>
-        public double Expired { get; set; }
+        public double? ExpiredTime { get; set; }
 
         #endregion
     }

@@ -35,7 +35,7 @@ namespace Shared.Repositories
         {
             // Owner index are specified.
             if (conditions.OwnerIndexes != null)
-                tokens = tokens.Where(x => conditions.OwnerIndexes.Contains(x.OwnerIndex));
+                tokens = tokens.Where(x => conditions.OwnerIndexes.Contains(x.OwnerId));
 
             // Types are specified.
             if (conditions.Types != null)
@@ -84,9 +84,9 @@ namespace Shared.Repositories
             {
                 var issuedRange = conditions.Issued;
                 if (issuedRange.From != null)
-                    tokens = tokens.Where(x => x.Issued >= issuedRange.From.Value);
+                    tokens = tokens.Where(x => x.IssuedTime >= issuedRange.From.Value);
                 if (issuedRange.To != null)
-                    tokens = tokens.Where(x => x.Issued <= issuedRange.To.Value);
+                    tokens = tokens.Where(x => x.IssuedTime <= issuedRange.To.Value);
             }
 
             // Expired range is specified.
@@ -94,9 +94,9 @@ namespace Shared.Repositories
             {
                 var expiredRange = conditions.Expired;
                 if (expiredRange.From != null)
-                    tokens = tokens.Where(x => x.Expired >= expiredRange.From.Value);
+                    tokens = tokens.Where(x => x.ExpiredTime >= expiredRange.From.Value);
                 if (expiredRange.To != null)
-                    tokens = tokens.Where(x => x.Expired <= expiredRange.To.Value);
+                    tokens = tokens.Where(x => x.ExpiredTime <= expiredRange.To.Value);
             }
 
 

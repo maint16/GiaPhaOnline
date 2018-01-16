@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SystemDatabase.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -23,17 +24,17 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Who should receive the notification.
         /// </summary>
-        public int RecipientIndex { get; set; }
+        public int RecipientId { get; set; }
 
         /// <summary>
         ///     Who caused the notification broadcasted.
         /// </summary>
-        public int BroadcasterIndex { get; set; }
+        public int BroadcasterId { get; set; }
 
         /// <summary>
         ///     Type of notification (CRUD)
         /// </summary>
-        public int Type { get; set; }
+        public NotificationType Type { get; set; }
 
         /// <summary>
         ///     Whether the owner seen the post or not.
@@ -43,7 +44,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     When the notification was created.
         /// </summary>
-        public double Created { get; set; }
+        public double CreatedTime { get; set; }
 
         #endregion
 
@@ -60,14 +61,14 @@ namespace SystemDatabase.Models.Entities
         ///     Who broadcasted the notification.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(RecipientIndex))]
+        [ForeignKey(nameof(RecipientId))]
         public Account Recipient { get; set; }
 
         /// <summary>
         ///     Who should receive the notification.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(BroadcasterIndex))]
+        [ForeignKey(nameof(BroadcasterId))]
         public Account Broadcaster { get; set; }
 
         #endregion

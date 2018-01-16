@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SystemDatabase.Enumerations;
 using Newtonsoft.Json;
@@ -16,6 +17,18 @@ namespace SystemDatabase.Models.Entities
         [ForeignKey(nameof(CreatorId))]
         public Account Creator { get; set; }
 
+        /// <summary>
+        /// List of categorization which are related to the current category.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<Categorization> Categorizations { get; set; }
+
+        /// <summary>
+        /// Category follow.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<FollowCategory> FollowCategories { get; set; }
+        
         #endregion
 
         #region Properties
@@ -23,8 +36,6 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Id of category.
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>

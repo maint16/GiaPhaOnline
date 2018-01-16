@@ -35,7 +35,12 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     When the report was created.
         /// </summary>
-        public double Created { get; set; }
+        public double CreatedTime { get; set; }
+
+        /// <summary>
+        /// When the report was lastly modified.
+        /// </summary>
+        public double? LastModifiedTime { get; set; }
 
         #endregion
 

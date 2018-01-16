@@ -1,6 +1,9 @@
-﻿using System;
+﻿#define USE_SQLITE
+
+using System;
 using SystemDatabase.Models.Contexts;
 using Main.Authentications.Handlers;
+using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
 using Main.Interfaces.Services;
 using Main.Models;
@@ -12,6 +15,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,10 +65,22 @@ namespace Main
         public void ConfigureServices(IServiceCollection services)
         {
             // Add entity framework to services collection.
-            var sqlConnection = Configuration.GetConnectionString("SqlServerConnectionString");
+            var sqlConnection = "";
+
+#if USE_SQLITE
+            sqlConnection = Configuration.GetConnectionString("sqliteConnectionString");
+            services.AddDbContext<RelationalDatabaseContext>(
+                options => options.UseSqlite(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+#elif USE_AZURE_SQL
+            sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
-
+#else
+            sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
+            services.AddDbContext<RelationalDatabaseContext>(
+                options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+#endif
+            
             // Injections configuration.
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IDatabaseFunction<>), typeof(DatabaseFunction<>));
@@ -114,7 +130,7 @@ namespace Main
             });
 
 
-            #region Mvc builder
+#region Mvc builder
 
             // Construct mvc options.
             services.AddMvc(mvcOptions =>
@@ -135,7 +151,7 @@ namespace Main
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
-            #endregion
+#endregion
         }
 
         /// <summary>
@@ -168,6 +184,6 @@ namespace Main
             app.UseMvc();
         }
 
-        #endregion
+#endregion
     }
 }

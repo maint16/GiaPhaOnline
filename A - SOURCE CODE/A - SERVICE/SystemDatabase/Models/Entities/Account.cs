@@ -14,8 +14,6 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Id of account (Auto incremented)
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
@@ -79,7 +77,7 @@ namespace SystemDatabase.Models.Entities
         /// List of categories created by this account.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Category> Categories { get; set; }
+        public virtual ICollection<Category> InitializedCategories { get; set; }
 
         /// <summary>
         /// List of categories user is following.
@@ -100,10 +98,16 @@ namespace SystemDatabase.Models.Entities
         public virtual ICollection<FollowPost> FollowPosts { get; set; }
 
         /// <summary>
+        /// List of post report this account has.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<PostReport> OwnedPostReports { get; set; }
+
+        /// <summary>
         /// List of post reports user has created.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<PostReport> PostReports { get; set; }
+        public virtual ICollection<PostReport> ReportedPosts { get; set; }
 
         /// <summary>
         /// List of comments user has created.
@@ -115,11 +119,12 @@ namespace SystemDatabase.Models.Entities
         /// List of comment reports this account has reported.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<CommentReport> ReportedCommentReports { get; set; }
+        public virtual ICollection<CommentReport> ReportedComments { get; set; }
 
         /// <summary>
         /// List of comment reports this account owns.
         /// </summary>
+        [JsonIgnore]
         public virtual ICollection<CommentReport> OwnedCommentReports { get; set; }
 
         /// <summary>

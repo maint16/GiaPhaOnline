@@ -38,12 +38,8 @@ namespace Shared.Repositories
 
             // Owner index is specified.
             if (conditions.OwnerId != null)
-                posts = posts.Where(x => x.OwnerIndex == conditions.OwnerId.Value);
-
-            // Category index is specified.
-            if (conditions.CategoryId != null)
-                posts = posts.Where(x => x.CategoryIndex == conditions.CategoryId.Value);
-
+                posts = posts.Where(x => x.OwnerId == conditions.OwnerId.Value);
+            
             // Title is specified.
             if (conditions.Title != null && !string.IsNullOrEmpty(conditions.Title.Value))
             {

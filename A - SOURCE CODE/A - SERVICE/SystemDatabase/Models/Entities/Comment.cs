@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
@@ -11,8 +12,6 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Id of comment (Auto incremented)
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
@@ -33,12 +32,12 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     When was the comment created.
         /// </summary>
-        public double Created { get; set; }
+        public double CreatedTime { get; set; }
 
         /// <summary>
         ///     When the comment was lastly modified.
         /// </summary>
-        public double? LastModified { get; set; }
+        public double? LastModifiedTime { get; set; }
 
         #endregion
 
@@ -58,6 +57,17 @@ namespace SystemDatabase.Models.Entities
         [ForeignKey(nameof(PostId))]
         public Post Post { get; set; }
 
+        /// <summary>
+        /// List of notifications belong to this comment.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<CommentNotification> CommentNotifications { get; set; }
+
+        /// <summary>
+        /// List of reports belong to this current comment.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<CommentReport> CommentReports { get; set; }
         #endregion
     }
 }
