@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Entities\SystemDatabase.csproj" />
+    <ProjectReference Include="..\SystemDatabase\SystemDatabase.csproj" />
   </ItemGroup>
 
 </Project>
