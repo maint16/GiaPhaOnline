@@ -1,4 +1,4 @@
-﻿using Shared.Enumerations.Order;
+﻿using SystemConstant.Enumerations.Order;
 
 namespace Shared.Models
 {

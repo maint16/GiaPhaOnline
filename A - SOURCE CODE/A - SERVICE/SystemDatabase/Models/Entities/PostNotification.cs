@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SystemDatabase.Enumerations;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -39,7 +39,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Whether the owner seen the post or not.
         /// </summary>
-        public bool IsSeen { get; set; }
+        public NotificationStatus Status { get; set; }
 
         /// <summary>
         ///     When the notification was created.

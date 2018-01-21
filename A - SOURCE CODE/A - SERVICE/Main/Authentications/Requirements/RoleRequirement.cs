@@ -1,4 +1,4 @@
-﻿using SystemDatabase.Enumerations;
+﻿using SystemConstant.Enumerations;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Main.Authentications.Requirements

@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\SystemDatabase\SystemDatabase.csproj" />
   </ItemGroup>
 
 </Project>

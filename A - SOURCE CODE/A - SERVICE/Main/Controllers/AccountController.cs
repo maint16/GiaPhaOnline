@@ -6,22 +6,23 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using SystemConstant.Enumerations;
+using SystemConstant.Models;
+using SystemDatabase.Interfaces;
+using SystemDatabase.Models.Entities;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.ViewModels.Accounts;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.Accounts;
-using System.Security.Principal;
-using SystemDatabase.Enumerations;
-using SystemDatabase.Models.Entities;
-using Microsoft.Extensions.Logging;
 
 namespace Main.Controllers
 {
@@ -87,6 +88,7 @@ namespace Main.Controllers
             #endregion
 
 #if !ALLOW_ANONYMOUS
+
             #region Search account
 
             // Find account with specific information in database.
@@ -102,18 +104,19 @@ namespace Main.Controllers
             condition.Password.Value = _encryptionService.Md5Hash(parameters.Password);
             condition.Password.Mode = TextSearchMode.EqualIgnoreCase;
 
-            condition.Statuses = new[] { AccountStatus.Active };
+            condition.Statuses = new[] {AccountStatus.Active};
 
             // Find accounts with defined condition above.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            accounts = _unitOfWork.RepositoryAccounts.Search(accounts, condition);
+            //accounts = _unitOfWork.RepositoryAccounts.Search(accounts, condition);
 
             // Find the first account in database.
             var account = await accounts.FirstOrDefaultAsync();
             if (account == null)
-                return NotFound(new HttpResponse(HttpMessages.AccountIsNotFound));
+                return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
 
             #endregion
+
 #else
             var account = new Account();
             account.Email = "redplane_dt@yahoo.com.vn";
@@ -132,7 +135,8 @@ namespace Main.Controllers
             claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
 
             // Write a security token.
-            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims, null, jwtExpiration, _jwtConfiguration.SigningCredentials);
+            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
+                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
 
             // Initiate token handler which is for generating token code.
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -157,7 +161,7 @@ namespace Main.Controllers
         [HttpGet("personal-profile")]
         public IActionResult FindProfile()
         {
-            var identity = (ClaimsIdentity)Request.HttpContext.User.Identity;
+            var identity = (ClaimsIdentity) Request.HttpContext.User.Identity;
             var claims = identity.Claims.ToDictionary(x => x.Type, x => x.Value);
             return Ok(claims);
         }
@@ -194,15 +198,15 @@ namespace Main.Controllers
 
             // Search accounts.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            accounts = _unitOfWork.RepositoryAccounts.Search(accounts, condition);
+            //accounts = _unitOfWork.RepositoryAccounts.Search(accounts, condition);
 
             var account = await accounts.FirstOrDefaultAsync();
 
             // Account exists in system.
             if (account != null)
             {
-                Response.StatusCode = (int)HttpStatusCode.Conflict;
-                return Json(new HttpResponse(HttpMessages.AccountIsInUse));
+                Response.StatusCode = (int) HttpStatusCode.Conflict;
+                return Json(new ApiResponse(HttpMessages.AccountIsInUse));
             }
 
             #endregion
@@ -252,11 +256,12 @@ namespace Main.Controllers
             // Initiate search conditions.
             var conditions = new SearchAccountViewModel();
             conditions.Email = new TextSearch(TextSearchMode.EndsWithIgnoreCase, parameter.Email);
-            conditions.Statuses = new[] { AccountStatus.Active };
+            conditions.Statuses = new[] {AccountStatus.Active};
 
             // Search user in database.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            var account = await _unitOfWork.RepositoryAccounts.Search(accounts, conditions).FirstOrDefaultAsync();
+            var account = await _unitOfWork.RepositoryAccounts.Search().FirstOrDefaultAsync();
+            throw new NotImplementedException();
 
             // User is not found.
             if (account == null)
@@ -328,13 +333,13 @@ namespace Main.Controllers
 
             // Find token.
             var result = from account in accounts
-                         from token in tokens
-                         where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
-                         select new SearchAccountTokenResult
-                         {
-                             Token = token,
-                             Account = account
-                         };
+                from token in tokens
+                where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
+                select new SearchAccountTokenResult
+                {
+                    Token = token,
+                    Account = account
+                };
 
             // No active token is found.
             if (!await result.AnyAsync())

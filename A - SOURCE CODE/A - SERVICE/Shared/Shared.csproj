@@ -6,8 +6,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Entities\SystemDatabase.csproj" />
-    <ProjectReference Include="..\SystemDatabase\SystemDatabase.csproj" />
+    <Compile Remove="Interfaces\Repositories\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Interfaces\Repositories\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Interfaces\Repositories\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SystemConstant\SystemConstant.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Enumerations\" />
   </ItemGroup>
 
 </Project>

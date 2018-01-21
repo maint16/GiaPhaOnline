@@ -1,4 +1,5 @@
-﻿using Shared.Models;
+﻿using SystemConstant.Models;
+using Shared.Models;
 
 namespace Shared.ViewModels.SignalrConnections
 {

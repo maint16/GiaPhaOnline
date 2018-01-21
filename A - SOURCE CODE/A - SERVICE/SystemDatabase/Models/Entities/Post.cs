@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SystemDatabase.Enumerations;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -21,7 +21,7 @@ namespace SystemDatabase.Models.Entities
         ///     Who owns the post.
         /// </summary>
         public int OwnerId { get; set; }
-        
+
         /// <summary>
         ///     Title of post.
         /// </summary>
@@ -33,12 +33,12 @@ namespace SystemDatabase.Models.Entities
         public string Body { get; set; }
 
         /// <summary>
-        /// Type of post.
+        ///     Type of post.
         /// </summary>
         public PostType Type { get; set; }
 
         /// <summary>
-        /// Status of post.
+        ///     Status of post.
         /// </summary>
         public PostStatus Status { get; set; }
 

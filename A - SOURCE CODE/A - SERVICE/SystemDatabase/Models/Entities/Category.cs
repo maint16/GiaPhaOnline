@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SystemDatabase.Enumerations;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -18,17 +17,17 @@ namespace SystemDatabase.Models.Entities
         public Account Creator { get; set; }
 
         /// <summary>
-        /// List of categorization which are related to the current category.
+        ///     List of categorization which are related to the current category.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Categorization> Categorizations { get; set; }
 
         /// <summary>
-        /// Category follow.
+        ///     Category follow.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<FollowCategory> FollowCategories { get; set; }
-        
+
         #endregion
 
         #region Properties
@@ -44,12 +43,12 @@ namespace SystemDatabase.Models.Entities
         public int CreatorId { get; set; }
 
         /// <summary>
-        /// Category photo.
+        ///     Category photo.
         /// </summary>
         public string Photo { get; set; }
 
         /// <summary>
-        /// Status of category.
+        ///     Status of category.
         /// </summary>
         public CategoryStatus Status { get; set; }
 

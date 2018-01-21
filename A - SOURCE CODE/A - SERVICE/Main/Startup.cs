@@ -1,7 +1,11 @@
 ﻿#define USE_SQLITE
 
 using System;
+using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
+using SystemDatabase.Repositories;
+using SystemDatabase.Services;
 using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
@@ -24,9 +28,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Serilog;
-using Shared.Interfaces.Repositories;
 using Shared.Interfaces.Services;
-using Shared.Repositories;
 using Shared.Services;
 
 namespace Main

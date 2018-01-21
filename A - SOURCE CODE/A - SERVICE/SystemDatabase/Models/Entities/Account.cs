@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Cryptography.X509Certificates;
-using SystemDatabase.Enumerations;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -68,95 +65,95 @@ namespace SystemDatabase.Models.Entities
         #region Relationships
 
         /// <summary>
-        /// Token which belongs to user.
+        ///     Token which belongs to user.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Token> Tokens { get; set; }
 
         /// <summary>
-        /// List of categories created by this account.
+        ///     List of categories created by this account.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Category> InitializedCategories { get; set; }
 
         /// <summary>
-        /// List of categories user is following.
+        ///     List of categories user is following.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<FollowCategory> FollowCategories { get; set; }
 
         /// <summary>
-        /// List of posts user has created.
+        ///     List of posts user has created.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Post> Posts { get; set; }
 
         /// <summary>
-        /// List of followed posts.
+        ///     List of followed posts.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<FollowPost> FollowPosts { get; set; }
 
         /// <summary>
-        /// List of post report this account has.
+        ///     List of post report this account has.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<PostReport> OwnedPostReports { get; set; }
 
         /// <summary>
-        /// List of post reports user has created.
+        ///     List of post reports user has created.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<PostReport> ReportedPosts { get; set; }
 
         /// <summary>
-        /// List of comments user has created.
+        ///     List of comments user has created.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Comment> Comments { get; set; }
 
         /// <summary>
-        /// List of comment reports this account has reported.
+        ///     List of comment reports this account has reported.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<CommentReport> ReportedComments { get; set; }
 
         /// <summary>
-        /// List of comment reports this account owns.
+        ///     List of comment reports this account owns.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<CommentReport> OwnedCommentReports { get; set; }
 
         /// <summary>
-        /// Comment notifications which should be received by this account.
+        ///     Comment notifications which should be received by this account.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<CommentNotification> ReceivedCommentNotifications { get; set; }
 
         /// <summary>
-        /// List of comment notification which have been broadcasted by the current user.
+        ///     List of comment notification which have been broadcasted by the current user.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<CommentNotification> BroadcastedCommentNotifications { get; set; }
 
         /// <summary>
-        /// List of notifications which should be received by this account.
+        ///     List of notifications which should be received by this account.
         /// </summary>
         [JsonIgnore]
-        public virtual  ICollection<PostNotification> ReceivedPostNotifications { get; set; }
+        public virtual ICollection<PostNotification> ReceivedPostNotifications { get; set; }
 
         /// <summary>
-        /// List of post notifications broadcasted by this account.
+        ///     List of post notifications broadcasted by this account.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<PostNotification> BroadcastedPostNotifications { get; set; }
 
         /// <summary>
-        /// List of signalr connections which have been established by this account.
+        ///     List of signalr connections which have been established by this account.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<SignalrConnection> SignalrConnections { get; set; }
-        
+
         #endregion
     }
 }

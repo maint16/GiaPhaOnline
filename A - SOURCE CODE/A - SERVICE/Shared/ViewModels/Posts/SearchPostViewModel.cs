@@ -1,4 +1,5 @@
-﻿using Shared.Enumerations.Order;
+﻿using SystemConstant.Enumerations.Order;
+using SystemConstant.Models;
 using Shared.Models;
 
 namespace Shared.ViewModels.Posts

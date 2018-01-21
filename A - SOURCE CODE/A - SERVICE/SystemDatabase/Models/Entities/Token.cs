@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SystemDatabase.Enumerations;
 using Newtonsoft.Json;
+using SystemConstant.Enumerations;
 
 namespace SystemDatabase.Models.Entities
 {

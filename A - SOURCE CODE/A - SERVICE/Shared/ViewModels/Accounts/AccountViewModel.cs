@@ -1,4 +1,4 @@
-﻿using SystemDatabase.Enumerations;
+﻿using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace Shared.ViewModels.Accounts
@@ -39,12 +39,12 @@ namespace Shared.ViewModels.Accounts
         ///     When the account was created.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public double? Joined { get; set; }
+        public double? JoinedTime { get; set; }
 
         /// <summary>
         ///     When the account information was lastly changed.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public double? LastModified { get; set; }
+        public double? LastModifiedTime { get; set; }
     }
 }
