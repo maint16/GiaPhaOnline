@@ -82,6 +82,7 @@ namespace Main.Controllers
                 TryValidateModel(parameters);
             }
 
+            // Invalid modelstate.
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -91,25 +92,15 @@ namespace Main.Controllers
 
             #region Search account
 
-            // Find account with specific information in database.
-            var condition = new SearchAccountViewModel();
-
-            // Email search condition.
-            condition.Email = new TextSearch();
-            condition.Email.Mode = TextSearchMode.Equal;
-            condition.Email.Value = parameters.Email;
-
-            // Find account by password.
-            condition.Password = new TextSearch();
-            condition.Password.Value = _encryptionService.Md5Hash(parameters.Password);
-            condition.Password.Mode = TextSearchMode.EqualIgnoreCase;
-
-            condition.Statuses = new[] {AccountStatus.Active};
-
-            // Find accounts with defined condition above.
+            // Hash the password first.
+            var hashedPassword = _encryptionService.Md5Hash(parameters.Password);
+            
+            // Search for account which is active and information is correct.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            //accounts = _unitOfWork.RepositoryAccounts.Search(accounts, condition);
-
+            accounts = accounts.Where(x =>
+                x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase) &&
+                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase));
+            
             // Find the first account in database.
             var account = await accounts.FirstOrDefaultAsync();
             if (account == null)
@@ -170,7 +161,7 @@ namespace Main.Controllers
         ///     Base on specific information to create an account in database.
         /// </summary>
         /// <returns></returns>
-        [Route("register")]
+        [Route("basic-register")]
         public async Task<IActionResult> Register([FromBody] RegisterAccountViewModel parameters)
         {
             #region Parameters validation
@@ -188,18 +179,14 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Search account
+            #region Search for duplicate accounts.
 
-            // Initiate search account condition.
-            var condition = new SearchAccountViewModel();
-            condition.Email = new TextSearch();
-            condition.Email.Mode = TextSearchMode.EqualIgnoreCase;
-            condition.Email.Value = parameters.Email;
-
-            // Search accounts.
+            // Search for duplicated accounts.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            //accounts = _unitOfWork.RepositoryAccounts.Search(accounts, condition);
-
+            accounts = accounts.Where(
+                x => x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase));
+            
+            // Find the first matched account.
             var account = await accounts.FirstOrDefaultAsync();
 
             // Account exists in system.
@@ -248,6 +235,9 @@ namespace Main.Controllers
                 parameter = new ForgotPasswordViewModel();
                 TryValidateModel(parameter);
             }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             #endregion
 
