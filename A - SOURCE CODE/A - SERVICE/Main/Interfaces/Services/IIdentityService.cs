@@ -2,6 +2,7 @@
 using System.Security.Principal;
 using SystemDatabase.Models.Entities;
 using Main.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Main.Interfaces.Services
 {
@@ -16,15 +17,22 @@ namespace Main.Interfaces.Services
         /// Initiate identity claim from user information.
         /// </summary>
         /// <returns></returns>
-        IIdentity InitiateIdentity(Account account);
+        void SetProfile(HttpContext httpContext, Account account);
 
+        /// <summary>
+        /// Get identity attached in request.
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <returns></returns>
+        Account GetProfile(HttpContext httpContext);
+        
         /// <summary>
         /// Initiate jwt from identity.
         /// </summary>
         /// <param name="claims"></param>
         /// <param name="jwtConfiguration"></param>
         /// <returns></returns>
-        string InitiateToken(Claim[] claims, JwtConfiguration jwtConfiguration);
+        string GenerateJwt(Claim[] claims, JwtConfiguration jwtConfiguration);
 
         /// <summary>
         /// Decode token by using specific information.
@@ -32,7 +40,7 @@ namespace Main.Interfaces.Services
         /// <param name="token"></param>
         /// <returns></returns>
         T DecodeJwt<T>(string token);
-        
+
         #endregion
     }
 }

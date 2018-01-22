@@ -7,6 +7,7 @@ using SystemConstant.Models;
 using SystemDatabase.Interfaces;
 using Main.Authentications.Requirements;
 using Main.Interfaces.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -50,6 +51,7 @@ namespace Main.Authentications.Handlers
         {
             // Convert authorization filter context into authorization filter context.
             var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
+
             //var httpContext = authorizationFilterContext.HttpContext;
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -68,16 +70,11 @@ namespace Main.Authentications.Handlers
                 context.Fail();
                 return;
             }
-
-            // Find account information.
-            var condition = new SearchAccountViewModel();
-            condition.Email = new TextSearch();
-            condition.Email.Value = email;
-            condition.Email.Mode = TextSearchMode.Equal;
-
+            
             // Find accounts based on conditions.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            throw new NotImplementedException();
+            accounts = accounts.Where(x =>
+                x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Active);
 
             // Find the first matched account in the system.
             var account = await accounts.FirstOrDefaultAsync();
@@ -87,14 +84,15 @@ namespace Main.Authentications.Handlers
                 return;
 
             // Initiate claim identity with newer information from database.
-            var identity = (ClaimsIdentity) _identityService.InitiateIdentity(account);
-            identity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
-            identity.AddClaim(new Claim(ClaimTypes.Authentication,
+            var claimsIdentity = new ClaimsIdentity();
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, email));
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Authentication,
                 Enum.GetName(typeof(AccountStatus), account.Status)));
 
             // Update claim identity.
-            httpContext.User = httpContext.Authentication.HttpContext.User = new ClaimsPrincipal(identity);
-            httpContext.Items.Add(ClaimTypes.Actor, account);
+            _identityService.SetProfile(httpContext, account);
             context.Succeed(requirement);
         }
 

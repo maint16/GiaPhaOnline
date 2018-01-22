@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Principal;
 using SystemDatabase.Models.Entities;
 using Main.Interfaces.Services;
 using Main.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Main.Services
 {
@@ -15,14 +15,33 @@ namespace Main.Services
         /// <summary>
         ///     Initiate identity principal by using specific information.
         /// </summary>
+        /// <param name="httpContext"></param>
         /// <param name="account"></param>
         /// <returns></returns>
-        public IIdentity InitiateIdentity(Account account)
+        public void SetProfile(HttpContext httpContext, Account account)
         {
-            var identity = new ClaimsIdentity();
-            identity.AddClaim(new Claim(ClaimTypes.Email, account.Email));
-            identity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
-            return identity;
+            var items = httpContext.Items;
+            if (items.ContainsKey(ClaimTypes.Actor))
+            {
+                items[ClaimTypes.Actor] = account;
+                return;
+            }
+
+            items.Add(ClaimTypes.Actor, account);
+        }
+
+        /// <summary>
+        ///     Get identity attached in request.
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <returns></returns>
+        public Account GetProfile(HttpContext httpContext)
+        {
+            var profile = httpContext.Items[ClaimTypes.Actor];
+            if (profile == null)
+                return null;
+
+            return (Account)profile;
         }
 
         /// <summary>
@@ -31,7 +50,7 @@ namespace Main.Services
         /// <param name="claims"></param>
         /// <param name="jwtConfiguration"></param>
         /// <returns></returns>
-        public string InitiateToken(Claim[] claims, JwtConfiguration jwtConfiguration)
+        public string GenerateJwt(Claim[] claims, JwtConfiguration jwtConfiguration)
         {
             var systemTime = DateTime.Now;
             var expiration = systemTime.AddSeconds(jwtConfiguration.LifeTime);
@@ -45,7 +64,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Decode token by using specific information.
+        ///     Decode token by using specific information.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="token"></param>
@@ -54,6 +73,7 @@ namespace Main.Services
         {
             return default(T);
         }
+
         #endregion
     }
 }

@@ -1,35 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using SystemConstant.Enumerations;
-using Newtonsoft.Json;
+﻿using SystemConstant.Enumerations;
 
-namespace SystemDatabase.Models.Entities
+namespace Shared.ViewModels.Categories
 {
-    public class Category
+    public class CategoryViewModel
     {
-        #region Relationships
-
-        /// <summary>
-        ///     One category can only be created by one account.
-        /// </summary>
-        [JsonIgnore]
-        [ForeignKey(nameof(CreatorId))]
-        public Account Creator { get; set; }
-
-        /// <summary>
-        ///     List of categorization which are related to the current category.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<Categorization> Categorizations { get; set; }
-
-        /// <summary>
-        ///     Category follow.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<FollowCategory> FollowCategories { get; set; }
-
-        #endregion
-
         #region Properties
 
         /// <summary>
@@ -45,7 +19,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Category photo.
         /// </summary>
-        public byte[] Photo { get; set; }
+        public string Photo { get; set; }
 
         /// <summary>
         ///     Status of category.

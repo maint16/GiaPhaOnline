@@ -6,6 +6,7 @@ using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
 using SystemDatabase.Repositories;
 using SystemDatabase.Services;
+using AutoMapper;
 using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
@@ -131,6 +132,8 @@ namespace Main
                 };
             });
 
+            // Add automaper configuration.
+            services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
 #region Mvc builder
 
