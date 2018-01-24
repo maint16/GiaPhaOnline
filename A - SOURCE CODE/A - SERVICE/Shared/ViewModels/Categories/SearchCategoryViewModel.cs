@@ -19,7 +19,7 @@ namespace Shared.ViewModels.Categories
         /// <summary>
         ///     Name of category.
         /// </summary>
-        public TextSearch Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         ///     When the category was created.
@@ -32,15 +32,10 @@ namespace Shared.ViewModels.Categories
         public Range<double?, double?> LastModifiedTime { get; set; }
 
         /// <summary>
-        ///     Which property should be used for sorting categories.
+        ///     Which property & direction should be used for sorting categories.
         /// </summary>
-        public CategoriesSort Sort { get; set; }
-
-        /// <summary>
-        ///     Whether records should be sorted ascendingly or decendingly.
-        /// </summary>
-        public SortDirection Direction { get; set; }
-
+        public Sort<CategoriesSort> Sort { get; set; }
+        
         /// <summary>
         ///     Pagination information.
         /// </summary>

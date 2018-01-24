@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
+using SystemConstant.Models;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
@@ -14,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels;
 using Shared.ViewModels.Categories;
 using SkiaSharp;
 
@@ -21,40 +24,17 @@ namespace Main.Controllers
 {
     public class CategoryController : Controller
     {
-        #region Properties
-
-        /// <summary>
-        /// Service which is for handling identity.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
-        /// Service which is for handling time calculation.
-        /// </summary>
-        private readonly ITimeService _timeService;
-
-        /// <summary>
-        /// Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// Instance for mapping objects.
-        /// </summary>
-        private readonly IMapper _mapper;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Initialize controller with injectors.
+        ///     Initialize controller with injectors.
         /// </summary>
         /// <param name="identityService">Service which is for handling identity.</param>
         /// <param name="timeService">Service which is for handling time calculation.</param>
         /// <param name="unitOfWork">Instance for accessing database.</param>
         /// <param name="mapper">Instance for mapping objects</param>
-        public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _identityService = identityService;
             _timeService = timeService;
@@ -64,10 +44,34 @@ namespace Main.Controllers
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Service which is for handling identity.
+        /// </summary>
+        private readonly IIdentityService _identityService;
+
+        /// <summary>
+        ///     Service which is for handling time calculation.
+        /// </summary>
+        private readonly ITimeService _timeService;
+
+        /// <summary>
+        ///     Instance for accessing database.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        ///     Instance for mapping objects.
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        #endregion
+
         #region Methods
 
         /// <summary>
-        /// Find a specific category by using id.
+        ///     Find a specific category by using id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -78,10 +82,10 @@ namespace Main.Controllers
             // Find category.
             var categories = _unitOfWork.RepositoryCategories.Search();
             categories = categories.Where(x => x.Id == id);
-            
+
             // Find the first matched result.
             var category = await categories.FirstOrDefaultAsync();
-            
+
             // Cannot find the category.
             if (category == null)
                 return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
@@ -89,11 +93,10 @@ namespace Main.Controllers
             var result = _mapper.Map<Category, CategoryViewModel>(category);
             result.Photo = Convert.ToBase64String(category.Photo);
             return Ok(category);
-
         }
 
         /// <summary>
-        /// Add a category into database.
+        ///     Add a category into database.
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
@@ -119,10 +122,9 @@ namespace Main.Controllers
             var skManagedStream = new SKManagedStream(memoryStream);
             var skBitmap = SKBitmap.Decode(skManagedStream);
             var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-            
 
             #endregion
-            
+
             #region Category initialization
 
             // Find requester identity.
@@ -148,7 +150,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Edit a category by search for its index.
+        ///     Edit a category by search for its index.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="info"></param>
@@ -221,6 +223,113 @@ namespace Main.Controllers
             #endregion
 
             return Ok();
+        }
+
+        /// <summary>
+        ///     Search for a list of categories.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("search")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SearchCategories([FromBody] SearchCategoryViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new SearchCategoryViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all categories.
+            var categories = _unitOfWork.RepositoryCategories.Search();
+            categories = SearchCategories(categories, condition);
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                categories =
+                    _unitOfWork.RepositoryCategories.Sort(categories, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                categories = _unitOfWork.RepositoryCategories.Sort(categories, SortDirection.Decending,
+                    CategoriesSort.CreatedTime);
+
+            // Result initialization.
+            var result = new SearchResult<IList<CategoryViewModel>>();
+            result.Total = await categories.CountAsync();
+            result.Records = await _unitOfWork.Paginate(categories.Select(x => new CategoryViewModel
+            {
+                Id = x.Id,
+                CreatorId = x.CreatorId,
+                Status = x.Status,
+                Name = x.Name,
+                CreatedTime = x.CreatedTime,
+                LastModifiedTime = x.LastModifiedTime
+            }), condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Search categories by using specific conditions.
+        /// </summary>
+        /// <param name="categories"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        public IQueryable<Category> SearchCategories(IQueryable<Category> categories,
+            SearchCategoryViewModel conditions)
+        {
+            if (conditions == null)
+                return categories;
+
+            // Id has been defined.
+            if (conditions.Id != null)
+                categories = categories.Where(x => x.Id == conditions.Id.Value);
+
+            // Creator has been defined.
+            if (conditions.CreatorId != null)
+                categories = categories.Where(x => x.CreatorId == conditions.CreatorId.Value);
+
+            // Name search condition has been defined.
+            if (conditions.Name != null && !string.IsNullOrWhiteSpace(conditions.Name))
+                categories = _unitOfWork.SearchPropertyText(categories, x => x.Name,
+                    new TextSearch(TextSearchMode.ContainIgnoreCase, conditions.Name));
+
+            // CreatedTime time range has been defined.
+            if (conditions.CreatedTime != null)
+            {
+                // Start time is defined.
+                if (conditions.CreatedTime.From != null)
+                    categories = categories.Where(x => x.CreatedTime >= conditions.CreatedTime.From.Value);
+
+                // End time is defined.
+                if (conditions.CreatedTime.To != null)
+                    categories = categories.Where(x => x.CreatedTime <= conditions.CreatedTime.To.Value);
+            }
+
+            // Last modified time range has been defined.
+            if (conditions.LastModifiedTime != null)
+            {
+                // Start time is defined.
+                if (conditions.LastModifiedTime.From != null)
+                    categories = categories.Where(x => x.LastModifiedTime >= conditions.LastModifiedTime.From.Value);
+
+                // End time is defined.
+                if (conditions.LastModifiedTime.To != null)
+                    categories = categories.Where(x => x.LastModifiedTime <= conditions.LastModifiedTime.To.Value);
+            }
+
+            return categories;
         }
 
         #endregion

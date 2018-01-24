@@ -131,6 +131,15 @@
   <data name="InformationNotFound" xml:space="preserve">
     <value>INFORMATION_NOT_FOUND</value>
   </data>
+  <data name="PostCategorizationNotFound" xml:space="preserve">
+    <value>POST_CATEGORIZATION_NOT_FOUND</value>
+  </data>
+  <data name="PostHasBeenCategorized" xml:space="preserve">
+    <value>POST_HAS_BEEN_CATEGORIZED</value>
+  </data>
+  <data name="PostNotFound" xml:space="preserve">
+    <value>POST_NOT_FOUND</value>
+  </data>
   <data name="TokenNotFound" xml:space="preserve">
     <value>TOKEN_NOT_FOUND</value>
   </data>

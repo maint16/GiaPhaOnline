@@ -97,6 +97,33 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to POST_CATEGORIZATION_NOT_FOUND.
+        /// </summary>
+        public static string PostCategorizationNotFound {
+            get {
+                return ResourceManager.GetString("PostCategorizationNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to POST_HAS_BEEN_CATEGORIZED.
+        /// </summary>
+        public static string PostHasBeenCategorized {
+            get {
+                return ResourceManager.GetString("PostHasBeenCategorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to POST_NOT_FOUND.
+        /// </summary>
+        public static string PostNotFound {
+            get {
+                return ResourceManager.GetString("PostNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TOKEN_NOT_FOUND.
         /// </summary>
         public static string TokenNotFound {

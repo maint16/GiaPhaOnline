@@ -3,9 +3,10 @@
     public enum CategoriesSort
     {
         Index,
-        CreatorIndex,
+        CreatorId,
+        Status,
         Name,
-        Created,
-        LastModified
+        CreatedTime,
+        LastModifiedTime
     }
 }
