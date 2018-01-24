@@ -79,6 +79,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CATEGORIZATION_NOT_FOUND.
+        /// </summary>
+        public static string CategorizationNotFound {
+            get {
+                return ResourceManager.GetString("CategorizationNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CATEGORY_NOT_FOUND.
         /// </summary>
         public static string CategoryNotFound {

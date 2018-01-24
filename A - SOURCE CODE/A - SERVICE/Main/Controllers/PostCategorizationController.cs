@@ -4,12 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels;
 using Shared.ViewModels.Categories;
 using Shared.ViewModels.PostCategorization;
 
@@ -129,10 +131,95 @@ namespace Main.Controllers
         /// <param name="postId"></param>
         /// <param name="categoryId"></param>
         /// <returns></returns>
+        [HttpDelete("")]
         public async Task<IActionResult> DeletePostCategorization([FromQuery] int postId, [FromQuery] int categoryId)
         {
-            
+            // Get all categorization by using post and category information.
+            var categorizations = _unitOfWork.RepositoryCategorizations.Search();
+            categorizations = categorizations.Where(x => x.PostId == postId && x.CategoryId == categoryId);
+
+            // Find categorization.
+            var categorization = await categorizations.FirstOrDefaultAsync();
+            if (categorization == null)
+                return NotFound(new ApiResponse(HttpMessages.CategorizationNotFound));
+
+            // Delete the categorization.
+            _unitOfWork.RepositoryCategorizations.Remove(categorization);
+            return Ok();
         }
+
+        /// <summary>
+        /// Search for post notifications.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("search")]
+        public async Task<IActionResult> SearchForPostCategorizations([FromBody] SearchPostCategorizationViewModel info)
+        {
+            #region Parameters validation
+
+            if (info == null)
+            {
+                info = new SearchPostCategorizationViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for categorizations
+
+            // Search categorizations.
+            var categorizations = _unitOfWork.RepositoryCategorizations.Search();
+
+            // Category has been defined.
+            if (info.CategoryId != null)
+                categorizations = categorizations.Where(x => x.CategoryId == info.CategoryId);
+
+            // Post has been defined.
+            if (info.PostId != null)
+                categorizations = categorizations.Where(x => x.PostId == info.PostId);
+
+            // Categorization time is defined.
+            var categorizationTime = info.CategorizationTime;
+            if (categorizationTime != null)
+            {
+                var from = categorizationTime.From;
+                if (from != null)
+                    categorizations = _unitOfWork.RepositoryCategorizations.SearchNumericProperty(categorizations,
+                        x => x.CategorizationTime, from.Value, NumericComparision.GreaterEqual);
+
+                var to = categorizationTime.To;
+                if (to != null)
+                    categorizations = _unitOfWork.RepositoryCategorizations.SearchNumericProperty(categorizations,
+                        x => x.CategorizationTime, to.Value, NumericComparision.LowerEqual);
+            }
+
+            // Sorting defined.
+            var sort = info.Sort;
+            if (sort != null)
+                categorizations =
+                    _unitOfWork.RepositoryCategorizations.Sort(categorizations, sort.Direction, sort.Property);
+            else
+                categorizations = _unitOfWork.RepositoryCategorizations.Sort(categorizations, SortDirection.Decending,
+                    PostCategorizationSort.CategorizationTime);
+
+            // Search result initialization.
+            var result = new SearchResult<IList<Categorization>>();
+            result.Total = await categorizations.CountAsync();
+
+            // Pagination defined.
+            var pagination = info.Pagination;
+            categorizations = _unitOfWork.RepositoryCategorizations.Paginate(categorizations, pagination);
+            result.Records = await categorizations.ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
         #endregion
     }
 }

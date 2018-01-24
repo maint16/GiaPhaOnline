@@ -17,6 +17,11 @@ namespace SystemDatabase.Models.Entities
         /// </summary>
         public int PostId { get; set; }
 
+        /// <summary>
+        /// Categorization time.
+        /// </summary>
+        public double CategorizationTime { get; set; }
+
         #endregion
 
         #region Relationships

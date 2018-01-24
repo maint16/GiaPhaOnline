@@ -125,6 +125,9 @@
     <value>ACCOUNT_NOT_FOUND</value>
     <comment>This message is about not being able to find account in database with specific conditions.</comment>
   </data>
+  <data name="CategorizationNotFound" xml:space="preserve">
+    <value>CATEGORIZATION_NOT_FOUND</value>
+  </data>
   <data name="CategoryNotFound" xml:space="preserve">
     <value>CATEGORY_NOT_FOUND</value>
   </data>
