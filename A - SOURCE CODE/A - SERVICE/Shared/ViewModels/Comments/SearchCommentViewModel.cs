@@ -6,6 +6,8 @@ namespace Shared.ViewModels.Comments
 {
     public class SearchCommentViewModel
     {
+        #region Properties
+
         /// <summary>
         ///     Comment index.
         /// </summary>
@@ -24,7 +26,7 @@ namespace Shared.ViewModels.Comments
         /// <summary>
         ///     Content of comment.
         /// </summary>
-        public TextSearch Content { get; set; }
+        public string Content { get; set; }
 
         /// <summary>
         ///     Time range when comment was created.
@@ -45,5 +47,7 @@ namespace Shared.ViewModels.Comments
         ///     Records pagination.
         /// </summary>
         public Pagination Pagination { get; set; }
+
+        #endregion
     }
 }

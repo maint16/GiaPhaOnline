@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -28,6 +28,11 @@ namespace SystemDatabase.Models.Entities
         ///     Comment content.
         /// </summary>
         public string Content { get; set; }
+
+        /// <summary>
+        /// Status of comment.
+        /// </summary>
+        public CommentStatus Status { get; set; }
 
         /// <summary>
         ///     When was the comment created.
@@ -58,16 +63,17 @@ namespace SystemDatabase.Models.Entities
         public Post Post { get; set; }
 
         /// <summary>
-        /// List of notifications belong to this comment.
+        ///     List of notifications belong to this comment.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<CommentNotification> CommentNotifications { get; set; }
 
         /// <summary>
-        /// List of reports belong to this current comment.
+        ///     List of reports belong to this current comment.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<CommentReport> CommentReports { get; set; }
+
         #endregion
     }
 }

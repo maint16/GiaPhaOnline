@@ -2,10 +2,10 @@
 {
     public enum CommentSort
     {
-        Index,
-        Owner,
-        Post,
-        Created,
-        LastModified
+        Id,
+        OwnerId,
+        PostId,
+        CreatedTime,
+        LastModifiedTime
     }
 }

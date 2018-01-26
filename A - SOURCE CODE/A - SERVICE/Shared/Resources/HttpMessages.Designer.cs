@@ -97,6 +97,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to COMMENT_NOT_FOUND.
+        /// </summary>
+        public static string CommentNotFound {
+            get {
+                return ResourceManager.GetString("CommentNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INFORMATION_NOT_FOUND.
         /// </summary>
         public static string InformationNotFound {
@@ -138,6 +147,15 @@ namespace Shared.Resources {
         public static string TokenNotFound {
             get {
                 return ResourceManager.GetString("TokenNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USER_NOT_COMMENT_OWNER.
+        /// </summary>
+        public static string UserNotCommentOwner {
+            get {
+                return ResourceManager.GetString("UserNotCommentOwner", resourceCulture);
             }
         }
     }
