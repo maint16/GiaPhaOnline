@@ -3,8 +3,8 @@
     public enum PostSort
     {
         Id,
-        OwnerIndex,
-        CategoryIndex,
-        Created
+        OwnerId,
+        CreatedTime,
+        LastModifiedTime
     }
 }

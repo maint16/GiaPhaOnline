@@ -2,10 +2,12 @@
 {
     public enum PostReportSort
     {
-        Id,
-        PostIndex,
-        PostOwnerIndex,
-        PostReporterIndex,
-        Created
+        PostId,
+        OwnerId,
+        ReporterId,
+        Reason,
+        Status,
+        CreatedTime,
+        LastModifiedTime
     }
 }

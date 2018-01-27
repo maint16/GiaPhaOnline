@@ -143,8 +143,14 @@
   <data name="PostHasBeenCategorized" xml:space="preserve">
     <value>POST_HAS_BEEN_CATEGORIZED</value>
   </data>
+  <data name="PostHasBeenReported" xml:space="preserve">
+    <value>POST_HAS_BEEN_REPORTED</value>
+  </data>
   <data name="PostNotFound" xml:space="preserve">
     <value>POST_NOT_FOUND</value>
+  </data>
+  <data name="PostReportNotFound" xml:space="preserve">
+    <value>POST_REPORT_NOT_FOUND</value>
   </data>
   <data name="TokenNotFound" xml:space="preserve">
     <value>TOKEN_NOT_FOUND</value>

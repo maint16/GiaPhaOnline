@@ -1,4 +1,6 @@
-﻿using SystemConstant.Enumerations.Order;
+﻿using System.Collections.Generic;
+using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using Shared.Models;
 
@@ -17,21 +19,26 @@ namespace Shared.ViewModels.Posts
         ///     Id of post owner.
         /// </summary>
         public int? OwnerId { get; set; }
-
-        /// <summary>
-        ///     Id of category which post belongs to.
-        /// </summary>
-        public int? CategoryId { get; set; }
-
+        
         /// <summary>
         ///     Title search option.
         /// </summary>
-        public TextSearch Title { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         ///     Body of post search.
         /// </summary>
-        public TextSearch Body { get; set; }
+        public string Body { get; set; }
+
+        /// <summary>
+        /// Statuses of post.
+        /// </summary>
+        public HashSet<PostStatus> Statuses { get; set; }
+
+        /// <summary>
+        /// Types of post.
+        /// </summary>
+        public HashSet<PostType> Types { get; set; }
 
         /// <summary>
         ///     When the post was created.

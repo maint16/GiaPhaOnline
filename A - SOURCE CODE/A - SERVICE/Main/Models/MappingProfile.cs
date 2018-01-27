@@ -1,6 +1,7 @@
 ﻿using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Shared.ViewModels.Categories;
+using Shared.ViewModels.Posts;
 
 namespace Main.Models
 {
@@ -15,6 +16,9 @@ namespace Main.Models
         {
             // Mapping between Category & CategoryViewModel.
             CreateMap<Category, CategoryViewModel>().ForMember(x => x.Photo, config => config.Ignore());
+
+            // Post mapping.
+            CreateMap<AddPostViewModel, Post>();
         }
 
         #endregion

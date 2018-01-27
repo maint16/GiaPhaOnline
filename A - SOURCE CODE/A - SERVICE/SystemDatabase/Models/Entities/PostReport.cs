@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -31,6 +32,11 @@ namespace SystemDatabase.Models.Entities
         ///     Reason the post was reported.
         /// </summary>
         public string Reason { get; set; }
+
+        /// <summary>
+        /// Status of post report.
+        /// </summary>
+        public PostReportStatus Status { get; set; }
 
         /// <summary>
         ///     When the report was created.

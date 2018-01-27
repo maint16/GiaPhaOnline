@@ -1,4 +1,6 @@
-﻿using SystemConstant.Enumerations.Order;
+﻿using System.Collections.Generic;
+using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using Shared.Models;
 
@@ -6,35 +8,32 @@ namespace Shared.ViewModels.PostReports
 {
     public class SearchPostReportViewModel
     {
-        /// <summary>
-        ///     Id of post report.
-        /// </summary>
-        public int? Id { get; set; }
+        #region Properties
 
         /// <summary>
         ///     Id of post which is reported.
         /// </summary>
-        public int? PostIndex { get; set; }
+        public int? PostId { get; set; }
 
         /// <summary>
         ///     Id of post owner.
         /// </summary>
-        public int? PostOwnerIndex { get; set; }
+        public int? ReporterId { get; set; }
 
         /// <summary>
         ///     Id of report.
         /// </summary>
-        public int? PostReporterIndex { get; set; }
+        public int? OwnerId { get; set; }
 
         /// <summary>
         ///     Post report body.
         /// </summary>
-        public TextSearch Body { get; set; }
-
+        public string Reason { get; set; }
+        
         /// <summary>
-        ///     Post report reason.
+        /// Post report statuses.
         /// </summary>
-        public TextSearch Reason { get; set; }
+        public HashSet<PostReportStatus> Statuses { get; set; }
 
         /// <summary>
         ///     When the report was created.
@@ -42,13 +41,21 @@ namespace Shared.ViewModels.PostReports
         public Range<double?, double?> CreatedTime { get; set; }
 
         /// <summary>
+        /// When the post report was lastly modified.
+        /// </summary>
+        public Range<double?, double?> LastModifiedTime { get; set; }
+
+        /// <summary>
         /// Sort property & direction.
         /// </summary>
         public Sort<PostReportSort> Sort { get; set; }
-        
+
         /// <summary>
         ///     Result pagination.
         /// </summary>
         public Pagination Pagination { get; set; }
+
+        #endregion
+
     }
 }
