@@ -84,6 +84,11 @@ namespace SystemDatabase.Services
         private IRepositoryPost _repositoryPost;
 
         /// <summary>
+        /// Provides access to FollowPost table.
+        /// </summary>
+        private IRepositoryFollowPost _repositoryFollowPost;
+
+        /// <summary>
         ///     Provide access to token database.
         /// </summary>
         private IRepositoryToken _repositoryToken;
@@ -131,6 +136,12 @@ namespace SystemDatabase.Services
         ///     Provides functions to access post database.
         /// </summary>
         public IRepositoryPost RepositoryPosts => _repositoryPost ?? (_repositoryPost = new RepositoryPost(_dbContext));
+
+        /// <summary>
+        /// Provides function to access FollowPost table.
+        /// </summary>
+        public IRepositoryFollowPost RepositoryFollowPosts =>
+            _repositoryFollowPost ?? (_repositoryFollowPost = new RepositoryFollowPost(_dbContext));
 
         /// <summary>
         ///     Provides functions to access realtime connection database.

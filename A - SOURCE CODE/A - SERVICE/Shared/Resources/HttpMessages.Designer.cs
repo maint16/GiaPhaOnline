@@ -160,6 +160,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to POST_HASNT_BEEN_FOLLOWED_YET.
+        /// </summary>
+        public static string PostHasntBeenFollowedYet {
+            get {
+                return ResourceManager.GetString("PostHasntBeenFollowedYet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to POST_NOT_FOUND.
         /// </summary>
         public static string PostNotFound {

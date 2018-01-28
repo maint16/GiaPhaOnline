@@ -152,6 +152,9 @@
   <data name="PostHasBeenReported" xml:space="preserve">
     <value>POST_HAS_BEEN_REPORTED</value>
   </data>
+  <data name="PostHasntBeenFollowedYet" xml:space="preserve">
+    <value>POST_HASNT_BEEN_FOLLOWED_YET</value>
+  </data>
   <data name="PostNotFound" xml:space="preserve">
     <value>POST_NOT_FOUND</value>
   </data>

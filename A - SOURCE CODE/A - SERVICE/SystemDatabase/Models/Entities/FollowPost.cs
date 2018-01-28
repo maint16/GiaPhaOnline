@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -16,6 +17,11 @@ namespace SystemDatabase.Models.Entities
         ///     Which post is being followed by the follower.
         /// </summary>
         public int PostId { get; set; }
+
+        /// <summary>
+        /// Status of follow post.
+        /// </summary>
+        public FollowPostStatus Status { get; set; }
 
         /// <summary>
         ///     When the following action was created.

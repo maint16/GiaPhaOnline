@@ -44,6 +44,11 @@ namespace SystemDatabase.Interfaces
         ///     Provides functions to access post reports database.
         /// </summary>
         IRepositoryPost RepositoryPosts { get; }
+        
+        /// <summary>
+        /// Provides functions to access FollowPost table.
+        /// </summary>
+        IRepositoryFollowPost RepositoryFollowPosts { get; }
 
         /// <summary>
         ///     Provides functions to access post reports database.
