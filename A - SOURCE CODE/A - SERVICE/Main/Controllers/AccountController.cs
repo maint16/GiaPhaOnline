@@ -246,7 +246,7 @@ namespace Main.Controllers
             // Initiate search conditions.
             var conditions = new SearchAccountViewModel();
             conditions.Email = new TextSearch(TextSearchMode.EndsWithIgnoreCase, parameter.Email);
-            conditions.Statuses = new[] {AccountStatus.Active};
+            conditions.Statuses = new[] {AccountStatus.Available};
 
             // Search user in database.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
@@ -315,7 +315,7 @@ namespace Main.Controllers
 
             // Find active accounts.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
-            accounts = accounts.Where(x => x.Status == AccountStatus.Active);
+            accounts = accounts.Where(x => x.Status == AccountStatus.Available);
 
             // Find active token.
             var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);

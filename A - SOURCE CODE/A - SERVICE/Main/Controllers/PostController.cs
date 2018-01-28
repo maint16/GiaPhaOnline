@@ -95,7 +95,7 @@ namespace Main.Controllers
 
             // Initialize post.
             var post = _mapper.Map<AddPostViewModel, Post>(info);
-            post.Status = PostStatus.Active;
+            post.Status = PostStatus.Available;
             post.OwnerId = identity.Id;
             post.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
@@ -117,7 +117,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EdtiPost([FromQuery] int id, [FromBody] EditPostViewModel info)
+        public async Task<IActionResult> EditPost([FromQuery] int id, [FromBody] EditPostViewModel info)
         {
             #region Parameters validation
 
@@ -138,7 +138,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             var posts = _unitOfWork.RepositoryPosts.Search();
-            posts = posts.Where(x => x.Id == id && x.Status == PostStatus.Active && x.OwnerId == identity.Id);
+            posts = posts.Where(x => x.Id == id && x.Status == PostStatus.Available && x.OwnerId == identity.Id);
 
             // Find post from list.
             var post = await posts.FirstOrDefaultAsync();
@@ -197,7 +197,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find post by id.
-            posts = posts.Where(x => x.Id == id && x.Status == PostStatus.Active);
+            posts = posts.Where(x => x.Id == id && x.Status == PostStatus.Available);
 
             // User can only delete his/her own posts. Admin can delete all.
             if (identity.Role != AccountRole.Admin)
@@ -265,7 +265,7 @@ namespace Main.Controllers
             {
                 // Normal users can only see available posts or their own posts.
                 posts = posts.Where(x =>
-                    x.Status == PostStatus.Active || (x.OwnerId == identity.Id && x.Status != PostStatus.Active));
+                    x.Status == PostStatus.Available || (x.OwnerId == identity.Id && x.Status != PostStatus.Available));
 
                 // Normal users can see public posts.
                 posts = posts.Where(x => x.Type == PostType.Public);

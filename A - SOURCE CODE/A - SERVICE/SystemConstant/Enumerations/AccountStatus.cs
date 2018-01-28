@@ -4,6 +4,6 @@
     {
         Disabled,
         Pending,
-        Active
+        Available
     }
 }

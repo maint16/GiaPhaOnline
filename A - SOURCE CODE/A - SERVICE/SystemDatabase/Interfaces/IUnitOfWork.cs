@@ -21,6 +21,11 @@ namespace SystemDatabase.Interfaces
         IRepositoryCategory RepositoryCategories { get; }
 
         /// <summary>
+        /// Provides functions to access follow category table.
+        /// </summary>
+        IRepositoryFollowCategory RepositoryFollowCategory { get; }
+
+        /// <summary>
         /// Provides function to access categorization database.
         /// </summary>
         IRepositoryCategorization RepositoryCategorizations { get; }

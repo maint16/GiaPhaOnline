@@ -1,4 +1,6 @@
-﻿using SystemConstant.Enumerations.Order;
+﻿using System.Collections.Generic;
+using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using Shared.Models;
 
@@ -11,42 +13,44 @@ namespace Shared.ViewModels.CommentReports
         /// <summary>
         ///     Id of comment which should be reported.
         /// </summary>
-        public int? CommentIndex { get; set; }
+        public int? CommentId { get; set; }
 
         /// <summary>
-        ///     Id of comment owner.
+        ///     Id of comment reporter.
         /// </summary>
-        public int? CommentOwnerIndex { get; set; }
+        public int? ReporterId { get; set; }
 
         /// <summary>
-        ///     Id of person who created comment report.
+        ///     Id of post which comment belongs to.
         /// </summary>
-        public int? CommentReporterIndex { get; set; }
+        public int? PostId { get; set; }
 
         /// <summary>
-        ///     Body of comment which is reported.
+        ///     Onwer index which owns the post.
         /// </summary>
-        public TextSearch Body { get; set; }
+        public int? OwnerId { get; set; }
 
         /// <summary>
         ///     Reason of report.
         /// </summary>
-        public TextSearch Reason { get; set; }
+        public string Reason { get; set; }
 
         /// <summary>
-        /// Which property should be sorted.
+        ///  Status of comment report.
         /// </summary>
-        public CommentReportSort Sort { get; set; }
-
-        /// <summary>
-        /// Sort direction.
-        /// </summary>
-        public SortDirection Direction { get; set; }
+        public HashSet<CommentReportStatus> Statuses { get; set; }
+        
+        public Sort<CommentReportSort> Sort { get; set; }
 
         /// <summary>
         ///     When the comment should be created.
         /// </summary>
         public Range<double?, double?> CreatedTime { get; set; }
+
+        /// <summary>
+        /// When the comment report was lastly modified.
+        /// </summary>
+        public Range<double?, double?> LastModifiedTime { get; set; }
 
         /// <summary>
         ///     Pagination information.

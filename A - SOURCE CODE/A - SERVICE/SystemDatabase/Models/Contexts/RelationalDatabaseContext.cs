@@ -128,13 +128,7 @@ namespace SystemDatabase.Models.Contexts
 
             // Use model builder to specify composite primary keys.
             // Composite primary keys configuration
-            modelBuilder.Entity<Categorization>().HasKey(x => new {x.CategoryId, x.PostId});
-            modelBuilder.Entity<FollowCategory>().HasKey(x => new {x.OwnerId, x.CategoryId});
-            modelBuilder.Entity<FollowPost>().HasKey(x => new {x.FollowerId, x.PostId});
-            modelBuilder.Entity<CommentReport>()
-                .HasKey(x => new {CommentIndex = x.CommentId, PostIndex = x.PostId, CommentReporterIndex = x.ReporterId, CommentOwnerIndex = x.OwnerId});
-            modelBuilder.Entity<PostReport>().HasKey(x => new {PostIndex = x.PostId, PostReporterIndex = x.ReporterId, PostOwnerIndex = x.OwnerId});
-
+        
             // This is for remove pluralization naming convention in database defined by Entity Framework.
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
                 entity.Relational().TableName = entity.DisplayName();
@@ -272,10 +266,10 @@ namespace SystemDatabase.Models.Contexts
             var followCategory = modelBuilder.Entity<FollowCategory>();
 
             // Primary key initialization.
-            followCategory.HasKey(x => new {x.OwnerId, x.CategoryId});
+            followCategory.HasKey(x => new {x.FollowerId, x.CategoryId});
             
             // Relationship between follow category and account.
-            followCategory.HasOne(x => x.Owner).WithMany(x => x.FollowCategories);
+            followCategory.HasOne(x => x.Follower).WithMany(x => x.FollowCategories);
 
             // Relationship between follow category and category.
             followCategory.HasOne(x => x.Category).WithMany(x => x.FollowCategories);

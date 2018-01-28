@@ -1,6 +1,6 @@
 ﻿namespace SystemConstant.Enumerations
 {
-    public enum PostReportStatus
+    public enum FollowCategoryStatus
     {
         Deleted,
         Available

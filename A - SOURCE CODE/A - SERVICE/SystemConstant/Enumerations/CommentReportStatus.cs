@@ -1,8 +1,7 @@
 ﻿namespace SystemConstant.Enumerations
 {
-    public enum PostStatus
+    public enum CommentReportStatus
     {
-        Disabled,
         Available,
         Deleted
     }

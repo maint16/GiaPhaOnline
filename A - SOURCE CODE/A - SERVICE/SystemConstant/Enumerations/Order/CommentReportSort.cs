@@ -2,10 +2,13 @@
 {
     public enum CommentReportSort
     {
-        Id,
-        CommentIndex,
-        CommentOwnerIndex,
-        CommentReporterIndex,
-        Created
+        CommentId,
+        PostId,
+        OwnerId,
+        ReporterId,
+        Reason,
+        Status,
+        CreatedTime,
+        LastModifiedTime
     }
 }

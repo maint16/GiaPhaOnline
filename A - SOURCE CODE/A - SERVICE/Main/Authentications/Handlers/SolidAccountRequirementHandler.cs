@@ -74,7 +74,7 @@ namespace Main.Authentications.Handlers
             // Find accounts based on conditions.
             var accounts = _unitOfWork.RepositoryAccounts.Search();
             accounts = accounts.Where(x =>
-                x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Active);
+                x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Available);
 
             // Find the first matched account in the system.
             var account = await accounts.FirstOrDefaultAsync();

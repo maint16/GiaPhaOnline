@@ -99,7 +99,7 @@ namespace Main.Controllers
 
             // Get all posts in system.
             var posts = _unitOfWork.RepositoryPosts.Search();
-            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Active);
+            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
 
             // Get the first post in database.
             var post = await posts.FirstOrDefaultAsync();

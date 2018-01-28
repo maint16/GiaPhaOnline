@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SystemDatabase.Services
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork<T> : IUnitOfWork, IDisposable where T : DbContext
     {
         #region Constructors
 
@@ -20,7 +20,7 @@ namespace SystemDatabase.Services
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
         /// <param name="dbContext"></param>
-        public UnitOfWork(DbContext dbContext)
+        public UnitOfWork(T dbContext)
         {
             _dbContext = dbContext;
         }
@@ -52,6 +52,11 @@ namespace SystemDatabase.Services
         ///     Provide access to categories database.
         /// </summary>
         private IRepositoryCategory _repositoryCategories;
+
+        /// <summary>
+        /// Provide access to FollowCategory table.
+        /// </summary>
+        private IRepositoryFollowCategory _repositoryFollowCategory;
 
         /// <summary>
         /// Provide access to categorization database.
@@ -97,6 +102,12 @@ namespace SystemDatabase.Services
         ///     Provides functions to access categories database.
         /// </summary>
         public IRepositoryCategory RepositoryCategories => _repositoryCategories ?? (_repositoryCategories = new RepositoryCategory(_dbContext));
+
+        /// <summary>
+        /// Provides function to access follow category table.
+        /// </summary>
+        public IRepositoryFollowCategory RepositoryFollowCategory =>
+            _repositoryFollowCategory ?? (_repositoryFollowCategory = new RepositoryFollowCategory(_dbContext));
 
         /// <summary>
         /// Provides functions to access categorizations database.

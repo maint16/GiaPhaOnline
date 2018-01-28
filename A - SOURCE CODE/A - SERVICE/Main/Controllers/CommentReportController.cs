@@ -15,12 +15,13 @@ using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
+using Shared.ViewModels.CommentReports;
 using Shared.ViewModels.PostReports;
 
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class PostReportController : Controller
+    public class CommentReportController : Controller
     {
         #region Properties
 
@@ -46,7 +47,7 @@ namespace Main.Controllers
         /// <summary>
         /// Initialize controller with injectors.
         /// </summary>
-        public PostReportController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
+        public CommentReportController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
@@ -62,13 +63,13 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> AddPostReport([FromBody] AddPostReportViewModel info)
+        public async Task<IActionResult> AddCommentReport([FromBody] AddCommentReportViewModel info)
         {
             #region Parameter validation
 
             if (info == null)
             {
-                info = new AddPostReportViewModel();
+                info = new AddCommentReportViewModel();
                 TryValidateModel(info);
             }
 
@@ -77,16 +78,29 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find post
+            #region Check whether comment belongs to requester or not
 
             // Find identity.
             var identity = _identityService.GetProfile(HttpContext);
 
-            // Find posts which doesn't belong to the requester.
-            var posts = _unitOfWork.RepositoryPosts.Search();
-            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available && x.OwnerId != identity.Id);
-            var post = await posts.FirstOrDefaultAsync();
+            // Find comments.
+            var comments = _unitOfWork.RepositoryComments.Search();
+            comments = comments.Where(x =>
+                x.Id == info.CommentId && x.OwnerId != identity.Id && x.Status == CommentStatus.Available);
 
+            // Find comment which matches to the search condition.
+            var comment = await comments.FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound(new ApiResponse(HttpMessages.CommentNotFound));
+
+            #endregion
+
+            #region Check post status
+
+            // Search for posts.
+            var posts = _unitOfWork.RepositoryPosts.Search();
+            posts = posts.Where(x => x.Id == comment.PostId && x.Status == PostStatus.Available);
+            var post = await posts.FirstOrDefaultAsync();
             if (post == null)
                 return NotFound(new ApiResponse(HttpMessages.PostNotFound));
 
@@ -94,52 +108,53 @@ namespace Main.Controllers
 
             #region Check report duplicate
 
-            // Find post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
-            postReports = postReports.Where(x => x.PostId == post.Id && x.ReporterId == identity.Id);
-            var postReport = await postReports.FirstOrDefaultAsync();
+            // Find comment reports.
+            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            commentReports = commentReports.Where(x => x.CommentId == info.CommentId && x.ReporterId == identity.Id);
+            var commentReport = await commentReports.FirstOrDefaultAsync();
 
             // Post has been reported.
-            if (postReport != null)
-                return StatusCode((int)HttpStatusCode.Conflict, new ApiResponse(HttpMessages.PostHasBeenReported));
+            if (commentReport != null)
+                return StatusCode((int)HttpStatusCode.Conflict, new ApiResponse(HttpMessages.CommentHasBeenReported));
 
             #endregion
 
-            #region Post report initialization
+            #region Comment report initialization
 
-            postReport = new PostReport();
-            postReport.PostId = post.Id;
-            postReport.OwnerId = post.OwnerId;
-            postReport.ReporterId = identity.Id;
-            postReport.Body = post.Body;
-            postReport.Reason = info.Reason;
-            postReport.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            commentReport = new CommentReport();
+            commentReport.CommentId = comment.Id;
+            commentReport.PostId = comment.PostId;
+            commentReport.OwnerId = post.OwnerId;
+            commentReport.ReporterId = identity.Id;
+            commentReport.Body = comment.Content;
+            commentReport.Reason = info.Reason;
+            commentReport.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert post to system.
-            _unitOfWork.RepositoryPostReports.Insert(postReport);
+            _unitOfWork.RepositoryCommentReports.Insert(commentReport);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
 
             #endregion
 
-            return Ok(postReport);
+            return Ok(commentReport);
         }
 
         /// <summary>
         /// Find post report and edit it.
         /// </summary>
-        /// <param name="postId"></param>
+        /// <param name="commentId"></param>
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("")]
-        public async Task<IActionResult> EditPostReport([FromQuery] int postId, [FromBody] EditPostReportViewModel info)
+        public async Task<IActionResult> EditCommentReport([FromQuery] int commentId, [FromBody] EditCommentReportViewModel info)
         {
             #region Parameters validation
 
             if (info == null)
             {
-                info = new EditPostReportViewModel();
+                info = new EditCommentReportViewModel();
                 TryValidateModel(info);
             }
 
@@ -148,65 +163,64 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Post report search
+            #region Comment report search
 
-            // Find identit in request.
+            // Find identity in request.
             var identity = _identityService.GetProfile(HttpContext);
 
-            // Find post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
-            postReports = postReports.Where(x => x.PostId == postId && x.ReporterId == identity.Id && x.Status == PostReportStatus.Available);
+            // Find comment reports.
+            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            commentReports = commentReports.Where(x => x.CommentId == commentId && x.ReporterId == identity.Id);
 
             // Find the report.
-            var postReport = await postReports.FirstOrDefaultAsync();
-            if (postReport == null)
-                return NotFound(new ApiResponse(HttpMessages.PostReportNotFound));
+            var commentReport = await commentReports.FirstOrDefaultAsync();
+            if (commentReport == null)
+                return NotFound(new ApiResponse(HttpMessages.CommentReportNotFound));
 
             #endregion
 
             #region Edit post report information
 
             // Update reason
-            postReport.Reason = info.Reason;
-            postReport.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            commentReport.Reason = info.Reason;
+            commentReport.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to system.
             await _unitOfWork.CommitAsync();
 
             #endregion
 
-            return Ok(postReport);
+            return Ok(commentReport);
         }
 
         /// <summary>
         /// Delete a post report from system.
         /// </summary>
-        /// <param name="postId"></param>
+        /// <param name="commentId"></param>
         /// <returns></returns>
         [HttpDelete("")]
-        public async Task<IActionResult> DeletePostReport([FromQuery] int postId)
+        public async Task<IActionResult> DeleteCommentReport([FromQuery] int commentId)
         {
-            #region Find post reports
+            #region Comment report search
 
-            // Find identity from request.
+            // Find identity in request.
             var identity = _identityService.GetProfile(HttpContext);
-            
-            // Find post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
-            postReports = postReports.Where(x =>
-                x.PostId == postId && x.ReporterId == identity.Id && x.Status == PostReportStatus.Available);
 
-            // Find post report.
-            var postReport = await postReports.FirstOrDefaultAsync();
-            if (postReport == null)
-                return NotFound(new ApiResponse(HttpMessages.PostNotFound));
+            // Find comment reports.
+            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            commentReports = commentReports.Where(x => x.CommentId == commentId && x.ReporterId == identity.Id);
+
+            // Find the report.
+            var commentReport = await commentReports.FirstOrDefaultAsync();
+            if (commentReport == null)
+                return NotFound(new ApiResponse(HttpMessages.CommentReportNotFound));
 
             #endregion
 
             #region Update information
 
             // Update status to deleted.
-            postReport.Status = PostReportStatus.Deleted;
+            commentReport.Status = CommentReportStatus.Deleted;
 
             // Commit data.
             await _unitOfWork.CommitAsync();
@@ -221,13 +235,13 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> SearchForPostReports([FromBody] SearchPostReportViewModel condition)
+        public async Task<IActionResult> SearchForPostReports([FromBody] SearchCommentReportViewModel condition)
         {
             #region Properties
 
             if (condition == null)
             {
-                condition = new SearchPostReportViewModel();
+                condition = new SearchCommentReportViewModel();
                 TryValidateModel(condition);
             }
 
@@ -242,35 +256,39 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Get all post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
+            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+
+            // Comment id has been defined.
+            if (condition.CommentId != null)
+                commentReports = commentReports.Where(x => x.CommentId == condition.CommentId.Value);
 
             // Post id has been defined.
             if (condition.PostId != null)
-                postReports = postReports.Where(x => x.PostId == condition.PostId.Value);
+                commentReports = commentReports.Where(x => x.PostId == condition.PostId.Value);
 
             // Post owner id has been defined.
             if (condition.OwnerId != null)
-                postReports = postReports.Where(x => x.OwnerId == condition.OwnerId.Value);
+                commentReports = commentReports.Where(x => x.OwnerId == condition.OwnerId.Value);
 
             // Reason is defined.
             if (!string.IsNullOrWhiteSpace(condition.Reason))
-                postReports = postReports.Where(x => x.Reason.Contains(condition.Reason));
+                commentReports = commentReports.Where(x => x.Reason.Contains(condition.Reason));
 
             // Filter base on role.
             if (identity.Role == AccountRole.Admin)
             {
                 // Reporter id has been defined.
                 if (condition.ReporterId != null)
-                    postReports = postReports.Where(x => x.ReporterId == condition.ReporterId.Value);
+                    commentReports = commentReports.Where(x => x.ReporterId == condition.ReporterId.Value);
 
                 // Statuses have been defined.
                 if (condition.Statuses != null && condition.Statuses.Count > 0)
-                    postReports = postReports.Where(x => condition.Statuses.Contains(x.Status));
+                    commentReports = commentReports.Where(x => condition.Statuses.Contains(x.Status));
             }
             else
             {
-                postReports = postReports.Where(x => x.ReporterId == identity.Id);
-                postReports = postReports.Where(x => x.Status == PostReportStatus.Available);
+                commentReports = commentReports.Where(x => x.ReporterId == identity.Id);
+                commentReports = commentReports.Where(x => x.Status == CommentReportStatus.Available);
             }
 
             // Created time has been defined.
@@ -281,11 +299,11 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
                         x => x.CreatedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
                         x => x.CreatedTime, to.Value, NumericComparision.LowerEqual);
             }
 
@@ -297,42 +315,43 @@ namespace Main.Controllers
                 var to = lastModifiedTime.To;
 
                 if (from != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
                         x => x.LastModifiedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
                         x => x.LastModifiedTime, to.Value, NumericComparision.LowerEqual);
             }
 
             // Sorting.
             var sort = condition.Sort;
             if (sort != null)
-                postReports = _unitOfWork.RepositoryPostReports.Sort(postReports, sort.Direction, sort.Property);
+                commentReports = _unitOfWork.RepositoryCommentReports.Sort(commentReports, sort.Direction, sort.Property);
             else
-                postReports = _unitOfWork.RepositoryPostReports.Sort(postReports, SortDirection.Decending,
+                commentReports = _unitOfWork.RepositoryCommentReports.Sort(commentReports, SortDirection.Decending,
                     PostReportSort.CreatedTime);
-            
+
             #endregion
 
             #region Result search and count
 
             // Count post task initialization.
-            var pCountPostReports = postReports.CountAsync();
-            var pGetPosts = _unitOfWork.Paginate(postReports, condition.Pagination).ToListAsync();
+            var pCountCommentReports = commentReports.CountAsync();
+            var pGetCommentReports = _unitOfWork.Paginate(commentReports, condition.Pagination).ToListAsync();
 
             // Wait for all tasks to complete.
-            await Task.WhenAll(pCountPostReports, pGetPosts);
+            await Task.WhenAll(pCountCommentReports, pGetCommentReports);
 
             // Result initialization.
-            var result = new SearchResult<IList<PostReport>>();
-            result.Records = pGetPosts.Result;
-            result.Total = pCountPostReports.Result;
+            var result = new SearchResult<IList<CommentReport>>();
+            result.Records = pGetCommentReports.Result;
+            result.Total = pCountCommentReports.Result;
 
             #endregion
 
             return Ok(result);
         }
+        
         #endregion
     }
 }

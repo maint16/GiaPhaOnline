@@ -97,11 +97,29 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to COMMENT_HAS_BEEN_REPORTED.
+        /// </summary>
+        public static string CommentHasBeenReported {
+            get {
+                return ResourceManager.GetString("CommentHasBeenReported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to COMMENT_NOT_FOUND.
         /// </summary>
         public static string CommentNotFound {
             get {
                 return ResourceManager.GetString("CommentNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to COMMENT_REPORT_NOT_FOUND.
+        /// </summary>
+        public static string CommentReportNotFound {
+            get {
+                return ResourceManager.GetString("CommentReportNotFound", resourceCulture);
             }
         }
         

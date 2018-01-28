@@ -65,7 +65,7 @@ namespace Main.Controllers
 
             // Find posts.
             var posts = _unitOfWork.RepositoryPosts.Search();
-            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Active);
+            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
 
             // Check whether post exists or not.
             var bIsPostAvailable = await posts.AnyAsync();

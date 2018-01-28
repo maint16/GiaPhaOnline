@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using SystemConstant.Enumerations;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -38,9 +39,19 @@ namespace SystemDatabase.Models.Entities
         public string Reason { get; set; }
 
         /// <summary>
+        /// Status of comment report.
+        /// </summary>
+        public CommentReportStatus Status { get; set; }
+
+        /// <summary>
         ///     When the report was created.
         /// </summary>
-        public double Created { get; set; }
+        public double CreatedTime { get; set; }
+
+        /// <summary>
+        /// Time when comment report has been modified.
+        /// </summary>
+        public double? LastModifiedTime { get; set; }
 
         #endregion
 
