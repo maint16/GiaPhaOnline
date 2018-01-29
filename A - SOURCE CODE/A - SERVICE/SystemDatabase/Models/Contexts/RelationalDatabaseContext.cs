@@ -220,7 +220,7 @@ namespace SystemDatabase.Models.Contexts
 
             // Primary key setting.
             commentNotification.HasKey(x => x.Id);
-            commentNotification.Property(x => x.Id).UseSqlServerIdentityColumn();
+            commentNotification.Property(x => x.Id).ValueGeneratedOnAdd();
 
             // Relationship between comment notification & comment.
             commentNotification.HasOne(x => x.Comment).WithMany(x => x.CommentNotifications);
@@ -322,7 +322,7 @@ namespace SystemDatabase.Models.Contexts
 
             // Primary key initialization.
             postNotification.HasKey(x => x.Id);
-            postNotification.Property(x => x.Id).UseSqlServerIdentityColumn();
+            postNotification.Property(x => x.Id).ValueGeneratedOnAdd();
 
             // Relationship between post notification and post.
             postNotification.HasOne(x => x.Post).WithMany(x => x.PostNotifications);

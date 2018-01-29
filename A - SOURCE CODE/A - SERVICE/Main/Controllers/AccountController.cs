@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Models;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
+using AutoMapper;
 using Main.Interfaces.Services;
 using Main.Models;
-using Main.ViewModels.Accounts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ using Shared.ViewModels.Accounts;
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountController : Controller
+    public class AccountController : ApiBaseController
     {
         #region Constructors
 
@@ -35,6 +36,9 @@ namespace Main.Controllers
         ///     Initiate controller with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
+        /// <param name="mapper"></param>
+        /// <param name="timeService"></param>
+        /// <param name="dbSharedService"></param>
         /// <param name="encryptionService"></param>
         /// <param name="identityService"></param>
         /// <param name="systemTimeService"></param>
@@ -43,17 +47,17 @@ namespace Main.Controllers
         /// <param name="logger"></param>
         public AccountController(
             IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ITimeService timeService,
+            IDbSharedService dbSharedService,
             IEncryptionService encryptionService,
             IIdentityService identityService,
             ITimeService systemTimeService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
-            _unitOfWork = unitOfWork;
             _encryptionService = encryptionService;
-            _identityService = identityService;
-            _systemTimeService = systemTimeService;
             _jwtConfiguration = jwtConfigurationOptions.Value;
             _applicationSettings = applicationSettings.Value;
             _logger = logger;
@@ -96,7 +100,7 @@ namespace Main.Controllers
             var hashedPassword = _encryptionService.Md5Hash(parameters.Password);
             
             // Search for account which is active and information is correct.
-            var accounts = _unitOfWork.RepositoryAccounts.Search();
+            var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
                 x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase) &&
                 x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase));
@@ -138,7 +142,7 @@ namespace Main.Controllers
             var jwt = new JwtResponse();
             jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
             jwt.LifeTime = _jwtConfiguration.LifeTime;
-            jwt.Expiration = _systemTimeService.DateTimeUtcToUnix(jwtExpiration);
+            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
 
             #endregion
 
@@ -182,7 +186,7 @@ namespace Main.Controllers
             #region Search for duplicate accounts.
 
             // Search for duplicated accounts.
-            var accounts = _unitOfWork.RepositoryAccounts.Search();
+            var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(
                 x => x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase));
             
@@ -206,10 +210,10 @@ namespace Main.Controllers
             account.Password = _encryptionService.Md5Hash(parameters.Password);
 
             // Add account into database.
-            _unitOfWork.RepositoryAccounts.Insert(account);
+            UnitOfWork.Accounts.Insert(account);
 
             // Save changes asychronously.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             // TODO: Implement instruction email.
             // TODO: Implement notification service which notifies administrators about the registration.
@@ -249,8 +253,8 @@ namespace Main.Controllers
             conditions.Statuses = new[] {AccountStatus.Available};
 
             // Search user in database.
-            var accounts = _unitOfWork.RepositoryAccounts.Search();
-            var account = await _unitOfWork.RepositoryAccounts.Search().FirstOrDefaultAsync();
+            var accounts = UnitOfWork.Accounts.Search();
+            var account = await UnitOfWork.Accounts.Search().FirstOrDefaultAsync();
             throw new NotImplementedException();
 
             // User is not found.
@@ -270,11 +274,11 @@ namespace Main.Controllers
             token.OwnerId = account.Id;
             token.Type = TokenType.AccountReactiveCode;
             token.Code = Guid.NewGuid().ToString("D");
-            token.IssuedTime = _systemTimeService.DateTimeUtcToUnix(systemTime);
-            token.ExpiredTime = _systemTimeService.DateTimeUtcToUnix(expiration);
+            token.IssuedTime = TimeService.DateTimeUtcToUnix(systemTime);
+            token.ExpiredTime = TimeService.DateTimeUtcToUnix(expiration);
 
             // Save token into database.
-            _unitOfWork.RepositoryTokens.Insert(token);
+            //TimeService.Tokens.Insert(token);
 
             #endregion
 
@@ -298,86 +302,72 @@ namespace Main.Controllers
                 ErrorMessageResourceName = "InformationIsRequired")] string code,
             [FromBody] SubmitPasswordResetViewModel parameter)
         {
-            #region Model validation
+            throw new NotImplementedException();
+            //#region Model validation
 
-            if (parameter == null)
-            {
-                parameter = new SubmitPasswordResetViewModel();
-                TryValidateModel(parameter);
-            }
+            //if (parameter == null)
+            //{
+            //    parameter = new SubmitPasswordResetViewModel();
+            //    TryValidateModel(parameter);
+            //}
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
 
-            #endregion
+            //#endregion
 
-            #region Information search
+            //#region Information search
 
-            // Find active accounts.
-            var accounts = _unitOfWork.RepositoryAccounts.Search();
-            accounts = accounts.Where(x => x.Status == AccountStatus.Available);
+            //// Find active accounts.
+            //var accounts = _unitOfWork.Accounts.Search();
+            //accounts = accounts.Where(x => x.Status == AccountStatus.Available);
 
-            // Find active token.
-            var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            var tokens = _unitOfWork.RepositoryTokens.Search();
+            //// Find active token.
+            //var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            //var tokens = _unitOfWork.RepositoryTokens.Search();
 
-            // Find token.
-            var result = from account in accounts
-                from token in tokens
-                where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
-                select new SearchAccountTokenResult
-                {
-                    Token = token,
-                    Account = account
-                };
+            //// Find token.
+            //var result = from account in accounts
+            //    from token in tokens
+            //    where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
+            //    select new SearchAccountTokenResult
+            //    {
+            //        Token = token,
+            //        Account = account
+            //    };
 
-            // No active token is found.
-            if (!await result.AnyAsync())
-                return NotFound(HttpMessages.InformationNotFound);
+            //// No active token is found.
+            //if (!await result.AnyAsync())
+            //    return NotFound(HttpMessages.InformationNotFound);
 
-            #endregion
+            //#endregion
 
-            #region Information change
+            //#region Information change
 
-            // Hash the password.
-            var password = _encryptionService.Md5Hash(parameter.Password);
+            //// Hash the password.
+            //var password = _encryptionService.Md5Hash(parameter.Password);
 
-            // Delete all found tokens.
-            _unitOfWork.RepositoryTokens.Remove(result.Select(x => x.Token));
-            await result.ForEachAsync(x => x.Account.Password = password);
+            //// Delete all found tokens.
+            //_unitOfWork.RepositoryTokens.Remove(result.Select(x => x.Token));
+            //await result.ForEachAsync(x => x.Account.Password = password);
 
-            // Commit changes.
-            await _unitOfWork.CommitAsync();
+            //// Commit changes.
+            //await _unitOfWork.CommitAsync();
 
-            #endregion
+            //#endregion
 
-            return Ok();
+            //return Ok();
         }
 
         #endregion
 
         #region Properties
-
-        /// <summary>
-        ///     Provides functions & repositories to access database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
+        
         /// <summary>
         ///     Provides functions to encrypt/decrypt data.
         /// </summary>
         private readonly IEncryptionService _encryptionService;
-
-        /// <summary>
-        ///     Service which handles identity businesses.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
-        ///     Service which handles time on system.
-        /// </summary>
-        private readonly ITimeService _systemTimeService;
-
+        
         /// <summary>
         ///     Configuration information of JWT.
         /// </summary>
@@ -388,6 +378,9 @@ namespace Main.Controllers
         /// </summary>
         private readonly ApplicationSetting _applicationSettings;
 
+        /// <summary>
+        /// Logging instance.
+        /// </summary>
         private readonly ILogger _logger;
 
         #endregion

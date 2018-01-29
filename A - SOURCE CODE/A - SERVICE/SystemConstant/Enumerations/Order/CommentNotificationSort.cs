@@ -1,8 +1,8 @@
 ﻿namespace SystemConstant.Enumerations.Order
 {
-    public enum FollowPostSort
+    public enum CommentNotificationSort
     {
-        PostId,
+        Type,
         Status,
         CreatedTime
     }

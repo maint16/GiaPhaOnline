@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,11 @@ namespace Main.Controllers
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Instance to access database function.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
 
         #endregion
 
@@ -38,9 +44,10 @@ namespace Main.Controllers
         /// <summary>
         /// Initialize controller with injectors.
         /// </summary>
-        public PostCategorizationController(IUnitOfWork unitOfWork)
+        public PostCategorizationController(IUnitOfWork unitOfWork, IDbSharedService databaseFunction)
         {
             _unitOfWork = unitOfWork;
+            _databaseFunction = databaseFunction;
         }
 
         #endregion
@@ -70,7 +77,7 @@ namespace Main.Controllers
             #region Check categorization duplicate
 
             // Get all post categorizations.
-            var categorizations = _unitOfWork.RepositoryCategorizations.Search();
+            var categorizations = _unitOfWork.PostCategorizations.Search();
             categorizations = categorizations.Where(x => x.CategoryId == info.CategoryId && x.PostId == info.PostId);
 
             // Find post categorization.
@@ -83,7 +90,7 @@ namespace Main.Controllers
             #region Category check
 
             // Get all categories in the system.
-            var categories = _unitOfWork.RepositoryCategories.Search();
+            var categories = _unitOfWork.Categories.Search();
             categories = categories.Where(x => x.Id == info.CategoryId && x.Status == CategoryStatus.Available);
 
             // Find the first matched result.
@@ -98,7 +105,7 @@ namespace Main.Controllers
             #region Post check
 
             // Get all posts in system.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = _unitOfWork.Posts.Search();
             posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
 
             // Get the first post in database.
@@ -115,7 +122,7 @@ namespace Main.Controllers
             categorization.PostId = post.Id;
 
             // Add record to database.
-            _unitOfWork.RepositoryCategorizations.Insert(categorization);
+            _unitOfWork.PostCategorizations.Insert(categorization);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
@@ -135,7 +142,7 @@ namespace Main.Controllers
         public async Task<IActionResult> DeletePostCategorization([FromQuery] int postId, [FromQuery] int categoryId)
         {
             // Get all categorization by using post and category information.
-            var categorizations = _unitOfWork.RepositoryCategorizations.Search();
+            var categorizations = _unitOfWork.PostCategorizations.Search();
             categorizations = categorizations.Where(x => x.PostId == postId && x.CategoryId == categoryId);
 
             // Find categorization.
@@ -144,7 +151,7 @@ namespace Main.Controllers
                 return NotFound(new ApiResponse(HttpMessages.CategorizationNotFound));
 
             // Delete the categorization.
-            _unitOfWork.RepositoryCategorizations.Remove(categorization);
+            _unitOfWork.PostCategorizations.Remove(categorization);
             return Ok();
         }
 
@@ -172,7 +179,7 @@ namespace Main.Controllers
             #region Search for categorizations
 
             // Search categorizations.
-            var categorizations = _unitOfWork.RepositoryCategorizations.Search();
+            var categorizations = _unitOfWork.PostCategorizations.Search();
 
             // Category has been defined.
             if (info.CategoryId != null)
@@ -188,12 +195,12 @@ namespace Main.Controllers
             {
                 var from = categorizationTime.From;
                 if (from != null)
-                    categorizations = _unitOfWork.RepositoryCategorizations.SearchNumericProperty(categorizations,
+                    categorizations = _databaseFunction.SearchNumericProperty(categorizations,
                         x => x.CategorizationTime, from.Value, NumericComparision.GreaterEqual);
 
                 var to = categorizationTime.To;
                 if (to != null)
-                    categorizations = _unitOfWork.RepositoryCategorizations.SearchNumericProperty(categorizations,
+                    categorizations = _databaseFunction.SearchNumericProperty(categorizations,
                         x => x.CategorizationTime, to.Value, NumericComparision.LowerEqual);
             }
 
@@ -201,9 +208,9 @@ namespace Main.Controllers
             var sort = info.Sort;
             if (sort != null)
                 categorizations =
-                    _unitOfWork.RepositoryCategorizations.Sort(categorizations, sort.Direction, sort.Property);
+                    _databaseFunction.Sort(categorizations, sort.Direction, sort.Property);
             else
-                categorizations = _unitOfWork.RepositoryCategorizations.Sort(categorizations, SortDirection.Decending,
+                categorizations = _databaseFunction.Sort(categorizations, SortDirection.Decending,
                     PostCategorizationSort.CategorizationTime);
 
             // Search result initialization.
@@ -212,7 +219,7 @@ namespace Main.Controllers
 
             // Pagination defined.
             var pagination = info.Pagination;
-            categorizations = _unitOfWork.RepositoryCategorizations.Paginate(categorizations, pagination);
+            categorizations = _databaseFunction.Paginate(categorizations, pagination);
             result.Records = await categorizations.ToListAsync();
 
             #endregion

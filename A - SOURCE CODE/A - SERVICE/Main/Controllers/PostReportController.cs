@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,11 @@ namespace Main.Controllers
         /// </summary>
         private readonly ITimeService _timeService;
 
+        /// <summary>
+        /// Service which is for accessing database function.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
         #endregion
 
         #region Constructors
@@ -46,11 +52,12 @@ namespace Main.Controllers
         /// <summary>
         /// Initialize controller with injectors.
         /// </summary>
-        public PostReportController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
+        public PostReportController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService, IDbSharedService databaseFunction)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
             _timeService = timeService;
+            _databaseFunction = databaseFunction;
         }
 
         #endregion
@@ -83,7 +90,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find posts which doesn't belong to the requester.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = _unitOfWork.Posts.Search();
             posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available && x.OwnerId != identity.Id);
             var post = await posts.FirstOrDefaultAsync();
 
@@ -95,7 +102,7 @@ namespace Main.Controllers
             #region Check report duplicate
 
             // Find post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
+            var postReports = _unitOfWork.PostReports.Search();
             postReports = postReports.Where(x => x.PostId == post.Id && x.ReporterId == identity.Id);
             var postReport = await postReports.FirstOrDefaultAsync();
 
@@ -116,7 +123,7 @@ namespace Main.Controllers
             postReport.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert post to system.
-            _unitOfWork.RepositoryPostReports.Insert(postReport);
+            _unitOfWork.PostReports.Insert(postReport);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
@@ -154,7 +161,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
+            var postReports = _unitOfWork.PostReports.Search();
             postReports = postReports.Where(x => x.PostId == postId && x.ReporterId == identity.Id && x.Status == PostReportStatus.Available);
 
             // Find the report.
@@ -192,7 +199,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
             
             // Find post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
+            var postReports = _unitOfWork.PostReports.Search();
             postReports = postReports.Where(x =>
                 x.PostId == postId && x.ReporterId == identity.Id && x.Status == PostReportStatus.Available);
 
@@ -242,7 +249,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Get all post reports.
-            var postReports = _unitOfWork.RepositoryPostReports.Search();
+            var postReports = _unitOfWork.PostReports.Search();
 
             // Post id has been defined.
             if (condition.PostId != null)
@@ -281,11 +288,11 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    postReports = _databaseFunction.SearchNumericProperty(postReports,
                         x => x.CreatedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    postReports = _databaseFunction.SearchNumericProperty(postReports,
                         x => x.CreatedTime, to.Value, NumericComparision.LowerEqual);
             }
 
@@ -297,38 +304,31 @@ namespace Main.Controllers
                 var to = lastModifiedTime.To;
 
                 if (from != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    postReports = _databaseFunction.SearchNumericProperty(postReports,
                         x => x.LastModifiedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    postReports = _unitOfWork.RepositoryPostReports.SearchNumericProperty(postReports,
+                    postReports = _databaseFunction.SearchNumericProperty(postReports,
                         x => x.LastModifiedTime, to.Value, NumericComparision.LowerEqual);
             }
 
             // Sorting.
             var sort = condition.Sort;
             if (sort != null)
-                postReports = _unitOfWork.RepositoryPostReports.Sort(postReports, sort.Direction, sort.Property);
+                postReports = _databaseFunction.Sort(postReports, sort.Direction, sort.Property);
             else
-                postReports = _unitOfWork.RepositoryPostReports.Sort(postReports, SortDirection.Decending,
+                postReports = _databaseFunction.Sort(postReports, SortDirection.Decending,
                     PostReportSort.CreatedTime);
             
             #endregion
 
             #region Result search and count
-
-            // Count post task initialization.
-            var pCountPostReports = postReports.CountAsync();
-            var pGetPosts = _unitOfWork.Paginate(postReports, condition.Pagination).ToListAsync();
-
-            // Wait for all tasks to complete.
-            await Task.WhenAll(pCountPostReports, pGetPosts);
-
+            
             // Result initialization.
             var result = new SearchResult<IList<PostReport>>();
-            result.Records = pGetPosts.Result;
-            result.Total = pCountPostReports.Result;
-
+            
+            result.Total = await postReports.CountAsync();
+            result.Records = await _databaseFunction.Paginate(postReports, condition.Pagination).ToListAsync();
             #endregion
 
             return Ok(result);

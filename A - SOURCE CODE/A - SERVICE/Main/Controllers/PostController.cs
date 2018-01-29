@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
@@ -43,6 +44,11 @@ namespace Main.Controllers
         /// </summary>
         private readonly ITimeService _timeService;
 
+        /// <summary>
+        /// Service which is for accessing database function.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
         #endregion
 
         #region Constructors
@@ -54,12 +60,14 @@ namespace Main.Controllers
         /// <param name="mapper"></param>
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
-        public PostController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService, ITimeService timeService)
+        /// <param name="databaseFunction"></param>
+        public PostController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService, ITimeService timeService, IDbSharedService databaseFunction)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _identityService = identityService;
             _timeService = timeService;
+            _databaseFunction = databaseFunction;
         }
 
         #endregion
@@ -100,7 +108,7 @@ namespace Main.Controllers
             post.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Add entity into system.
-            _unitOfWork.RepositoryPosts.Insert(post);
+            _unitOfWork.Posts.Insert(post);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
@@ -137,7 +145,7 @@ namespace Main.Controllers
             // Find identity in request.
             var identity = _identityService.GetProfile(HttpContext);
 
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = _unitOfWork.Posts.Search();
             posts = posts.Where(x => x.Id == id && x.Status == PostStatus.Available && x.OwnerId == identity.Id);
 
             // Find post from list.
@@ -191,7 +199,7 @@ namespace Main.Controllers
         public async Task<IActionResult> DeletePost([FromQuery] int id)
         {
             // Find post by using post.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = _unitOfWork.Posts.Search();
 
             // Find requester identity.
             var identity = _identityService.GetProfile(HttpContext);
@@ -235,21 +243,21 @@ namespace Main.Controllers
             #endregion
 
             #region Search for information
-            
+
             // Find identity in request.
             var identity = _identityService.GetProfile(HttpContext);
 
             // Search for posts.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = _unitOfWork.Posts.Search();
 
             // Id is defined.
             if (condition.Id != null)
                 posts = posts.Where(x => x.Id == condition.Id);
-            
+
             // Owner is defined.
             if (condition.OwnerId != null)
                 posts = posts.Where(x => x.OwnerId == condition.OwnerId);
-            
+
             // Search conditions which are based on roles.
             if (identity.Role == AccountRole.Admin)
             {
@@ -270,7 +278,7 @@ namespace Main.Controllers
                 // Normal users can see public posts.
                 posts = posts.Where(x => x.Type == PostType.Public);
             }
-            
+
             // Created time has been defined.
             var createdTime = condition.CreatedTime;
             if (createdTime != null)
@@ -279,11 +287,11 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    posts = _unitOfWork.RepositoryPosts.SearchNumericProperty(posts, x => x.CreatedTime, from.Value,
+                    posts = _databaseFunction.SearchNumericProperty(posts, x => x.CreatedTime, from.Value,
                         NumericComparision.GreaterEqual);
-                
+
                 if (to != null)
-                    posts = _unitOfWork.RepositoryPosts.SearchNumericProperty(posts, x => x.CreatedTime, to.Value,
+                    posts = _databaseFunction.SearchNumericProperty(posts, x => x.CreatedTime, to.Value,
                         NumericComparision.LowerEqual);
             }
 
@@ -295,35 +303,31 @@ namespace Main.Controllers
                 var to = lastModifiedTime.To;
 
                 if (from != null)
-                    posts = _unitOfWork.RepositoryPosts.SearchNumericProperty(posts, x => x.LastModifiedTime, from.Value,
+                    posts = _databaseFunction.SearchNumericProperty(posts, x => x.LastModifiedTime, from.Value,
                         NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    posts = _unitOfWork.RepositoryPosts.SearchNumericProperty(posts, x => x.LastModifiedTime, to.Value,
+                    posts = _databaseFunction.SearchNumericProperty(posts, x => x.LastModifiedTime, to.Value,
                         NumericComparision.LowerEqual);
             }
 
             // Sort property & direction.
             var sort = condition.Sort;
             if (sort != null)
-                posts = _unitOfWork.Sort(posts, sort.Direction, sort.Property);
+                posts = _databaseFunction.Sort(posts, sort.Direction, sort.Property);
             else
-                posts = _unitOfWork.Sort(posts, SortDirection.Decending, SortDirection.Decending);
+                posts = _databaseFunction.Sort(posts, SortDirection.Decending, SortDirection.Decending);
 
-            // Count posts.
-            var pGetPostCount = posts.CountAsync();
-            var pGetPosts = _unitOfWork.Paginate(posts, condition.Pagination).ToListAsync();
-
-            await Task.WhenAll(pGetPostCount, pGetPosts);
             var result = new SearchResult<IList<Post>>();
-            result.Records = pGetPosts.Result;
-            result.Total = pGetPostCount.Result;
+
+            result.Total = await posts.CountAsync();
+            result.Records = await _databaseFunction.Paginate(posts, condition.Pagination).ToListAsync();
 
             #endregion
 
             return Ok(result);
         }
-        
+
         #endregion
     }
 }

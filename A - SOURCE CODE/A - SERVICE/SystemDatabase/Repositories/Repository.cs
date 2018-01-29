@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SystemDatabase.Repositories
 {
-    public class ParentRepository<T> : DatabaseFunction<T>, IParentRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         #region Properties
 
@@ -13,7 +13,7 @@ namespace SystemDatabase.Repositories
         ///     Database set.
         /// </summary>
         private readonly DbSet<T> _dbSet;
-
+        
         #endregion
 
         #region Constructors
@@ -22,7 +22,7 @@ namespace SystemDatabase.Repositories
         ///     Initiate repository with database context wrapper.
         /// </summary>
         /// <param name="dbContext"></param>
-        public ParentRepository(DbContext dbContext)
+        public Repository(DbContext dbContext)
         {
             _dbSet = dbContext.Set<T>();
         }

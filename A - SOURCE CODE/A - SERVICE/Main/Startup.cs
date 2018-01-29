@@ -83,11 +83,13 @@ namespace Main
             services.AddDbContext<RelationalDatabaseContext>(
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
 #endif
-            
+
             // Injections configuration.
-            services.AddScoped<IUnitOfWork, UnitOfWork<RelationalDatabaseContext>>();
-            services.AddScoped(typeof(IDatabaseFunction<>), typeof(DatabaseFunction<>));
             services.AddScoped<DbContext, RelationalDatabaseContext>();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork<RelationalDatabaseContext>>();
+            services.AddScoped<IDbSharedService, DbSharedService>();
+            
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();

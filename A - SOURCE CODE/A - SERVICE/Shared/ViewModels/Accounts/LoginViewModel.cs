@@ -1,4 +1,4 @@
-﻿namespace Main.ViewModels.Accounts
+﻿namespace Shared.ViewModels.Accounts
 {
     public class LoginViewModel
     {

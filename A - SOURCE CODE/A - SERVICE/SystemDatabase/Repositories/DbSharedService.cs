@@ -8,7 +8,7 @@ using SystemDatabase.Interfaces.Repositories;
 
 namespace SystemDatabase.Repositories
 {
-    public class DatabaseFunction<T> : IDatabaseFunction<T>
+    public class DbSharedService : IDbSharedService
     {
         #region Methods
 
@@ -20,7 +20,7 @@ namespace SystemDatabase.Repositories
         /// <param name="value"></param>
         /// <param name="comparision"></param>
         /// <returns></returns>
-        public IQueryable<T> SearchNumericProperty(IQueryable<T> records, Func<T, double?> property, double value,
+        public IQueryable<T> SearchNumericProperty<T>(IQueryable<T> records, Func<T, double?> property, double value,
             NumericComparision comparision)
         {
             switch (comparision)
@@ -57,7 +57,7 @@ namespace SystemDatabase.Repositories
         /// <param name="value"></param>
         /// <param name="comparision"></param>
         /// <returns></returns>
-        public IQueryable<T> SearchNumericProperty(IQueryable<T> records, Func<T, double> property, double value,
+        public IQueryable<T> SearchNumericProperty<T>(IQueryable<T> records, Func<T, double> property, double value,
             NumericComparision comparision)
         {
             switch (comparision)
@@ -95,7 +95,7 @@ namespace SystemDatabase.Repositories
         /// <param name="value"></param>
         /// <param name="comparision"></param>
         /// <returns></returns>
-        public IQueryable<T> SearchNumericProperty(IQueryable<T> records, Func<T, int?> property, int value,
+        public IQueryable<T> SearchNumericProperty<T>(IQueryable<T> records, Func<T, int?> property, int value,
             NumericComparision comparision)
         {
             switch (comparision)
@@ -130,7 +130,7 @@ namespace SystemDatabase.Repositories
         /// <param name="list"></param>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        public IQueryable<T> Paginate(IQueryable<T> list, Pagination pagination)
+        public IQueryable<T> Paginate<T>(IQueryable<T> list, Pagination pagination)
         {
             if (pagination == null)
                 return list;
@@ -145,7 +145,7 @@ namespace SystemDatabase.Repositories
         /// <param name="sortDirection"></param>
         /// <param name="sortProperty"></param>
         /// <returns></returns>
-        public IQueryable<T> Sort(IQueryable<T> list, SortDirection sortDirection, Enum sortProperty)
+        public IQueryable<T> Sort<T>(IQueryable<T> list, SortDirection sortDirection, Enum sortProperty)
         {
             string sortMethod;
             if (sortDirection == SortDirection.Ascending)
@@ -184,7 +184,7 @@ namespace SystemDatabase.Repositories
         /// <param name="property"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        public IQueryable<T> SearchPropertyText(IQueryable<T> records, Func<T, string> property, TextSearch search)
+        public IQueryable<T> SearchPropertyText<T>(IQueryable<T> records, Func<T, string> property, TextSearch search)
         {
             if (search == null || string.IsNullOrWhiteSpace(search.Value))
                 return records;

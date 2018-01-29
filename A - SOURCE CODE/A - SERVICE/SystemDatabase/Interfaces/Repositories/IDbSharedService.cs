@@ -6,7 +6,7 @@ using SystemConstant.Models;
 
 namespace SystemDatabase.Interfaces.Repositories
 {
-    public interface IDatabaseFunction<T>
+    public interface IDbSharedService
     {
         #region Methods
 
@@ -18,7 +18,7 @@ namespace SystemDatabase.Interfaces.Repositories
         /// <param name="value"></param>
         /// <param name="comparision"></param>
         /// <returns></returns>
-        IQueryable<T> SearchNumericProperty(IQueryable<T> records, Func<T, double?> property, double value,
+        IQueryable<T> SearchNumericProperty<T>(IQueryable<T> records, Func<T, double?> property, double value,
             NumericComparision comparision);
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SystemDatabase.Interfaces.Repositories
         /// <param name="value"></param>
         /// <param name="comparision"></param>
         /// <returns></returns>
-        IQueryable<T> SearchNumericProperty(IQueryable<T> records, Func<T, double> property, double value,
+        IQueryable<T> SearchNumericProperty<T>(IQueryable<T> records, Func<T, double> property, double value,
             NumericComparision comparision);
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SystemDatabase.Interfaces.Repositories
         /// <param name="value"></param>
         /// <param name="comparision"></param>
         /// <returns></returns>
-        IQueryable<T> SearchNumericProperty(IQueryable<T> records, Func<T, int?> property, int value,
+        IQueryable<T> SearchNumericProperty<T>(IQueryable<T> records, Func<T, int?> property, int value,
             NumericComparision comparision);
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SystemDatabase.Interfaces.Repositories
         /// <param name="list"></param>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        IQueryable<T> Paginate(IQueryable<T> list, Pagination pagination);
+        IQueryable<T> Paginate<T>(IQueryable<T> list, Pagination pagination);
 
         /// <summary>
         ///     Sort a list by using specific property enumeration.
@@ -60,7 +60,7 @@ namespace SystemDatabase.Interfaces.Repositories
         /// <param name="sortDirection"></param>
         /// <param name="sortProperty"></param>
         /// <returns></returns>
-        IQueryable<T> Sort(IQueryable<T> list, SortDirection sortDirection, Enum sortProperty);
+        IQueryable<T> Sort<T>(IQueryable<T> list, SortDirection sortDirection, Enum sortProperty);
 
         /// <summary>
         ///     Search property base on searching mode.
@@ -70,7 +70,7 @@ namespace SystemDatabase.Interfaces.Repositories
         /// <param name="property"></param>
         /// <param name="search"></param>
         /// <returns></returns>
-        IQueryable<T> SearchPropertyText(IQueryable<T> records, Func<T, string> property, TextSearch search);
+        IQueryable<T> SearchPropertyText<T>(IQueryable<T> records, Func<T, string> property, TextSearch search);
 
         #endregion
     }

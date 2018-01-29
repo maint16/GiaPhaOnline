@@ -7,6 +7,7 @@ using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
@@ -32,13 +33,15 @@ namespace Main.Controllers
         /// <param name="identityService">Service which is for handling identity.</param>
         /// <param name="timeService">Service which is for handling time calculation.</param>
         /// <param name="unitOfWork">Instance for accessing database.</param>
+        /// <param name="databaseFunction"></param>
         /// <param name="mapper">Instance for mapping objects</param>
-        public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
+        public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork, IDbSharedService databaseFunction,
             IMapper mapper)
         {
             _identityService = identityService;
             _timeService = timeService;
             _unitOfWork = unitOfWork;
+            _databaseFunction = databaseFunction;
             _mapper = mapper;
         }
 
@@ -60,11 +63,16 @@ namespace Main.Controllers
         ///     Instance for accessing database.
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
-
+        
         /// <summary>
         ///     Instance for mapping objects.
         /// </summary>
         private readonly IMapper _mapper;
+
+        /// <summary>
+        /// Provide access to generic database functions.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
 
         #endregion
 
@@ -80,7 +88,7 @@ namespace Main.Controllers
         public async Task<IActionResult> FindCategory([FromQuery] int id)
         {
             // Find category.
-            var categories = _unitOfWork.RepositoryCategories.Search();
+            var categories = _unitOfWork.Categories.Search();
             categories = categories.Where(x => x.Id == id);
 
             // Find the first matched result.
@@ -139,7 +147,7 @@ namespace Main.Controllers
             category.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Add category into database.
-            _unitOfWork.RepositoryCategories.Insert(category);
+            _unitOfWork.Categories.Insert(category);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
@@ -174,7 +182,7 @@ namespace Main.Controllers
             #region Find category
 
             // Find category.
-            var categories = _unitOfWork.RepositoryCategories.Search();
+            var categories = _unitOfWork.Categories.Search();
             categories = categories.Where(x => x.Id == id);
 
             // Find category.
@@ -250,22 +258,22 @@ namespace Main.Controllers
             #region Search for information
 
             // Get all categories.
-            var categories = _unitOfWork.RepositoryCategories.Search();
+            var categories = _unitOfWork.Categories.Search();
             categories = SearchCategories(categories, condition);
 
             // Sort by properties.
             if (condition.Sort != null)
                 categories =
-                    _unitOfWork.RepositoryCategories.Sort(categories, condition.Sort.Direction,
+                    _databaseFunction.Sort(categories, condition.Sort.Direction,
                         condition.Sort.Property);
             else
-                categories = _unitOfWork.RepositoryCategories.Sort(categories, SortDirection.Decending,
+                categories = _databaseFunction.Sort(categories, SortDirection.Decending,
                     CategoriesSort.CreatedTime);
 
             // Result initialization.
             var result = new SearchResult<IList<CategoryViewModel>>();
             result.Total = await categories.CountAsync();
-            result.Records = await _unitOfWork.Paginate(categories.Select(x => new CategoryViewModel
+            result.Records = await _databaseFunction.Paginate(categories.Select(x => new CategoryViewModel
             {
                 Id = x.Id,
                 CreatorId = x.CreatorId,
@@ -302,7 +310,7 @@ namespace Main.Controllers
 
             // Name search condition has been defined.
             if (conditions.Name != null && !string.IsNullOrWhiteSpace(conditions.Name))
-                categories = _unitOfWork.SearchPropertyText(categories, x => x.Name,
+                categories = _databaseFunction.SearchPropertyText(categories, x => x.Name,
                     new TextSearch(TextSearchMode.ContainIgnoreCase, conditions.Name));
 
             // CreatedTime time range has been defined.

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
@@ -44,6 +45,11 @@ namespace Main.Controllers
         /// </summary>
         private readonly ITimeService _timeService;
 
+        /// <summary>
+        /// Instance to access generic database function.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
         #endregion
 
         #region Constructors
@@ -55,12 +61,14 @@ namespace Main.Controllers
         /// <param name="mapper"></param>
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
-        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService, ITimeService timeService)
+        /// <param name="databaseFunction"></param>
+        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService, ITimeService timeService, IDbSharedService databaseFunction)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _identityService = identityService;
             _timeService = timeService;
+            _databaseFunction = databaseFunction;
         }
 
         #endregion
@@ -78,7 +86,7 @@ namespace Main.Controllers
             #region Find category
 
             // Find categories.
-            var categories = _unitOfWork.RepositoryCategories.Search();
+            var categories = _unitOfWork.Categories.Search();
             categories = categories.Where(x => x.Id == categoryId && x.Status == CategoryStatus.Available);
 
             // Find the first matched result.
@@ -94,7 +102,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find follow categories.
-            var followCategories = _unitOfWork.RepositoryFollowCategory.Search();
+            var followCategories = _unitOfWork.FollowCategories.Search();
             followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
             var followCategory = await followCategories.FirstOrDefaultAsync();
 
@@ -104,18 +112,18 @@ namespace Main.Controllers
 
             // Already followed the category.
             if (followCategory != null)
-                followCategory.Status = FollowCategoryStatus.Available;
+                followCategory.Status = FollowStatus.Following;
             else
             {
                 // Initialize follow category.
                  followCategory = new FollowCategory();
                 followCategory.FollowerId = identity.Id;
                 followCategory.CategoryId = categoryId;
-                followCategory.Status = FollowCategoryStatus.Available;
+                followCategory.Status = FollowStatus.Following;
                 followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
-                _unitOfWork.RepositoryFollowCategory.Insert(followCategory);
+                _unitOfWork.FollowCategories.Insert(followCategory);
             }
 
             // Commit changes.
@@ -138,7 +146,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find categories by using specific conditions.
-            var followCategories = _unitOfWork.RepositoryFollowCategory.Search();
+            var followCategories = _unitOfWork.FollowCategories.Search();
             followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
 
             // Find the first matched category.
@@ -147,7 +155,7 @@ namespace Main.Controllers
                 return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
 
             // Stop following category.
-            followCategory.Status = FollowCategoryStatus.Deleted;
+            followCategory.Status = FollowStatus.Ignore;
 
             // Save changes.
             await _unitOfWork.CommitAsync();
@@ -182,7 +190,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Search for posts.
-            var followCategories = _unitOfWork.RepositoryFollowCategory.Search();
+            var followCategories = _unitOfWork.FollowCategories.Search();
             
             // Category id is defined.
             if (condition.CategoryId != null)
@@ -215,29 +223,24 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    followCategories = _unitOfWork.RepositoryFollowCategory.SearchNumericProperty(followCategories, x => x.CreatedTime, from.Value,
+                    followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, from.Value,
                         NumericComparision.GreaterEqual);
                 
                 if (to != null)
-                    followCategories = _unitOfWork.RepositoryFollowCategory.SearchNumericProperty(followCategories, x => x.CreatedTime, to.Value,
+                    followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, to.Value,
                         NumericComparision.LowerEqual);
             }
             
             // Sort property & direction.
             var sort = condition.Sort;
             if (sort != null)
-                followCategories = _unitOfWork.Sort(followCategories, sort.Direction, sort.Property);
+                followCategories = _databaseFunction.Sort(followCategories, sort.Direction, sort.Property);
             else
-                followCategories = _unitOfWork.Sort(followCategories, SortDirection.Decending, SortDirection.Decending);
-
-            // Count posts.
-            var pGetFollowCategoriesCount = followCategories.CountAsync();
-            var pGetFollowCategories = _unitOfWork.Paginate(followCategories, condition.Pagination).ToListAsync();
-
-            await Task.WhenAll(pGetFollowCategoriesCount, pGetFollowCategories);
+                followCategories = _databaseFunction.Sort(followCategories, SortDirection.Decending, SortDirection.Decending);
+            
             var result = new SearchResult<IList<FollowCategory>>();
-            result.Records = pGetFollowCategories.Result;
-            result.Total = pGetFollowCategoriesCount.Result;
+            result.Total = await followCategories.CountAsync();
+            result.Records = await _databaseFunction.Paginate(followCategories, condition.Pagination).ToListAsync();
 
             #endregion
 

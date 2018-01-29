@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SystemConstant.Enumerations;
 using Newtonsoft.Json;
@@ -13,13 +14,12 @@ namespace SystemDatabase.Models.Entities
         ///     Id of notification.
         /// </summary>
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         ///     Post which is notified.
         /// </summary>
-        public int PostIndex { get; set; }
+        public int PostId { get; set; }
 
         /// <summary>
         ///     Who should receive the notification.
@@ -54,7 +54,7 @@ namespace SystemDatabase.Models.Entities
         ///     Post which is notified.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(PostIndex))]
+        [ForeignKey(nameof(PostId))]
         public Post Post { get; set; }
 
         /// <summary>

@@ -7,6 +7,7 @@ using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
+using SystemDatabase.Models.Entities;
 using SystemDatabase.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,234 +39,159 @@ namespace SystemDatabase.Services
         ///     Provide methods to access confession database.
         /// </summary>
         private readonly DbContext _dbContext;
-
         #endregion
 
         #region Properties
 
+        #region Repository instances
+
         /// <summary>
         ///     Provide access to accounts database.
         /// </summary>
-        private IRepositoryAccount _repositoryAccounts;
+        private IRepository<Account> _accounts;
 
         /// <summary>
         ///     Provide access to categories database.
         /// </summary>
-        private IRepositoryCategory _repositoryCategories;
+        private IRepository<Category> _categories;
 
         /// <summary>
         /// Provide access to FollowCategory table.
         /// </summary>
-        private IRepositoryFollowCategory _repositoryFollowCategory;
+        private IRepository<FollowCategory> _followCategories;
 
         /// <summary>
         /// Provide access to categorization database.
         /// </summary>
-        private IRepositoryCategorization _repositoryCategorization;
+        private IRepository<Categorization> _postCategorizations;
 
         /// <summary>
         ///     Provide access to comments database.
         /// </summary>
-        private IRepositoryComment _repositoryComment;
+        private IRepository<Comment> _comments;
 
         /// <summary>
         ///     Provide functions to access comment reports database.
         /// </summary>
-        private IRepositoryCommentReport _repositoryCommentReport;
+        private IRepository<CommentReport> _commentReports;
+
+        /// <summary>
+        /// Provides functions to access comment notification table.
+        /// </summary>
+        private IRepository<CommentNotification> _commentNotifications;
 
         /// <summary>
         ///     Provide access to post report database.
         /// </summary>
-        private IRepositoryPostReport _repositoryPostReport;
+        private IRepository<PostReport> _postReports;
 
         /// <summary>
         ///     Provides access to post database.
         /// </summary>
-        private IRepositoryPost _repositoryPost;
+        private IRepository<Post> _posts;
+
+        /// <summary>
+        /// Provides access to PostNotification database.
+        /// </summary>
+        private IRepository<PostNotification> _postNotifications;
 
         /// <summary>
         /// Provides access to FollowPost table.
         /// </summary>
-        private IRepositoryFollowPost _repositoryFollowPost;
+        private IRepository<FollowPost> _followPosts;
 
         /// <summary>
         ///     Provide access to token database.
         /// </summary>
-        private IRepositoryToken _repositoryToken;
+        private IRepository<Token> _tokens;
 
         /// <summary>
         ///     Provide access to signalr connection database.
         /// </summary>
-        private IRepositorySignalrConnection _repositorySignalrConnection;
+        private IRepository<SignalrConnection> _signalrConnections;
+
+        #endregion
+
+        #region Repository accessors
 
         /// <summary>
         ///     Provides functions to access account database.
         /// </summary>
-        public IRepositoryAccount RepositoryAccounts => _repositoryAccounts ?? (_repositoryAccounts = new RepositoryAccount(_dbContext));
+        public IRepository<Account> Accounts => _accounts ?? (_accounts = new Repository<Account>(_dbContext));
 
         /// <summary>
         ///     Provides functions to access categories database.
         /// </summary>
-        public IRepositoryCategory RepositoryCategories => _repositoryCategories ?? (_repositoryCategories = new RepositoryCategory(_dbContext));
+        public IRepository<Category> Categories => _categories ?? (_categories = new Repository<Category>(_dbContext));
 
         /// <summary>
         /// Provides function to access follow category table.
         /// </summary>
-        public IRepositoryFollowCategory RepositoryFollowCategory =>
-            _repositoryFollowCategory ?? (_repositoryFollowCategory = new RepositoryFollowCategory(_dbContext));
+        public IRepository<FollowCategory> FollowCategories =>
+            _followCategories ?? (_followCategories = new Repository<FollowCategory>(_dbContext));
 
         /// <summary>
         /// Provides functions to access categorizations database.
         /// </summary>
-        public IRepositoryCategorization RepositoryCategorizations =>
-            _repositoryCategorization ?? (_repositoryCategorization = new RepositoryCategorization(_dbContext));
+        public IRepository<Categorization> PostCategorizations =>
+            _postCategorizations ?? (_postCategorizations = new Repository<Categorization>(_dbContext));
 
         /// <summary>
         ///     Provides functions to access comments database.
         /// </summary>
-        public IRepositoryComment RepositoryComments => _repositoryComment ?? (_repositoryComment = new RepositoryComment(_dbContext));
-
-
-        /// <summary>
-        ///     Provides functions to access to post reports database.
-        /// </summary>
-        public IRepositoryPostReport RepositoryPostReports
-            => _repositoryPostReport ?? (_repositoryPostReport = new RepositoryPostReport(_dbContext));
+        public IRepository<Comment> Comments => _comments ?? (_comments = new Repository<Comment>(_dbContext));
 
         /// <summary>
-        ///     Provides functions to access post database.
+        ///     Provides functions to access CommentNotification database.
         /// </summary>
-        public IRepositoryPost RepositoryPosts => _repositoryPost ?? (_repositoryPost = new RepositoryPost(_dbContext));
-
-        /// <summary>
-        /// Provides function to access FollowPost table.
-        /// </summary>
-        public IRepositoryFollowPost RepositoryFollowPosts =>
-            _repositoryFollowPost ?? (_repositoryFollowPost = new RepositoryFollowPost(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access realtime connection database.
-        /// </summary>
-        public IRepositorySignalrConnection RepositorySignalrConnections => _repositorySignalrConnection ??
-                                                                            (_repositorySignalrConnection = new RepositorySignalrConnection(_dbContext));
+        public IRepository<CommentNotification> CommentNotifications => _commentNotifications ?? (_commentNotifications = new Repository<CommentNotification>(_dbContext));
 
         /// <summary>
         ///     Provides functions to access comment reports database.
         /// </summary>
-        public IRepositoryCommentReport RepositoryCommentReports => _repositoryCommentReport ??
-                                                                    (_repositoryCommentReport =
-                                                                        new RepositoryCommentReport(_dbContext))
-        ;
+        public IRepository<CommentReport> CommentReports => _commentReports ??
+                                                                      (_commentReports =
+                                                                          new Repository<CommentReport>(_dbContext));
 
+        /// <summary>
+        ///     Provides functions to access to post reports database.
+        /// </summary>
+        public IRepository<PostReport> PostReports
+            => _postReports ?? (_postReports = new Repository<PostReport>(_dbContext));
+
+        /// <summary>
+        ///     Provides functions to access post database.
+        /// </summary>
+        public IRepository<Post> Posts => _posts ?? (_posts = new Repository<Post>(_dbContext));
+
+        /// <summary>
+        /// Provide access to PostNotification table.
+        /// </summary>
+        public IRepository<PostNotification> PostNotifications =>
+            _postNotifications ?? (_postNotifications = new Repository<PostNotification>(_dbContext));
+
+        /// <summary>
+        /// Provides function to access FollowPost table.
+        /// </summary>
+        public IRepository<FollowPost> FollowPosts =>
+            _followPosts ?? (_followPosts = new Repository<FollowPost>(_dbContext));
+
+        /// <summary>
+        ///     Provides functions to access realtime connection database.
+        /// </summary>
+        public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
+                                                                            (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
+        
         /// <summary>
         ///     Provides function to access token database.
         /// </summary>
-        public IRepositoryToken RepositoryTokens => _repositoryToken ?? (_repositoryToken = new RepositoryToken(_dbContext));
+        public IRepository<Token> RepositoryTokens => _tokens ?? (_tokens = new Repository<Token>(_dbContext));
+
+        #endregion
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        ///     Do pagination on a specific list.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="pagination"></param>
-        /// <returns></returns>
-        public IQueryable<T> Paginate<T>(IQueryable<T> list, Pagination pagination)
-        {
-            if (pagination == null)
-                return list;
-            return list.Skip(pagination.Index * pagination.Records).Take(pagination.Records);
-        }
-
-        /// <summary>
-        ///     Sort a list by using specific property enumeration.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="sortDirection"></param>
-        /// <param name="sortProperty"></param>
-        /// <returns></returns>
-        public IQueryable<T> Sort<T>(IQueryable<T> list, SortDirection sortDirection, Enum sortProperty)
-        {
-            string sortMethod;
-            if (sortDirection == SortDirection.Ascending)
-                sortMethod = "OrderBy";
-            else
-                sortMethod = "OrderByDescending";
-
-            // Search parameter expression.
-            var parameterExpression = Expression.Parameter(list.ElementType, "p");
-
-            // Search name of property which should be used for sorting.
-            var sortPropertyName = Enum.GetName(sortProperty.GetType(), sortProperty);
-            if (string.IsNullOrEmpty(sortPropertyName))
-                return list;
-
-            // Search member expression.
-            var memberExpression = Expression.Property(parameterExpression, sortPropertyName);
-
-            var lamdaExpression = Expression.Lambda(memberExpression, parameterExpression);
-
-            var methodCallExpression = Expression.Call(
-                typeof(Queryable),
-                sortMethod,
-                new[] { list.ElementType, memberExpression.Type },
-                list.Expression,
-                Expression.Quote(lamdaExpression));
-
-            return list.Provider.CreateQuery<T>(methodCallExpression);
-        }
-
-        /// <summary>
-        ///     Search property base on searching mode.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="records"></param>
-        /// <param name="property"></param>
-        /// <param name="search"></param>
-        /// <returns></returns>
-        public IQueryable<T> SearchPropertyText<T>(IQueryable<T> records, Func<T, string> property, TextSearch search)
-        {
-            if (search == null || string.IsNullOrWhiteSpace(search.Value))
-                return records;
-
-            switch (search.Mode)
-            {
-                case TextSearchMode.Contain:
-                    records = records.Where(x => property(x).Contains(search.Value));
-                    break;
-                case TextSearchMode.Equal:
-                    records = records.Where(x => property(x).Equals(search.Value));
-                    break;
-                case TextSearchMode.EqualIgnoreCase:
-                    records =
-                        records.Where(x => property(x).Equals(search.Value, StringComparison.CurrentCultureIgnoreCase));
-                    break;
-                case TextSearchMode.StartsWith:
-                    records = records.Where(x => property(x).StartsWith(search.Value));
-                    break;
-                case TextSearchMode.StartsWithIgnoreCase:
-                    records =
-                        records.Where(
-                            x => property(x).StartsWith(search.Value, StringComparison.CurrentCultureIgnoreCase));
-                    break;
-                case TextSearchMode.EndsWith:
-                    records = records.Where(x => property(x).EndsWith(search.Value));
-                    break;
-                case TextSearchMode.EndsWithIgnoreCase:
-                    records =
-                        records.Where(
-                            x => property(x).EndsWith(search.Value, StringComparison.CurrentCultureIgnoreCase));
-                    break;
-                default:
-                    records = records.Where(x => property(x).ToLower().Contains(search.Value.ToLower()));
-                    break;
-            }
-            return records;
-        }
 
         /// <summary>
         ///     Save changes into database.

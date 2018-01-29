@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace SystemDatabase.Interfaces.Repositories
 {
-    public interface IParentRepository<T> : IDatabaseFunction<T>
+    public interface IRepository<T> 
     {
         #region Methods
         

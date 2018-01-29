@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
+using AutoMapper;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -21,37 +23,21 @@ using Shared.ViewModels.PostReports;
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class CommentReportController : Controller
+    public class CommentReportController : ApiBaseController
     {
-        #region Properties
-
-        /// <summary>
-        /// Instance which is for accessing database in the system.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// Instance for handling identity in request.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
-        /// Service which is for handling time calculation.
-        /// </summary>
-        private readonly ITimeService _timeService;
-
-        #endregion
 
         #region Constructors
 
         /// <summary>
         /// Initialize controller with injectors.
         /// </summary>
-        public CommentReportController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
+        /// <param name="unitOfWork"></param>
+        /// <param name="mapper"></param>
+        /// <param name="timeService"></param>
+        /// <param name="dbSharedService"></param>
+        /// <param name="identityService"></param>
+        public CommentReportController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
-            _unitOfWork = unitOfWork;
-            _identityService = identityService;
-            _timeService = timeService;
         }
 
         #endregion
@@ -81,10 +67,10 @@ namespace Main.Controllers
             #region Check whether comment belongs to requester or not
 
             // Find identity.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Find comments.
-            var comments = _unitOfWork.RepositoryComments.Search();
+            var comments = UnitOfWork.Comments.Search();
             comments = comments.Where(x =>
                 x.Id == info.CommentId && x.OwnerId != identity.Id && x.Status == CommentStatus.Available);
 
@@ -98,7 +84,7 @@ namespace Main.Controllers
             #region Check post status
 
             // Search for posts.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = UnitOfWork.Posts.Search();
             posts = posts.Where(x => x.Id == comment.PostId && x.Status == PostStatus.Available);
             var post = await posts.FirstOrDefaultAsync();
             if (post == null)
@@ -109,7 +95,7 @@ namespace Main.Controllers
             #region Check report duplicate
 
             // Find comment reports.
-            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            var commentReports = UnitOfWork.CommentReports.Search();
             commentReports = commentReports.Where(x => x.CommentId == info.CommentId && x.ReporterId == identity.Id);
             var commentReport = await commentReports.FirstOrDefaultAsync();
 
@@ -128,13 +114,13 @@ namespace Main.Controllers
             commentReport.ReporterId = identity.Id;
             commentReport.Body = comment.Content;
             commentReport.Reason = info.Reason;
-            commentReport.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            commentReport.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert post to system.
-            _unitOfWork.RepositoryCommentReports.Insert(commentReport);
+            UnitOfWork.CommentReports.Insert(commentReport);
 
             // Commit changes.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -166,10 +152,10 @@ namespace Main.Controllers
             #region Comment report search
 
             // Find identity in request.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Find comment reports.
-            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            var commentReports = UnitOfWork.CommentReports.Search();
             commentReports = commentReports.Where(x => x.CommentId == commentId && x.ReporterId == identity.Id);
 
             // Find the report.
@@ -183,10 +169,10 @@ namespace Main.Controllers
 
             // Update reason
             commentReport.Reason = info.Reason;
-            commentReport.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            commentReport.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to system.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -204,10 +190,10 @@ namespace Main.Controllers
             #region Comment report search
 
             // Find identity in request.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Find comment reports.
-            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            var commentReports = UnitOfWork.CommentReports.Search();
             commentReports = commentReports.Where(x => x.CommentId == commentId && x.ReporterId == identity.Id);
 
             // Find the report.
@@ -223,7 +209,7 @@ namespace Main.Controllers
             commentReport.Status = CommentReportStatus.Deleted;
 
             // Commit data.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -253,10 +239,10 @@ namespace Main.Controllers
             #region Search for post reports
 
             // Find identity from request.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Get all post reports.
-            var commentReports = _unitOfWork.RepositoryCommentReports.Search();
+            var commentReports = UnitOfWork.CommentReports.Search();
 
             // Comment id has been defined.
             if (condition.CommentId != null)
@@ -299,11 +285,11 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
+                    commentReports = DbSharedService.SearchNumericProperty(commentReports,
                         x => x.CreatedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
+                    commentReports = DbSharedService.SearchNumericProperty(commentReports,
                         x => x.CreatedTime, to.Value, NumericComparision.LowerEqual);
             }
 
@@ -315,37 +301,31 @@ namespace Main.Controllers
                 var to = lastModifiedTime.To;
 
                 if (from != null)
-                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
+                    commentReports = DbSharedService.SearchNumericProperty(commentReports,
                         x => x.LastModifiedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    commentReports = _unitOfWork.RepositoryCommentReports.SearchNumericProperty(commentReports,
+                    commentReports = DbSharedService.SearchNumericProperty(commentReports,
                         x => x.LastModifiedTime, to.Value, NumericComparision.LowerEqual);
             }
 
             // Sorting.
             var sort = condition.Sort;
             if (sort != null)
-                commentReports = _unitOfWork.RepositoryCommentReports.Sort(commentReports, sort.Direction, sort.Property);
+                commentReports = DbSharedService.Sort(commentReports, sort.Direction, sort.Property);
             else
-                commentReports = _unitOfWork.RepositoryCommentReports.Sort(commentReports, SortDirection.Decending,
+                commentReports = DbSharedService.Sort(commentReports, SortDirection.Decending,
                     PostReportSort.CreatedTime);
 
             #endregion
 
             #region Result search and count
-
-            // Count post task initialization.
-            var pCountCommentReports = commentReports.CountAsync();
-            var pGetCommentReports = _unitOfWork.Paginate(commentReports, condition.Pagination).ToListAsync();
-
-            // Wait for all tasks to complete.
-            await Task.WhenAll(pCountCommentReports, pGetCommentReports);
-
+            
             // Result initialization.
             var result = new SearchResult<IList<CommentReport>>();
-            result.Records = pGetCommentReports.Result;
-            result.Total = pCountCommentReports.Result;
+            
+            result.Total = await commentReports.CountAsync();
+            result.Records = await DbSharedService.Paginate(commentReports, condition.Pagination).ToListAsync();;
 
             #endregion
 
@@ -353,5 +333,6 @@ namespace Main.Controllers
         }
         
         #endregion
+        
     }
 }

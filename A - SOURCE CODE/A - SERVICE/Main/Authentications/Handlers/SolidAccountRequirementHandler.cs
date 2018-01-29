@@ -72,7 +72,7 @@ namespace Main.Authentications.Handlers
             }
             
             // Find accounts based on conditions.
-            var accounts = _unitOfWork.RepositoryAccounts.Search();
+            var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
                 x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Available);
 

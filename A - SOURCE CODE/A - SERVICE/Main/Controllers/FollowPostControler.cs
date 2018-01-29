@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
-using SystemConstant.Models;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
@@ -17,55 +16,29 @@ using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
-using Shared.ViewModels.Categories;
 using Shared.ViewModels.FollowPosts;
-using SkiaSharp;
 
 namespace Main.Controllers
 {
-    public class FollowPostController : Controller
+    public class FollowPostController : ApiBaseController
     {
         #region Constructors
 
         /// <summary>
-        ///     Initialize controller with injectors.
+        /// Initialize controller with injectors.
         /// </summary>
-        /// <param name="identityService">Service which is for handling identity.</param>
-        /// <param name="timeService">Service which is for handling time calculation.</param>
-        /// <param name="unitOfWork">Instance for accessing database.</param>
-        /// <param name="mapper">Instance for mapping objects</param>
-        public FollowPostController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
-            IMapper mapper)
+        /// <param name="unitOfWork"></param>
+        /// <param name="mapper"></param>
+        /// <param name="timeService"></param>
+        /// <param name="dbSharedService"></param>
+        /// <param name="identityService"></param>
+        public FollowPostController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
-            _identityService = identityService;
-            _timeService = timeService;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         #endregion
 
         #region Properties
-
-        /// <summary>
-        ///     Service which is for handling identity.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
-        ///     Service which is for handling time calculation.
-        /// </summary>
-        private readonly ITimeService _timeService;
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Instance for mapping objects.
-        /// </summary>
-        private readonly IMapper _mapper;
 
         #endregion
 
@@ -76,12 +49,12 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> StartFollowingPost([FromQuery] int postId)
+        public async Task<IActionResult> StartFollowingPost([FromBody] int postId)
         {
             #region Find post
 
             // Get posts by using id.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = UnitOfWork.Posts.Search();
             posts = posts.Where(x => x.Id == postId && x.Status == PostStatus.Available);
             var post = await posts.FirstOrDefaultAsync();
 
@@ -94,29 +67,31 @@ namespace Main.Controllers
             #region Check following duplicate
 
             // Get identity from request.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Get follow posts.
-            var followPosts = _unitOfWork.RepositoryFollowPosts.Search();
+            var followPosts = UnitOfWork.FollowPosts.Search();
             followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == post.Id);
             var followPost = await followPosts.FirstOrDefaultAsync();
 
             if (followPost != null)
-                followPost.Status = FollowPostStatus.Available;
+            {
+                followPost.Status = FollowStatus.Following;
+            }
             else
             {
                 followPost = new FollowPost();
                 followPost.FollowerId = identity.Id;
                 followPost.PostId = postId;
-                followPost.Status = FollowPostStatus.Available;
-                followPost.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                followPost.Status = FollowStatus.Following;
+                followPost.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert record into system.
-                _unitOfWork.RepositoryFollowPosts.Insert(followPost);
+                UnitOfWork.FollowPosts.Insert(followPost);
             }
 
             // Commit changes to system.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -124,7 +99,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Stop following a specific post.
+        ///     Stop following a specific post.
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
@@ -134,10 +109,10 @@ namespace Main.Controllers
             #region Check following duplicate
 
             // Get identity from request.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Get follow posts.
-            var followPosts = _unitOfWork.RepositoryFollowPosts.Search();
+            var followPosts = UnitOfWork.FollowPosts.Search();
             followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == postId);
             var followPost = await followPosts.FirstOrDefaultAsync();
 
@@ -145,11 +120,11 @@ namespace Main.Controllers
                 return NotFound(new ApiResponse(HttpMessages.PostHasntBeenFollowedYet));
 
             // Update follow post.
-            followPost.Status = FollowPostStatus.Deleted;
+            followPost.Status = FollowStatus.Ignore;
 
             // Commit changes to system.
-            await _unitOfWork.CommitAsync();
-            
+            await UnitOfWork.CommitAsync();
+
             #endregion
 
             return Ok(followPost);
@@ -180,11 +155,11 @@ namespace Main.Controllers
             #region Search for information
 
             // Find request identity.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Get all categories.
-            var followPosts = _unitOfWork.RepositoryFollowPosts.Search();
-            
+            var followPosts = UnitOfWork.FollowPosts.Search();
+
             // Post id is defined.
             if (condition.PostId != null)
                 followPosts = followPosts.Where(x => x.PostId == condition.PostId.Value);
@@ -192,25 +167,16 @@ namespace Main.Controllers
             // Statuses are defined.
             if (condition.Statuses != null && condition.Statuses.Count > 0)
             {
-                condition.Statuses = condition.Statuses.Where(x => Enum.IsDefined(typeof(FollowPostStatus), x))
+                condition.Statuses = condition.Statuses.Where(x => Enum.IsDefined(typeof(FollowStatus), x))
                     .ToHashSet();
 
                 if (condition.Statuses.Count > 0)
                     followPosts = followPosts.Where(x => condition.Statuses.Contains(x.Status));
             }
 
-            // Search by role.
-            if (identity.Role == AccountRole.Admin)
-            {
-                // Admin can search for followers.
-                if (condition.FollowerId != null)
-                    followPosts = followPosts.Where(x => x.FollowerId == condition.FollowerId.Value);
-            }
-            else
-            {
-                followPosts = followPosts.Where(x => x.FollowerId == identity.Id);
-            }
-
+            // Only see the posts that user is following.
+            followPosts = followPosts.Where(x => x.FollowerId == identity.Id);
+            
             // Created time is defined.
             var createdTime = condition.CreatedTime;
             if (createdTime != null)
@@ -219,45 +185,39 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    followPosts = _unitOfWork.RepositoryFollowPosts.SearchNumericProperty(followPosts,
+                    followPosts = DbSharedService.SearchNumericProperty(followPosts,
                         x => x.CreatedTime, from.Value, NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    followPosts = _unitOfWork.RepositoryFollowPosts.SearchNumericProperty(followPosts,
+                    followPosts = DbSharedService.SearchNumericProperty(followPosts,
                         x => x.CreatedTime, to.Value, NumericComparision.LowerEqual);
             }
 
             // Sort by properties.
             if (condition.Sort != null)
                 followPosts =
-                    _unitOfWork.RepositoryFollowPosts.Sort(followPosts, condition.Sort.Direction,
+                    DbSharedService.Sort(followPosts, condition.Sort.Direction,
                         condition.Sort.Property);
             else
-                followPosts = _unitOfWork.RepositoryFollowPosts.Sort(followPosts, SortDirection.Decending,
+                followPosts = DbSharedService.Sort(followPosts, SortDirection.Decending,
                     CategoriesSort.CreatedTime);
 
             #endregion
 
             #region Result gathering
 
-            // Tasks initialization.
-            var pGetFollowPostsCount = followPosts.CountAsync();
-            var pGetFollowPosts = _unitOfWork.Paginate(followPosts, condition.Pagination).ToListAsync();
-
-            // Await all tasks to complete.
-            await Task.WhenAll(pGetFollowPosts, pGetFollowPostsCount);
-
             // Result initialization.
             var result = new SearchResult<IList<FollowPost>>();
-            result.Records = pGetFollowPosts.Result;
-            result.Total = pGetFollowPostsCount.Result;
+            result.Total = await followPosts.CountAsync();
+            result.Records = await DbSharedService.Paginate(followPosts, condition.Pagination).ToListAsync();
 
             #endregion
 
             return Ok(result);
         }
-        
 
         #endregion
+
+
     }
 }

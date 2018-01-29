@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SystemConstant.Enumerations;
 using Newtonsoft.Json;
@@ -12,9 +13,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Id of notification.
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         ///     Comment which causes notification broadcasted.

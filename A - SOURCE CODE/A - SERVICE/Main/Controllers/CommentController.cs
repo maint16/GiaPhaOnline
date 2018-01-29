@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
+using AutoMapper;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,21 +22,20 @@ using Shared.ViewModels.Comments;
 namespace Main.Controllers
 {
     [Route("api/[comment]")]
-    public class CommentController : Controller
+    public class CommentController : ApiBaseController
     {
         #region Constructors
 
         /// <summary>
-        ///     Initialize controller with injectors.
+        /// Initialize controller with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
-        /// <param name="identityService"></param>
+        /// <param name="mapper"></param>
         /// <param name="timeService"></param>
-        public CommentController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
+        /// <param name="dbSharedService"></param>
+        /// <param name="identityService"></param>
+        public CommentController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
-            _unitOfWork = unitOfWork;
-            _identityService = identityService;
-            _timeService = timeService;
         }
 
         #endregion
@@ -64,7 +66,7 @@ namespace Main.Controllers
             #region Find post
 
             // Find posts.
-            var posts = _unitOfWork.RepositoryPosts.Search();
+            var posts = UnitOfWork.Posts.Search();
             posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
 
             // Check whether post exists or not.
@@ -77,7 +79,7 @@ namespace Main.Controllers
             #region Comment initialization
 
             // Find identity from request.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Comment intialization.
             var comment = new Comment();
@@ -85,12 +87,12 @@ namespace Main.Controllers
             comment.PostId = info.PostId;
             comment.Status = CommentStatus.Available;
             comment.Content = info.Content;
-            comment.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            comment.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert comment into system.
-            _unitOfWork.RepositoryComments.Insert(comment);
+            UnitOfWork.Comments.Insert(comment);
 
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -122,10 +124,10 @@ namespace Main.Controllers
             #region Find comment
 
             // Get request identity.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Get all comments in database.
-            var comments = _unitOfWork.RepositoryComments.Search();
+            var comments = UnitOfWork.Comments.Search();
             comments = comments.Where(x => x.Id == id && x.OwnerId == identity.Id && x.Status == CommentStatus.Available);
 
             // Get the first matched comments.
@@ -139,10 +141,10 @@ namespace Main.Controllers
 
             // Update content.
             comment.Content = info.Content;
-            comment.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            comment.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -160,10 +162,10 @@ namespace Main.Controllers
             #region Find comment
 
             // Get request identity.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Get all comments in database.
-            var comments = _unitOfWork.RepositoryComments.Search();
+            var comments = UnitOfWork.Comments.Search();
             comments = comments.Where(x => x.Id == id && x.OwnerId == identity.Id && x.Status == CommentStatus.Available);
 
             // Get the first matched comments.
@@ -179,7 +181,7 @@ namespace Main.Controllers
             comment.Status = CommentStatus.Deleted;
 
             // Commit to system.
-            await _unitOfWork.CommitAsync();
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
@@ -211,10 +213,10 @@ namespace Main.Controllers
             #region Search for information
 
             // Get request identity.
-            var identity = _identityService.GetProfile(HttpContext);
+            var identity = IdentityService.GetProfile(HttpContext);
 
             // Search for all comments.
-            var comments = _unitOfWork.RepositoryComments.Search();
+            var comments = UnitOfWork.Comments.Search();
 
             // Id has been defined.
             if (condition.Id != null)
@@ -240,10 +242,10 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    comments = _unitOfWork.RepositoryComments.SearchNumericProperty(comments, x => x.CreatedTime,
+                    comments = DbSharedService.SearchNumericProperty(comments, x => x.CreatedTime,
                         from.Value, NumericComparision.GreaterEqual);
                 if (to != null)
-                    comments = _unitOfWork.RepositoryComments.SearchNumericProperty(comments, x => x.CreatedTime,
+                    comments = DbSharedService.SearchNumericProperty(comments, x => x.CreatedTime,
                         to.Value, NumericComparision.LowerEqual);
             }
 
@@ -255,10 +257,10 @@ namespace Main.Controllers
                 var to = lastModifiedTime.To;
 
                 if (from != null)
-                    comments = _unitOfWork.RepositoryComments.SearchNumericProperty(comments, x => x.LastModifiedTime,
+                    comments = DbSharedService.SearchNumericProperty(comments, x => x.LastModifiedTime,
                         from.Value, NumericComparision.GreaterEqual);
                 if (to != null)
-                    comments = _unitOfWork.RepositoryComments.SearchNumericProperty(comments, x => x.LastModifiedTime,
+                    comments = DbSharedService.SearchNumericProperty(comments, x => x.LastModifiedTime,
                         to.Value, NumericComparision.LowerEqual);
             }
 
@@ -267,17 +269,8 @@ namespace Main.Controllers
             #region Count and paging
 
             var result = new SearchResult<IList<Comment>>();
-
-            // Count comments.
-            var pCountCommentTask = comments.CountAsync();
-            
-            // Paginate comments.
-            var pGetCommentTask = _unitOfWork.Paginate(comments, condition.Pagination).ToListAsync();
-
-            // Wait for all tasks to complete.
-            await Task.WhenAll(pGetCommentTask, pGetCommentTask);
-            result.Records = pGetCommentTask.Result;
-            result.Total = pCountCommentTask.Result;
+            result.Total = await comments.CountAsync();
+            result.Records = await DbSharedService.Paginate(comments, condition.Pagination).ToListAsync();
 
             #endregion
 
@@ -285,24 +278,6 @@ namespace Main.Controllers
         }
 
         #endregion
-
-        #region Properties
-
-        /// <summary>
-        ///     Instance which for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Instance which is for accessing identity attached into request.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
-        ///     Instance which is for calculating time.
-        /// </summary>
-        private readonly ITimeService _timeService;
-
-        #endregion
+        
     }
 }
