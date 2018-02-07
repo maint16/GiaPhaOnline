@@ -113,7 +113,8 @@ module.exports = {
     entry: {
         'vendor': ['jquery', 'bootstrap', 'admin-lte',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
-            'angular-translate', 'angular-translate-loader-static-files', 'bluebird'],
+            'angular-translate', 'angular-translate-loader-static-files', 'bluebird',
+            'datatables.net/js/jquery.dataTables', 'angular-datatables'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {

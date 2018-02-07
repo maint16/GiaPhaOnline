@@ -8,10 +8,7 @@ module.exports = function(ngModule){
       $stateProvider.state(urlStates.unauthorizedLayout.name, {
           controller: 'unauthorizedLayoutController',
           abstract: true,
-          template: ngModuleHtmlTemplate,
-          params:{
-              cssClassNames: ['hold-transition', 'login-page']
-          }
+          template: ngModuleHtmlTemplate
       })
   });
 };

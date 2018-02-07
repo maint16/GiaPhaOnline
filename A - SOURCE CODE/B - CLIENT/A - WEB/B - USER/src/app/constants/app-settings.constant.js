@@ -1,7 +1,17 @@
-module.exports = function(ngModule){
+module.exports = function (ngModule) {
     ngModule.constant('appSettings', {
-       title: 'Title: Hello world',
 
-        identityStorage: 'identityStorage'
+        identityStorage: 'identityStorage',
+
+        // End-point configuration.
+        endPoint: {
+            apiService: 'http://vlqy5vs38b4xkhqra.stoplight-proxy.io'
+        },
+
+        // Pagination configuration.
+        pagination: {
+            userSelector: 20,
+            default: 30
+        }
     });
 };

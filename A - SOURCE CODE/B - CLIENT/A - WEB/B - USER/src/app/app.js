@@ -5,19 +5,22 @@ require('../../node_modules/bootstrap/dist/css/bootstrap.css');
 
 // AdminLTE
 require('../../node_modules/admin-lte/dist/css/AdminLTE.css');
-require('../../node_modules/admin-lte/dist/css/skins/skin-black.css');
+require('../../node_modules/admin-lte/dist/css/skins/skin-green-light.css');
 
 require('../../node_modules/angular-toastr/dist/angular-toastr.css');
 
 // Font awesome.
 require('../../node_modules/font-awesome/css/font-awesome.css');
 require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
+require('../../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
 
 // Import jquery lib.
 require('jquery');
 require('bluebird');
 require('bootstrap');
 require('admin-lte');
+require('datatables.net/js/jquery.dataTables');
+require('moment');
 
 // Angular plugins declaration.
 var angular = require('angular');
@@ -26,9 +29,13 @@ require('angular-block-ui');
 require('angular-toastr');
 require('angular-translate');
 require('angular-translate-loader-static-files');
+require('angular-datatables');
+require('angular-moment');
 
 // Module declaration.
-var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr', 'pascalprecht.translate']);
+var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr', 'pascalprecht.translate',
+    'datatables', 'datatables.bootstrap', 'angularMoment']);
+
 ngModule.config(function($urlRouterProvider, $translateProvider, $httpProvider, urlStates){
 
     // API interceptor
@@ -48,6 +55,12 @@ ngModule.config(function($urlRouterProvider, $translateProvider, $httpProvider, 
 
 });
 
+// Import angular-dataTable configs.
+require('./configs/angular-dataTable.config')(ngModule);
+
+/*
+* Application controller.
+* */
 ngModule.controller('appController', function($transitions, urlStates, $scope){
 
     //#region Properties
@@ -74,7 +87,7 @@ ngModule.controller('appController', function($transitions, urlStates, $scope){
         var destination = $transition.$to();
 
         if (destination.includes[urlStates.authorizedLayout.name]){
-            $scope.model.layoutClass = 'skin-black layout-boxed sidebar-mini sidebar-mini-expand-feature';
+            $scope.model.layoutClass = 'hold-transition skin-green-light layout-top-nav';
             return;
         }
 

@@ -14,6 +14,13 @@ module.exports = function (ngModule) {
             name: 'dashboard'
         },
 
+        category:{
+          postListing:{
+              url: '/category/:categoryId',
+              name: 'category-detail'
+          }
+        },
+
         authorizedLayout: {
             name: 'authorized-layout'
         },

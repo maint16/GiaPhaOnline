@@ -1,5 +1,6 @@
 module.exports = function(ngModule){
-    require('./shared/index')(ngModule);
-    require('./dashboard/index')(ngModule);
-    require('./account/index')(ngModule);
+    require('./shared')(ngModule);
+    require('./dashboard')(ngModule);
+    require('./account')(ngModule);
+    require('./category')(ngModule);
 };

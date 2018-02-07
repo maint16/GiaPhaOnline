@@ -14,8 +14,16 @@ module.exports = function (ngModule) {
             controller: 'authorizedLayoutController',
             abstract: true,
             template: ngModuleHtmlTemplate,
-            params:{
-                cssClassNames: ['hold-transition', 'skin-black', 'fixed', 'sidebar-mini']
+            resolve:{
+                profile: function(userService){
+                    return userService.getProfile().then(function(getProfileResponse){
+                        var getProfileResult = getProfileResponse.data;
+                        if (!getProfileResult)
+                            return null;
+
+                        return getProfileResult;
+                    });
+                }
             }
         });
     });

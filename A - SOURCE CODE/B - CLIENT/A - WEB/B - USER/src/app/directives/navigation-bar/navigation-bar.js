@@ -8,7 +8,9 @@ module.exports = function (ngModule) {
         return {
             template: ngModuleHtmlTemplate,
             restrict: 'E',
-            scope: null,
+            scope: {
+                profile: '=?'
+            },
             controller: function($scope, urlStates){
 
                 //#region Properties

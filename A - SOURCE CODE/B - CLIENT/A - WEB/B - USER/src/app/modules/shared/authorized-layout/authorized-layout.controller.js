@@ -1,6 +1,13 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
-        function ($scope, $transitions, uiService) {
+        function ($scope, $transitions, uiService, profile) {
+
+            //#region Properties
+
+            // Resolver reflection.
+            $scope.profile = profile;
+
+            //#endregion
 
             //#region Methods
 

@@ -4,8 +4,16 @@
 module.exports = function(ngModule){
     ngModule.controller('mainDashboardController', function($scope, toastr){
 
-        $scope.init = function(){
-            toastr.success('Main dashboard has been initiated.');
+        //#region Properties
+
+        $scope.result = {
+            getCategories:{
+                categories: [],
+                total: 100
+            }
         };
+
+        //#endregion
+
     });
 };

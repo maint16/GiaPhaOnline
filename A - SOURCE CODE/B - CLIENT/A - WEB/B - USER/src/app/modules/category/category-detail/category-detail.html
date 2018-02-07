@@ -1,0 +1,244 @@
+<section class="content-header">
+    <h1>
+        Category 01
+        <small>
+            <a href="javascript:void(0);">(Followed)</a>
+        </small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Category 01</li>
+    </ol>
+</section>
+
+<section class="content">
+
+    <!--Basic search box-->
+    <div class="row form-group"
+         ng-if="!bUsingAdvancedSearch">
+        <div class="col-sm-12">
+            <div class="input-group">
+                <input class="form-control" placeholder="{{'Search for post' | translate}} ...">
+                <span class="input-group-btn">
+                    <button class="btn btn-flat btn-info">
+                        <span class="fa fa-search"></span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-flat btn-default dropdown-toggle"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li ng-click="clickAdvancedSearch(true)">
+                          <a href="javascript:void(0);">
+                              {{'Advanced search' | translate}}
+                          </a>
+                      </li>
+                    </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!--Advanced search box-->
+    <div class="row form-group"
+         ng-if="bUsingAdvancedSearch">
+        <div class="col-sm-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <span class="fa fa-search"></span>
+                    <span class="box-title">{{'Advanced search' | translate}}</span>
+                    <div class="pull-right box-tools">
+                        <button type="button"
+                                class="btn btn-flat btn-danger btn-sm"
+                                ng-click="clickAdvancedSearch(false)">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+
+                    <!--Owner & title-->
+                    <div class="row">
+
+                        <!--Owner-->
+                        <div class="col-sm-2 col-xs-12">
+                            <label>{{'Owner' | translate}}</label>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input class="form-control" readonly>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-flat btn-info">
+                                            <span class="fa fa-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Title-->
+                        <div class="col-sm-2 col-xs-12">
+                            <label>{{'Title' | translate}}</label>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <input class="form-control" placeholder="{{'Title' | translate}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Created time-->
+                    <div class="row">
+
+                        <!--Created time (from)-->
+                        <div class="col-sm-2 col-xs-12">
+                            <label>{{'Created time' | translate}} ({{'from' | translate}})</label>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input class="form-control" readonly>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-flat btn-info">
+                                            <span class="fa fa-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Created time (to)-->
+                        <div class="col-sm-2 col-xs-12">
+                            <label>{{'Created time' | translate}} ({{'to' | translate}})</label>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <input class="form-control" placeholder="{{'Title' | translate}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Last modified time-->
+                    <div class="row">
+
+                        <!--Last modified time (from)-->
+                        <div class="col-sm-2 col-xs-12">
+                            <label>{{'Last modified time' | translate}} ({{'from' | translate}})</label>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input class="form-control" readonly>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-flat btn-info">
+                                            <span class="fa fa-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Last modified time (to)-->
+                        <div class="col-sm-2 col-xs-12">
+                            <label>{{'Last modified time' | translate}} ({{'to' | translate}})</label>
+                        </div>
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="form-group">
+                                <input class="form-control" placeholder="{{'Title' | translate}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Posts-->
+    <div class="row form-group"
+         ng-repeat="post in loadDataResult.posts.data"
+         ng-init="loadPostComments(post)">
+        <div class="col-lg-12">
+            <!-- Box Comment -->
+            <div class="box box-widget">
+                <div class="box-header with-border">
+                    <div class="user-block">
+                        <img class="img-circle" ng-src="/assets/images/avatar.png" alt="User Image">
+                        <span class="username">
+                            <a href="javascript:void(0);">{{buffer.users[post.ownerId].nickname}}</a>
+                        </span>
+                        <span class="description">Shared publicly - {{post.createdTime | amFromUnix | amDateFormat: 'LLLL'}}</span>
+                    </div>
+                    <div class="pull-right box-tools">
+                        <div data-toggle="tooltip" title="Follow post">
+                            <button class="btn btn-flat dropdown-toggle"
+                                    ng-class="{'bg-red': (buffer.followingPosts[post.id] != null)}"
+                                    type="button" data-toggle="dropdown">
+                                <span class="fa"
+                                      ng-class="{'fa-heart': buffer.followingPosts[post.id], 'fa-heart-o': !buffer.followingPosts[post.id]}"></span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="box-body">
+                    <p>{{post.body}}</p>
+                    <span class="pull-right text-muted">3 comments</span>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer box-comments">
+                    <div class="box-comment"
+                         ng-repeat="commentId in buffer.postComments[post.id]"
+                         ng-init="comment = buffer.comments[commentId]">
+                        <img class="img-circle img-sm" ng-src="/assets/images/avatar.png" alt="User Image">
+                        <div class="comment-text">
+                            <span class="username">{{buffer.users[comment.ownerId].nickname}}
+                                <span class="text-muted pull-right">{{comment.createdTime| amFromUnix | amDateFormat: 'LLL'}}</span>
+                            </span>
+                            {{comment.content}}
+                        </div>
+                        <!-- /.comment-text -->
+                    </div>
+
+                    <!--Comment footer-->
+                    <div class="box-comment">
+                        <div class="text-center">
+                            <small>
+                                <a href="javascript:void(0);">{{'View more comments'}} ...<span
+                                        class="caret"></span></a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-footer -->
+                <div class="box-footer">
+                    <form action="#" method="post">
+                        <img class="img-responsive img-circle img-sm" ng-src="/assets/images/avatar.png" alt="Alt Text">
+                        <!-- .img-push is used to add margin to elements next to floating images -->
+                        <div class="img-push">
+                            <input type="text" class="form-control input-sm" placeholder="Press enter to post comment">
+                        </div>
+                    </form>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+
+    <!--Pagination-->
+    <div class="row form-group">
+        <div class="col-lg-12 text-center">
+            <ul class="pagination">
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+            </ul>
+        </div>
+    </div>
+</section>
