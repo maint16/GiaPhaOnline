@@ -21,7 +21,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         /// Status of follow post.
         /// </summary>
-        public FollowStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     When the following action was created.

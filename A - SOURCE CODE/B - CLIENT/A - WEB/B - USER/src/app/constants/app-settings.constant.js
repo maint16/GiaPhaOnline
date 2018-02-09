@@ -11,7 +11,8 @@ module.exports = function (ngModule) {
         // Pagination configuration.
         pagination: {
             userSelector: 20,
-            default: 30
+            default: 30,
+            categoryPosts: 50
         }
     });
 };

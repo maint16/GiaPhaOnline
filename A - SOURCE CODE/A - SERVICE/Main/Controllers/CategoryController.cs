@@ -97,9 +97,7 @@ namespace Main.Controllers
             // Cannot find the category.
             if (category == null)
                 return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
-
-            var result = _mapper.Map<Category, CategoryViewModel>(category);
-            result.Photo = Convert.ToBase64String(category.Photo);
+            
             return Ok(category);
         }
 
@@ -141,8 +139,7 @@ namespace Main.Controllers
             // Initialize category.
             var category = new Category();
             category.CreatorId = profile.Id;
-            category.Photo = resizedSkBitmap.Bytes;
-            category.Status = CategoryStatus.Available;
+            category.Status = ItemStatus.Available;
             category.Name = info.Name;
             category.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
@@ -219,8 +216,7 @@ namespace Main.Controllers
                 var skManagedStream = new SKManagedStream(memoryStream);
                 var skBitmap = SKBitmap.Decode(skManagedStream);
                 var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-
-                category.Photo = resizedSkBitmap.Bytes;
+                
                 bHasInformationChanged = true;
             }
 
@@ -271,17 +267,9 @@ namespace Main.Controllers
                     CategoriesSort.CreatedTime);
 
             // Result initialization.
-            var result = new SearchResult<IList<CategoryViewModel>>();
+            var result = new SearchResult<IList<Category>>();
             result.Total = await categories.CountAsync();
-            result.Records = await _databaseFunction.Paginate(categories.Select(x => new CategoryViewModel
-            {
-                Id = x.Id,
-                CreatorId = x.CreatorId,
-                Status = x.Status,
-                Name = x.Name,
-                CreatedTime = x.CreatedTime,
-                LastModifiedTime = x.LastModifiedTime
-            }), condition.Pagination).ToListAsync();
+            result.Records = await _databaseFunction.Paginate(categories, condition.Pagination).ToListAsync();
 
             #endregion
 

@@ -12,7 +12,28 @@ module.exports = function (ngModule) {
             url: urlStateDashboard.url,
             controller: 'mainDashboardController',
             parent: urlStateAuthorizedLayout.name,
-            template: ngModuleHtmlTemplate
+            template: ngModuleHtmlTemplate,
+            resolve: {
+
+                // List of default categories.
+                initialGetCategory: function (categoryService, appSettings) {
+
+                    var condition = {
+                        pagination: {
+                            page: 1,
+                            records: appSettings.pagination.default
+                        }
+                    };
+
+                    // Get list of categories.
+                    return categoryService.getCategories(condition)
+                        .then(function(getCategoriesResponse){
+
+                            // Get api result.
+                            return getCategoriesResponse.data;
+                        });
+                }
+            }
         });
     });
 };

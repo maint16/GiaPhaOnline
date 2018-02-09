@@ -76,14 +76,14 @@ namespace Main.Controllers
 
             if (followPost != null)
             {
-                followPost.Status = FollowStatus.Following;
+                followPost.Status = ItemStatus.Available;
             }
             else
             {
                 followPost = new FollowPost();
                 followPost.FollowerId = identity.Id;
                 followPost.PostId = postId;
-                followPost.Status = FollowStatus.Following;
+                followPost.Status = ItemStatus.Available;
                 followPost.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert record into system.
@@ -120,7 +120,7 @@ namespace Main.Controllers
                 return NotFound(new ApiResponse(HttpMessages.PostHasntBeenFollowedYet));
 
             // Update follow post.
-            followPost.Status = FollowStatus.Ignore;
+            followPost.Status = ItemStatus.NotAvailable;
 
             // Commit changes to system.
             await UnitOfWork.CommitAsync();
@@ -167,7 +167,7 @@ namespace Main.Controllers
             // Statuses are defined.
             if (condition.Statuses != null && condition.Statuses.Count > 0)
             {
-                condition.Statuses = condition.Statuses.Where(x => Enum.IsDefined(typeof(FollowStatus), x))
+                condition.Statuses = condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x))
                     .ToHashSet();
 
                 if (condition.Statuses.Count > 0)

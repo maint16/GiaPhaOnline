@@ -43,14 +43,21 @@ namespace SystemDatabase.Models.Entities
         public int CreatorId { get; set; }
 
         /// <summary>
-        ///     Category photo.
+        /// Photo relative url.
         /// </summary>
-        public byte[] Photo { get; set; }
+        [JsonProperty("Photo")]
+        public string PhotoRelativeUrl { get; set; }
+
+        /// <summary>
+        /// Absolute url shouldn't be passed to client.
+        /// </summary>
+        [JsonIgnore]
+        public string PhotoAbsoluteUrl { get; set; }
 
         /// <summary>
         ///     Status of category.
         /// </summary>
-        public CategoryStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     Name of category.

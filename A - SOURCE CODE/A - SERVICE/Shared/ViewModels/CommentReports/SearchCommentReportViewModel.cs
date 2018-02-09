@@ -38,7 +38,7 @@ namespace Shared.ViewModels.CommentReports
         /// <summary>
         ///  Status of comment report.
         /// </summary>
-        public HashSet<CommentReportStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
         
         public Sort<CommentReportSort> Sort { get; set; }
 

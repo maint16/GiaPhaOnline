@@ -9,7 +9,8 @@
     </ol>
 </section>
 
-<section class="content" ui-view>
+<section class="content"
+         ui-view>
     <div class="row">
 
         <!--Categories list-->
@@ -17,7 +18,7 @@
             <div class="box box-widget widget-user-2">
                 <div class="widget-user-header bg-green">
                     <div class="input-group">
-                        <input class="form-control" placeholder="Search for categories ...">
+                        <input class="form-control" placeholder="{{'Search for categories' | translate}} ...">
                         <span class="input-group-btn">
                         <button class="btn btn-info btn-flat">
                             <span class="fa fa-search"></span>
@@ -28,14 +29,20 @@
 
                 <div class="box-footer no-padding">
                     <ul class="nav nav-stacked">
-                        <li><a href="javascript:void(0);">Projects <span class="pull-right badge bg-blue">31</span></a></li>
-                        <li><a href="javascript:void(0);">Tasks <span class="pull-right badge bg-aqua">5</span></a></li>
-                        <li><a href="javascript:void(0);">Completed Projects <span
-                                class="pull-right badge bg-green">12</span></a></li>
-                        <li><a href="javascript:void(0);">Followers <span class="pull-right badge bg-red">842</span></a>
+                        <li ng-repeat="category in result.getCategories.records"
+                            ng-click="clickCategory(category)">
+                            <a href="javascript:void(0);">{{category.name}}
+                                <span class="pull-right badge bg-blue">31</span>
+                            </a>
                         </li>
-                        <li>
-
+                        <li class="text-center"
+                            ng-if="result.getCategories.records.length < result.getCategories.total">
+                            <a href="javascript:void(0)">
+                                <button class="btn btn-link btn-block">
+                                    <span>{{'View more categories' | translate}}</span>
+                                    <span class="caret"></span>
+                                </button>
+                            </a>
                         </li>
                     </ul>
                 </div>

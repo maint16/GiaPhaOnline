@@ -111,10 +111,10 @@ plugins.push(new HtmlWebpackPlugin({
 module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
-        'vendor': ['jquery', 'bootstrap', 'admin-lte',
+        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'trix',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files', 'bluebird',
-            'datatables.net/js/jquery.dataTables', 'angular-datatables'],
+            'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-trix', 'angular-ui-bootstrap'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {

@@ -14,7 +14,7 @@ namespace Shared.ViewModels.Categories
         /// <summary>
         /// Status of category.
         /// </summary>
-        public CategoryStatus? Status { get; set; }
+        public ItemStatus? Status { get; set; }
 
         /// <summary>
         /// Photo of category (base64 encoded)

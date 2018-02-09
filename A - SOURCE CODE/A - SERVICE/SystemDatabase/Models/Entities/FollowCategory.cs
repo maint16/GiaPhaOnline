@@ -21,7 +21,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         /// Status of follow category.
         /// </summary>
-        public FollowStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     When the relationship was lastly created.

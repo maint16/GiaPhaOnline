@@ -13,6 +13,8 @@ require('../../node_modules/angular-toastr/dist/angular-toastr.css');
 require('../../node_modules/font-awesome/css/font-awesome.css');
 require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
 require('../../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
+require('../../node_modules/trix/dist/trix.css');
+require('../../src/app/app.css');
 
 // Import jquery lib.
 require('jquery');
@@ -21,6 +23,7 @@ require('bootstrap');
 require('admin-lte');
 require('datatables.net/js/jquery.dataTables');
 require('moment');
+require('trix');
 
 // Angular plugins declaration.
 var angular = require('angular');
@@ -31,9 +34,13 @@ require('angular-translate');
 require('angular-translate-loader-static-files');
 require('angular-datatables');
 require('angular-moment');
+require('angular-trix');
+require('angular-ui-bootstrap');
 
 // Module declaration.
-var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr', 'pascalprecht.translate',
+var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
+    'ui.bootstrap',
+    'pascalprecht.translate',
     'datatables', 'datatables.bootstrap', 'angularMoment']);
 
 ngModule.config(function($urlRouterProvider, $translateProvider, $httpProvider, urlStates){
@@ -57,6 +64,9 @@ ngModule.config(function($urlRouterProvider, $translateProvider, $httpProvider, 
 
 // Import angular-dataTable configs.
 require('./configs/angular-dataTable.config')(ngModule);
+
+// Import pager controller configs.
+require('./configs/angular-paginator.config')(ngModule);
 
 /*
 * Application controller.

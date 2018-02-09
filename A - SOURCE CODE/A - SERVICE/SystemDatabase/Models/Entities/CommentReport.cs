@@ -41,7 +41,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         /// Status of comment report.
         /// </summary>
-        public CommentReportStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     When the report was created.

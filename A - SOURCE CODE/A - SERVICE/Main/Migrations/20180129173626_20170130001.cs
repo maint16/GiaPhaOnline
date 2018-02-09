@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
 namespace Main.Migrations
 {
-    public partial class _20180122001 : Migration
+    public partial class _20170130001 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,7 +14,7 @@ namespace Main.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Email = table.Column<string>(nullable: true),
                     JoinedTime = table.Column<double>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true),
@@ -34,12 +35,12 @@ namespace Main.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatedTime = table.Column<double>(nullable: false),
                     CreatorId = table.Column<int>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    Photo = table.Column<string>(nullable: true),
+                    Photo = table.Column<byte[]>(nullable: true),
                     Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -58,7 +59,7 @@ namespace Main.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Body = table.Column<string>(nullable: true),
                     CreatedTime = table.Column<double>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true),
@@ -102,7 +103,7 @@ namespace Main.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Code = table.Column<string>(nullable: true),
                     ExpiredTime = table.Column<double>(nullable: true),
                     IssuedTime = table.Column<double>(nullable: false),
@@ -124,14 +125,14 @@ namespace Main.Migrations
                 name: "FollowCategory",
                 columns: table => new
                 {
-                    OwnerId = table.Column<int>(nullable: false),
+                    FollowerId = table.Column<int>(nullable: false),
                     CategoryId = table.Column<int>(nullable: false),
                     CreatedTime = table.Column<double>(nullable: false),
-                    LastModifiedTime = table.Column<double>(nullable: true)
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FollowCategory", x => new { x.OwnerId, x.CategoryId });
+                    table.PrimaryKey("PK_FollowCategory", x => new { x.FollowerId, x.CategoryId });
                     table.ForeignKey(
                         name: "FK_FollowCategory_Category_CategoryId",
                         column: x => x.CategoryId,
@@ -139,8 +140,8 @@ namespace Main.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FollowCategory_Account_OwnerId",
-                        column: x => x.OwnerId,
+                        name: "FK_FollowCategory_Account_FollowerId",
+                        column: x => x.FollowerId,
                         principalTable: "Account",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -150,13 +151,13 @@ namespace Main.Migrations
                 name: "Categorization",
                 columns: table => new
                 {
+                    PostId = table.Column<int>(nullable: false),
                     CategoryId = table.Column<int>(nullable: false),
-                    PostId = table.Column<int>(nullable: false)
+                    CategorizationTime = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categorization", x => new { x.CategoryId, x.PostId });
-                    table.UniqueConstraint("AK_Categorization_PostId_CategoryId", x => new { x.PostId, x.CategoryId });
+                    table.PrimaryKey("PK_Categorization", x => new { x.PostId, x.CategoryId });
                     table.ForeignKey(
                         name: "FK_Categorization_Category_CategoryId",
                         column: x => x.CategoryId,
@@ -176,12 +177,13 @@ namespace Main.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Content = table.Column<string>(nullable: true),
                     CreatedTime = table.Column<double>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true),
                     OwnerId = table.Column<int>(nullable: false),
-                    PostId = table.Column<int>(nullable: false)
+                    PostId = table.Column<int>(nullable: false),
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -206,7 +208,8 @@ namespace Main.Migrations
                 {
                     FollowerId = table.Column<int>(nullable: false),
                     PostId = table.Column<int>(nullable: false),
-                    CreatedTime = table.Column<double>(nullable: false)
+                    CreatedTime = table.Column<double>(nullable: false),
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -229,11 +232,10 @@ namespace Main.Migrations
                 name: "PostNotification",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(nullable: false),
                     BroadcasterId = table.Column<int>(nullable: false),
                     CreatedTime = table.Column<double>(nullable: false),
-                    PostIndex = table.Column<int>(nullable: false),
+                    PostId = table.Column<int>(nullable: false),
                     RecipientId = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     Type = table.Column<int>(nullable: false)
@@ -248,8 +250,8 @@ namespace Main.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PostNotification_Post_PostIndex",
-                        column: x => x.PostIndex,
+                        name: "FK_PostNotification_Post_PostId",
+                        column: x => x.PostId,
                         principalTable: "Post",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -267,16 +269,16 @@ namespace Main.Migrations
                 {
                     PostId = table.Column<int>(nullable: false),
                     ReporterId = table.Column<int>(nullable: false),
-                    OwnerId = table.Column<int>(nullable: false),
                     Body = table.Column<string>(nullable: true),
                     CreatedTime = table.Column<double>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true),
-                    Reason = table.Column<string>(nullable: true)
+                    OwnerId = table.Column<int>(nullable: false),
+                    Reason = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostReport", x => new { x.PostId, x.ReporterId, x.OwnerId });
-                    table.UniqueConstraint("AK_PostReport_PostId_ReporterId", x => new { x.PostId, x.ReporterId });
+                    table.PrimaryKey("PK_PostReport", x => new { x.PostId, x.ReporterId });
                     table.ForeignKey(
                         name: "FK_PostReport_Account_OwnerId",
                         column: x => x.OwnerId,
@@ -301,8 +303,7 @@ namespace Main.Migrations
                 name: "CommentNotification",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<Guid>(nullable: false),
                     BroadcasterId = table.Column<int>(nullable: false),
                     CommentId = table.Column<int>(nullable: false),
                     CreatedTime = table.Column<double>(nullable: false),
@@ -345,17 +346,18 @@ namespace Main.Migrations
                 columns: table => new
                 {
                     CommentId = table.Column<int>(nullable: false),
-                    PostId = table.Column<int>(nullable: false),
-                    ReporterId = table.Column<int>(nullable: false),
                     OwnerId = table.Column<int>(nullable: false),
                     Body = table.Column<string>(nullable: true),
-                    Created = table.Column<double>(nullable: false),
-                    Reason = table.Column<string>(nullable: true)
+                    CreatedTime = table.Column<double>(nullable: false),
+                    LastModifiedTime = table.Column<double>(nullable: true),
+                    PostId = table.Column<int>(nullable: false),
+                    Reason = table.Column<string>(nullable: true),
+                    ReporterId = table.Column<int>(nullable: false),
+                    Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CommentReport", x => new { x.CommentId, x.PostId, x.ReporterId, x.OwnerId });
-                    table.UniqueConstraint("AK_CommentReport_CommentId_OwnerId", x => new { x.CommentId, x.OwnerId });
+                    table.PrimaryKey("PK_CommentReport", x => new { x.CommentId, x.OwnerId });
                     table.ForeignKey(
                         name: "FK_CommentReport_Comment_CommentId",
                         column: x => x.CommentId,
@@ -381,6 +383,11 @@ namespace Main.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categorization_CategoryId",
+                table: "Categorization",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Category_CreatorId",
@@ -453,9 +460,9 @@ namespace Main.Migrations
                 column: "BroadcasterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostNotification_PostIndex",
+                name: "IX_PostNotification_PostId",
                 table: "PostNotification",
-                column: "PostIndex");
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PostNotification_RecipientId",

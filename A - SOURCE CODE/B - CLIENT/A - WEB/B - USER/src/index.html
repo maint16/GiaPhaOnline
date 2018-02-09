@@ -10,7 +10,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{'applicationTitle' | translate}}</title>
+    <title ng-cloak ng-bind="{{'applicationTitle' | translate}}"></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -20,6 +20,8 @@
     <base href="/">
 </head>
 <body class="{{model.layoutClass}}">
-<ui-view></ui-view>
+<div block-ui="myBlockUI">
+    <ui-view></ui-view>
+</div>
 </body>
 </html>

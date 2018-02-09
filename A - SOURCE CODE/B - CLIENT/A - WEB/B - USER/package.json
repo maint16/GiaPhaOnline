@@ -34,9 +34,12 @@
     "angular-block-ui": "^0.2.2",
     "angular-datatables": "^0.6.2",
     "angular-moment": "^1.2.0",
+    "angular-sanitize": "^1.6.9",
     "angular-toastr": "^2.1.1",
     "angular-translate": "^2.16.0",
     "angular-translate-loader-static-files": "^2.16.0",
+    "angular-trix": "^1.0.2",
+    "angular-ui-bootstrap": "^2.5.6",
     "bluebird": "^3.5.1",
     "bootstrap": "^3.3.7",
     "datatables.net": "^1.10.16",
@@ -45,6 +48,7 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "moment": "^2.20.1",
+    "trix": "^0.11.1",
     "webpack": "^3.8.1"
   }
 }

@@ -87,7 +87,7 @@ namespace Main.Controllers
 
             // Find categories.
             var categories = _unitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Id == categoryId && x.Status == CategoryStatus.Available);
+            categories = categories.Where(x => x.Id == categoryId && x.Status == ItemStatus.Available);
 
             // Find the first matched result.
             var category = await categories.FirstOrDefaultAsync();
@@ -112,14 +112,14 @@ namespace Main.Controllers
 
             // Already followed the category.
             if (followCategory != null)
-                followCategory.Status = FollowStatus.Following;
+                followCategory.Status = ItemStatus.Available;
             else
             {
                 // Initialize follow category.
                  followCategory = new FollowCategory();
                 followCategory.FollowerId = identity.Id;
                 followCategory.CategoryId = categoryId;
-                followCategory.Status = FollowStatus.Following;
+                followCategory.Status = ItemStatus.Available;
                 followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
@@ -155,7 +155,7 @@ namespace Main.Controllers
                 return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
 
             // Stop following category.
-            followCategory.Status = FollowStatus.Ignore;
+            followCategory.Status = ItemStatus.NotAvailable;
 
             // Save changes.
             await _unitOfWork.CommitAsync();

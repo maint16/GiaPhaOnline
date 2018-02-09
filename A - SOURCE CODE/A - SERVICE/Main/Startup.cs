@@ -1,4 +1,4 @@
-﻿#define USE_SQLITE
+﻿#define USE_SQL
 
 using System;
 using SystemDatabase.Interfaces;
@@ -57,6 +57,7 @@ namespace Main
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
+                //.AddJsonFile($"dbSetting.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }

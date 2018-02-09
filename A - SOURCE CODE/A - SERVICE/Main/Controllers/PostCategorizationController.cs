@@ -91,7 +91,7 @@ namespace Main.Controllers
 
             // Get all categories in the system.
             var categories = _unitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Id == info.CategoryId && x.Status == CategoryStatus.Available);
+            categories = categories.Where(x => x.Id == info.CategoryId && x.Status == ItemStatus.Available);
 
             // Find the first matched result.
             var category = await categories.FirstOrDefaultAsync();

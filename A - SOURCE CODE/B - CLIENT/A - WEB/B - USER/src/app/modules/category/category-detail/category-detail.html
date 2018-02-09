@@ -1,12 +1,12 @@
 <section class="content-header">
     <h1>
         Category 01
-        <small>
-            <a href="javascript:void(0);">(Followed)</a>
+        <small ng-if="followCategory">
+            <a href="javascript:void(0);">({{'Followed' | translate}})</a>
         </small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> {{'Home' | translate}}</a></li>
         <li class="active">Category 01</li>
     </ol>
 </section>
@@ -157,88 +157,93 @@
         </div>
     </div>
 
-    <!--Posts-->
-    <div class="row form-group"
-         ng-repeat="post in loadDataResult.posts.data"
-         ng-init="loadPostComments(post)">
-        <div class="col-lg-12">
-            <!-- Box Comment -->
-            <div class="box box-widget">
-                <div class="box-header with-border">
-                    <div class="user-block">
-                        <img class="img-circle" ng-src="/assets/images/avatar.png" alt="User Image">
-                        <span class="username">
-                            <a href="javascript:void(0);">{{buffer.users[post.ownerId].nickname}}</a>
-                        </span>
-                        <span class="description">Shared publicly - {{post.createdTime | amFromUnix | amDateFormat: 'LLLL'}}</span>
-                    </div>
-                    <div class="pull-right box-tools">
-                        <div data-toggle="tooltip" title="Follow post">
-                            <button class="btn btn-flat dropdown-toggle"
-                                    ng-class="{'bg-red': (buffer.followingPosts[post.id] != null)}"
-                                    type="button" data-toggle="dropdown">
-                                <span class="fa"
-                                      ng-class="{'fa-heart': buffer.followingPosts[post.id], 'fa-heart-o': !buffer.followingPosts[post.id]}"></span>
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <div class="box box-success">
+                <div class="box-header">
+                    <i class="fa fa-folder-open"></i>
+
+                    <h3 class="box-title">{{'Posts belong to' | translate}} Category 01</h3>
+
+                    <div class="box-tools pull-right">
+                        <div class="btn-group">
+
+                            <button type="button"
+                                    class="btn btn-flat btn-sm"
+                                    ng-class="{'bg-red': followCategory}"
+                                    data-toggle="tooltip"
+                                    title="{{'Add to favorite' | translate }}">
+                                <i class="fa fa-heart"></i>
+                            </button>
+
+                            <button type="button"
+                                    data-toggle="tooltip"
+                                    title="{{'Write a post' | translate }}"
+                                    class="btn btn-flat btn-primary btn-sm">
+                                <i class="fa fa-pencil"></i>
                             </button>
                         </div>
+                    </div>
+                </div>
+                <div class="box-body chat">
+                    <!-- chat item -->
+                    <div class="item"
+                         ng-repeat="post in loadDataResult.posts.data">
+                        <img ng-src="/assets/images/avatar.png" alt="user image" class="online">
 
-                    </div>
-                </div>
-                <div class="box-body">
-                    <p>{{post.body}}</p>
-                    <span class="pull-right text-muted">3 comments</span>
-                </div>
-                <!-- /.box-body -->
-                <div class="box-footer box-comments">
-                    <div class="box-comment"
-                         ng-repeat="commentId in buffer.postComments[post.id]"
-                         ng-init="comment = buffer.comments[commentId]">
-                        <img class="img-circle img-sm" ng-src="/assets/images/avatar.png" alt="User Image">
-                        <div class="comment-text">
-                            <span class="username">{{buffer.users[comment.ownerId].nickname}}
-                                <span class="text-muted pull-right">{{comment.createdTime| amFromUnix | amDateFormat: 'LLL'}}</span>
-                            </span>
-                            {{comment.content}}
-                        </div>
-                        <!-- /.comment-text -->
-                    </div>
+                        <p class="message">
+                            <a href="javascript:void(0)" class="name">
+                                <small class="text-muted pull-right">
+                                    <i class="fa fa-clock-o"></i> 2:15
+                                </small>
+                                <label class="label label-info">Mike Doe</label>
+                            </a>
+                            <b class="text-bold text-success">
+                                I would like to meet you to discuss the latest news about
+                                the arrival of the new theme. They say it is going to be one the
+                                best themes on the market
+                            </b>
+                        </p>
+                        <div class="attachment">
+                            <div>
+                                I would like to meet you to discuss the latest news about
+                                the arrival of the new theme. They say it is going to be one the
+                                best themes on the market
+                            </div>
 
-                    <!--Comment footer-->
-                    <div class="box-comment">
-                        <div class="text-center">
-                            <small>
-                                <a href="javascript:void(0);">{{'View more comments'}} ...<span
-                                        class="caret"></span></a>
-                            </small>
+                            <div class="pull-right">
+                                <button type="button"
+                                        class="btn btn-sm btn-flat btn-info">
+                                    <span class="fa fa-eye"></span>
+                                </button>
+
+                                <!--Follow/unfollow post-->
+                                <button class="btn btn-sm btn-flat"
+                                        ng-class="{'bg-red': (buffer.followingPosts[post.id] != null)}"
+                                        type="button"
+                                        data-toggle="tooltip"
+                                        title="{{'Follow post' | translate}}">
+                                <span class="fa"
+                                      ng-class="{'fa-heart': buffer.followingPosts[post.id], 'fa-heart-o': !buffer.followingPosts[post.id]}"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.box-footer -->
-                <div class="box-footer">
-                    <form action="#" method="post">
-                        <img class="img-responsive img-circle img-sm" ng-src="/assets/images/avatar.png" alt="Alt Text">
-                        <!-- .img-push is used to add margin to elements next to floating images -->
-                        <div class="img-push">
-                            <input type="text" class="form-control input-sm" placeholder="Press enter to post comment">
-                        </div>
-                    </form>
-                </div>
-                <!-- /.box-footer -->
             </div>
-            <!-- /.box -->
         </div>
     </div>
 
-    <!--Pagination-->
     <div class="row form-group">
-        <div class="col-lg-12 text-center">
-            <ul class="pagination">
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-            </ul>
+        <div class="col-lg-12">
+            <div class="text-center">
+                <ul uib-pagination
+                    items-per-page="appSettings.pagination.categoryPosts"
+                    total-items="loadDataResult.posts.total"
+                    ng-model="currentPage"
+                    ng-change="pageChanged()"></ul>
+            </div>
         </div>
     </div>
+
 </section>

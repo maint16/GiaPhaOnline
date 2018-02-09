@@ -18,7 +18,7 @@ namespace Shared.ViewModels.FollowPosts
         /// <summary>
         /// Follow post statuses.
         /// </summary>
-        public HashSet<FollowStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
 
         /// <summary>
         /// Time when follow post was created.

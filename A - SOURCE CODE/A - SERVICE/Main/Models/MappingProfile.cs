@@ -14,9 +14,6 @@ namespace Main.Models
         /// </summary>
         public MappingProfile()
         {
-            // Mapping between Category & CategoryViewModel.
-            CreateMap<Category, CategoryViewModel>().ForMember(x => x.Photo, config => config.Ignore());
-
             // Post mapping.
             CreateMap<AddPostViewModel, Post>();
         }

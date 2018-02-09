@@ -1,0 +1,55 @@
+<div class="box box-widget">
+    <div class="box-header with-border">
+        <div class="user-block">
+            <img class="img-circle" ng-src="/assets/images/avatar.png" alt="User Image">
+            <span class="username">
+                <a href="javascript:void(0);">{{buffer.users[post.ownerId].nickname}}</a>
+            </span>
+            <span class="description">Shared publicly - {{post.createdTime | amFromUnix | amDateFormat: 'LLLL'}}</span>
+        </div>
+        <div class="pull-right box-tools">
+            <div data-toggle="tooltip" title="Follow post">
+                <button class="btn btn-flat dropdown-toggle"
+                        ng-class="{'bg-red': (buffer.followingPosts[post.id] != null)}"
+                        type="button" data-toggle="dropdown">
+                    <span class="fa"
+                          ng-class="{'fa-heart': buffer.followingPosts[post.id], 'fa-heart-o': !buffer.followingPosts[post.id]}">
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="box-body">
+        <p>{{post.body}}</p>
+        <span class="pull-right text-muted">3 comments</span>
+    </div>
+    <div class="box-footer box-comments">
+        <div class="box-comment"
+             ng-repeat="commentId in buffer.postComments[post.id]"
+             ng-init="comment = buffer.comments[commentId]">
+            <img class="img-circle img-sm" ng-src="/assets/images/avatar.png" alt="User Image">
+            <div class="comment-text">
+                <span class="username">{{buffer.users[comment.ownerId].nickname}}
+                    <span class="text-muted pull-right">{{comment.createdTime| amFromUnix | amDateFormat: 'LLL'}}</span>
+                </span>
+                {{comment.content}}
+            </div>
+        </div>
+        <div class="box-comment">
+            <div class="text-center">
+                <small>
+                    <a href="javascript:void(0);">{{'View more comments'}} ...<span
+                            class="caret"></span></a>
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="box-footer">
+        <form action="javascript:void(0);" method="post">
+            <img class="img-responsive img-circle img-sm" ng-src="/assets/images/avatar.png" alt="Alt Text">
+            <div class="img-push">
+                <input type="text" class="form-control input-sm" placeholder="Press enter to post comment">
+            </div>
+        </form>
+    </div>
+</div>

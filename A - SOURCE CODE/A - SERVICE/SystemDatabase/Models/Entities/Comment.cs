@@ -32,7 +32,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         /// Status of comment.
         /// </summary>
-        public CommentStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     When was the comment created.

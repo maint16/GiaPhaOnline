@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ using Shared.ViewModels.Comments;
 
 namespace Main.Controllers
 {
-    [Route("api/[comment]")]
+    [Route("api/[controller]")]
     public class CommentController : ApiBaseController
     {
         #region Constructors
@@ -85,7 +86,7 @@ namespace Main.Controllers
             var comment = new Comment();
             comment.OwnerId = identity.Id;
             comment.PostId = info.PostId;
-            comment.Status = CommentStatus.Available;
+            comment.Status = ItemStatus.Available;
             comment.Content = info.Content;
             comment.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
@@ -97,6 +98,36 @@ namespace Main.Controllers
             #endregion
 
             return Ok(comment);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [HttpPost("load-comments")]
+        public async Task<IActionResult> GetComments([FromBody] [Required] HashSet<int> ids )
+        {
+            var result = new SearchResult<IList<Comment>>();
+
+            // Get request identity.
+            var identity = IdentityService.GetProfile(HttpContext);
+
+            // Indexes filter.
+            ids = ids.Where(x => x > 0).ToHashSet();
+
+            // Get comments from database.
+            var comments = UnitOfWork.Comments.Search();
+
+            if (identity.Role == AccountRole.User)
+                comments = comments.Where(x => x.Status == ItemStatus.Available);
+
+            comments = comments.Where(x => ids.Contains(x.Id));
+
+            result.Records = await comments.ToListAsync();
+            result.Total = result.Records.Count;
+
+            return Ok(result);
         }
 
         /// <summary>
@@ -128,7 +159,7 @@ namespace Main.Controllers
 
             // Get all comments in database.
             var comments = UnitOfWork.Comments.Search();
-            comments = comments.Where(x => x.Id == id && x.OwnerId == identity.Id && x.Status == CommentStatus.Available);
+            comments = comments.Where(x => x.Id == id && x.OwnerId == identity.Id && x.Status == ItemStatus.Available);
 
             // Get the first matched comments.
             var comment = await comments.FirstOrDefaultAsync();
@@ -136,7 +167,7 @@ namespace Main.Controllers
                 return NotFound(new ApiResponse(HttpMessages.CommentNotFound));
 
             #endregion
-            
+
             #region Update comment information
 
             // Update content.
@@ -166,7 +197,7 @@ namespace Main.Controllers
 
             // Get all comments in database.
             var comments = UnitOfWork.Comments.Search();
-            comments = comments.Where(x => x.Id == id && x.OwnerId == identity.Id && x.Status == CommentStatus.Available);
+            comments = comments.Where(x => x.Id == id && x.OwnerId == identity.Id && x.Status == ItemStatus.Available);
 
             // Get the first matched comments.
             var comment = await comments.FirstOrDefaultAsync();
@@ -178,7 +209,7 @@ namespace Main.Controllers
             #region Change comment information
 
             // Change comment status.
-            comment.Status = CommentStatus.Deleted;
+            comment.Status = ItemStatus.NotAvailable;
 
             // Commit to system.
             await UnitOfWork.CommitAsync();
@@ -212,11 +243,76 @@ namespace Main.Controllers
 
             #region Search for information
 
+            var comments = UnitOfWork.Comments.Search();
+            comments = SearchComments(comments, condition);
+
+            #endregion
+
+            #region Count and paging
+
+            var result = new SearchResult<IList<Comment>>();
+            result.Total = await comments.CountAsync();
+            result.Records = await DbSharedService.Paginate(comments, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Search for comments using specific conditions.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("detail-search")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SearchDetailedComments([FromBody] SearchCommentViewModel condition)
+        {
+            #region Parameters validation
+
+            throw new NotImplementedException();
+            if (condition == null)
+            {
+                condition = new SearchCommentViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            var comments = UnitOfWork.Comments.Search();
+            comments = SearchComments(comments, condition);
+
+            #endregion
+
+
+            #region Count and paging
+
+            var result = new SearchResult<IList<Comment>>();
+            result.Total = await comments.CountAsync();
+            result.Records = await DbSharedService.Paginate(comments, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Search for comments by using specific conditions.
+        /// </summary>
+        /// <param name="comments"></param>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        private IQueryable<Comment> SearchComments(IQueryable<Comment> comments, SearchCommentViewModel condition)
+        {
+            #region Search for information
+
             // Get request identity.
             var identity = IdentityService.GetProfile(HttpContext);
-
-            // Search for all comments.
-            var comments = UnitOfWork.Comments.Search();
 
             // Id has been defined.
             if (condition.Id != null)
@@ -266,18 +362,10 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Count and paging
-
-            var result = new SearchResult<IList<Comment>>();
-            result.Total = await comments.CountAsync();
-            result.Records = await DbSharedService.Paginate(comments, condition.Pagination).ToListAsync();
-
-            #endregion
-
-            return Ok(result);
+            return comments;
         }
 
         #endregion
-        
+
     }
 }

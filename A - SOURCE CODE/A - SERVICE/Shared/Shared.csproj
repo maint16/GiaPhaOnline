@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SystemConstant\SystemConstant.csproj" />
+    <ProjectReference Include="..\SystemDatabase\SystemDatabase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

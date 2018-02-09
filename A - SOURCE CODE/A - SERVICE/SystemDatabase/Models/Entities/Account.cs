@@ -41,6 +41,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Relative url (http url) of user photo.
         /// </summary>
+        [JsonProperty("Photo")]
         public string PhotoRelativeUrl { get; set; }
 
         /// <summary>

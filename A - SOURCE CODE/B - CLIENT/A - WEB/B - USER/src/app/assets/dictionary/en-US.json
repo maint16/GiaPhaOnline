@@ -31,5 +31,13 @@
   "Owner": "Owner",
   "from": "from",
   "to": "to",
-  "Last modified time": "Last modified time"
+  "Last modified time": "Last modified time",
+  "View details": "View details",
+  "Follow post": "Follow post",
+  "Posts belong to": "Posts belong to",
+  "Write a post": "Write a post",
+  "Add to favorite": "Add to favourite",
+  "Followed": "Followed",
+  "Search for categories": "Search for categories",
+  "View more categories": "View more categories"
 }

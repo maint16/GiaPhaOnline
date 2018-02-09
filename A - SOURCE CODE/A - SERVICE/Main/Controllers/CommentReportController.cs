@@ -72,7 +72,7 @@ namespace Main.Controllers
             // Find comments.
             var comments = UnitOfWork.Comments.Search();
             comments = comments.Where(x =>
-                x.Id == info.CommentId && x.OwnerId != identity.Id && x.Status == CommentStatus.Available);
+                x.Id == info.CommentId && x.OwnerId != identity.Id && x.Status == ItemStatus.Available);
 
             // Find comment which matches to the search condition.
             var comment = await comments.FirstOrDefaultAsync();
@@ -206,7 +206,7 @@ namespace Main.Controllers
             #region Update information
 
             // Update status to deleted.
-            commentReport.Status = CommentReportStatus.Deleted;
+            commentReport.Status = ItemStatus.NotAvailable;
 
             // Commit data.
             await UnitOfWork.CommitAsync();
@@ -274,7 +274,7 @@ namespace Main.Controllers
             else
             {
                 commentReports = commentReports.Where(x => x.ReporterId == identity.Id);
-                commentReports = commentReports.Where(x => x.Status == CommentReportStatus.Available);
+                commentReports = commentReports.Where(x => x.Status == ItemStatus.Available);
             }
 
             // Created time has been defined.

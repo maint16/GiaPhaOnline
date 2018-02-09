@@ -23,7 +23,7 @@ namespace Shared.ViewModels.FollowCategories
         /// <summary>
         /// Statuses of follow category.
         /// </summary>
-        public HashSet<FollowStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
 
         /// <summary>
         /// Time when follow category was created.

@@ -1,10 +1,13 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettings,
+                                                              appSettings, followCategory,
                                                               postService, followPostService, commentService, userService) {
 
         //#region Properties
+
+        // Constant reflection.
+        $scope.appSettings = appSettings;
 
         // Buffer data which is for information binding and local caching.
         $scope.buffer = {
@@ -13,6 +16,14 @@ module.exports = function (ngModule) {
             users: {},
             followingPosts: {}
         };
+
+        // Model which is for model binding.
+        $scope.model = {
+            initialPostContent: null
+        };
+
+        // Resolver reflection.
+        $scope.followCategory = followCategory;
 
         // Data which obtained from api service.
         $scope.loadDataResult = {
@@ -69,9 +80,10 @@ module.exports = function (ngModule) {
                     // Get posts list.
                     var posts = result.records;
 
+                    debugger;
                     // Posts list.
-                    posts = $scope.loadDataResult.posts.data.concat(posts);
-                    $scope.loadDataResult.posts.data = posts;
+                    $scope.loadDataResult.posts.data = $scope.loadDataResult.posts.data.concat(posts);
+                    $scope.loadDataResult.posts.total = result.total;
 
                     // Get users list.
                     var userIds = posts
@@ -180,8 +192,6 @@ module.exports = function (ngModule) {
 
                         $scope.buffer.users[user.id] = user;
                     });
-
-                    console.log($scope.buffer.users);
                 })
         };
 
@@ -241,6 +251,7 @@ module.exports = function (ngModule) {
         $scope.clickAdvancedSearch = function(bUseAdvancedSearch){
             $scope.bUsingAdvancedSearch = bUseAdvancedSearch;
         }
+
         //#endregion
     });
 };

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 using SystemConstant.Enumerations;
 using SystemDatabase.Models.Contexts;
@@ -11,14 +12,15 @@ using SystemDatabase.Models.Contexts;
 namespace Main.Migrations
 {
     [DbContext(typeof(RelationalDatabaseContext))]
-    [Migration("20180121175646_20180122001")]
-    partial class _20180122001
+    [Migration("20180129173626_20170130001")]
+    partial class _20170130001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
+                .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("SystemDatabase.Models.Entities.Account", b =>
                 {
@@ -51,13 +53,15 @@ namespace Main.Migrations
 
             modelBuilder.Entity("SystemDatabase.Models.Entities.Categorization", b =>
                 {
-                    b.Property<int>("CategoryId");
-
                     b.Property<int>("PostId");
 
-                    b.HasKey("CategoryId", "PostId");
+                    b.Property<int>("CategoryId");
 
-                    b.HasAlternateKey("PostId", "CategoryId");
+                    b.Property<double>("CategorizationTime");
+
+                    b.HasKey("PostId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Categorization");
                 });
@@ -76,7 +80,7 @@ namespace Main.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("Photo");
+                    b.Property<byte[]>("Photo");
 
                     b.Property<int>("Status");
 
@@ -103,6 +107,8 @@ namespace Main.Migrations
 
                     b.Property<int>("PostId");
 
+                    b.Property<int>("Status");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
@@ -114,9 +120,8 @@ namespace Main.Migrations
 
             modelBuilder.Entity("SystemDatabase.Models.Entities.CommentNotification", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BroadcasterId");
 
@@ -149,21 +154,23 @@ namespace Main.Migrations
                 {
                     b.Property<int>("CommentId");
 
-                    b.Property<int>("PostId");
-
-                    b.Property<int>("ReporterId");
-
                     b.Property<int>("OwnerId");
 
                     b.Property<string>("Body");
 
-                    b.Property<double>("Created");
+                    b.Property<double>("CreatedTime");
+
+                    b.Property<double?>("LastModifiedTime");
+
+                    b.Property<int>("PostId");
 
                     b.Property<string>("Reason");
 
-                    b.HasKey("CommentId", "PostId", "ReporterId", "OwnerId");
+                    b.Property<int>("ReporterId");
 
-                    b.HasAlternateKey("CommentId", "OwnerId");
+                    b.Property<int>("Status");
+
+                    b.HasKey("CommentId", "OwnerId");
 
                     b.HasIndex("OwnerId");
 
@@ -176,15 +183,15 @@ namespace Main.Migrations
 
             modelBuilder.Entity("SystemDatabase.Models.Entities.FollowCategory", b =>
                 {
-                    b.Property<int>("OwnerId");
+                    b.Property<int>("FollowerId");
 
                     b.Property<int>("CategoryId");
 
                     b.Property<double>("CreatedTime");
 
-                    b.Property<double?>("LastModifiedTime");
+                    b.Property<int>("Status");
 
-                    b.HasKey("OwnerId", "CategoryId");
+                    b.HasKey("FollowerId", "CategoryId");
 
                     b.HasIndex("CategoryId");
 
@@ -198,6 +205,8 @@ namespace Main.Migrations
                     b.Property<int>("PostId");
 
                     b.Property<double>("CreatedTime");
+
+                    b.Property<int>("Status");
 
                     b.HasKey("FollowerId", "PostId");
 
@@ -235,15 +244,14 @@ namespace Main.Migrations
 
             modelBuilder.Entity("SystemDatabase.Models.Entities.PostNotification", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("BroadcasterId");
 
                     b.Property<double>("CreatedTime");
 
-                    b.Property<int>("PostIndex");
+                    b.Property<int>("PostId");
 
                     b.Property<int>("RecipientId");
 
@@ -255,7 +263,7 @@ namespace Main.Migrations
 
                     b.HasIndex("BroadcasterId");
 
-                    b.HasIndex("PostIndex");
+                    b.HasIndex("PostId");
 
                     b.HasIndex("RecipientId");
 
@@ -268,19 +276,19 @@ namespace Main.Migrations
 
                     b.Property<int>("ReporterId");
 
-                    b.Property<int>("OwnerId");
-
                     b.Property<string>("Body");
 
                     b.Property<double>("CreatedTime");
 
                     b.Property<double?>("LastModifiedTime");
 
+                    b.Property<int>("OwnerId");
+
                     b.Property<string>("Reason");
 
-                    b.HasKey("PostId", "ReporterId", "OwnerId");
+                    b.Property<int>("Status");
 
-                    b.HasAlternateKey("PostId", "ReporterId");
+                    b.HasKey("PostId", "ReporterId");
 
                     b.HasIndex("OwnerId");
 
@@ -415,9 +423,9 @@ namespace Main.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SystemDatabase.Models.Entities.Account", "Owner")
+                    b.HasOne("SystemDatabase.Models.Entities.Account", "Follower")
                         .WithMany("FollowCategories")
-                        .HasForeignKey("OwnerId")
+                        .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -451,7 +459,7 @@ namespace Main.Migrations
 
                     b.HasOne("SystemDatabase.Models.Entities.Post", "Post")
                         .WithMany("PostNotifications")
-                        .HasForeignKey("PostIndex")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SystemDatabase.Models.Entities.Account", "Recipient")
