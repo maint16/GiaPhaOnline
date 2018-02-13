@@ -28,17 +28,20 @@ module.exports = function (ngModule) {
         // Data which obtained from api service.
         $scope.loadDataResult = {
             posts: {
-                data: [],
-                total: 0,
-                remain: 0
+                records: [],
+                total: 0
             }
         };
 
         // Data load condition
         $scope.loadDataCondition = {
             post: {
-                page: 1,
-                records: appSettings.pagination.default
+                title: null,
+                pagination:{
+                    page: 1,
+                    records: appSettings.pagination.default
+                }
+
             },
             comment: {
                 page: 1,
@@ -72,8 +75,7 @@ module.exports = function (ngModule) {
                     var posts = result.records;
 
                     // Posts list.
-                    $scope.loadDataResult.posts.data = $scope.loadDataResult.posts.data.concat(posts);
-                    $scope.loadDataResult.posts.total = result.total;
+                    $scope.loadDataResult.posts = result;
 
                     // Get users list.
                     var userIds = posts
@@ -110,58 +112,6 @@ module.exports = function (ngModule) {
         };
 
         /*
-        * Load comments by using specific conditions.
-        * */
-        $scope.loadComments = function (conditions, bClearBufferData) {
-            var loadDataCondition = conditions;
-            if (loadDataCondition == null)
-                loadDataCondition = $scope.loadDataCondition.comment;
-
-            // Clear buffer data.
-            if (bClearBufferData)
-                $scope.buffer.comments = {};
-
-            // Call api to load data.
-            return commentService.getComments(loadDataCondition)
-                .then(function (x) {
-                    var result = x.data;
-                    if (!result)
-                        return null;
-
-                    // Get posts list.
-                    var comments = result.records;
-
-                    // Initialize users to load api.
-                    var userIds = [];
-
-                    // Go through every posts, check the cache and import the post to cache as its not available.
-                    angular.forEach(comments, function (comment, iterator) {
-                        // Not in cache.
-                        if (!$scope.buffer.comments[comment.id]) {
-                            $scope.buffer.comments[comment.id] = comment;
-
-                            // Not in post comments cache.
-                            if (!$scope.buffer.postComments[comment.postId]) {
-                                $scope.buffer.postComments[comment.postId] = [];
-                            }
-
-                            // Attach post comment.
-                            $scope.buffer.postComments[comment.postId].push(comment.id);
-
-                            if (!$scope.buffer.users[comment.ownerId])
-                                userIds.push(comment.ownerId);
-
-                        }
-                    });
-
-                    // Load users list.
-                    if (userIds && userIds.length > 0)
-                        $scope.loadUsers(userIds);
-                    return result;
-                });
-        };
-
-        /*
         * Load users
         * */
         $scope.loadUsers = function (ids) {
@@ -183,21 +133,6 @@ module.exports = function (ngModule) {
                         $scope.buffer.users[user.id] = user;
                     });
                 })
-        };
-
-        /*
-        * Load post comments.
-        * */
-        $scope.loadPostComments = function (post, initialLoad) {
-            var conditions = {
-                postId: post.id,
-                pagination: {
-                    page: 1,
-                    records: appSettings.pagination.default
-                }
-            };
-
-            $scope.loadComments(conditions, null);
         };
 
         /*
@@ -227,7 +162,7 @@ module.exports = function (ngModule) {
         * */
         $scope.clickAdvancedSearch = function(bUseAdvancedSearch){
             $scope.bUsingAdvancedSearch = bUseAdvancedSearch;
-        }
+        };
 
         /*
         * Called when user clicks on a page of category posts.
@@ -244,16 +179,44 @@ module.exports = function (ngModule) {
         };
 
         /*
+        * Event is fired when basic search is used.
+        * */
+        $scope.fnBasicSearch = function($event){
+
+            // Prevent default behaviour of control submission.
+            $event.preventDefault();
+
+            // Reset search condition.
+            $scope.loadDataCondition.post.pagination.page = 1;
+
+            // Search for posts.
+            $scope.loadPosts($scope.loadDataCondition.post);
+        };
+
+        /*
+        * Event which is fired when advanced search function is used.
+        * */
+        $scope.fnAdvanceSearch = function($event){
+
+            // Prevent default behaviour.
+            $event.preventDefault();
+
+            // Reset search pagination.
+            $scope.loadDataCondition.post.pagination.page = 1;
+
+            // Search for posts.
+            $scope.loadPosts($scope.loadDataCondition.post);
+        };
+
+        /*
         * Called when controller has been initialized.
         * */
         $timeout(function () {
             // Clear buffer data.
-            $scope.buffer.postComments = {};
-            $scope.buffer.comments = {};
             $scope.buffer.users = {};
             $scope.buffer.followingPosts = {};
 
-            $scope.loadPosts(null, false);
+            $scope.loadPosts(null);
         });
 
         //#endregion

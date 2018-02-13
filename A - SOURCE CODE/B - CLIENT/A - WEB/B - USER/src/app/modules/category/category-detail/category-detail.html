@@ -16,11 +16,16 @@
     <!--Basic search box-->
     <div class="row form-group"
          ng-if="!bUsingAdvancedSearch">
-        <div class="col-sm-12">
+        <form class="col-sm-12"
+              ng-submit="fnBasicSearch($event)"
+              novalidate>
             <div class="input-group">
-                <input class="form-control" placeholder="{{'Search for post' | translate}} ...">
+                <input class="form-control"
+                       placeholder="{{'Search for post' | translate}} ..."
+                       ng-model="loadDataCondition.post.title">
                 <span class="input-group-btn">
-                    <button class="btn btn-flat btn-info">
+                    <button class="btn btn-flat btn-info"
+                            type="submit">
                         <span class="fa fa-search"></span>
                     </button>
                     <button type="button"
@@ -39,13 +44,15 @@
                     </ul>
                 </span>
             </div>
-        </div>
+        </form>
     </div>
 
     <!--Advanced search box-->
     <div class="row form-group"
          ng-if="bUsingAdvancedSearch">
-        <div class="col-sm-12">
+        <form class="col-sm-12"
+              novalidate
+              ng-submit="fnAdvanceSearch($event)">
             <div class="box box-info">
                 <div class="box-header">
                     <span class="fa fa-search"></span>
@@ -86,7 +93,9 @@
                         </div>
                         <div class="col-sm-4 col-xs-12">
                             <div class="form-group">
-                                <input class="form-control" placeholder="{{'Title' | translate}}">
+                                <input class="form-control"
+                                       placeholder="{{'Title' | translate}}"
+                                       ng-model="loadDataCondition.post.title">
                             </div>
                         </div>
                     </div>
@@ -153,8 +162,17 @@
                         </div>
                     </div>
                 </div>
+            <div class="box-footer">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <button class="btn btn-flat btn-primary">
+                            {{'Search' | translate}}
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+            </div>
+        </form>
     </div>
 
     <div class="row form-group">
@@ -188,7 +206,7 @@
                 <div class="box-body chat">
                     <!-- chat item -->
                     <div class="item"
-                         ng-repeat="post in loadDataResult.posts.data">
+                         ng-repeat="post in loadDataResult.posts.records">
                         <img ng-src="/assets/images/avatar.png" alt="user image" class="online">
 
                         <p class="message">
@@ -240,7 +258,7 @@
                 <ul uib-pagination
                     items-per-page="appSettings.pagination.categoryPosts"
                     total-items="loadDataResult.posts.total"
-                    ng-model="loadDataCondition.post.page"
+                    ng-model="loadDataCondition.post.pagination.page"
                     ng-change="clickChangePage($event)"></ul>
             </div>
         </div>
