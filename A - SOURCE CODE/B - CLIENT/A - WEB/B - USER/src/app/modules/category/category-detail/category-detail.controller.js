@@ -56,19 +56,10 @@ module.exports = function (ngModule) {
         /*
         * Load posts by using specific conditions.
         * */
-        $scope.loadPosts = function (conditions, bClearBufferData) {
+        $scope.loadPosts = function (conditions) {
             var loadDataCondition = conditions;
             if (loadDataCondition == null)
                 loadDataCondition = $scope.loadDataCondition.post;
-
-            // Clear buffer data.
-            if (bClearBufferData) {
-                $scope.loadDataResult.posts = {
-                    data: [],
-                    total: 0,
-                    remain: 0
-                };
-            }
 
             // Call api to load data.
             return postService.getPosts(loadDataCondition)
@@ -80,7 +71,6 @@ module.exports = function (ngModule) {
                     // Get posts list.
                     var posts = result.records;
 
-                    debugger;
                     // Posts list.
                     $scope.loadDataResult.posts.data = $scope.loadDataResult.posts.data.concat(posts);
                     $scope.loadDataResult.posts.total = result.total;
@@ -233,6 +223,27 @@ module.exports = function (ngModule) {
         };
 
         /*
+        * Callback which is fired when advanced search button is clicked.
+        * */
+        $scope.clickAdvancedSearch = function(bUseAdvancedSearch){
+            $scope.bUsingAdvancedSearch = bUseAdvancedSearch;
+        }
+
+        /*
+        * Called when user clicks on a page of category posts.
+        * */
+        $scope.clickChangePage = function(){
+
+            // Clear buffers.
+            $scope.buffer.users = {};
+            $scope.buffer.comments = {};
+            $scope.buffer.postComments = {};
+
+            // Load posts.
+            $scope.loadPosts($scope.loadDataCondition.post, true);
+        };
+
+        /*
         * Called when controller has been initialized.
         * */
         $timeout(function () {
@@ -244,13 +255,6 @@ module.exports = function (ngModule) {
 
             $scope.loadPosts(null, false);
         });
-
-        /*
-        * Callback which is fired when advanced search button is clicked.
-        * */
-        $scope.clickAdvancedSearch = function(bUseAdvancedSearch){
-            $scope.bUsingAdvancedSearch = bUseAdvancedSearch;
-        }
 
         //#endregion
     });

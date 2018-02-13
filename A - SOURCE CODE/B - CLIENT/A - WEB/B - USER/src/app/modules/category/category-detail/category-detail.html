@@ -240,8 +240,8 @@
                 <ul uib-pagination
                     items-per-page="appSettings.pagination.categoryPosts"
                     total-items="loadDataResult.posts.total"
-                    ng-model="currentPage"
-                    ng-change="pageChanged()"></ul>
+                    ng-model="loadDataCondition.post.page"
+                    ng-change="clickChangePage($event)"></ul>
             </div>
         </div>
     </div>
