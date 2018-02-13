@@ -16,6 +16,10 @@ module.exports = function (ngModule) {
             getPosts: 'api/post/search'
         },
 
+        postCategorization:{
+            getPostCategorization: 'api/categorization/search'
+        },
+
         comment: {
             getComments: 'api/comment/search',
             loadComments: 'api/comment/load-comments'

@@ -16,34 +16,40 @@
         <!--Categories list-->
         <div class="col-sm-12 col-md-4 col-lg-3">
             <div class="box box-widget widget-user-2">
-                <div class="widget-user-header bg-green">
+                <form class="widget-user-header bg-green"
+                      novalidate
+                      ng-submit="fnGetCategories($event)">
                     <div class="input-group">
-                        <input class="form-control" placeholder="{{'Search for categories' | translate}} ...">
+                        <input class="form-control"
+                               placeholder="{{'Search for categories' | translate}} ...">
                         <span class="input-group-btn">
                         <button class="btn btn-info btn-flat">
                             <span class="fa fa-search"></span>
                         </button>
                     </span>
                     </div>
-                </div>
+                </form>
 
                 <div class="box-footer no-padding">
                     <ul class="nav nav-stacked">
                         <li ng-repeat="category in result.getCategories.records"
                             ng-click="clickCategory(category)">
                             <a href="javascript:void(0);">{{category.name}}
-                                <span class="pull-right badge bg-blue">31</span>
+                                <span class="pull-right badge bg-blue"
+                                      ng-if="buffer.categoryPostsCounter[category.id]">
+                                    {{buffer.categoryPostsCounter[category.id]}}
+                                </span>
                             </a>
                         </li>
-                        <li class="text-center"
-                            ng-if="result.getCategories.records.length < result.getCategories.total">
-                            <a href="javascript:void(0)">
-                                <button class="btn btn-link btn-block">
-                                    <span>{{'View more categories' | translate}}</span>
-                                    <span class="caret"></span>
-                                </button>
-                            </a>
-                        </li>
+                        <!--<li class="text-center"-->
+                            <!--ng-if="result.getCategories.records.length < result.getCategories.total">-->
+                            <!--<a href="javascript:void(0)">-->
+                                <!--<button class="btn btn-link btn-block">-->
+                                    <!--<span>{{'View more categories' | translate}}</span>-->
+                                    <!--<span class="caret"></span>-->
+                                <!--</button>-->
+                            <!--</a>-->
+                        <!--</li>-->
                     </ul>
                 </div>
             </div>
