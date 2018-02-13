@@ -1,13 +1,16 @@
 <section class="content-header">
     <h1>
-        Category 01
-        <small ng-if="followCategory">
+        {{category.name}}
+        <small ng-if="bIsFollowingCategory">
             <a href="javascript:void(0);">({{'Followed' | translate}})</a>
         </small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> {{'Home' | translate}}</a></li>
-        <li class="active">Category 01</li>
+        <li>
+            <a href="#"><i class="fa fa-dashboard"></i> {{'Home' | translate}}</a></li>
+        <li class="active">
+            {{category.name}}
+        </li>
     </ol>
 </section>
 
@@ -181,14 +184,14 @@
                 <div class="box-header">
                     <i class="fa fa-folder-open"></i>
 
-                    <h3 class="box-title">{{'Posts belong to' | translate}} Category 01</h3>
+                    <h3 class="box-title">{{'Posts belong to' | translate}} {{category.name}}</h3>
 
                     <div class="box-tools pull-right">
                         <div class="btn-group">
 
                             <button type="button"
                                     class="btn btn-flat btn-sm"
-                                    ng-class="{'bg-red': followCategory}"
+                                    ng-class="{'bg-red': bIsFollowingCategory}"
                                     data-toggle="tooltip"
                                     title="{{'Add to favorite' | translate }}">
                                 <i class="fa fa-heart"></i>

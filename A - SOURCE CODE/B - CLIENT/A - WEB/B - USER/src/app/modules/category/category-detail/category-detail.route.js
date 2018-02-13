@@ -16,11 +16,11 @@ module.exports = function (ngModule) {
             resolve: {
 
                 // Follow category information.
-                followCategory: function ($state, $stateParams,
-                                            urlStates,
-                                            profile, followCategoryService) {
-                    if (profile == null)
-                        return null;
+                details: function ($state, $stateParams,
+                                   urlStates,
+                                   profile,
+                                   followCategoryService, categoryService) {
+
 
                     var szCategoryId = $stateParams.categoryId;
                     if (!szCategoryId) {
@@ -35,24 +35,78 @@ module.exports = function (ngModule) {
                         return;
                     }
 
-                    var conditions = {
-                        categoryId: iCategoryId,
-                        pagination:{
+
+                    var getCategoryCondition = {
+                        id: iCategoryId,
+                        pagination: {
                             page: 1,
                             records: 1
                         }
                     };
 
-                    return followCategoryService.getFollowingCategories(conditions)
-                        .then(function(getFollowingCategoriesResponse){
-                            var getFollowingCategoriesResult = getFollowingCategoriesResponse.data;
-                            if (!getFollowingCategoriesResult)
-                                return null;
+                    // Information which should be returned from promise.
+                    var details = {
+                        bIsFollowingCategory: false,
+                        category: null
+                    };
 
-                            var followingCategories = getFollowingCategoriesResult.records;
-                            return followingCategories[0];
+                    // Get category information first.
+                    return categoryService.getCategories(getCategoryCondition)
+                        .then(function(getCategoriesResponse){
+
+                            // Get result from api.
+                            var getCategoriesResult = getCategoriesResponse.data;
+
+                            // Invalid response.
+                            if (!getCategoriesResult){
+                                $state.go(urlStates.dashboard.name);
+                                throw 'Unable to get category information';
+                            }
+
+                            var categories = getCategoriesResult.records;
+                            if (!categories || categories.length < 1){
+                                $state.go(urlStates.dashboard.name);
+                                throw 'Unable to get category information';
+                            }
+
+                            // Update detail information.
+                            details.category = categories[0];
+                            return categories[0];
+                        })
+
+                        // Get following category information.
+                        .then(function(category){
+
+                            // User is anonymous. Skip this step.
+                            if (profile == null)
+                                return details;
+
+                            // Get following categories conditions.
+                            var getFollowingCategoriesCondition = {
+                                categoryId: category.id,
+                                pagination: {
+                                    page: 1,
+                                    records: 1
+                                }
+                            };
+
+                            return followCategoryService.getFollowingCategories(getFollowingCategoriesCondition)
+                                .then(function (getFollowingCategoriesResponse) {
+                                    var getFollowingCategoriesResult = getFollowingCategoriesResponse.data;
+                                    if (!getFollowingCategoriesResult)
+                                        return details;
+
+                                    var followingCategories = getFollowingCategoriesResult.records;
+                                    if (!followingCategories || followingCategories.length < 1)
+                                        return details;
+
+                                    details.bIsFollowingCategory = true;
+                                    return details
+                                });
                         });
+
                 }
+
             }
         });
     });

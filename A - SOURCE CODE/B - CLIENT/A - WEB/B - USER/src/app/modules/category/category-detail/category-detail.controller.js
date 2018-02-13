@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettings, followCategory,
+                                                              appSettings, details,
                                                               postService, followPostService, commentService, userService) {
 
         //#region Properties
@@ -23,7 +23,8 @@ module.exports = function (ngModule) {
         };
 
         // Resolver reflection.
-        $scope.followCategory = followCategory;
+        $scope.bIsFollowingCategory = details.bIsFollowingCategory;
+        $scope.category = details.category;
 
         // Data which obtained from api service.
         $scope.loadDataResult = {
