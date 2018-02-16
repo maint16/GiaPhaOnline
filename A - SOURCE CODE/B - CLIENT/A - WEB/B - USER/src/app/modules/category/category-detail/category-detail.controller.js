@@ -2,12 +2,16 @@ module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
                                                               appSettings, details,
-                                                              postService, followPostService, commentService, userService) {
+                                                              postService, followPostService,
+                                                              commentService, userService, $uibModal) {
 
         //#region Properties
 
         // Constant reflection.
         $scope.appSettings = appSettings;
+
+        // Resolver reflection.
+        $scope.profile = profile;
 
         // Buffer data which is for information binding and local caching.
         $scope.buffer = {
@@ -20,6 +24,13 @@ module.exports = function (ngModule) {
         // Model which is for model binding.
         $scope.model = {
             initialPostContent: null
+        };
+
+        /*
+        * List of modals dialog.
+        * */
+        $scope.modals = {
+            postDetails: null
         };
 
         // Resolver reflection.
@@ -52,6 +63,9 @@ module.exports = function (ngModule) {
 
         // Whether advanced search is being used or not.
         $scope.bUsingAdvancedSearch = false;
+
+        $scope.post = null;
+        $scope.postOwner = null;
 
         //#endregion
 
@@ -207,6 +221,29 @@ module.exports = function (ngModule) {
 
             // Search for posts.
             $scope.loadPosts($scope.loadDataCondition.post);
+        };
+
+        /*
+        * Called when a post is selected.
+        * */
+        $scope.fnSelectPost = function(post){
+            $scope.post = post;
+            $scope.postOwner = $scope.buffer.users[post.ownerId];
+
+            // Display modal dialog.
+            $scope.modals.postDetails = $uibModal.open({
+                templateUrl: 'post-details.html',
+                scope: $scope,
+                size: 'lg'
+            });
+        };
+
+        $scope.fnLoginSuccessfully = function(token){
+            console.log(token);
+        };
+
+        $scope.fnLoginFailingly = function(){
+            console.log('hhh');
         };
 
         /*

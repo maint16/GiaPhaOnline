@@ -9,7 +9,10 @@ module.exports = function (ngModule) {
             template: ngModuleHtmlTemplate,
             restrict: 'E',
             scope: {
-                profile: '=?'
+                profile: '=?',
+
+                ngClickBasicLogin: '&',
+                ngClickSignOut: '&'
             },
             controller: function($scope, urlStates){
 
@@ -17,6 +20,24 @@ module.exports = function (ngModule) {
 
                 // Constants reflection.
                 $scope.urlStates = urlStates;
+
+                //#endregion
+
+                //#region Methods
+
+                /*
+                * Event which is fired when basic login is clicked.
+                * */
+                $scope.fnBasicLogin = function(){
+                    $scope.ngClickBasicLogin();
+                };
+
+                /*
+                * Event which is fired when sign out button is clicked.
+                * */
+                $scope.fnSignOut = function(){
+                    $scope.ngClickSignOut();
+                };
 
                 //#endregion
             }

@@ -1,5 +1,8 @@
 module.exports = function(ngModule){
   ngModule.service('commonService', function(){
+
+      //#region Methods
+
       /*
       * From start element index and max records to calculate page.
       * */
@@ -7,5 +10,7 @@ module.exports = function(ngModule){
           var iPage = startIndex / maxRecords;
           return Math.ceil(iPage) + 1;
       };
+
+      //#endregion
   });
 };

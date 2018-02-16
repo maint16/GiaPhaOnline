@@ -1,0 +1,61 @@
+<form class="box box-info"
+      name="basicLoginForm"
+      novalidate
+      ng-submit="fnLogin($event)">
+    <div class="box-header">
+        <h3 class="box-title">{{'Login' | translate}}</h3>
+        <span class="box-tools pull-right">
+            <button class="btn btn-flat btn-sm btn-danger"
+                    ng-click="fnCancel()">
+                <span>&times;</span>
+            </button>
+        </span>
+    </div>
+    <div class="box-body">
+        <!--Email-->
+        <div class="row">
+            <div class="col-sm-12">
+                <label>{{'Email' | translate}}</label>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                        </span>
+                        <input class="form-control"
+                               required
+                               ng-model="model.email">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Password-->
+        <div class="row">
+            <div class="col-sm-12">
+                <label>{{'Password' | translate}}</label>
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="fa fa-key"></span>
+                        </span>
+                        <input class="form-control"
+                               type="password"
+                               required
+                               ng-model="model.password">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="box-footer">
+        <div class="row">
+            <div class="col-xs-12 text-center">
+                <button type="submit"
+                        ng-disabled="basicLoginForm.$invalid"
+                        class="btn btn-flat btn-primary">
+                    {{'OK' | translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

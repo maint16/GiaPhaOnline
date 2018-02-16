@@ -24,7 +24,15 @@ module.exports = function(ngModule){
         this.getProfile = function(){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.getPersonalProfile;
             return $http.get(url);
-        }
+        };
+
+        /*
+        * Use email & password to exchange with an access token.
+        * */
+        this.basicLogin = function(info){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.basicLogin;
+            return $http.post(url, info);
+        };
     });
 
 };

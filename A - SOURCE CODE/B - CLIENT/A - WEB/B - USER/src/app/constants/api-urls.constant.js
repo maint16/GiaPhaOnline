@@ -5,7 +5,8 @@ module.exports = function (ngModule) {
             getUser: 'api/account/{id}',
             getUsers: 'api/account/search',
             loadUsers: 'api/account/load-users',
-            getPersonalProfile: 'api/user/personal-profile'
+            getPersonalProfile: 'api/user/personal-profile',
+            basicLogin: 'api/user/login'
         },
 
         category: {
@@ -21,6 +22,7 @@ module.exports = function (ngModule) {
         },
 
         comment: {
+            addComment: 'api/comment',
             getComments: 'api/comment/search',
             loadComments: 'api/comment/load-comments'
         },

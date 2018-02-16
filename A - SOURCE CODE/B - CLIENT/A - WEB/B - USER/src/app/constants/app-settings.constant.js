@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.constant('appSettings', {
 
-        identityStorage: 'identityStorage',
+        identityStorage: 'iConfess',
 
         // End-point configuration.
         endPoint: {
@@ -12,7 +12,8 @@ module.exports = function (ngModule) {
         pagination: {
             userSelector: 20,
             default: 30,
-            categoryPosts: 50
+            categoryPosts: 50,
+            comments: 50
         }
     });
 };

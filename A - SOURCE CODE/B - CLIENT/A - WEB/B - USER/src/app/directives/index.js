@@ -5,5 +5,7 @@ module.exports = function(ngModule){
     require('./ui-view-css.directive')(ngModule);
     require('./post-search/post-search')(ngModule);
     require('./user-picker/user-picker')(ngModule);
-    require('./post-detail-box/post-detail-box')(ngModule);
+    require('./post-content-box/post-content-box')(ngModule);
+    require('./post-initiator/post-initiator')(ngModule);
+    require('./basic-login-box/basic-login-box')(ngModule);
 };

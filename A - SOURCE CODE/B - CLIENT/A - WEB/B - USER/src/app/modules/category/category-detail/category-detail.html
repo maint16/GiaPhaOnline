@@ -234,7 +234,8 @@
 
                             <div class="pull-right">
                                 <button type="button"
-                                        class="btn btn-sm btn-flat btn-info">
+                                        class="btn btn-sm btn-flat btn-info"
+                                        ng-click="fnSelectPost(post)">
                                     <span class="fa fa-eye"></span>
                                 </button>
 
@@ -268,3 +269,12 @@
     </div>
 
 </section>
+
+<!--Modal dialog: Post details box-->
+<script type="text/ng-template"
+        id="post-details.html">
+    <post-content-box post="post"
+                      post-owner="postOwner"
+                      audience-profile="profile">
+    </post-content-box>
+</script>

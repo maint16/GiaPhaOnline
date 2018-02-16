@@ -5,7 +5,10 @@
                class="navbar-brand" ui-sref="{{urlStates.dashboard.name}}">
                 <b>iConfess</b>
             </a>
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#navbar-collapse">
                 <i class="fa fa-bars"></i>
             </button>
         </div>
@@ -14,47 +17,90 @@
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <!-- User Account Menu -->
-                <li class="dropdown user user-menu"
-                    ng-if="profile">
+                <li class="dropdown user user-menu">
                     <!-- Menu Toggle Button -->
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <a href="javascript:void(0);"
+                       class="dropdown-toggle"
+                       data-toggle="dropdown">
                         <!-- The user image in the navbar-->
-                        <img ng-src="assets/images/avatar.png" class="user-image" alt="User Image">
-                        <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                        <span class="hidden-xs">{{profile.nickname}}</span>
+                        <img ng-if="profile"
+                             ng-src="{{profile.photo}}"
+                             class="user-image"
+                             alt="User Image">
+
+                        <span class="hidden-xs"
+                              ng-if="profile">{{profile.nickname}}
+                        </span>
+
+                        <span class="fa fa-user-secret" ng-if="!profile"></span>
+                        <span class="hidden-xs"
+                              ng-if="!profile">
+                            {{'Anonymous' | translate}}
+                        </span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- The user image in the menu -->
-                        <li class="user-header">
-                            <img ng-src="assets/images/avatar.png" class="img-circle" alt="User Image">
-
+                        <li class="user-header"
+                            ng-if="profile">
+                            <img ng-src="{{profile.photo}}"
+                                 class="img-circle"
+                                 alt="User Image">
                             <p>
                                 Alexander Pierce - Web Developer
                                 <small>Member since Nov. 2012</small>
                             </p>
                         </li>
-                        <!-- Menu Body -->
-                        <li class="user-body">
-                            <div class="row">
-                                <div class="col-xs-4 text-center">
-                                    <a href="#">Followers</a>
-                                </div>
-                                <div class="col-xs-4 text-center">
-                                    <a href="#">Sales</a>
-                                </div>
-                                <div class="col-xs-4 text-center">
-                                    <a href="#">Friends</a>
-                                </div>
-                            </div>
-                            <!-- /.row -->
-                        </li>
-                        <!-- Menu Footer-->
-                        <li class="user-footer">
+
+                        <!-- Menu Footer (Authorized)-->
+                        <li class="user-footer"
+                            ng-if="profile">
                             <div class="pull-left">
                                 <a href="#" class="btn btn-default btn-flat">Profile</a>
                             </div>
                             <div class="pull-right">
-                                <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                <button class="btn btn-default btn-flat"
+                                        ng-click="fnSignOut()">
+                                    {{'Sign out' | translate}}
+                                </button>
+                            </div>
+                        </li>
+
+                        <!--Menu footer (unauthorized)-->
+                        <li class="user-footer"
+                            ng-if="!profile">
+
+                            <!--Login (Google)-->
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <button class="btn btn-flat btn-block btn-default">
+                                            <span>{{'Sign in using' | translate}} Google</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Basic login-->
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <button class="btn btn-flat btn-block btn-default"
+                                                ng-click="fnBasicLogin()">
+                                            <span>{{'Sign in' | translate}}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--Register-->
+                            <div class="row">
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <button class="btn btn-flat btn-block btn-primary">
+                                            <span>{{'Register' | translate}}</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </li>
                     </ul>

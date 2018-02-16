@@ -17,7 +17,15 @@ module.exports = function(ngModule){
         this.loadComments = function(ids){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.loadComments;
             return $http.post(url, {ids: ids});
-        }
+        };
+
+        /*
+        * Add a comment to a specific post.
+        * */
+        this.addComment = function(comment){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.addComment;
+            return $http.post(url, comment);
+        };
 
         //#endregion
     });

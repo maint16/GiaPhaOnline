@@ -1,15 +1,17 @@
-<div class="box box-widget">
+<div class="box box-widget"
+     ng-init="init()">
     <div class="box-header with-border">
         <div class="user-block">
             <img class="img-circle" ng-src="/assets/images/avatar.png" alt="User Image">
             <span class="username">
-                <a href="javascript:void(0);">{{buffer.users[post.ownerId].nickname}}</a>
+                <a href="javascript:void(0);">{{postOwner.nickname}}</a>
             </span>
             <span class="description">Shared publicly - {{post.createdTime | amFromUnix | amDateFormat: 'LLLL'}}</span>
         </div>
-        <div class="pull-right box-tools">
-            <div data-toggle="tooltip" title="Follow post">
-                <button class="btn btn-flat dropdown-toggle"
+        <div class="pull-right box-tools"
+             ng-if="audienceProfile">
+            <div data-toggle="tooltip" title="{{'Follow post' | translate}}">
+                <button class="btn btn-flat"
                         ng-class="{'bg-red': (buffer.followingPosts[post.id] != null)}"
                         type="button" data-toggle="dropdown">
                     <span class="fa"
@@ -21,12 +23,11 @@
     </div>
     <div class="box-body">
         <p>{{post.body}}</p>
-        <span class="pull-right text-muted">3 comments</span>
+        <span class="pull-right text-muted">{{result.getComments.total}} comments</span>
     </div>
     <div class="box-footer box-comments">
         <div class="box-comment"
-             ng-repeat="commentId in buffer.postComments[post.id]"
-             ng-init="comment = buffer.comments[commentId]">
+             ng-repeat="comment in result.getComments.records">
             <img class="img-circle img-sm" ng-src="/assets/images/avatar.png" alt="User Image">
             <div class="comment-text">
                 <span class="username">{{buffer.users[comment.ownerId].nickname}}
@@ -37,18 +38,36 @@
         </div>
         <div class="box-comment">
             <div class="text-center">
-                <small>
-                    <a href="javascript:void(0);">{{'View more comments'}} ...<span
-                            class="caret"></span></a>
-                </small>
+                <ul uib-pagination
+                    item-per-page="appSettings.pagination.comments"
+                    total-items="result.getComments.total"
+                    ng-model="condition.getComments.pagination.page"
+                    ng-change="getComments()"></ul>
             </div>
         </div>
     </div>
-    <div class="box-footer">
-        <form action="javascript:void(0);" method="post">
+    <div class="box-footer"
+         ng-if="audienceProfile">
+        <form novalidate
+              ng-submit="addComment($event)"
+              name="addCommentForm">
             <img class="img-responsive img-circle img-sm" ng-src="/assets/images/avatar.png" alt="Alt Text">
             <div class="img-push">
-                <input type="text" class="form-control input-sm" placeholder="Press enter to post comment">
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control input-sm"
+                           ng-model="model.content"
+                           placeholder="{{'Add a comment' | translate}}"
+
+                           required>
+                    <span class="input-group-btn">
+                        <button ng-disabled="addCommentForm.$invalid"
+                                type="submit"
+                                class="btn btn-sm btn-flat btn-primary">
+                            <span class="fa fa-send"></span>
+                        </button>
+                    </span>
+                </div>
             </div>
         </form>
     </div>

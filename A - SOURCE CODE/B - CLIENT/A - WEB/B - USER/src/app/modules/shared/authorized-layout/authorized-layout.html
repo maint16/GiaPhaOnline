@@ -1,10 +1,12 @@
 <div class="wrapper" ng-init="init()">
-
     <!--Side bar rendering-->
     <!--<side-bar></side-bar>-->
 
     <!--Navigation bar rendering-->
-    <navigation-bar profile="profile"></navigation-bar>
+    <navigation-bar profile="profile"
+                    ng-click-basic-login="fnClickBasicLogin()"
+                    ng-click-sign-out="fnSignOut()">
+    </navigation-bar>
 
     <div class="col-lg-10 col-lg-offset-1">
         <!-- Content Wrapper. Contains page content -->
@@ -12,5 +14,11 @@
 
         </div>
     </div>
-
 </div>
+
+<!--Modal dialog: Post details box-->
+<script type="text/ng-template"
+        id="basic-login.html">
+    <basic-login-box ng-cancel="fnCancelLogin()"
+                     ng-login-successfully="fnLoginSuccessfully(token)"></basic-login-box>
+</script>
