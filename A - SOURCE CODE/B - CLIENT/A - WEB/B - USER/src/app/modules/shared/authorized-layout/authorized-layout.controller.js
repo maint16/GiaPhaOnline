@@ -2,7 +2,7 @@ module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
         function ($scope, $state, $transitions, uiService,
                   profile, $uibModal, $timeout, $window,
-                  authenticationService) {
+                  authenticationService, userService) {
 
             //#region Properties
 
@@ -119,8 +119,29 @@ module.exports = function (ngModule) {
                     .grantOfflineAccess({
                         scope: 'profile email'
                     })
-                    .then(function (getGoogleCredentialResult) {
-                        console.log(getGoogleCredentialResult);
+                    .then(function (getGoogleCredentialResponse) {
+                        var szCode = getGoogleCredentialResponse.code;
+                        console.log(szCode);
+                        userService.fnUseGoogleLogin({code: szCode})
+                            .then(
+                                function (loginResponse) {
+
+                                    var loginResult = loginResponse.data;
+                                    if (!loginResult)
+                                        return;
+
+                                    var szAccessToken = loginResult.accessToken;
+                                    if (!szAccessToken || szAccessToken.length < 1)
+                                        return;
+
+                                    // Save access token to local storage.
+                                    authenticationService.initAuthenticationToken(szAccessToken);
+
+                                    // Reload the current state.
+                                    $state.reload();
+
+                                    console.log('Reload current state');
+                                });
                     });
             };
 

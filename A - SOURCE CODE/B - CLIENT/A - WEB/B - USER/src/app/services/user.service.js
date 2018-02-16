@@ -33,6 +33,14 @@ module.exports = function(ngModule){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.basicLogin;
             return $http.post(url, info);
         };
+
+        /*
+        * Exchange google code for local access token.
+        * */
+        this.fnUseGoogleLogin = function(info){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.googleLogin;
+            return $http.post(url, info);
+        };
     });
 
 };
