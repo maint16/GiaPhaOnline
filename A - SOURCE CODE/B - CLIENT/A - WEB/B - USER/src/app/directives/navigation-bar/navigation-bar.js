@@ -12,6 +12,7 @@ module.exports = function (ngModule) {
                 profile: '=?',
 
                 ngClickBasicLogin: '&',
+                ngClickGoogleLogin: '&',
                 ngClickSignOut: '&'
             },
             controller: function($scope, urlStates){
@@ -32,12 +33,18 @@ module.exports = function (ngModule) {
                     $scope.ngClickBasicLogin();
                 };
 
+                $scope.fnGoogleSignIn = function(){
+                    $scope.ngClickGoogleLogin();
+                };
+
                 /*
                 * Event which is fired when sign out button is clicked.
                 * */
                 $scope.fnSignOut = function(){
                     $scope.ngClickSignOut();
                 };
+
+
 
                 //#endregion
             }

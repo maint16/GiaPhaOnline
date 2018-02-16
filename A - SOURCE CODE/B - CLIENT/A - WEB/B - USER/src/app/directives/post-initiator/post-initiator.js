@@ -18,6 +18,12 @@ module.exports = function (ngModule) {
                 // Constants reflection.
                 $scope.urlStates = urlStates;
 
+                $scope.ckEditorOptions = {
+                    language: 'en',
+                    allowedContent: true,
+                    entities: false
+                };
+
                 // Model which is for information binding.
                 $scope.model = {
                     title: null,

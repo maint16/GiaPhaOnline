@@ -27,19 +27,20 @@
             <div class="col-sm-12">
                 <label>{{'Content' | translate}}</label> <b class="text-danger">*</b>
                 <div class="form-group">
-                    <!--<input class="hidden"-->
-                           <!--name="txtPostContent"-->
-                           <!--hidden-->
-                           <!--ng-model="model.content"-->
-                           <!--required>-->
+                    <input class="hidden"
+                           name="txtPostContent"
+                           hidden
+                           ng-model="model.content"
+                           required>
                     <!--<trix-editor angular-trix-->
                                  <!--ng-model="model.content">-->
                     <!--</trix-editor>-->
-                    <trix-editor spellcheck="false"
-                                 class="trix-content"
-                                 ng-model="trix"
-                                 angular-trix >
-                    </trix-editor>
+                    <!--<trix-editor spellcheck="false"-->
+                                 <!--class="trix-content"-->
+                                 <!--ng-model="trix"-->
+                                 <!--angular-trix >-->
+                    <!--</trix-editor>-->
+                    <div ckeditor="ckEditorOptions" ng-model="model.content"></div>
                 </div>
             </div>
         </div>
