@@ -46,8 +46,8 @@
                                  class="img-circle"
                                  alt="User Image">
                             <p>
-                                Alexander Pierce - Web Developer
-                                <small>Member since Nov. 2012</small>
+                                {{profile.nickname}}
+                                <small>{{'Member since' | translate}} {{profile.joinedTime| amFromUnix | amDateFormat: 'LLL'}}</small>
                             </p>
                         </li>
 
