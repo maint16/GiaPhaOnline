@@ -9,6 +9,7 @@ module.exports = function (ngModule) {
             template: ngModuleHtmlTemplate,
             restrict: 'E',
             scope: {
+                ngSupportGoogleLogin: '=',
                 ngCancel: '&',
                 ngClickBasicLogin: '&',
                 ngClickGoogleLogin: '&'

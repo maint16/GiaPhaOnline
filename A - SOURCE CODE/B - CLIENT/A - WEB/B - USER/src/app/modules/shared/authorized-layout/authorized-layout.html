@@ -20,7 +20,8 @@
 <!--Modal dialog: Post details box-->
 <script type="text/ng-template"
         id="basic-login.html">
-    <basic-login-box ng-cancel="fnCancelLogin()"
+    <basic-login-box ng-support-google-login="bIsGoogleLoginLoaded"
+                     ng-cancel="fnCancelLogin()"
                      ng-click-basic-login="fnBasicLogin(model)"
                      ng-click-google-login="fnGoogleLogin()">
     </basic-login-box>

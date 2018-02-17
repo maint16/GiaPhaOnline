@@ -1,6 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
-        function ($scope, $state, $transitions, uiService,
+        function (oAuthSettings,
+                  $scope, $state, $transitions, uiService,
                   profile, $uibModal, $timeout, $window,
                   authenticationService, userService) {
 
@@ -13,6 +14,9 @@ module.exports = function (ngModule) {
             $scope.modals = {
                 login: null
             };
+
+            // Whether google login has been loaded or not.
+            $scope.bIsGoogleLoginLoaded = false;
 
             //#endregion
 
@@ -70,10 +74,10 @@ module.exports = function (ngModule) {
             /*
             * Callback which is fired when google login is clicked.
             * */
-            $scope.fnGoogleLogin = function(){
+            $scope.fnGoogleLogin = function () {
 
                 // Close modal dialog.
-                if ($scope.modals.login){
+                if ($scope.modals.login) {
                     $scope.modals.login.dismiss();
                     $scope.modals.login = null;
                 }
@@ -134,12 +138,6 @@ module.exports = function (ngModule) {
             * Event which will be raised when layout has been initialized.
             * */
             $timeout(function () {
-                // var apiGoogleScript = document.createElement('script');
-                // apiGoogleScript.type = 'text/javascript';
-                // apiGoogleScript.async = true;
-                // apiGoogleScript.src = 'https://apis.google.com/js/client.js?onload=fnSignInGoogle';
-                // var scriptTag = document.getElementByName('script')[0];
-                // scriptTag.parentNode.insertBefore(apiGoogleScript, scriptTag);
 
                 var apiGoogleScript = document.createElement('script');
                 apiGoogleScript.type = 'text/javascript';
@@ -150,10 +148,12 @@ module.exports = function (ngModule) {
                 $window.fnGoogleClientInitialized = function () {
 
                     gapi.load('auth2', function () {
-                        console.log('Auth2 ready');
+
+                        // Google login script has been loaded.
+                        $scope.bIsGoogleLoginLoaded = true;
 
                         var params = {
-                            client_id: '323676358406-ikvol20relacv3mn5popdi79e5m759pc.apps.googleusercontent.com',
+                            client_id: oAuthSettings.google.clientId,
                             scope: 'email',
                             fetch_basic_profile: true
                         };
