@@ -4,8 +4,8 @@
 
     <!--Navigation bar rendering-->
     <navigation-bar profile="profile"
-                    ng-click-basic-login="fnClickBasicLogin()"
-                    ng-click-google-login="fnClickGoogleLogin()"
+                    ng-application-title="iConfess"
+                    ng-click-login="fnClickLogin()"
                     ng-click-sign-out="fnSignOut()">
     </navigation-bar>
 
@@ -21,5 +21,7 @@
 <script type="text/ng-template"
         id="basic-login.html">
     <basic-login-box ng-cancel="fnCancelLogin()"
-                     ng-login-successfully="fnLoginSuccessfully(token)"></basic-login-box>
+                     ng-click-basic-login="fnBasicLogin(model)"
+                     ng-click-google-login="fnGoogleLogin()">
+    </basic-login-box>
 </script>

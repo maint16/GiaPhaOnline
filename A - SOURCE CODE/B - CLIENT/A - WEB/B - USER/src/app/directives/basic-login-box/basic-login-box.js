@@ -10,8 +10,8 @@ module.exports = function (ngModule) {
             restrict: 'E',
             scope: {
                 ngCancel: '&',
-                ngLoginSuccessfully: '&',
-                ngLoginFailingly: '&'
+                ngClickBasicLogin: '&',
+                ngClickGoogleLogin: '&'
             },
             controller: function ($scope, urlStates, userService) {
 
@@ -43,21 +43,21 @@ module.exports = function (ngModule) {
                     if ($scope.basicLoginForm.$invalid)
                         return;
 
-                    userService.basicLogin($scope.model)
-                        .then(
-                            function success(basicLoginResponse) {
-                                var basicLoginResult = basicLoginResponse.data;
-                                $scope.ngLoginSuccessfully({token: basicLoginResult});
-                            },
-                            function error(basicLoginResponse) {
-                                $scope.ngLoginFailingly();
-                            });
+                    // Emit click basic login event.
+                    $scope.ngClickBasicLogin({model: $scope.model});
+                };
+
+                /*
+                * Event which is fired when Google sign in is clicked.
+                * */
+                $scope.fnClickGoogleLogin = function () {
+                    $scope.ngClickGoogleLogin();
                 };
 
                 /*
                 * Event which is fired when cancel button is clicked.
                 * */
-                $scope.fnCancel = function(){
+                $scope.fnCancel = function () {
                     $scope.ngCancel();
                 };
 

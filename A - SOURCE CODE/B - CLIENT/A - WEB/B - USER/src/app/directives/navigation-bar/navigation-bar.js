@@ -8,11 +8,14 @@ module.exports = function (ngModule) {
         return {
             template: ngModuleHtmlTemplate,
             restrict: 'E',
+            transclude: {
+                userMenu: '?userMenu'
+            },
             scope: {
                 profile: '=?',
+                ngApplicationTitle: '@',
 
-                ngClickBasicLogin: '&',
-                ngClickGoogleLogin: '&',
+                ngClickLogin: '&',
                 ngClickSignOut: '&'
             },
             controller: function($scope, urlStates){
@@ -29,12 +32,11 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when basic login is clicked.
                 * */
-                $scope.fnBasicLogin = function(){
-                    $scope.ngClickBasicLogin();
-                };
+                $scope.fnLogin = function(){
+                    if ($scope.profile)
+                        return;
 
-                $scope.fnGoogleSignIn = function(){
-                    $scope.ngClickGoogleLogin();
+                    $scope.ngClickLogin();
                 };
 
                 /*

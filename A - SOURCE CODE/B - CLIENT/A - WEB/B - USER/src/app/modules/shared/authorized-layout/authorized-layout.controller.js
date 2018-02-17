@@ -28,7 +28,7 @@ module.exports = function (ngModule) {
             /*
             * Callback which is fired when basic login button is clicked.
             * */
-            $scope.fnClickBasicLogin = function () {
+            $scope.fnClickLogin = function () {
                 // Display basic login modal.
                 $scope.modals.login = $uibModal.open({
                     templateUrl: 'basic-login.html',
@@ -40,19 +40,71 @@ module.exports = function (ngModule) {
             /*
             * Callback which is fired when login successfully.
             * */
-            $scope.fnLoginSuccessfully = function (token) {
+            $scope.fnBasicLogin = function (model) {
 
-                // Save access token into storage.
-                authenticationService.initAuthenticationToken(token.accessToken);
+                userService.basicLogin(model)
+                    .then(
+                        function success(basicLoginResponse) {
 
-                // Dismiss the modal.
-                if ($scope.modals.login) {
+                            // Login result.
+                            var basicLoginResult = basicLoginResponse.data;
+
+                            // Save access token into storage.
+                            authenticationService.initAuthenticationToken(basicLoginResult.accessToken);
+
+                            // Dismiss the modal.
+                            if ($scope.modals.login) {
+                                $scope.modals.login.dismiss();
+                                $scope.modals.login = null;
+                            }
+
+                            // Reload the state.
+                            $state.reload();
+                        },
+                        function error(basicLoginResponse) {
+                            $scope.ngLoginFailingly();
+                        });
+
+            };
+
+            /*
+            * Callback which is fired when google login is clicked.
+            * */
+            $scope.fnGoogleLogin = function(){
+
+                // Close modal dialog.
+                if ($scope.modals.login){
                     $scope.modals.login.dismiss();
                     $scope.modals.login = null;
                 }
 
-                // Reload the state.
-                $state.reload();
+                var pGoogleAuthenticationClient = gapi.auth2.getAuthInstance();
+                pGoogleAuthenticationClient
+                    .grantOfflineAccess({
+                        scope: 'profile email'
+                    })
+                    .then(function (getGoogleCredentialResponse) {
+                        var szCode = getGoogleCredentialResponse.code;
+                        console.log(szCode);
+                        userService.fnUseGoogleLogin({code: szCode})
+                            .then(
+                                function (loginResponse) {
+
+                                    var loginResult = loginResponse.data;
+                                    if (!loginResult)
+                                        return;
+
+                                    var szAccessToken = loginResult.accessToken;
+                                    if (!szAccessToken || szAccessToken.length < 1)
+                                        return;
+
+                                    // Save access token to local storage.
+                                    authenticationService.initAuthenticationToken(szAccessToken);
+
+                                    // Reload the current state.
+                                    $state.reload();
+                                });
+                    });
             };
 
             /*
@@ -77,7 +129,6 @@ module.exports = function (ngModule) {
                 $scope.modals.login.dismiss();
                 $scope.modals.login = null;
             };
-
 
             /*
             * Event which will be raised when layout has been initialized.
@@ -112,38 +163,6 @@ module.exports = function (ngModule) {
 
                 };
             });
-
-            $scope.fnClickGoogleLogin = function () {
-                var pGoogleAuthenticationClient = gapi.auth2.getAuthInstance();
-                pGoogleAuthenticationClient
-                    .grantOfflineAccess({
-                        scope: 'profile email'
-                    })
-                    .then(function (getGoogleCredentialResponse) {
-                        var szCode = getGoogleCredentialResponse.code;
-                        console.log(szCode);
-                        userService.fnUseGoogleLogin({code: szCode})
-                            .then(
-                                function (loginResponse) {
-
-                                    var loginResult = loginResponse.data;
-                                    if (!loginResult)
-                                        return;
-
-                                    var szAccessToken = loginResult.accessToken;
-                                    if (!szAccessToken || szAccessToken.length < 1)
-                                        return;
-
-                                    // Save access token to local storage.
-                                    authenticationService.initAuthenticationToken(szAccessToken);
-
-                                    // Reload the current state.
-                                    $state.reload();
-
-                                    console.log('Reload current state');
-                                });
-                    });
-            };
 
             /*
             * Hook the transition from state to state.
