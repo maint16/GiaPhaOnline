@@ -1,6 +1,7 @@
 module.exports = function(ngModule){
 
-    ngModule.service('userService', function($http, appSettings, apiUrls){
+    ngModule.service('userService', function($http, $interpolate,
+                                             appSettings, apiUrls, urlStates){
 
         /*
         * Get user information.
@@ -21,9 +22,28 @@ module.exports = function(ngModule){
         /*
         * Exchange access token for a profile information.
         * */
-        this.getProfile = function(){
+        this.getProfile = function(id){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.getPersonalProfile;
+            url = url.replace('{id}', id);
             return $http.get(url);
+        };
+
+        /*
+        * Get profile state name.
+        * */
+        this.getProfilePage = function(id){
+            var url = $interpolate('{{sref}}({profileId: {{id}}})')({sref: urlStates.user.profile.name, id: id});
+            console.log(url);
+            return url;
+        };
+
+        /*
+        * Submit new password for a profile.
+        * */
+        this.changePassword = function(id, info){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.changePassword;
+            url = url.replace('{id}', id);
+            return $http.post(url, info);
         };
 
         /*
@@ -41,6 +61,14 @@ module.exports = function(ngModule){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.googleLogin;
             return $http.post(url, info);
         };
+
+        /*
+        * Exchange facebook code for local access token.
+        * */
+        this.fnUseFacebookLogin = function (info) {
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.facebookLogin;
+            return $http.post(url, info);
+        }
     });
 
 };

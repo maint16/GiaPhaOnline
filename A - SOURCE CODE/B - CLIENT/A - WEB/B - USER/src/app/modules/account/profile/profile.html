@@ -1,0 +1,284 @@
+<section class="content-header">
+    <h1>
+        Nguyen Linh
+        <small>
+            <a href="javascript:void(0);">Profile</a>
+        </small>
+    </h1>
+    <ol class="breadcrumb">
+        <li>
+            <a href="javascript:void(0);">
+                <i class="fa fa-dashboard"></i> {{'Home' | translate}}
+            </a>
+        </li>
+        <li class="active">
+            Personal profile
+        </li>
+    </ol>
+</section>
+
+<section class="content">
+
+    <!--Basic information-->
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <div class="box-header">
+                    <h3 class="box-title">Basic information</h3>
+                </div>
+
+                <div class="box-body">
+                    <div class="col-lg-4">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <div class="form-group">
+                                    <img ng-src="http://via.placeholder.com/512x512"
+                                         class="img img-responsive img-thumbnail"
+                                         width="256px"
+                                         height="256px">
+                                </div>
+                            </div>
+                            <div class="col-xs-12 text-center">
+                                <a href="javascript:void(0);">
+                                    {{'Change image' | translate}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+
+                        <!--Name-->
+                        <div class="row">
+                            <div class="col-sm-4"><label>{{'Name' | translate}}</label></div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <input class="form-control"
+                                           disabled
+                                           value="{{personalProfile.nickname}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Email-->
+                        <div class="row">
+                            <div class="col-sm-4"><label>{{'Email' | translate}}</label></div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <input class="form-control"
+                                           disabled
+                                           value="{{personalProfile.email}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Password (only available to profile owner & admin)-->
+                        <div class="row"
+                             ng-if="profile && profile.id === personalProfile.id">
+                            <div class="col-sm-4"><label>{{'Password' | translate}}</label></div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input class="form-control"
+                                               type="password"
+                                               disabled
+                                               value="*****************">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-flat btn-primary"
+                                                    ng-click="fnClickChangePassword()">
+                                                <span class="fa fa-edit"></span>
+                                            </button>
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Role (User role in system)-->
+                        <div class="row">
+                            <div class="col-sm-4"><label>{{'Role' | translate}}</label></div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <input class="form-control"
+                                           disabled
+                                           value="Admin">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Joined time-->
+                        <div class="row">
+                            <div class="col-sm-4"><label>{{'Joined time' | translate}}</label></div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <input class="form-control"
+                                           disabled
+                                           value="{{personalProfile.joinedTime | amFromUnix | amDateFormat: 'LLL'}}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--Last modified time-->
+                        <div class="row"
+                             ng-if="personalProfile.lastModifiedTime !== null">
+                            <div class="col-sm-4"><label>{{'Last modified time' | translate}}</label></div>
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <input class="form-control"
+                                           disabled
+                                           value="{{personalProfile.lastModifiedTime | amFromUnix | amDateFormat: 'LLL'}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Detailed information-->
+    <div class="row form-group">
+        <div class="col-xs-12">
+            <div class="box box-info">
+                <div class="box-body">
+                    <uib-tabset justified="true">
+                        <uib-tab index="0" heading="{{'Posts' | translate}}">
+
+                            <div class="row form-group">
+                                <div class="col-xs-12">
+                                    <table class="table table-responsive table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Title</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Created time</th>
+                                            <th>Last modified time</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Title 01</td>
+                                            <td>Public</td>
+                                            <td>Available</td>
+                                            <td>2018-01-01</td>
+                                            <td></td>
+                                            <td>
+                                                <button class="btn btn-flat btn-danger">Delete</button>
+                                                <button class="btn btn-flat btn-info">Detail</button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!--Paginator-->
+                            <div class="row form-group">
+                                <div class="col-lg-12">
+                                    <div class="text-center">
+                                        <ul uib-pagination
+                                            items-per-page="appSettings.pagination.categoryPosts"
+                                            total-items="loadDataResult.posts.total"
+                                            ng-model="loadDataCondition.post.pagination.page"
+                                            ng-change="clickChangePage($event)"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </uib-tab>
+                        <uib-tab index="1"
+                                 heading="{{'Comments' | translate}}">
+                            Short Labeled Justified content
+                        </uib-tab>
+                        <uib-tab index="2"
+                                 heading="{{'Post reports' | translate}}">
+                            Long Labeled Justified content
+                        </uib-tab>
+                        <uib-tab index="3" heading="{{'Comment reports' | translate}}">
+                            Comment reports
+                        </uib-tab>
+                    </uib-tabset>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/ng-template"
+        id="change-password.html">
+
+    <form class="box box-primary"
+          novalidate
+          name="changePasswordForm"
+          ng-submit="fnSubmitPassword($event, changePasswordForm.$valid)">
+        <div class="box-header">
+            <h3 class="box-title">{{'Change password' | translate}}</h3>
+        </div>
+        <div class="box-body">
+
+            <!--Current password-->
+            <div class="row">
+                <div class="col-lg-4">
+                    <label>{{'Current password' | translate}}</label>
+                </div>
+                <div class="col-lg-8">
+                    <div class="form-group">
+                        <input class="form-control"
+                               type="password"
+                               ng-model="model.changePassword.currentPassword"
+
+                               required>
+                    </div>
+                </div>
+            </div>
+
+            <!--Password-->
+            <div class="row">
+                <div class="col-lg-4">
+                    <label>{{'Password' | translate}}</label>
+                </div>
+                <div class="col-lg-8">
+                    <div class="form-group">
+                        <input class="form-control"
+                               type="password"
+                               ng-model="model.changePassword.password"
+
+                               required>
+                    </div>
+                </div>
+            </div>
+
+            <!--Confirm password-->
+            <div class="row">
+                <div class="col-lg-4">
+                    <label>{{'Confirm password' | translate}}</label>
+                </div>
+                <div class="col-lg-8">
+                    <div class="form-group">
+                        <input class="form-control"
+                               type="password"
+                               ng-model="model.changePassword.confirmPassword"
+
+                               required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <button type="submit"
+                            class="btn btn-flat btn-primary"
+                            ng-disabled="changePasswordForm.$invalid">
+                        <span>{{'OK' | translate}}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</script>

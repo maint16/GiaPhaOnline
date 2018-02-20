@@ -1,1 +1,3 @@
-[ng-quill-editor] { display: block; }
+.note-cant-resize .note-resizebar{
+    display: none !important;
+}

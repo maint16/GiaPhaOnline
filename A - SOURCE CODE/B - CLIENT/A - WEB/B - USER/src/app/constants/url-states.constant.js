@@ -4,9 +4,19 @@ module.exports = function (ngModule) {
     * Application constants declaration.
     * */
     ngModule.constant('urlStates', {
-        login:{
-            url: '/login',
-            name: 'login'
+
+        user:{
+            // Login state.
+            login:{
+                name: 'login',
+                url: '/login'
+            },
+
+            // Profile state
+            profile:{
+                name: 'personal-profile',
+                url: '/profile/:profileId'
+            }
         },
 
         dashboard: {

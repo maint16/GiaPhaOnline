@@ -9,6 +9,7 @@ module.exports = function (ngModule) {
             template: ngModuleHtmlTemplate,
             restrict: 'E',
             scope: {
+                ngClickCreatePost: '&',
                 ngClickCancel: '&'
             },
             controller: function($scope, urlStates){
@@ -18,16 +19,15 @@ module.exports = function (ngModule) {
                 // Constants reflection.
                 $scope.urlStates = urlStates;
 
-                $scope.ckEditorOptions = {
-                    language: 'en',
-                    allowedContent: true,
-                    entities: false
-                };
-
                 // Model which is for information binding.
                 $scope.model = {
                     title: null,
-                    content: ''
+                    content: null
+                };
+
+                // Editor option.
+                $scope.editorOptions = {
+                    disableResizeEditor: true
                 };
                 //#endregion
 
@@ -38,6 +38,21 @@ module.exports = function (ngModule) {
                 * */
                 $scope.cancel = function(){
                     $scope.ngClickCancel();
+                };
+
+                /*
+                * Event which is fired when post is created.
+                * */
+                $scope.fnClickCreatePost = function($event){
+                    // Event is valid. Prevent its default behaviour.
+                    if ($event)
+                        $event.preventDefault();
+
+                    // Form is invalid.
+                    if (!$scope.postInitiatorForm.$invalid)
+                        return;
+
+                    $scope.ngCreatePost({post: $scope.model});
                 };
 
                 //#endregion

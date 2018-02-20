@@ -5,6 +5,10 @@ module.exports = function(ngModule){
 
         google:{
             clientId: '323676358406-ikvol20relacv3mn5popdi79e5m759pc.apps.googleusercontent.com'
+        },
+
+        facebook:{
+            clientId: '266849570452043'
         }
 
     });

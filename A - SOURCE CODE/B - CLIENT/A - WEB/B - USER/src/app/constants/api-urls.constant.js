@@ -5,9 +5,11 @@ module.exports = function (ngModule) {
             getUser: 'api/account/{id}',
             getUsers: 'api/account/search',
             loadUsers: 'api/account/load-users',
-            getPersonalProfile: 'api/user/personal-profile',
+            getPersonalProfile: 'api/user/personal-profile/{id}',
+            changePassword: 'api/user/change-password/{id}',
             basicLogin: 'api/user/login',
-            googleLogin: 'api/user/google-login'
+            googleLogin: 'api/user/google-login',
+            facebookLogin: 'api/user/facebook-login'
         },
 
         category: {

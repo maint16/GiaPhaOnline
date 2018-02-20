@@ -1,5 +1,7 @@
 <form class="box box-primary"
-      novalidate name="postInitiatorForm">
+      novalidate
+      name="postInitiatorForm"
+      ng-submit="fnClickCreatePost($event)">
     <div class="box-header with-border">
         <h3 class="box-title">{{'Create a post' | translate}}</h3>
         <span class="box-tools pull-right">
@@ -9,47 +11,34 @@
         </span>
     </div>
     <div class="box-body">
-        <!--Title-->
-        <div class="row">
-            <div class="col-sm-12">
-                <label>{{'Title' | translate}}</label> <b class="text-danger">*</b>
-                <div class="form-group">
-                    <input class="form-control"
-                           name="txtPostTitle"
-                           ng-model="model.title"
-                           required>
+        <div class="col-xs-12">
+            <!--Title-->
+            <div class="row">
+                <div class="col-sm-12">
+                    <label>{{'Title' | translate}}</label> <b class="text-danger">*</b>
+                    <div class="form-group">
+                        <input class="form-control"
+                               name="txtPostTitle"
+                               ng-model="model.title"
+                               required>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!--Body-->
-        <div class="row">
-            <div class="col-sm-12">
-                <label>{{'Content' | translate}}</label> <b class="text-danger">*</b>
-                <div class="form-group">
-                    <input class="hidden"
-                           name="txtPostContent"
-                           hidden
-                           ng-model="model.content"
-                           required>
-                    <!--<trix-editor angular-trix-->
-                                 <!--ng-model="model.content">-->
-                    <!--</trix-editor>-->
-                    <!--<trix-editor spellcheck="false"-->
-                                 <!--class="trix-content"-->
-                                 <!--ng-model="trix"-->
-                                 <!--angular-trix >-->
-                    <!--</trix-editor>-->
-                    <div ckeditor="ckEditorOptions" ng-model="model.content"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-12">
-                <label>This is the body</label>
-                <div class="form-group">
-                    {{trix}}
+            <!--Body-->
+            <div class="row">
+                <div class="col-sm-12">
+                    <label>{{'Content' | translate}}</label> <b class="text-danger">*</b>
+                    <div class="form-group note-cant-resize">
+                        <input class="hidden"
+                               name="txtPostContent"
+                               hidden
+                               ng-model="model.content"
+                               required>
+                        <summernote ng-model="model.content"
+                                    height="300"
+                                    config="editorOptions"></summernote>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,7 +47,8 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <button class="btn btn-flat btn-primary"
-                        ng-disabled="postInitiatorForm.$invalid">{{'OK' | translate}}</button>
+                        ng-disabled="postInitiatorForm.$invalid">{{'OK' | translate}}
+                </button>
             </div>
         </div>
     </div>

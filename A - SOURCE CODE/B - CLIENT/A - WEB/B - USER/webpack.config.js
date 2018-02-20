@@ -50,6 +50,10 @@ if (bProductionMode) {
     plugins.push(new webpack.optimize.UglifyJsPlugin({
         compress: {warnings: true}
     }));
+
+    plugins.push(new webpack.DefinePlugin({
+        'require.specified': 'require.resolve'
+    }));
 }
 
 /*
@@ -111,10 +115,11 @@ plugins.push(new HtmlWebpackPlugin({
 module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
-        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'trix',
+        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'summernote',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files', 'bluebird',
-            'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-trix', 'angular-ui-bootstrap'],
+            'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-summernote/dist/angular-summernote',
+            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {
@@ -151,6 +156,12 @@ module.exports = {
         ]
     },
     plugins: plugins,
+    resolve:{
+        alias: {
+            // summernote: codemirror
+            'CodeMirror': 'codemirror'
+        }
+    },
     output: {
         path: path.resolve(paths.dist),
         filename: '[name].js'

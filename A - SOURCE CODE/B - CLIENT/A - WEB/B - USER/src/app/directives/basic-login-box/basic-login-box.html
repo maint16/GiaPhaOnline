@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <!--Sign in by using google-->
+        <!--Sign in by using Google-->
         <div class="row"
              ng-if="ngSupportGoogleLogin">
             <div class="col-sm-12">
@@ -55,7 +55,20 @@
                     <a href="javascript:void(0);"
                        class="btn btn-block btn-social btn-google btn-flat"
                        ng-click="fnClickGoogleLogin()">
-                        <i class="fa fa-google-plus"></i> {{'Sign in using' | translate}} Google+</a>
+                        <i class="fa fa-google-plus"></i> {{'Sign in using' | translate}} Google</a>
+                </div>
+            </div>
+        </div>
+
+        <!--Sign in by using Facebook-->
+        <div class="row"
+             ng-if="ngSupportFacebookLogin">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <a href="javascript:void(0);"
+                       class="btn btn-block btn-social btn-facebook btn-flat"
+                       ng-click="fnClickFacebookLogin()">
+                        <i class="fa fa-facebook"></i> {{'Sign in using' | translate}} Facebook</a>
                 </div>
             </div>
         </div>

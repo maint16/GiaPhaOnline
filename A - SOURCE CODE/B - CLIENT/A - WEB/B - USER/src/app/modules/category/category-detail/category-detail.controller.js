@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettings, details,
+                                                              appSettings, urlStates, details,
                                                               postService, followPostService,
                                                               commentService, userService, $uibModal) {
 
@@ -9,10 +9,14 @@ module.exports = function (ngModule) {
 
         // Constant reflection.
         $scope.appSettings = appSettings;
+        $scope.urlStates = urlStates;
 
         // Resolver reflection.
         $scope.profile = profile;
 
+        // Service reflection.
+        $scope.userService = userService;
+        
         // Buffer data which is for information binding and local caching.
         $scope.buffer = {
             postComments: {},
@@ -30,7 +34,8 @@ module.exports = function (ngModule) {
         * List of modals dialog.
         * */
         $scope.modals = {
-            postDetails: null
+            postDetails: null,
+            addPost: null
         };
 
         // Resolver reflection.
@@ -238,12 +243,34 @@ module.exports = function (ngModule) {
             });
         };
 
-        $scope.fnLoginSuccessfully = function(token){
-            console.log(token);
+        /*
+        * Cancel adding post.
+        * */
+        $scope.fnCancelAddingPost = function(){
+            // Modal has been initialized before. Dismiss it.
+            if ($scope.modals.addPost){
+                $scope.modals.addPost.dismiss();
+                $scope.modals.addPost = null;
+            }
         };
 
-        $scope.fnLoginFailingly = function(){
-            console.log('hhh');
+        /*
+        * Event which is fired when add post button is clicked.
+        * */
+        $scope.fnClickAddPost = function(){
+            // Display modal dialog.
+            $scope.modals.addPost = $uibModal.open({
+                templateUrl: 'post-initiator.html',
+                scope: $scope,
+                size: 'lg'
+            });
+        };
+
+        /*
+        * Confirm to add a post.
+        * */
+        $scope.fnAddPost = function(post){
+            console.log('Hello world');
         };
 
         /*

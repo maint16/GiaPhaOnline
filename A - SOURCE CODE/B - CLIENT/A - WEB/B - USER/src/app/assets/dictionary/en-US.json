@@ -50,5 +50,17 @@
   "Register": "Register",
   "Login": "Login",
   "Password": "Password",
-  "Member since": "Member since"
+  "Member since": "Member since",
+  "Name": "Name",
+  "Joined time": "Joined time",
+  "Change image": "Change image",
+  "Posts": "Posts",
+  "Comments": "Comments",
+  "Post reports": "Post reports",
+  "Comment reports": "Comment reports",
+  "Delete": "Delete",
+  "Detail": "Detail",
+  "Cancel": "Cancel",
+  "Current password": "Current password",
+  "Confirm password": "Confirm password"
 }

@@ -9,8 +9,12 @@ module.exports = function (ngModule) {
     * Module configuration.
     * */
     ngModule.config(function ($stateProvider, urlStates) {
-        $stateProvider.state(urlStates.login.name, {
-            url: urlStates.login.url,
+
+        // Get state parameter.
+        var urlLoginState = urlStates.user.login;
+
+        $stateProvider.state(urlLoginState.name, {
+            url: urlLoginState.url,
             controller: 'loginController',
             template: ngModuleHtmlTemplate,
             parent: urlStates.unauthorizedLayout.name

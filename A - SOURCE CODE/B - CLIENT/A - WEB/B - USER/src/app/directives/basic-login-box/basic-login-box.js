@@ -10,9 +10,11 @@ module.exports = function (ngModule) {
             restrict: 'E',
             scope: {
                 ngSupportGoogleLogin: '=',
+                ngSupportFacebookLogin: '=',
                 ngCancel: '&',
                 ngClickBasicLogin: '&',
-                ngClickGoogleLogin: '&'
+                ngClickGoogleLogin: '&',
+                ngClickFacebookLogin: '&'
             },
             controller: function ($scope, urlStates, userService) {
 
@@ -49,10 +51,17 @@ module.exports = function (ngModule) {
                 };
 
                 /*
-                * Event which is fired when Google sign in is clicked.
+                * Event which is fired when Google login is clicked.
                 * */
                 $scope.fnClickGoogleLogin = function () {
                     $scope.ngClickGoogleLogin();
+                };
+
+                /*
+                * Event which is fired when Facebook login is clicked.
+                * */
+                $scope.fnClickFacebookLogin = function(){
+                    $scope.ngClickFacebookLogin();
                 };
 
                 /*
