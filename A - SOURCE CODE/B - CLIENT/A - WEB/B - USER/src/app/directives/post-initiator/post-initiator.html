@@ -1,6 +1,7 @@
 <form class="box box-primary"
       novalidate
       name="postInitiatorForm"
+      ng-init="fnInit()"
       ng-submit="fnClickCreatePost($event)">
     <div class="box-header with-border">
         <h3 class="box-title">{{'Create a post' | translate}}</h3>
@@ -38,6 +39,32 @@
                         <summernote ng-model="model.content"
                                     height="300"
                                     config="editorOptions"></summernote>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <label>{{'Categories' | translate}}</label>
+                    <div class="form-group">
+                        <ng-multi-selector ng-model="model.categories"
+                                           is-search-box-available="true"
+                                           display-property="'name'"
+                                           items="cache.categories"
+                                           ng-search-items="fnGetCategories(keyword)">
+                        </ng-multi-selector>
+                    </div>
+                </div>
+            </div>
+
+            <!--Type of post-->
+            <div class="row">
+                <div class="col-sm-12">
+                    <label>{{'Type' | translate}}</label> <b class="text-danger"></b>
+                    <div class="form-group">
+                        <select class="form-control"
+                                ng-options="postType.id as postType.name | translate for postType in postTypes"
+                                ng-model="model.type"></select>
                     </div>
                 </div>
             </div>

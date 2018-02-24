@@ -24,7 +24,9 @@ require('bootstrap');
 require('admin-lte');
 require('datatables.net/js/jquery.dataTables');
 require('moment');
+require('codemirror');
 require('summernote');
+require('rxjs/bundles/Rx');
 
 // Angular plugins declaration.
 var angular = require('angular');
@@ -39,10 +41,11 @@ require('angular-ui-bootstrap');
 require('angular-summernote/dist/angular-summernote');
 require('angular-sanitize');
 require('angular-confirm1');
+require('ng-multi-selector');
 
 // Module declaration.
 var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
-    'ui.bootstrap',
+    'ui.bootstrap', 'ngMultiSelector',
     'pascalprecht.translate',
     'datatables', 'datatables.bootstrap', 'angularMoment', 'summernote', 'ngSanitize',
     'cp.ngConfirm']);

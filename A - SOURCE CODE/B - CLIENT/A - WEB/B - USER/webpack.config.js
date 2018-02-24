@@ -115,11 +115,11 @@ plugins.push(new HtmlWebpackPlugin({
 module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
-        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'summernote',
+        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'summernote', 'rxjs/bundles/Rx',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
-            'angular-translate', 'angular-translate-loader-static-files', 'bluebird',
+            'angular-translate', 'angular-translate-loader-static-files',
             'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-summernote/dist/angular-summernote',
-            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1'],
+            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {
@@ -134,6 +134,37 @@ module.exports = {
                     options: '$'
                 }]
             },
+            {
+                test: require.resolve('rxjs/bundles/Rx'),
+                use:[
+                    {
+                        loader: 'expose-loader',
+                        options: 'Rx'
+                    }
+                ]
+            },
+            {
+                test: require.resolve('codemirror'),
+                use:[
+                    {
+                        loader: 'expose-loader',
+                        options: 'CodeMirror'
+                    }
+                ]
+            },
+            // {
+            //     test: require.resolve('bluebird'),
+            //     use:[
+            //         {
+            //             loader: 'expose-loader',
+            //             options: 'Promise'
+            //         },
+            //         {
+            //             loader: 'expose-loader',
+            //             options: 'window.Promise'
+            //         }
+            //     ]
+            // },
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']
@@ -156,12 +187,12 @@ module.exports = {
         ]
     },
     plugins: plugins,
-    resolve:{
-        alias: {
-            // summernote: codemirror
-            'CodeMirror': 'codemirror'
-        }
-    },
+    // resolve:{
+    //     alias: {
+    //         // summernote: codemirror
+    //         'CodeMirror': 'codemirror'
+    //     }
+    // },
     output: {
         path: path.resolve(paths.dist),
         filename: '[name].js'

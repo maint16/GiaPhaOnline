@@ -16,7 +16,7 @@ module.exports = function (ngModule) {
 
         // Service reflection.
         $scope.userService = userService;
-        
+
         // Buffer data which is for information binding and local caching.
         $scope.buffer = {
             postComments: {},
@@ -270,6 +270,12 @@ module.exports = function (ngModule) {
         * Confirm to add a post.
         * */
         $scope.fnAddPost = function(post){
+            var model = {
+                title: post.title,
+                content: post.content,
+                type: post.type
+            };
+
             console.log('Hello world');
         };
 

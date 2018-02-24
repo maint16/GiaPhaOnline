@@ -12,7 +12,9 @@ module.exports = function (ngModule) {
                 ngClickCreatePost: '&',
                 ngClickCancel: '&'
             },
-            controller: function($scope, urlStates){
+            controller: function($scope, urlStates, postTypeConstant,
+                                 appSettings,
+                                 categoryService){
 
                 //#region Properties
 
@@ -22,8 +24,27 @@ module.exports = function (ngModule) {
                 // Model which is for information binding.
                 $scope.model = {
                     title: null,
-                    content: null
+                    content: null,
+                    type: postTypeConstant.public,
+                    categories: null
                 };
+
+                // Cache information.
+                $scope.cache = {
+                    categories: null
+                };
+
+                // Type of post.
+                $scope.postTypes = [
+                    {
+                        id: postTypeConstant.public,
+                        name: 'Public'
+                    },
+                    {
+                        id: postTypeConstant.private,
+                        name: 'Private'
+                    }
+                ];
 
                 // Editor option.
                 $scope.editorOptions = {
@@ -41,6 +62,14 @@ module.exports = function (ngModule) {
                 };
 
                 /*
+                * Callback which is fired when component is initiated.
+                * */
+                $scope.fnInit = function(){
+                    // Search for categories.
+                    $scope.fnGetCategories(null);
+                };
+
+                /*
                 * Event which is fired when post is created.
                 * */
                 $scope.fnClickCreatePost = function($event){
@@ -53,6 +82,38 @@ module.exports = function (ngModule) {
                         return;
 
                     $scope.ngCreatePost({post: $scope.model});
+                };
+
+                /*
+                * Event which is fired when multi selector control searches for a category.
+                * */
+                $scope.fnGetCategories = function(keyword){
+
+                    // Build query condition.
+                    var getCategoriesCondition = {
+                        name: keyword,
+                        pagination:{
+                            page: 1,
+                            records: appSettings.pagination.categoriesSelector
+                        }
+                    };
+
+                    categoryService.getCategories(getCategoriesCondition)
+                        .then(function(getCategoriesResponse){
+
+                            // Get the result.
+                            var getCategoriesResult = getCategoriesResponse.data;
+
+                            // Result is invalid.
+                            if (!getCategoriesResult)
+                                return;
+
+                            var categories = getCategoriesResult.records;
+                            if (!categories || categories.length < 1)
+                                return;
+
+                            $scope.cache.categories = categories;
+                        })
                 };
 
                 //#endregion

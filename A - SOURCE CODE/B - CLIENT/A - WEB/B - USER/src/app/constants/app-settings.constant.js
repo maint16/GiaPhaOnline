@@ -13,7 +13,8 @@ module.exports = function (ngModule) {
             userSelector: 20,
             default: 30,
             categoryPosts: 50,
-            comments: 50
+            comments: 50,
+            categoriesSelector: 10
         }
     });
 };

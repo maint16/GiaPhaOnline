@@ -33,7 +33,6 @@ module.exports = function(ngModule){
         * */
         this.getProfilePage = function(id){
             var url = $interpolate('{{sref}}({profileId: {{id}}})')({sref: urlStates.user.profile.name, id: id});
-            console.log(url);
             return url;
         };
 

@@ -13,9 +13,11 @@
     "concurrently": "^3.5.0",
     "copy-webpack-plugin": "^4.2.0",
     "css-loader": "^0.28.7",
+    "exports-loader": "^0.7.0",
     "file-loader": "^1.1.5",
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1",
+    "imports-loader": "^0.8.0",
     "ng-annotate-webpack-plugin": "^0.2.1-pre",
     "style-loader": "^0.19.0",
     "uglifyjs-webpack-plugin": "^1.0.1",
@@ -50,6 +52,8 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
     "moment": "^2.20.1",
+    "ng-multi-selector": "^1.0.4",
+    "rxjs": "^6.0.0-alpha.3",
     "summernote": "^0.8.9",
     "webpack": "^3.8.1"
   }
