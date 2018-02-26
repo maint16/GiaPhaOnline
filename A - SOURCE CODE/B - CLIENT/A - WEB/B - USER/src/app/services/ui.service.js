@@ -11,6 +11,13 @@ module.exports = function(ngModule){
             $(window).resize();
         };
 
+        /*
+        * Find element in dom.
+        * */
+        this.getElement = function(elementQuery){
+            return $(elementQuery);
+        };
+
         //#endregion
     });
 };

@@ -8,4 +8,5 @@ module.exports = function (ngModule) {
     require('./post-status.constant')(ngModule);
     require('./o-auth.constant')(ngModule);
     require('./post-type.constant')(ngModule);
+    require('./user-role.constant')(ngModule);
 };

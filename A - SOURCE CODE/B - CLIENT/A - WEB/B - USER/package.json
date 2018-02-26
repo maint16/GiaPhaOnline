@@ -36,6 +36,7 @@
     "angular-block-ui": "^0.2.2",
     "angular-confirm1": "^1.1.0",
     "angular-datatables": "^0.6.2",
+    "angular-file-upload": "^2.5.0",
     "angular-moment": "^1.2.0",
     "angular-sanitize": "^1.6.9",
     "angular-summernote": "^0.8.1",
@@ -55,6 +56,7 @@
     "ng-multi-selector": "^1.0.4",
     "rxjs": "^6.0.0-alpha.3",
     "summernote": "^0.8.9",
+    "ui-cropper": "^1.0.6",
     "webpack": "^3.8.1"
   }
 }

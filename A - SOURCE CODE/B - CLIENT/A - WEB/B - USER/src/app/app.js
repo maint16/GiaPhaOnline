@@ -15,6 +15,7 @@ require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
 require('../../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
 require('../../node_modules/summernote/dist/summernote.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
+require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
 require('../../src/app/app.css');
 
 // Import jquery lib.
@@ -42,13 +43,15 @@ require('angular-summernote/dist/angular-summernote');
 require('angular-sanitize');
 require('angular-confirm1');
 require('ng-multi-selector');
+require('angular-file-upload');
+require('ui-cropper');
 
 // Module declaration.
 var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
     'ui.bootstrap', 'ngMultiSelector',
     'pascalprecht.translate',
     'datatables', 'datatables.bootstrap', 'angularMoment', 'summernote', 'ngSanitize',
-    'cp.ngConfirm']);
+    'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
 
 ngModule.config(function($urlRouterProvider, $translateProvider, $httpProvider, urlStates){
 

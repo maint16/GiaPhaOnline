@@ -1,3 +1,10 @@
 .note-cant-resize .note-resizebar{
     display: none !important;
 }
+
+/* Truncate content of div tag */
+div.truncate{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

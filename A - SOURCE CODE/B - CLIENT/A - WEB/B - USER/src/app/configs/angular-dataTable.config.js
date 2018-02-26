@@ -11,6 +11,7 @@ module.exports = function(ngModule){
         DTDefaultOptions.setOption('bLengthChange', false);
         DTDefaultOptions.setOption('bInfo', false);
         DTDefaultOptions.setOption('order', []);
+        DTDefaultOptions.setOption('pagingType', 'full_numbers');
         DTDefaultOptions.setDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">');
         DTDefaultOptions.setLanguage({
             'paginate':{

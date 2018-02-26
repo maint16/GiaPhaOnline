@@ -119,7 +119,8 @@ module.exports = {
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
             'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-summernote/dist/angular-summernote',
-            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector'],
+            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector',
+            'angular-file-upload', 'ui-cropper'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {
@@ -152,19 +153,6 @@ module.exports = {
                     }
                 ]
             },
-            // {
-            //     test: require.resolve('bluebird'),
-            //     use:[
-            //         {
-            //             loader: 'expose-loader',
-            //             options: 'Promise'
-            //         },
-            //         {
-            //             loader: 'expose-loader',
-            //             options: 'window.Promise'
-            //         }
-            //     ]
-            // },
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']

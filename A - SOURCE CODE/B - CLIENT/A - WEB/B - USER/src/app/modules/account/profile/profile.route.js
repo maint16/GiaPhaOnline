@@ -1,5 +1,7 @@
-module.exports = function(ngModule){
+// Import profile stylesheets.
+require('./profile.css');
 
+module.exports = function(ngModule){
     // Read templates.
     var ngPersonalProfileTemplate = require('./profile.html');
 

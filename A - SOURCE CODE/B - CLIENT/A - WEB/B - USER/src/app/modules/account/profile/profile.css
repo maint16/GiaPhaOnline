@@ -1,0 +1,41 @@
+/* Profile stylesheet */
+
+/* Post content */
+.post-content {
+    max-width: 500px;
+}
+
+/* Comment content */
+.comment-content {
+    max-width: 500px;
+}
+
+/* Comment report reason */
+.comment-report-reason {
+    max-width: 500px;
+}
+
+/* Post report reason */
+.post-report-reason {
+    max-width: 500px;
+}
+
+/* Post report content */
+.post-report-content {
+    max-width: 500px;
+}
+
+.profile-image-picker {
+
+}
+
+.profile-image-picker .cropper-area{
+    background: #E4E4E4;
+    overflow: hidden;
+    width: 100%;
+}
+
+/*.profile-image-picker canvas{*/
+    /*margin-top: 0 !important;*/
+    /*margin-left: 0 !important;*/
+/*}*/

@@ -217,7 +217,11 @@
                     <!-- chat item -->
                     <div class="item"
                          ng-repeat="post in loadDataResult.posts.records">
-                        <img ng-src="/assets/images/avatar.png" alt="user image" class="online">
+                        <img ng-src="/assets/images/avatar.png" 
+                             alt="user image"
+                             ui-sref="{{userService.getProfilePage(post.ownerId)}}"
+                             style="cursor: pointer;"
+                             class="online">
 
                         <p class="message">
                             <a href="javascript:void(0)" class="name">
@@ -225,7 +229,10 @@
                                     <i class="fa fa-clock-o"></i> 2:15
                                 </small>
                                 <label class="label label-info"
-                                       ui-sref="{{userService.getProfilePage(post.ownerId)}}">Mike Doe</label>
+                                       style="cursor: pointer"
+                                       ui-sref="{{userService.getProfilePage(post.ownerId)}}">
+                                    {{buffer.users[post.ownerId].nickname}}
+                                </label>
                             </a>
                             <b class="text-bold text-success">
                                 I would like to meet you to discuss the latest news about

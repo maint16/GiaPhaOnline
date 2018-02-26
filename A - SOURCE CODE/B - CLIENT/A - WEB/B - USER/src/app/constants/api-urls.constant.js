@@ -20,6 +20,10 @@ module.exports = function (ngModule) {
             getPosts: 'api/post/search'
         },
 
+        postReport:{
+            getPostReports: 'api/post-report/search'
+        },
+
         postCategorization:{
             getPostCategorization: 'api/categorization/search'
         },
@@ -28,6 +32,11 @@ module.exports = function (ngModule) {
             addComment: 'api/comment',
             getComments: 'api/comment/search',
             loadComments: 'api/comment/load-comments'
+        },
+
+        commentReports:{
+            getCommentReports: 'api/comment-report/search',
+            deleteCommentReports: 'api/comment-report'
         },
 
         followPost: {
