@@ -2,8 +2,9 @@ module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
                                                               appSettings, urlStates, details,
+                                                              $uibModal, toastr, $translate,
                                                               postService, followPostService,
-                                                              commentService, userService, $uibModal) {
+                                                              commentService, userService, followCategoryService) {
 
         //#region Properties
 
@@ -69,8 +70,11 @@ module.exports = function (ngModule) {
         // Whether advanced search is being used or not.
         $scope.bUsingAdvancedSearch = false;
 
-        $scope.post = null;
-        $scope.postOwner = null;
+        // Information of post detail box.
+        $scope.postDetailBox = {
+            post: null,
+            postOwner: null
+        };
 
         //#endregion
 
@@ -232,8 +236,8 @@ module.exports = function (ngModule) {
         * Called when a post is selected.
         * */
         $scope.fnSelectPost = function(post){
-            $scope.post = post;
-            $scope.postOwner = $scope.buffer.users[post.ownerId];
+            $scope.postDetailBox.post = post;
+            $scope.postDetailBox.postOwner = $scope.buffer.users[post.ownerId];
 
             // Display modal dialog.
             $scope.modals.postDetails = $uibModal.open({
@@ -278,6 +282,45 @@ module.exports = function (ngModule) {
 
             console.log('Hello world');
         };
+
+        /*
+        * Start following category.
+        * */
+        $scope.fnFollowCategory = function(categoryId){
+
+            // Category has been followed.
+            if ($scope.bIsFollowingCategory)
+                return;
+
+            // Follow the category by using api call.
+            followCategoryService.followCategory(categoryId)
+                .then(function(followCategoryResponse){
+                    toastr.success($translate.instant('Start following this category'));
+
+                    // Change category to be followed.
+                    $scope.bIsFollowingCategory = true;
+                });
+        };
+
+        /*
+        * Unfollow category.
+        * */
+        $scope.fnUnfollowCategory = function(categoryId){
+            // Category has been unfollowed before.
+            if (!$scope.bIsFollowingCategory){
+                return;
+            }
+
+            // Stop following the category.
+            followCategoryService.unfollowCategory(categoryId)
+                .then(function(unfollowCategoryResponse){
+                    toastr.success($translate.instant('Stop following this category'));
+
+                    // Mark the category to be unfollowed.
+                    $scope.bIsFollowingCategory = false;
+                });
+        };
+
 
         /*
         * Called when controller has been initialized.

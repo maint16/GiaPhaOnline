@@ -27,6 +27,15 @@ module.exports = function(ngModule){
             return $http.post(url, comment);
         };
 
+        /*
+        * Delete comment by using specific information.
+        * */
+        this.deleteComment = function(id){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.deleteComment;
+            url = url.replace('{id}', id);
+            return $http.delete(url);
+        };
+
         //#endregion
     });
 };

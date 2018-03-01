@@ -67,7 +67,15 @@ module.exports = function(ngModule){
         this.fnUseFacebookLogin = function (info) {
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.facebookLogin;
             return $http.post(url, info);
-        }
+        };
+
+        /*
+        * Upload profile avatar to server.
+        * */
+        this.uploadProfileAvatar = function(avatar){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.uploadProfileImage;
+            return $http.post(url, {image: avatar});
+        };
     });
 
 };

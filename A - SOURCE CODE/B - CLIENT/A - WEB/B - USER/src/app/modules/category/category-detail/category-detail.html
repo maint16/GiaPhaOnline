@@ -1,8 +1,13 @@
 <section class="content-header">
     <h1>
-        {{category.name}}
-        <small ng-if="bIsFollowingCategory">
-            <a href="javascript:void(0);">({{'Followed' | translate}})</a>
+        <b class="text-info">{{category.name}}</b>
+        <small ng-if="bIsFollowingCategory"
+               ng-click="fnUnfollowCategory(category.id)">
+            <a href="javascript:void(0);">({{'Unfollow' | translate}})</a>
+        </small>
+        <small ng-if="!bIsFollowingCategory"
+               ng-click="fnFollowCategory(category.id)">
+            <a href="javascript:void(0);">({{'Follow' | translate}})</a>
         </small>
     </h1>
     <ol class="breadcrumb">
@@ -18,6 +23,11 @@
 </section>
 
 <section class="content">
+
+    <div class="row form-group">
+        <div class="col-sm-12">
+        </div>
+    </div>
 
     <!--Basic search box-->
     <div class="row form-group"
@@ -197,8 +207,8 @@
                             <button type="button"
                                     class="btn btn-flat btn-sm"
                                     ng-class="{'bg-red': bIsFollowingCategory}"
-                                    data-toggle="tooltip"
-                                    title="{{'Add to favorite' | translate }}">
+                                    uib-tooltip="{{'Add to favorite' | translate }}"
+                                    ng-click="bIsFollowingCategory ? fnUnfollowCategory(category.id) : fnFollowCategory(category.id)">
                                 <i class="fa fa-heart"></i>
                             </button>
 
@@ -234,14 +244,16 @@
                                     {{buffer.users[post.ownerId].nickname}}
                                 </label>
                             </a>
-                            <b class="text-bold text-success">
+                            <b class="text-bold text-success"
+                               style="cursor: pointer"
+                               ng-click="fnSelectPost(post)">
                                 I would like to meet you to discuss the latest news about
                                 the arrival of the new theme. They say it is going to be one the
                                 best themes on the market
                             </b>
                         </p>
                         <div class="attachment">
-                            <div>
+                            <div style="cursor: pointer" ng-click="fnSelectPost(post)">
                                 I would like to meet you to discuss the latest news about
                                 the arrival of the new theme. They say it is going to be one the
                                 best themes on the market
@@ -289,9 +301,10 @@
 <!--Modal dialog: Post details box-->
 <script type="text/ng-template"
         id="post-details.html">
-    <post-content-box post="post"
-                      post-owner="postOwner"
-                      audience-profile="profile">
+    <post-content-box ng-post="postDetailBox.post"
+                      ng-users="buffer.users"
+                      ng-audience-profile="profile"
+                      ng-is-comment-available="true">
     </post-content-box>
 </script>
 

@@ -30,7 +30,7 @@ module.exports = function(ngModule){
 
             var szSdkName = 'google-jssdk';
 
-            // Sdk has been imported before.
+            // Sdk has been imported before. Prevent it from being imported again.
             if (document.getElementById(szSdkName)) {
                 return;
             }

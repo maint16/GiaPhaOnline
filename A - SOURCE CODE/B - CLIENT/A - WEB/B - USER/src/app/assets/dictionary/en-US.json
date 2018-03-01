@@ -81,8 +81,15 @@
   "Post title": "Post title",
   "Comment content": "Comment content",
   "Comment report reason": "Comment report reason",
+  "Confirmation": "Confirmation",
+  "Start following this category": "Start following this category",
+  "Stop following this category": "Stop following this category",
   "Delete comment report confirmation": "Delete comment report confirmation",
+  "Are you sure to delete this comment ?": "Are you sure to delete this comment ?",
   "Are you sure to delete this comment report ?": "Are you sure to delete this comment report ?",
+  "Are you sure to delete this post report ?": "Are you sure to delete this post report ?",
+  "Post report has been deleted successfully": "Post report has been deleted successfully.",
+  "Comment has been deleted successfully": "Comment has been deleted successfully",
   "Change profile image": "Change profile image",
   "Please select a valid image": "Please select a valid image"
 }

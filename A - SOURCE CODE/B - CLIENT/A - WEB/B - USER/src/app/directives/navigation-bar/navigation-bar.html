@@ -60,10 +60,13 @@
                         <li class="user-footer"
                             ng-if="profile">
                             <div class="pull-left">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                <a href="javascript:void(0);"
+                                   class="btn btn-default btn-flat" ui-sref="{{urlStates.user.profile.name}}({'profileId': profile.id})">
+                                    {{'Profile' | translate}}
+                                </a>
                             </div>
                             <div class="pull-right">
-                                <button class="btn btn-default btn-flat"
+                                <button class="btn btn-danger btn-flat"
                                         ng-click="fnSignOut()">
                                     {{'Sign out' | translate}}
                                 </button>

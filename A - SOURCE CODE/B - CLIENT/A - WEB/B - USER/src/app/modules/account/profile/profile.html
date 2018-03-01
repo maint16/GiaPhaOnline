@@ -144,6 +144,7 @@
             <div class="box box-info">
                 <div class="box-body">
                     <uib-tabset justified="true">
+                        <!--Posts-->
                         <uib-tab index="0" heading="{{'Posts' | translate}}">
 
                             <div class="row form-group">
@@ -157,21 +158,24 @@
                                 </div>
                             </div>
                         </uib-tab>
-                        <uib-tab index="1"
-                                 heading="{{'Comments' | translate}}">
+
+                        <!--Comments-->
+                        <uib-tab index="1" heading="{{'Comments' | translate}}">
                             <div class="row form-group">
                                 <div class="col-xs-12">
                                     <table class="table table-responsive table-condensed"
                                            datatable
                                            dt-options="dtOptions.comments"
                                            dt-columns="dtColumns.comments"
+                                           dt-instance="dtInstances.comments"
                                            width="100%">
                                     </table>
                                 </div>
                             </div>
                         </uib-tab>
-                        <uib-tab index="2"
-                                 heading="{{'Post reports' | translate}}"
+
+                        <!--Post reports-->
+                        <uib-tab index="2" heading="{{'Post reports' | translate}}"
                                  ng-if="profile && (profile.id === personalProfile.id || profile.role === userRoleConstant.admin)">
                             <div class="row form-group">
                                 <div class="col-xs-12">
@@ -179,6 +183,7 @@
                                            datatable
                                            dt-options="dtOptions.postReports"
                                            dt-columns="dtColumns.postReports"
+                                           dt-instance="dtInstances.postReports"
                                            width="100%">
                                     </table>
                                 </div>
@@ -326,7 +331,9 @@
         <div class="box-footer">
             <div class="text-center">
                 <button class="btn btn-flat btn-primary"
-                        ng-if="model.profile.originalImage">
+                        ng-if="model.profile.originalImage"
+                        ng-disabled="!model.profile.croppedImage"
+                        ng-click="fnUploadProfileAvatar()">
                     {{'OK' | translate}}
                 </button>
                 <button class="btn btn-flat btn-default"

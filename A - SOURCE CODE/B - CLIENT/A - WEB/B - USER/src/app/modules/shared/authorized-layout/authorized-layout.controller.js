@@ -28,6 +28,12 @@ module.exports = function (ngModule) {
             * */
             $scope.init = function () {
                 uiService.reloadWindowSize();
+
+                // Add google sdk to page.
+                oAuthService.addGoogleSdk('fnGoogleClientInitialized');
+
+                // Add facebook sdk to page.
+                oAuthService.addFacebookSdk();
             };
 
             /*
@@ -188,17 +194,6 @@ module.exports = function (ngModule) {
                 $scope.modals.login = null;
             };
 
-            /*
-            * Event which will be raised when layout has been initialized.
-            * */
-            $timeout(function () {
-
-                // Add google sdk to page.
-                oAuthService.addGoogleSdk('fnGoogleClientInitialized');
-
-                // Add facebook sdk to page.
-                oAuthService.addFacebookSdk();
-            });
 
             /*
             * Event which is fired when Google SDK has been loaded.
@@ -219,8 +214,6 @@ module.exports = function (ngModule) {
                     gapi.auth2.init(params);
                 });
             };
-
-
 
             /*
             Event which is fired when facebook sdk has been initiated successfully.
@@ -246,6 +239,7 @@ module.exports = function (ngModule) {
             $transitions.onSuccess({}, function (transition) {
                 uiService.reloadWindowSize();
             });
+
             //#endregion
         });
 };

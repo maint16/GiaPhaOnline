@@ -111,7 +111,8 @@ ngModule.controller('appController', function($transitions, urlStates, $scope){
             return;
         }
 
-        if (destination.includes[urlStates.login.name]){
+        var urlStateUser = urlStates.user;
+        if (destination.includes[urlStateUser.login.name] || destination.includes[urlStateUser.googleLogin.name]){
             $scope.model.layoutClass = 'hold-transition login-page';
             return;
         }

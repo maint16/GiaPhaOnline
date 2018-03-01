@@ -5,9 +5,9 @@ module.exports = function (ngModule) {
     * */
     ngModule.controller('profileController', function (profile, personalProfile,
                                                        DTOptionsBuilder, DTColumnBuilder,
-                                                       postTypeConstant, postStatusConstant, appSettings, userRoleConstant,
+                                                       postTypeConstant, postStatusConstant, commentStatusConstant, appSettings, userRoleConstant,
                                                        $ngConfirm, $uibModal, $translate, $state, $compile, moment, $interpolate,
-                                                       $timeout,
+                                                       $timeout, toastr,
                                                        uiService, userService, authenticationService, commonService, postService,
                                                        commentService, commentReportService, postReportService,
                                                        FileUploader,
@@ -34,7 +34,7 @@ module.exports = function (ngModule) {
             },
 
             // Profile image.
-            profile:{
+            profile: {
                 originalImage: null,
                 croppedImage: null
             }
@@ -100,7 +100,7 @@ module.exports = function (ngModule) {
                                 items.recordsFiltered = getPostsResult.total;
                                 fnCallback(items);
                             },
-                            function error(){
+                            function error() {
                                 fnCallback(items);
                                 return;
                             });
@@ -161,7 +161,7 @@ module.exports = function (ngModule) {
                                 items.recordsFiltered = getPostReportResult.total;
                                 fnCallback(items);
                             },
-                            function error(){
+                            function error() {
                                 fnCallback(items);
                                 return;
                             });
@@ -222,7 +222,7 @@ module.exports = function (ngModule) {
                                 items.recordsFiltered = getCommentsResult.total;
                                 fnCallback(items);
                             },
-                            function error(){
+                            function error() {
                                 fnCallback(items);
                                 return;
                             });
@@ -283,7 +283,7 @@ module.exports = function (ngModule) {
                                 items.recordsFiltered = getCommentReportsResult.total;
                                 fnCallback(items);
                             },
-                            function error(){
+                            function error() {
                                 fnCallback(items);
                                 return;
                             });
@@ -299,8 +299,8 @@ module.exports = function (ngModule) {
                 DTColumnBuilder.newColumn('title').withTitle($translate('Title')).notSortable(),
                 // Type
                 DTColumnBuilder.newColumn(null).withTitle($translate('Type')).notSortable().renderWith(
-                    function(data, type, item, meta){
-                        switch (item.type){
+                    function (data, type, item, meta) {
+                        switch (item.type) {
                             case postTypeConstant.private:
                                 return '<span class="text-bold text-black">' + $translate.instant('Private') + '</span>';
                             default:
@@ -310,8 +310,8 @@ module.exports = function (ngModule) {
                 ),
                 // Status
                 DTColumnBuilder.newColumn(null).withTitle($translate('Status')).notSortable().renderWith(
-                    function(data, type, item, meta){
-                        switch (item.status){
+                    function (data, type, item, meta) {
+                        switch (item.status) {
                             case postStatusConstant.disabled:
                                 return '<span class="text-danger">' + $translate.instant('Disabled') + '</span>';
                             case postTypeConstant.available:
@@ -324,13 +324,13 @@ module.exports = function (ngModule) {
                 ),
                 // Created time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Created time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return moment(item.createdTime).format('LLL');
                     }
                 ),
                 // Last modified time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Last modified time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         if (item.lastModifiedTime == null)
                             return '';
                         return moment(item.lastModifiedTime).format('LLL');
@@ -338,7 +338,7 @@ module.exports = function (ngModule) {
                 ),
                 // Action
                 DTColumnBuilder.newColumn(null).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
                         szUi += '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
@@ -350,8 +350,11 @@ module.exports = function (ngModule) {
 
                         // Viewer is the profile owner.
                         if (profile && profile.id === $scope.personalProfile.id) {
-                            szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
+                            // Item is still available. Which means it can be deleted.
+                            if (item.status === postStatusConstant.available)
+                                szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
                         }
+
                         szUi += '</ul>';
                         szUi += '</div>';
                         return szUi;
@@ -363,19 +366,30 @@ module.exports = function (ngModule) {
             comments: [
                 // Comment content
                 DTColumnBuilder.newColumn('content').withClass('comment-content').withTitle($translate('Content')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return '<div class="truncate">' + item.content + '</div>';
+                    }
+                ),
+                // Comment status
+                DTColumnBuilder.newColumn(null).withTitle($translate('Status')).notSortable().renderWith(
+                    function (data, type, item, meta) {
+                        switch (item.status) {
+                            case commentStatusConstant.unavailable:
+                                return $interpolate('<span class="text-bold text-danger">{{"Deleted" | translate}}</span>');
+                            default:
+                                return $interpolate('<span class="text-bold text-success">{{"Available" | translate}}</span>')
+                        }
                     }
                 ),
                 // Created time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Created time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return moment(item.createdTime).format('LLL');
                     }
                 ),
                 // Last modified time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Last modified time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         if (item.lastModifiedTime == null)
                             return '';
                         return moment(item.lastModifiedTime).format('LLL');
@@ -383,7 +397,7 @@ module.exports = function (ngModule) {
                 ),
                 // Action
                 DTColumnBuilder.newColumn(null).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
                         szUi += '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
@@ -395,7 +409,13 @@ module.exports = function (ngModule) {
 
                         // Viewer is the profile owner.
                         if (profile && profile.id === $scope.personalProfile.id) {
-                            szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
+                            // If the item status is available. It can be deleted.
+                            if (item.status === commentStatusConstant.available) {
+                                var params = {
+                                    commentId: item.id
+                                };
+                                szUi += $interpolate('<li><a href="javascript:void(0);" ng-click="fnDeleteComment({{commentId}})"><span class="fa fa-trash text-danger"></span>{{"Delete" | translate}}</a></li>')(params);
+                            }
                         }
                         szUi += '</ul>';
                         szUi += '</div>';
@@ -408,25 +428,25 @@ module.exports = function (ngModule) {
             postReports: [
                 // Comment content
                 DTColumnBuilder.newColumn(null).withClass('post-report-content').withTitle($translate('Content')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return '<div class="truncate">' + 'Post content' + '</div>';
                     }
                 ),
                 // Reason
                 DTColumnBuilder.newColumn(null).withClass('post-report-reason').withTitle($translate('Reason')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return '<div class="truncate">' + 'Reason' + '</div>';
                     }
                 ),
                 // Created time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Created time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return moment(item.createdTime).format('LLL');
                     }
                 ),
                 // Last modified time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Last modified time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         if (item.lastModifiedTime == null)
                             return '';
                         return moment(item.lastModifiedTime).format('LLL');
@@ -434,7 +454,7 @@ module.exports = function (ngModule) {
                 ),
                 // Action
                 DTColumnBuilder.newColumn(null).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
                         szUi += '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
@@ -446,7 +466,7 @@ module.exports = function (ngModule) {
 
                         // Viewer is the profile owner.
                         if (profile && profile.id === $scope.personalProfile.id) {
-                            szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
+                            szUi += $interpolate('<li ng-click="fnDeletePostReport({{postId}})"><a href="javscript:void(0);"><span class="fa fa-trash text-bold text-danger"></span>{{"Delete" | translate}}</a></li>')({postId: item.postId});
                         }
                         szUi += '</ul>';
                         szUi += '</div>';
@@ -459,31 +479,31 @@ module.exports = function (ngModule) {
             commentReports: [
                 // Comment content
                 DTColumnBuilder.newColumn(null).withClass('post-content').withTitle($translate('Post title')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return '<div class="truncate">' + '<a href="javascript:void(0);">' + 'Post title' + '</a>' + '</div>';
                     }
                 ),
                 // Comment content
                 DTColumnBuilder.newColumn(null).withClass('comment-content').withTitle($translate('Comment content')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return '<a href="javascript:void(0);">' + 'Comment content' + '</a>';
                     }
                 ),
                 // Comment report reason
                 DTColumnBuilder.newColumn(null).withClass('comment-content').withTitle($translate('Comment report reason')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return 'Comment report reason';
                     }
                 ),
                 // Created time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Created time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         return moment(item.createdTime).format('LLL');
                     }
                 ),
                 // Last modified time
                 DTColumnBuilder.newColumn(null).withTitle($translate('Last modified time')).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         if (item.lastModifiedTime == null)
                             return '';
                         return moment(item.lastModifiedTime).format('LLL');
@@ -491,7 +511,7 @@ module.exports = function (ngModule) {
                 ),
                 // Action
                 DTColumnBuilder.newColumn(null).notSortable().renderWith(
-                    function(data, type, item, meta){
+                    function (data, type, item, meta) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
                         szUi += '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
@@ -504,8 +524,11 @@ module.exports = function (ngModule) {
                         // Viewer is the profile owner.
                         if (profile && profile.id === $scope.personalProfile.id) {
                             //szUi += '<li ' + 'ng-click="fnClickDeleteCommentReport"' + '><a href="javascript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
-                            var szDelete = '<li ng-click="fnClickDeleteCommentReport({{commentId}}, {{reporterId}})"><a href="javascript:void(0);"><span class="fa fa-trash"></span>{{"Delete" | translate}}</a></li>';
-                            szDelete = $interpolate(szDelete)({commentId: item.commentId, reporterId: $scope.personalProfile.id});
+                            var szDelete = '<li ng-click="fnClickDeleteCommentReport({{commentId}}, {{reporterId}})"><a href="javascript:void(0);"><span class="fa fa-trash text-bold text-danger"></span>{{"Delete" | translate}}</a></li>';
+                            szDelete = $interpolate(szDelete)({
+                                commentId: item.commentId,
+                                reporterId: $scope.personalProfile.id
+                            });
                             szUi += szDelete;
                             //szUi += '<li ng-click="fnClickDeleteCommentReport"><a href="javascript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
                         }
@@ -516,6 +539,12 @@ module.exports = function (ngModule) {
                     }
                 )
             ]
+        };
+
+        // Data-table instances list.
+        $scope.dtInstances = {
+            comments: {},
+            postReports: {}
         };
 
         // File uploaders collection.
@@ -530,7 +559,7 @@ module.exports = function (ngModule) {
         /*
         * Function which is raised when component is initiated.
         * */
-        $scope.fnInit = function(){
+        $scope.fnInit = function () {
 
         };
 
@@ -596,9 +625,47 @@ module.exports = function (ngModule) {
         };
 
         /*
+        * Delete comment by using specific condition.
+        * */
+        $scope.fnDeleteComment = function (commentId) {
+            // Display a confirmation message.
+            $ngConfirm({
+                title: $translate.instant('Confirmation'),
+                content: '<b class="text-bold text-danger">' + $translate.instant('Are you sure to delete this comment ?') + '</b>',
+                scope: $scope,
+                buttons: {
+                    ok: {
+                        text: $translate.instant('OK'),
+                        btnClass: 'btn btn-danger btn-flat',
+                        action: function (scope, button) {
+                            // Delete comment by searching for its id.
+                            commentService.deleteComment(commentId)
+                                .then(function () {
+
+                                    // Display success message.
+                                    toastr.success($translate.instant('Comment has been deleted successfully'));
+
+                                    // Reload the data-table.
+                                    $scope.dtInstances.comments.dataTable.fnDraw();
+                                });
+                        }
+                    },
+                    cancel:{
+                        text: $translate.instant('Cancel'),
+                        btnClass: 'btn btn-default btn-flat',
+                        action: function (scope, button) {
+                        }
+                    }
+                }
+            });
+
+
+        };
+
+        /*
         * Function which is for deleting comment report.
         * */
-        $scope.fnClickDeleteCommentReport = function(commentId, reporterId){
+        $scope.fnClickDeleteCommentReport = function (commentId, reporterId) {
             $ngConfirm({
                 title: '',
                 content: '<b class="text-danger">' + $translate.instant('Are you sure to delete this comment report ?') + '</b>',
@@ -607,14 +674,14 @@ module.exports = function (ngModule) {
                     ok: {
                         text: $translate.instant('OK'),
                         btnClass: 'btn btn-flat btn-danger',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                             // Delete comment report.
                             return commentReportService.deleteCommentReport(commentId, reporterId)
                                 .then(
-                                    function success(){
+                                    function success() {
                                         return true;
                                     },
-                                    function error(){
+                                    function error() {
                                         return true;
                                     }
                                 );
@@ -623,7 +690,7 @@ module.exports = function (ngModule) {
                     cancel: {
                         text: $translate.instant('Cancel'),
                         btnClass: 'btn btn-flat btn-default',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                         }
                     }
                 }
@@ -633,7 +700,7 @@ module.exports = function (ngModule) {
         /*
         * Function to display change profile image modal dialog.
         * */
-        $scope.fnChangeProfileImage = function(){
+        $scope.fnChangeProfileImage = function () {
             $scope.modals.changeProfileImage = $uibModal.open({
                 templateUrl: 'change-profile-avatar.html',
                 scope: $scope,
@@ -644,7 +711,7 @@ module.exports = function (ngModule) {
         /*
         * Cancel editing profile image to select another image.
         * */
-        $scope.fnCancelEditProfileImage = function(){
+        $scope.fnCancelEditProfileImage = function () {
 
             if ($scope.model.profile.originalImage) {
                 // Reset original image and cropped image.
@@ -660,19 +727,72 @@ module.exports = function (ngModule) {
         };
 
         /*
+        * Upload profile avatar to server.
+        * */
+        $scope.fnUploadProfileAvatar = function () {
+
+            // Cropped image hasn't been defined.
+            if (!$scope.model.profile.croppedImage)
+                return;
+
+            userService.uploadProfileAvatar($scope.model.profile.croppedImage)
+                .then(function (uploadProfileAvatarResponse) {
+
+                    // Dismiss the modal if it is available.
+                    if ($scope.modals.changeProfileImage) {
+                        $scope.modals.changeProfileImage.dismiss();
+                        $scope.modals.changeProfileImage = null;
+                    }
+
+                    // Reload the current state.
+                    $state.reload();
+                });
+        };
+
+        /*
         * Delete a specific post report.
         * */
-        $scope.fnDeletePostReport = function(){
+        $scope.fnDeletePostReport = function (postId) {
+
+            $ngConfirm({
+                title: $translate.instant('Confirmation'),
+                content: '<b class="text-danger">' + $translate.instant('Are you sure to delete this post report ?') + '</b>',
+                scope: $scope,
+                buttons: {
+                    ok: {
+                        text: $translate.instant('OK'),
+                        btnClass: 'btn btn-danger btn-flat',
+                        action: function (scope, button) {
+                            postReportService.deletePostReport(postId)
+                                .then(function (deletePostReportId) {
+                                    // Reload the post report data-table instant.
+                                    $scope.dtInstances.postReports.dataTable.fnDraw();
+
+                                    // Display success message.
+                                    toastr.success($translate.instant('Post report has been deleted successfully'));
+                                });
+                        }
+                    },
+                    cancel: {
+                        text: $translate.instant('Cancel'),
+                        btnClass: 'btn btn-default btn-flat',
+                        action: function ($scope, button) {
+
+                        }
+                    }
+                }
+            });
+
 
         };
 
         /*
         * Function which is raised when profile image is selected.
         * */
-        $scope.fileUploader.profileImageSelector.onAfterAddingFile = function(fileItem){
+        $scope.fileUploader.profileImageSelector.onAfterAddingFile = function (fileItem) {
             var fileReader = new FileReader();
             fileReader.onload = function (evt) {
-                $scope.$apply(function($scope){
+                $scope.$apply(function ($scope) {
                     $scope.model.profile.originalImage = evt.target.result;
                 });
             };
@@ -682,21 +802,21 @@ module.exports = function (ngModule) {
         /*
         * Function which is raised when profile image imported failingly.
         * */
-        $scope.fileUploader.profileImageSelector.onWhenAddingFileFailed = function(){
+        $scope.fileUploader.profileImageSelector.onWhenAddingFileFailed = function () {
 
             // Reset the selected image.
             $scope.model.profile.originalImage = null;
             $scope.model.profile.croppedImage = null;
 
             $ngConfirm({
-                title: $translate.instant('Please select a valid image'),
-                content: '',
+                title: ' ',
+                content: '<b class="text-danger text-bold">' + $translate.instant('Please select a valid image') + '</b>',
                 scope: $scope,
                 buttons: {
                     ok: {
                         text: $translate.instant('OK'),
                         btnClass: 'btn btn-default btn-flat',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                         }
                     }
                 }
@@ -706,10 +826,10 @@ module.exports = function (ngModule) {
         /*
         * Function which is raised when component is initiated successfully.
         * */
-        $timeout(function(){
+        $timeout(function () {
             $scope.fileUploader.profileImageSelector.filters.push({
                 name: 'image-filter',
-                fn: function(item /*{File|FileLikeObject}*/, options) {
+                fn: function (item /*{File|FileLikeObject}*/, options) {
                     return (item.type && item.type.indexOf('image') !== -1);
                 }
             });

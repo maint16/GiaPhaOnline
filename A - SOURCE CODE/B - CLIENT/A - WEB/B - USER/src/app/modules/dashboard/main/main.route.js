@@ -3,6 +3,9 @@ module.exports = function (ngModule) {
     // Module html template import.
     var ngModuleHtmlTemplate = require('./main.html');
 
+    // Import style.
+    require('./main.css');
+
     ngModule.config(function ($stateProvider, urlStates) {
 
         var urlStateDashboard = urlStates.dashboard;

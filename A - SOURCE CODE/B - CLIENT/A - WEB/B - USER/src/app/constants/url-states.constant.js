@@ -12,6 +12,11 @@ module.exports = function (ngModule) {
                 url: '/login'
             },
 
+            googleLogin:{
+                name: 'google-login',
+                url: '/google-login/:code'
+            },
+
             // Profile state
             profile:{
                 name: 'personal-profile',

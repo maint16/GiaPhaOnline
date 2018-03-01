@@ -9,7 +9,8 @@ module.exports = function (ngModule) {
             changePassword: 'api/user/change-password/{id}',
             basicLogin: 'api/user/login',
             googleLogin: 'api/user/google-login',
-            facebookLogin: 'api/user/facebook-login'
+            facebookLogin: 'api/user/facebook-login',
+            uploadProfileImage: 'api/user/upload-avatar'
         },
 
         category: {
@@ -21,7 +22,8 @@ module.exports = function (ngModule) {
         },
 
         postReport:{
-            getPostReports: 'api/post-report/search'
+            getPostReports: 'api/post-report/search',
+            deletePostReport: 'api/post-report'
         },
 
         postCategorization:{
@@ -31,7 +33,8 @@ module.exports = function (ngModule) {
         comment: {
             addComment: 'api/comment',
             getComments: 'api/comment/search',
-            loadComments: 'api/comment/load-comments'
+            loadComments: 'api/comment/load-comments',
+            deleteComment: 'api/comment/{id}'
         },
 
         commentReports:{
@@ -45,7 +48,9 @@ module.exports = function (ngModule) {
         },
 
         followingCategory:{
-            getFollowingCategory: 'api/follow-category/search'
+            getFollowingCategory: 'api/follow-category/search',
+            followCategory: 'api/follow-category',
+            unfollowCategory: 'api/follow-category'
         }
 
     });
