@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccountAlreadyDisabled" xml:space="preserve">
+    <value>ACCOUNT_ALREADY_DISABLED</value>
+  </data>
+  <data name="AccountIsDisabled" xml:space="preserve">
+    <value>ACCOUNT_IS_DISABLED</value>
+  </data>
   <data name="AccountIsInUse" xml:space="preserve">
     <value>ACCOUNT_IS_IN_USE</value>
     <comment>This message is for notifying that email has been used for account registration before.</comment>
@@ -124,6 +130,9 @@
   <data name="AccountIsNotFound" xml:space="preserve">
     <value>ACCOUNT_NOT_FOUND</value>
     <comment>This message is about not being able to find account in database with specific conditions.</comment>
+  </data>
+  <data name="AccountIsPending" xml:space="preserve">
+    <value>ACCOUNT_IS_PENDING</value>
   </data>
   <data name="CategorizationNotFound" xml:space="preserve">
     <value>CATEGORIZATION_NOT_FOUND</value>
@@ -139,6 +148,12 @@
   </data>
   <data name="CommentReportNotFound" xml:space="preserve">
     <value>COMMENT_REPORT_NOT_FOUND</value>
+  </data>
+  <data name="FacebookCodeIsInvalid" xml:space="preserve">
+    <value>FACEBOOK_CODE_IS_INVALID</value>
+  </data>
+  <data name="GoogleCodeIsInvalid" xml:space="preserve">
+    <value>GOOGLE_CODE_IS_INVALID</value>
   </data>
   <data name="InformationNotFound" xml:space="preserve">
     <value>INFORMATION_NOT_FOUND</value>

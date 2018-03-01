@@ -1,0 +1,9 @@
+.category-detail-box {
+
+}
+
+.category-detail-box .category-description {
+    height: 200px !important;
+    overflow-y: auto !important;
+    white-space: normal !important;
+}

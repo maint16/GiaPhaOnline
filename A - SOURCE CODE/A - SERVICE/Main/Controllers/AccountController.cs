@@ -14,6 +14,7 @@ using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
 using Main.Models;
+using Main.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +43,7 @@ namespace Main.Controllers
         /// <param name="encryptionService"></param>
         /// <param name="identityService"></param>
         /// <param name="systemTimeService"></param>
+        /// <param name="externalAuthenticationService"></param>
         /// <param name="jwtConfigurationOptions"></param>
         /// <param name="applicationSettings"></param>
         /// <param name="logger"></param>
@@ -53,6 +55,7 @@ namespace Main.Controllers
             IEncryptionService encryptionService,
             IIdentityService identityService,
             ITimeService systemTimeService,
+            IExternalAuthenticationService externalAuthenticationService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<AccountController> logger) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
@@ -61,6 +64,7 @@ namespace Main.Controllers
             _jwtConfiguration = jwtConfigurationOptions.Value;
             _applicationSettings = applicationSettings.Value;
             _logger = logger;
+            _externalAuthenticationService = externalAuthenticationService;
         }
 
         #endregion
@@ -103,7 +107,7 @@ namespace Main.Controllers
             var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
                 x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase));
+                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == AccountType.Basic);
             
             // Find the first account in database.
             var account = await accounts.FirstOrDefaultAsync();
@@ -118,35 +122,168 @@ namespace Main.Controllers
             account.Nickname = "Linh Nguyen";
 #endif
 
-            // Find current time on the system.
-            var systemTime = DateTime.Now;
-            var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
+            // Initialize jwt token.
+            var jwt = InitializeAccountToken(account);
+            return Ok(jwt);
+        }
 
-            // Claims initalization.
-            var claims = new List<Claim>();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
-            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
+        /// <summary>
+        /// Use specific conditions to login into Google authentication system.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("google-login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
+        {
+            #region Parameters validation
 
-            // Write a security token.
-            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
-                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
+            if (info == null)
+            {
+                info = new GoogleLoginViewModel();
+                TryValidateModel(info);
+            }
 
-            // Initiate token handler which is for generating token code.
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-
-            #region Jwt initialization
-
-            var jwt = new JwtResponse();
-            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-            jwt.LifeTime = _jwtConfiguration.LifeTime;
-            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             #endregion
 
+            #region Authentication request
+
+            // Find token information.
+            var tokenInfo =  await _externalAuthenticationService.GetGoogleTokenInfoAsync(info.Code);
+            if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.Id))
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.GoogleCodeIsInvalid));
+
+            // Get the profile information.
+            var profile = await _externalAuthenticationService.GetGoogleBasicProfileAsync(tokenInfo.Id);
+            if (profile == null)
+                return StatusCode((int) HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
+
+            #endregion
+
+            #region Account availability check
+
+            // Find accounts by searching for email address.
+            var accounts = UnitOfWork.Accounts.Search();
+            accounts = accounts.Where(x => x.Email.Equals(profile.Email));
+
+            // Get the first matched account.
+            var account = await accounts.FirstOrDefaultAsync();
+
+            // Account is available in the system. Check its status.
+            if (account != null)
+            {
+                // Prevent account from logging into system because it is pending.
+                if (account.Status == AccountStatus.Pending)
+                    return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
+
+                // Prevent account from logging into system because it is deleted.
+                if (account.Status == AccountStatus.Disabled)
+                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
+            }
+            else
+            {
+                // Initialize account instance.
+                account = new Account();
+                account.Email = profile.Email;
+                account.Nickname = profile.Name;
+                account.Role = AccountRole.User;
+                account.PhotoRelativeUrl = profile.Picture;
+                account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                account.Type = AccountType.Google;
+
+                // Add account to database.
+                UnitOfWork.Accounts.Insert(account);
+                await UnitOfWork.CommitAsync();
+            }
+
+            #endregion
+            
+            // Initialize access token.
+            var jwt = InitializeAccountToken(account);
             return Ok(jwt);
+        }
+
+        /// <summary>
+        /// Use specific information to sign into system using facebook account.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("facebook-login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
+        {
+            #region Parameters validation
+
+            // Information hasn't been initialized.
+            if (info == null)
+            {
+                info = new FacebookLoginViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Authentication request
+
+            // Find token information.
+            var tokenInfo = await _externalAuthenticationService.GetFacebookTokenInfoAsync(info.Code);
+            if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.AccessToken))
+                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.FacebookCodeIsInvalid));
+
+            // Get the profile information.
+            var profile = await _externalAuthenticationService.GetFacebookBasicProfileAsync(tokenInfo.AccessToken);
+            if (profile == null)
+                return StatusCode((int)HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
+
+            #endregion
+
+            #region Account availability check
+
+            // Find accounts by searching for email address.
+            var accounts = UnitOfWork.Accounts.Search();
+            accounts = accounts.Where(x => x.Email.Equals(profile.Email));
+
+            // Get the first matched account.
+            var account = await accounts.FirstOrDefaultAsync();
+
+            // Account is available in the system. Check its status.
+            if (account != null)
+            {
+                // Prevent account from logging into system because it is pending.
+                if (account.Status == AccountStatus.Pending)
+                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
+
+                // Prevent account from logging into system because it is deleted.
+                if (account.Status == AccountStatus.Disabled)
+                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
+            }
+            else
+            {
+                // Initialize account instance.
+                account = new Account();
+                account.Email = profile.Email;
+                account.Nickname = profile.FullName;
+                account.Role = AccountRole.User;
+                account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                account.Type = AccountType.Facebook;
+
+                // Add account to database.
+                UnitOfWork.Accounts.Insert(account);
+                await UnitOfWork.CommitAsync();
+            }
+
+            #endregion
+
+            // Initialize access token.
+            var jwt = InitializeAccountToken(account);
+            return Ok(jwt);
+
         }
 
         /// <summary>
@@ -359,6 +496,42 @@ namespace Main.Controllers
             //return Ok();
         }
 
+        /// <summary>
+        /// Initialize account access token.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        private JwtResponse InitializeAccountToken(Account account)
+        {
+            // Find current time on the system.
+            var systemTime = DateTime.Now;
+            var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
+
+            // Claims initalization.
+            var claims = new List<Claim>();
+            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
+            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
+
+            // Write a security token.
+            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
+                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
+
+            // Initiate token handler which is for generating token code.
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+            
+            // Initialize jwt response.
+            var jwt = new JwtResponse();
+            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+            jwt.LifeTime = _jwtConfiguration.LifeTime;
+            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
+            
+
+            return jwt;
+        }
+
         #endregion
 
         #region Properties
@@ -382,6 +555,11 @@ namespace Main.Controllers
         /// Logging instance.
         /// </summary>
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// Service which is for handling external authentication service.
+        /// </summary>
+        private readonly IExternalAuthenticationService _externalAuthenticationService;
 
         #endregion
     }

@@ -258,49 +258,7 @@ namespace Main.Controllers
 
             return Ok(result);
         }
-
-        /// <summary>
-        /// Search for comments using specific conditions.
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        [HttpPost("detail-search")]
-        [AllowAnonymous]
-        public async Task<IActionResult> SearchDetailedComments([FromBody] SearchCommentViewModel condition)
-        {
-            #region Parameters validation
-
-            throw new NotImplementedException();
-            if (condition == null)
-            {
-                condition = new SearchCommentViewModel();
-                TryValidateModel(condition);
-            }
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            #endregion
-
-            #region Search for information
-
-            var comments = UnitOfWork.Comments.Search();
-            comments = SearchComments(comments, condition);
-
-            #endregion
-
-
-            #region Count and paging
-
-            var result = new SearchResult<IList<Comment>>();
-            result.Total = await comments.CountAsync();
-            result.Records = await DbSharedService.Paginate(comments, condition.Pagination).ToListAsync();
-
-            #endregion
-
-            return Ok(result);
-        }
-
+        
         /// <summary>
         /// Search for comments by using specific conditions.
         /// </summary>

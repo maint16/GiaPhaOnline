@@ -39,6 +39,11 @@ namespace SystemDatabase.Models.Entities
         public AccountRole Role { get; set; }
 
         /// <summary>
+        /// Type of account.
+        /// </summary>
+        public AccountType Type { get; set; }
+
+        /// <summary>
         ///     Relative url (http url) of user photo.
         /// </summary>
         [JsonProperty("Photo")]

@@ -61,6 +61,24 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ACCOUNT_ALREADY_DISABLED.
+        /// </summary>
+        public static string AccountAlreadyDisabled {
+            get {
+                return ResourceManager.GetString("AccountAlreadyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ACCOUNT_IS_DISABLED.
+        /// </summary>
+        public static string AccountIsDisabled {
+            get {
+                return ResourceManager.GetString("AccountIsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ACCOUNT_IS_IN_USE.
         /// </summary>
         public static string AccountIsInUse {
@@ -75,6 +93,15 @@ namespace Shared.Resources {
         public static string AccountIsNotFound {
             get {
                 return ResourceManager.GetString("AccountIsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ACCOUNT_IS_PENDING.
+        /// </summary>
+        public static string AccountIsPending {
+            get {
+                return ResourceManager.GetString("AccountIsPending", resourceCulture);
             }
         }
         
@@ -120,6 +147,24 @@ namespace Shared.Resources {
         public static string CommentReportNotFound {
             get {
                 return ResourceManager.GetString("CommentReportNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FACEBOOK_CODE_IS_INVALID.
+        /// </summary>
+        public static string FacebookCodeIsInvalid {
+            get {
+                return ResourceManager.GetString("FacebookCodeIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GOOGLE_CODE_IS_INVALID.
+        /// </summary>
+        public static string GoogleCodeIsInvalid {
+            get {
+                return ResourceManager.GetString("GoogleCodeIsInvalid", resourceCulture);
             }
         }
         

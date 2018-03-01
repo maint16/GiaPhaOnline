@@ -12,6 +12,7 @@ using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
 using Main.Interfaces.Services;
 using Main.Models;
+using Main.Models.ExternalAuthentication;
 using Main.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -90,12 +91,13 @@ namespace Main
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork<RelationalDatabaseContext>>();
             services.AddScoped<IDbSharedService, DbSharedService>();
-            
+
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();
+            services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-           
+
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
@@ -103,6 +105,8 @@ namespace Main
             // Load jwt configuration from setting files.
             services.Configure<JwtConfiguration>(Configuration.GetSection(nameof(JwtConfiguration)));
             services.Configure<ApplicationSetting>(Configuration.GetSection(nameof(ApplicationSetting)));
+            services.Configure<GoogleCredential>(Configuration.GetSection(nameof(GoogleCredential)));
+            services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
 
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
@@ -138,7 +142,7 @@ namespace Main
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
-#region Mvc builder
+            #region Mvc builder
 
             // Construct mvc options.
             services.AddMvc(mvcOptions =>
@@ -159,7 +163,7 @@ namespace Main
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
 
-#endregion
+            #endregion
         }
 
         /// <summary>
@@ -191,7 +195,8 @@ namespace Main
             // Enable MVC features.
             app.UseMvc();
         }
+        
 
-#endregion
+        #endregion
     }
 }
