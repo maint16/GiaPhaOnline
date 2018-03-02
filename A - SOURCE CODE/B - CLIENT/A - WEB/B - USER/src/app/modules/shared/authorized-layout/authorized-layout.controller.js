@@ -34,6 +34,10 @@ module.exports = function (ngModule) {
 
                 // Add facebook sdk to page.
                 oAuthService.addFacebookSdk();
+
+                $timeout(function() {
+                    uiService.reloadWindowSize();
+                }, 250);
             };
 
             /*
@@ -231,14 +235,6 @@ module.exports = function (ngModule) {
                     version: 'v2.12' // use graph api version 2.8
                 });
             };
-
-
-            /*
-            * Hook the transition from state to state.
-            * */
-            $transitions.onSuccess({}, function (transition) {
-                uiService.reloadWindowSize();
-            });
 
             //#endregion
         });
