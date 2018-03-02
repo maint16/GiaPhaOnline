@@ -1,7 +1,7 @@
 <section class="content-header">
     <h1>
-        Recent post
-        <small>Control panel</small>
+        {{'Categories' | translate}}
+        <small>{{'List' | translate}}</small>
     </h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> {{'Home' | translate}}</a></li>
@@ -10,36 +10,45 @@
 </section>
 
 <section class="content"
-         ui-view>
+         ng-init="fnInit()">
 
+    <!--Basic search box-->
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <div class="box box-widget widget-user-2">
-                    <form class="widget-user-header bg-green"
-                          novalidate
-                          ng-submit="fnGetCategories($event)">
-                        <div class="input-group">
-                            <input class="form-control"
-                                   placeholder="{{'Search for categories' | translate}} ...">
-                            <span class="input-group-btn">
+                <form class="input-group"
+                      novalidate
+                      ng-submit="fnSearchCategories($event)">
+                    <input class="form-control"
+                           placeholder="{{'Search for categories' | translate}} ...">
+                    <span class="input-group-btn">
                         <button class="btn btn-info btn-flat">
                             <span class="fa fa-search"></span>
                         </button>
                     </span>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <!--Pagination-->
     <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group text-center">
+                <ul uib-pagination
+                    boundary-links="true"
+                    total-items="result.getCategories.total"
+                    ng-model="condition.getCategories.pagination.page"
+                    ng-change="fnGetCategories()"></ul>
+            </div>
+        </div>
+    </div>
 
-
+    <!--Categories list-->
+    <div class="row">
         <div class="col-sm-12">
 
             <div class="row">
-
                 <div class="col-md-4 col-sm-6 col-xs-12"
                      ng-repeat="category in result.getCategories.records">
                     <div class="box box-info category-detail-box">
@@ -47,11 +56,13 @@
                             <h3 class="box-title">{{category.name}}</h3>
                         </div>
                         <div class="box-body">
-                            <div class="col-lg-4">
-                                <img class="img img-responsive img-thumbnail"
-                                     ng-src="/assets/images/avatar.png">
+                            <div class="col-sm-12">
+                                <div class="form-group text-center">
+                                    <img class="img img-responsive img-thumbnail category-image"
+                                         ng-src="{{category.photo}}">
+                                </div>
                             </div>
-                            <div class="col-lg-8">
+                            <div class="col-sm-12">
                                 <div class="truncate category-description slim-scrollbar">
                                     orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
                                     Ipsum has been the industry's standard dummy text ever since the 1500s, when an
@@ -71,10 +82,6 @@
                                     <th>{{'Posts' | translate}}</th>
                                     <td>{{buffer.categoryPostsCounter[category.id]}}</td>
                                 </tr>
-                                <tr>
-                                    <th>{{'Followers' | translate}}</th>
-                                    <td>200</td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -86,17 +93,41 @@
                                     <span class="fa fa-eye"></span>
                                 </button>
 
-                                <button class="btn btn-flat btn-sm">
-                                    <span class="fa fa-heart"></span>
-                                </button>
+                                <span ng-if="profile">
+                                    <!--Category is being followed-->
+                                    <button class="btn btn-flat btn-sm bg-red"
+                                            ng-if="buffer.followingCategory[category.id]"
+                                            ng-click="fnUnfollowCategory(category.id)">
+                                        <span class="fa fa-heart"></span>
+                                    </button>
+                                    <!--Category IS NOT being followed-->
+                                    <button class="btn btn-flat btn-sm"
+                                            ng-if="!buffer.followingCategory[category.id]"
+                                            ng-click="fnFollowCategory(category.id)">
+                                        <span class="fa fa-heart"></span>
+                                    </button>
+                                </span>
+
                             </div>
                         </div>
                     </div>
                 </div>
 
-
             </div>
 
+        </div>
+    </div>
+
+    <!--Pagination-->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group text-center">
+                <ul uib-pagination
+                    boundary-links="true"
+                    total-items="result.getCategories.total"
+                    ng-model="condition.getCategories.pagination.page"
+                    ng-change="fnGetCategories()"></ul>
+            </div>
         </div>
     </div>
 </section>

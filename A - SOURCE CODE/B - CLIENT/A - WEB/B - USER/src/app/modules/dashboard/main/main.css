@@ -7,3 +7,7 @@
     overflow-y: auto !important;
     white-space: normal !important;
 }
+
+.category-image {
+    max-height: 150px;
+}

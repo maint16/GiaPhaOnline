@@ -63,6 +63,7 @@
   "Cancel": "Cancel",
   "Current password": "Current password",
   "Confirm password": "Confirm password",
+  "Change to basic search": "Change to basic search",
   "Type": "Type",
   "Public": "Public",
   "Private": "Private",
@@ -82,6 +83,7 @@
   "Comment content": "Comment content",
   "Comment report reason": "Comment report reason",
   "Confirmation": "Confirmation",
+  "List": "List",
   "Start following this category": "Start following this category",
   "Stop following this category": "Stop following this category",
   "Delete comment report confirmation": "Delete comment report confirmation",
@@ -90,6 +92,8 @@
   "Are you sure to delete this post report ?": "Are you sure to delete this post report ?",
   "Post report has been deleted successfully": "Post report has been deleted successfully.",
   "Comment has been deleted successfully": "Comment has been deleted successfully",
+  "Stopped following category successfully": "Stopped following category successfully.",
+  "Followed category successfully": "Followed category successfully",
   "Change profile image": "Change profile image",
   "Please select a valid image": "Please select a valid image"
 }
