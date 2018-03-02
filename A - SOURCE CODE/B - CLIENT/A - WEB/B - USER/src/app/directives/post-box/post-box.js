@@ -1,18 +1,22 @@
 module.exports = function (ngModule) {
 
     // Module template import.
-    var ngModuleHtmlTemplate = require('./post-content-box.html');
+    var ngModuleHtmlTemplate = require('./post-box.html');
 
     // Directive declaration.
     ngModule
-        .directive('postContentBox', function () {
+        .directive('postBox', function () {
             return {
                 template: ngModuleHtmlTemplate,
                 restrict: 'AE',
+                transclude:{
+                    postContent: '?postContent'
+                },
                 scope: {
                     ngPost: '=',
                     ngIsFollowingPost: '=',
                     ngIsCommentAvailable: '=',
+                    ngIsCommentSubmissionAvailable: '=',
                     ngUsers: '=',
                     ngAudienceProfile: '='
                 },
