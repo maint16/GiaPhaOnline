@@ -19,6 +19,30 @@ module.exports = function(ngModule){
             return $http.post(url, {ids: ids});
         };
 
+        /*
+        * Start following a post.
+        * */
+        this.followPost = function (id) {
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.followPost.followPost;
+            var body = {
+                postId: id
+            };
+
+            return $http.post(url, body);
+        };
+
+        /*
+        * Stop following a post.
+        * */
+        this.unfollowPost = function(id){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.followPost.unfollowPost;
+            var query = {
+                postId: id
+            };
+
+            return $http.delete(url, {params: query});
+        };
+
         //#endregion
     });
 };

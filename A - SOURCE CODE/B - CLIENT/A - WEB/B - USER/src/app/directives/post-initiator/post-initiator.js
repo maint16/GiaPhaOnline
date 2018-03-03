@@ -81,7 +81,7 @@ module.exports = function (ngModule) {
                     if (!$scope.postInitiatorForm.$invalid)
                         return;
 
-                    $scope.ngCreatePost({post: $scope.model});
+                    $scope.ngClickCreatePost({post: $scope.model});
                 };
 
                 /*
@@ -114,6 +114,13 @@ module.exports = function (ngModule) {
 
                             $scope.cache.categories = categories;
                         })
+                };
+
+                /*
+                * Event which is raised when close button is clicked.
+                * */
+                $scope.fnClickCloseBox = function(){
+                    $scope.ngClickCancel();
                 };
 
                 //#endregion

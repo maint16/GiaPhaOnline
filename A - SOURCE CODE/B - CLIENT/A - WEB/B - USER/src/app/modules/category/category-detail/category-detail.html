@@ -199,10 +199,14 @@
              ng-repeat="post in loadDataResult.posts.records">
 
             <post-box ng-post="post"
-                      ng-is-following-post="false"
+                      ng-is-following-post="buffer.followingPosts[post.id]"
                       ng-is-comment-available="false"
+                      ng-is-follow-post-available="true"
                       ng-users="buffer.users"
-                      ng-audience-profile="profile">
+                      ng-audience-profile="profile"
+
+                      followed-post="fnFollowedPost(id, status, result)"
+                      unfollowed-post="fnUnfollowedPost(id, status, result)">
                 <post-content style="cursor: pointer;"
                               ng-click="fnSelectPost(post)">
                     {{post.body}}

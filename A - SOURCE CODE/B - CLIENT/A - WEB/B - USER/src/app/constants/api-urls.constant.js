@@ -44,7 +44,9 @@ module.exports = function (ngModule) {
 
         followPost: {
             getFollowPost: 'api/follow-post/search',
-            loadFollowPosts: 'api/follow-post/load'
+            loadFollowPosts: 'api/follow-post/load',
+            followPost: 'api/follow-post',
+            unfollowPost: 'api/follow-post'
         },
 
         followingCategory:{

@@ -81,7 +81,10 @@ require('./configs/angular-paginator.config')(ngModule);
 /*
 * Application controller.
 * */
-ngModule.controller('appController', function($transitions, urlStates, $scope){
+ngModule.controller('appController', function($transitions, $timeout,
+                                              urlStates,
+                                              uiService,
+                                              $scope){
 
     //#region Properties
 
@@ -102,6 +105,10 @@ ngModule.controller('appController', function($transitions, urlStates, $scope){
     * Called when transition from state to state is successful.
     * */
     $transitions.onSuccess({}, function($transition){
+
+        $timeout(function() {
+            uiService.reloadWindowSize();
+        }, 250);
 
         // Find destination of transaction.
         var destination = $transition.$to();

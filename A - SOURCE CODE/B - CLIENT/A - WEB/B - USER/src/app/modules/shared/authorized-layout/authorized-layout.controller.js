@@ -27,17 +27,12 @@ module.exports = function (ngModule) {
             * Callback which is called when component starts being initiated.
             * */
             $scope.init = function () {
-                uiService.reloadWindowSize();
 
                 // Add google sdk to page.
                 oAuthService.addGoogleSdk('fnGoogleClientInitialized');
 
                 // Add facebook sdk to page.
                 oAuthService.addFacebookSdk();
-
-                $timeout(function() {
-                    uiService.reloadWindowSize();
-                }, 250);
             };
 
             /*

@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettings, urlStates, details,
+                                                              appSettings, urlStates, details, taskStatusConstant, taskResultConstant,
                                                               $uibModal, toastr, $translate,
                                                               postService, followPostService,
                                                               commentService, userService, followCategoryService) {
@@ -55,7 +55,7 @@ module.exports = function (ngModule) {
         $scope.loadDataCondition = {
             post: {
                 title: null,
-                pagination:{
+                pagination: {
                     page: 1,
                     records: appSettings.pagination.default
                 }
@@ -162,20 +162,20 @@ module.exports = function (ngModule) {
         /*
         * Get following posts list.
         * */
-        $scope.loadFollowingPosts = function(postIds){
+        $scope.loadFollowingPosts = function (postIds) {
             followPostService.loadFollowPosts(postIds)
-                .then(function(loadFollowPostsResponse){
+                .then(function (loadFollowPostsResponse) {
 
                     var loadFollowPostsResult = loadFollowPostsResponse.data;
                     if (!loadFollowPostsResult)
                         return;
 
                     var followPosts = loadFollowPostsResult.records;
-                    followPosts.map(function(followPost){
+                    followPosts.map(function (followPost) {
                         if ($scope.buffer.followingPosts[followPost.postId])
                             return followPost;
 
-                        $scope.buffer.followingPosts[followPost.postId] = followPost;
+                        $scope.buffer.followingPosts[followPost.postId] = true;
                         return followPost;
                     });
                 });
@@ -184,14 +184,14 @@ module.exports = function (ngModule) {
         /*
         * Callback which is fired when advanced search button is clicked.
         * */
-        $scope.clickAdvancedSearch = function(bUseAdvancedSearch){
+        $scope.clickAdvancedSearch = function (bUseAdvancedSearch) {
             $scope.bUsingAdvancedSearch = bUseAdvancedSearch;
         };
 
         /*
         * Called when user clicks on a page of category posts.
         * */
-        $scope.clickChangePage = function(){
+        $scope.clickChangePage = function () {
 
             // Clear buffers.
             $scope.buffer.users = {};
@@ -205,7 +205,7 @@ module.exports = function (ngModule) {
         /*
         * Event is fired when basic search is used.
         * */
-        $scope.fnBasicSearch = function($event){
+        $scope.fnBasicSearch = function ($event) {
 
             // Prevent default behaviour of control submission.
             $event.preventDefault();
@@ -220,7 +220,7 @@ module.exports = function (ngModule) {
         /*
         * Event which is fired when advanced search function is used.
         * */
-        $scope.fnAdvanceSearch = function($event){
+        $scope.fnAdvanceSearch = function ($event) {
 
             // Prevent default behaviour.
             $event.preventDefault();
@@ -235,7 +235,7 @@ module.exports = function (ngModule) {
         /*
         * Called when a post is selected.
         * */
-        $scope.fnSelectPost = function(post){
+        $scope.fnSelectPost = function (post) {
             $scope.postDetailBox.post = post;
             $scope.postDetailBox.postOwner = $scope.buffer.users[post.ownerId];
 
@@ -250,9 +250,9 @@ module.exports = function (ngModule) {
         /*
         * Cancel adding post.
         * */
-        $scope.fnCancelAddingPost = function(){
+        $scope.fnCancelAddingPost = function () {
             // Modal has been initialized before. Dismiss it.
-            if ($scope.modals.addPost){
+            if ($scope.modals.addPost) {
                 $scope.modals.addPost.dismiss();
                 $scope.modals.addPost = null;
             }
@@ -261,7 +261,7 @@ module.exports = function (ngModule) {
         /*
         * Event which is fired when add post button is clicked.
         * */
-        $scope.fnClickAddPost = function(){
+        $scope.fnClickAddPost = function () {
             // Display modal dialog.
             $scope.modals.addPost = $uibModal.open({
                 templateUrl: 'post-initiator.html',
@@ -273,7 +273,7 @@ module.exports = function (ngModule) {
         /*
         * Confirm to add a post.
         * */
-        $scope.fnAddPost = function(post){
+        $scope.fnAddPost = function (post) {
             var model = {
                 title: post.title,
                 content: post.content,
@@ -286,7 +286,7 @@ module.exports = function (ngModule) {
         /*
         * Start following category.
         * */
-        $scope.fnFollowCategory = function(categoryId){
+        $scope.fnFollowCategory = function (categoryId) {
 
             // Category has been followed.
             if ($scope.bIsFollowingCategory)
@@ -294,7 +294,7 @@ module.exports = function (ngModule) {
 
             // Follow the category by using api call.
             followCategoryService.followCategory(categoryId)
-                .then(function(followCategoryResponse){
+                .then(function (followCategoryResponse) {
                     toastr.success($translate.instant('Start following this category'));
 
                     // Change category to be followed.
@@ -305,15 +305,15 @@ module.exports = function (ngModule) {
         /*
         * Unfollow category.
         * */
-        $scope.fnUnfollowCategory = function(categoryId){
+        $scope.fnUnfollowCategory = function (categoryId) {
             // Category has been unfollowed before.
-            if (!$scope.bIsFollowingCategory){
+            if (!$scope.bIsFollowingCategory) {
                 return;
             }
 
             // Stop following the category.
             followCategoryService.unfollowCategory(categoryId)
-                .then(function(unfollowCategoryResponse){
+                .then(function (unfollowCategoryResponse) {
                     toastr.success($translate.instant('Stop following this category'));
 
                     // Mark the category to be unfollowed.
@@ -321,6 +321,33 @@ module.exports = function (ngModule) {
                 });
         };
 
+        /*
+        * Raised when post is followed.
+        * */
+        $scope.fnFollowedPost = function (id, status, result) {
+            // Task is not complete.
+            if (status !== taskStatusConstant.afterAction)
+                return;
+
+            if (result !== taskResultConstant.success)
+                return;
+
+            $scope.buffer.followingPosts[id] = true;
+        };
+
+        /*
+        * Raised when post is unfollowed.
+        * */
+        $scope.fnUnfollowedPost = function (id, status, result) {
+            // Task is not complete.
+            if (status !== taskStatusConstant.afterAction)
+                return;
+
+            if (result !== taskResultConstant.success)
+                return;
+
+            $scope.buffer.followingPosts[id] = false;
+        };
 
         /*
         * Called when controller has been initialized.

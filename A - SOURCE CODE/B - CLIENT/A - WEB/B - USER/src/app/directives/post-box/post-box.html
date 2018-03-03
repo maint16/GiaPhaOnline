@@ -16,13 +16,13 @@
             </span>
         </div>
         <div class="pull-right box-tools"
-             ng-if="ngAudienceProfile">
+             ng-if="ngAudienceProfile && ngIsFollowPostAvailable">
             <div data-toggle="tooltip"
                  uib-tooltip="{{'Follow post' | translate}}">
                 <button class="btn btn-flat"
                         ng-class="{'bg-red': (ngIsFollowingPost)}"
                         type="button"
-                        data-toggle="dropdown">
+                        ng-click="fnTogglePostFollow()">
                     <span class="fa"
                           ng-class="{'fa-heart': ngIsFollowingPost, 'fa-heart-o': !ngIsFollowingPost}">
                     </span>

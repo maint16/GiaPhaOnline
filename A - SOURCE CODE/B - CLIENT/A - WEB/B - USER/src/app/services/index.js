@@ -9,6 +9,7 @@ module.exports = function (ngModule) {
     require('./common.service')(ngModule);
     require('./follow-post.service')(ngModule);
     require('./follow-category.service')(ngModule);
+    require('./follow-post.service')(ngModule);
     require('./oauth.service')(ngModule);
     require('./comment-report.service')(ngModule);
     require('./post-report.service')(ngModule);

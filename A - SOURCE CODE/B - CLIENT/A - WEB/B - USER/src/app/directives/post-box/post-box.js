@@ -17,11 +17,17 @@ module.exports = function (ngModule) {
                     ngIsFollowingPost: '=',
                     ngIsCommentAvailable: '=',
                     ngIsCommentSubmissionAvailable: '=',
+                    ngIsFollowPostAvailable: '=',
                     ngUsers: '=',
-                    ngAudienceProfile: '='
+                    ngAudienceProfile: '=',
+
+                    followingPost: '&',
+                    followedPost: '&',
+                    unfollowingPost: '&',
+                    unfollowedPost: '&'
                 },
-                controller: function ($scope, urlStates, appSettings, postTypeConstant,
-                                      userService, commentService) {
+                controller: function ($scope, urlStates, appSettings, postTypeConstant, taskStatusConstant, taskResultConstant,
+                                      userService, commentService, followPostService) {
 
                     //#region Properties
 
@@ -185,6 +191,40 @@ module.exports = function (ngModule) {
                             default:
                                 return 'Public';
                         }
+                    };
+
+                    /*
+                    * Toggle post follow.
+                    * */
+                    $scope.fnTogglePostFollow = function(){
+
+                        // Post is being followed. Unfollow it.
+                        if ($scope.ngIsFollowingPost){
+                            // Raise the callback.
+                            $scope.unfollowingPost({status: taskStatusConstant.beforeAction, result: taskResultConstant.success});
+                            followPostService.unfollowPost($scope.ngPost.id)
+                                .then(function(){
+                                    // Raise the callback.
+                                    $scope.unfollowedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.success});
+                                })
+                                .catch(function(){
+                                    // Raise the callback.
+                                    $scope.unfollowedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.fail});
+                                });
+                            return;
+                        }
+
+                        // Raise the callback.
+                        $scope.followingPost({status: taskStatusConstant.beforeAction, result: taskResultConstant.success});
+                        followPostService.followPost($scope.ngPost.id)
+                            .then(function(){
+                                // Raise the callback.
+                                $scope.followedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.success});
+                            })
+                            .catch(function(){
+                                // Raise the callback.
+                                $scope.followedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.fail});
+                            });
                     };
 
                     //#endregion
