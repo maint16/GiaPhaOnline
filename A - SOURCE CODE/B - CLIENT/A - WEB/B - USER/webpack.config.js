@@ -50,10 +50,6 @@ if (bProductionMode) {
     plugins.push(new webpack.optimize.UglifyJsPlugin({
         compress: {warnings: true}
     }));
-
-    plugins.push(new webpack.DefinePlugin({
-        'require.specified': 'require.resolve'
-    }));
 }
 
 /*
@@ -80,17 +76,24 @@ if (!bProductionMode) {
     plugins.push(browserSyncPlugin);
 }
 
+// Using bluebird promise instead of native promise.
+plugins.push(new webpack.ProvidePlugin({
+    'jQuery': 'jquery',
+    '$': 'jquery',
+    Promise: 'bluebird',
+    'CodeMirror': 'codemirror',
+    'Rx': 'rxjs/bundles/Rx'
+}));
+
+plugins.push(new webpack.DefinePlugin({
+    'require.specified': 'require.resolve'
+}));
+
 /*
 * Enlist default plugins.
 * */
 // Copy files.
 plugins.push(new CopyWebpackPlugin(options.copy));
-
-// Using bluebird promise instead of native promise.
-plugins.push(new webpack.ProvidePlugin({
-    Promise: 'bluebird'
-}));
-
 
 //Using this plugin to split source code into chunks
 //This is for improving loading process.
@@ -125,34 +128,34 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: require.resolve('jquery'),
-                use: [{
-                    loader: 'expose-loader',
-                    options: 'jQuery'
-                }, {
-                    loader: 'expose-loader',
-                    options: '$'
-                }]
-            },
-            {
-                test: require.resolve('rxjs/bundles/Rx'),
-                use:[
-                    {
-                        loader: 'expose-loader',
-                        options: 'Rx'
-                    }
-                ]
-            },
-            {
-                test: require.resolve('codemirror'),
-                use:[
-                    {
-                        loader: 'expose-loader',
-                        options: 'CodeMirror'
-                    }
-                ]
-            },
+            // {
+            //     test: require.resolve('jquery'),
+            //     use: [{
+            //         loader: 'expose-loader',
+            //         options: 'jQuery'
+            //     }, {
+            //         loader: 'expose-loader',
+            //         options: '$'
+            //     }]
+            // },
+            // {
+            //     test: require.resolve('rxjs/bundles/Rx'),
+            //     use:[
+            //         {
+            //             loader: 'expose-loader',
+            //             options: 'Rx'
+            //         }
+            //     ]
+            // },
+            // {
+            //     test: require.resolve('codemirror'),
+            //     use:[
+            //         {
+            //             loader: 'expose-loader',
+            //             options: 'CodeMirror'
+            //         }
+            //     ]
+            // },
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']

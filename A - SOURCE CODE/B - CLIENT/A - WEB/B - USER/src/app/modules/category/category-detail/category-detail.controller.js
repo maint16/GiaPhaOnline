@@ -156,7 +156,7 @@ module.exports = function (ngModule) {
 
                         $scope.buffer.users[user.id] = user;
                     });
-                })
+                });
         };
 
         /*
