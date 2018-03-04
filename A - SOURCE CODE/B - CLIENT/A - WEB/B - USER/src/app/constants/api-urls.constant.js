@@ -53,6 +53,10 @@ module.exports = function (ngModule) {
             getFollowingCategory: 'api/follow-category/search',
             followCategory: 'api/follow-category',
             unfollowCategory: 'api/follow-category'
+        },
+
+        postNotification:{
+            getPostNotifications: 'api/post-notification/search'
         }
 
     });

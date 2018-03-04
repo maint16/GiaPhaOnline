@@ -14,7 +14,8 @@ module.exports = function (ngModule) {
             default: 30,
             categoryPosts: 50,
             comments: 50,
-            categoriesSelector: 10
+            categoriesSelector: 10,
+            postNotifications: 20
         }
     });
 };
