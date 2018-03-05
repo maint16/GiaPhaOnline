@@ -391,8 +391,12 @@ namespace Main.Controllers
 
             // Search user in database.
             var accounts = UnitOfWork.Accounts.Search();
-            var account = await UnitOfWork.Accounts.Search().FirstOrDefaultAsync();
-            throw new NotImplementedException();
+            accounts = accounts.Where(x =>
+                x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) &&
+                x.Status == AccountStatus.Available);
+
+            // Find the first matched account.
+            var account = await accounts.FirstOrDefaultAsync();
 
             // User is not found.
             if (account == null)
@@ -415,7 +419,7 @@ namespace Main.Controllers
             token.ExpiredTime = TimeService.DateTimeUtcToUnix(expiration);
 
             // Save token into database.
-            //TimeService.Tokens.Insert(token);
+            UnitOfWork.Tokens.Insert(token);
 
             #endregion
 
@@ -461,7 +465,7 @@ namespace Main.Controllers
 
             //// Find active token.
             //var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            //var tokens = _unitOfWork.RepositoryTokens.Search();
+            //var tokens = _unitOfWork.Tokens.Search();
 
             //// Find token.
             //var result = from account in accounts
@@ -485,7 +489,7 @@ namespace Main.Controllers
             //var password = _encryptionService.Md5Hash(parameter.Password);
 
             //// Delete all found tokens.
-            //_unitOfWork.RepositoryTokens.Remove(result.Select(x => x.Token));
+            //_unitOfWork.Tokens.Remove(result.Select(x => x.Token));
             //await result.ForEachAsync(x => x.Account.Password = password);
 
             //// Commit changes.
