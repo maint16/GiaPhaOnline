@@ -28,6 +28,8 @@ require('moment');
 require('codemirror');
 require('summernote');
 require('rxjs/bundles/Rx');
+var firebase = require('firebase/app');
+require('firebase/messaging');
 
 // Angular plugins declaration.
 var angular = require('angular');
@@ -53,7 +55,7 @@ var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
     'datatables', 'datatables.bootstrap', 'angularMoment', 'summernote', 'ngSanitize',
     'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
 
-ngModule.config(function($urlRouterProvider, $translateProvider, $httpProvider, urlStates){
+ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider, urlStates) {
 
     // API interceptor
     $httpProvider.interceptors.push('apiInterceptor');
@@ -81,10 +83,10 @@ require('./configs/angular-paginator.config')(ngModule);
 /*
 * Application controller.
 * */
-ngModule.controller('appController', function($transitions, $timeout,
-                                              urlStates,
-                                              uiService,
-                                              $scope){
+ngModule.controller('appController', function ($transitions, $timeout,
+                                               urlStates,
+                                               uiService,
+                                               $scope) {
 
     //#region Properties
 
@@ -104,22 +106,48 @@ ngModule.controller('appController', function($transitions, $timeout,
     /*
     * Called when transition from state to state is successful.
     * */
-    $transitions.onSuccess({}, function($transition){
+    $transitions.onSuccess({}, function ($transition) {
 
-        $timeout(function() {
+        $timeout(function () {
             uiService.reloadWindowSize();
+
+            // Initialize firebase.
+            firebase.initializeApp({
+                'messagingSenderId': '420319602777'
+            });
+
+            var messaging = firebase.messaging();
+            messaging.usePublicVapidKey("BKa5DHBtGv4JchD7XuP571kHQKM-7T-5Bdj5KM3flRjVFDVtTDtX6CEe_WEeHuwmoV0O1DaQ7KClP6kqG618--A");
+            messaging.requestPermission()
+                .then(function () {
+                    console.log('Notification permission granted.');
+                    // TODO(developer): Retrieve an Instance ID token for use with FCM.
+                    messaging.getToken()
+                        .then(function (currentToken) {
+                            console.log(currentToken);
+                            $('#txtToken').val(currentToken);
+                        })
+                        .catch(function (err) {
+                            console.log('An error occurred while retrieving token. ', err);
+                        });
+
+                })
+                .catch(function (err) {
+                    console.log('Unable to get permission to notify.', err);
+                });
+
         }, 250);
 
         // Find destination of transaction.
         var destination = $transition.$to();
 
-        if (destination.includes[urlStates.authorizedLayout.name]){
+        if (destination.includes[urlStates.authorizedLayout.name]) {
             $scope.model.layoutClass = 'hold-transition skin-green-light layout-top-nav';
             return;
         }
 
         var urlStateUser = urlStates.user;
-        if (destination.includes[urlStateUser.login.name] || destination.includes[urlStateUser.googleLogin.name]){
+        if (destination.includes[urlStateUser.login.name] || destination.includes[urlStateUser.googleLogin.name]) {
             $scope.model.layoutClass = 'hold-transition login-page';
             return;
         }
@@ -144,3 +172,4 @@ require('./directives/index')(ngModule);
 
 // Module requirements.
 require('./modules/index')(ngModule);
+
