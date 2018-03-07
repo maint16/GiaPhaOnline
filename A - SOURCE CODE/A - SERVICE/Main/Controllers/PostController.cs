@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
+using SystemConstant.Models;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
@@ -125,7 +127,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditPost([FromQuery] int id, [FromBody] EditPostViewModel info)
+        public async Task<IActionResult> EditPost([FromRoute] int id, [FromBody] EditPostViewModel info)
         {
             #region Parameters validation
 
@@ -196,7 +198,7 @@ namespace Main.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePost([FromQuery] int id)
+        public async Task<IActionResult> DeletePost([FromRoute] int id)
         {
             // Find post by using post.
             var posts = _unitOfWork.Posts.Search();
@@ -227,6 +229,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [AllowAnonymous]
         public async Task<IActionResult> SearchForPosts([FromBody] SearchPostViewModel condition)
         {
             #region Parameters validation
@@ -258,26 +261,44 @@ namespace Main.Controllers
             if (condition.OwnerId != null)
                 posts = posts.Where(x => x.OwnerId == condition.OwnerId);
 
-            // Search conditions which are based on roles.
-            if (identity.Role == AccountRole.Admin)
-            {
-                // Statuses are defined.
-                if (condition.Statuses != null && condition.Statuses.Count > 0)
-                    posts = posts.Where(x => condition.Statuses.Contains(x.Status));
+            // Title search condition has been defined.
+            if (condition.Title != null && !string.IsNullOrWhiteSpace(condition.Title))
+                posts = _databaseFunction.SearchPropertyText(posts, x => x.Title,
+                    new TextSearch(TextSearchMode.ContainIgnoreCase, condition.Title));
 
-                // Types are defined. Only admin can see post types.
-                if (condition.Types != null && condition.Types.Count > 0)
-                    posts = posts.Where(x => condition.Types.Contains(x.Type));
+            // Search conditions which are based on roles.
+            if (identity != null)
+            {
+                if (identity.Role == AccountRole.Admin)
+                {
+                    // Statuses are defined.
+                    if (condition.Statuses != null && condition.Statuses.Count > 0)
+                        posts = posts.Where(x => condition.Statuses.Contains(x.Status));
+
+                    // Types are defined. Only admin can see post types.
+                    if (condition.Types != null && condition.Types.Count > 0)
+                        posts = posts.Where(x => condition.Types.Contains(x.Type));
+                }
+                else
+                {
+                    // Normal users can only see available posts or their own posts.
+                    posts = posts.Where(x =>
+                        x.Status == PostStatus.Available || (x.OwnerId == identity.Id && x.Status != PostStatus.Available));
+
+                    // Normal users can see public posts.
+                    posts = posts.Where(x => x.Type == PostType.Public);
+                }
             }
             else
             {
-                // Normal users can only see available posts or their own posts.
+                // Normal users can only see avaiable posts
                 posts = posts.Where(x =>
-                    x.Status == PostStatus.Available || (x.OwnerId == identity.Id && x.Status != PostStatus.Available));
+                    x.Status == PostStatus.Available);
 
-                // Normal users can see public posts.
+                // Normal users can see public posts
                 posts = posts.Where(x => x.Type == PostType.Public);
             }
+            
 
             // Created time has been defined.
             var createdTime = condition.CreatedTime;
@@ -316,7 +337,7 @@ namespace Main.Controllers
             if (sort != null)
                 posts = _databaseFunction.Sort(posts, sort.Direction, sort.Property);
             else
-                posts = _databaseFunction.Sort(posts, SortDirection.Decending, SortDirection.Decending);
+                posts = _databaseFunction.Sort(posts, SortDirection.Decending, PostSort.CreatedTime);
 
             var result = new SearchResult<IList<Post>>();
 

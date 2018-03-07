@@ -26,11 +26,6 @@ namespace Shared.ViewModels.Posts
         public string Title { get; set; }
 
         /// <summary>
-        ///     Body of post search.
-        /// </summary>
-        public string Body { get; set; }
-
-        /// <summary>
         /// Statuses of post.
         /// </summary>
         public HashSet<PostStatus> Statuses { get; set; }

@@ -140,7 +140,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("")]
-        public async Task<IActionResult> EditPostReport([FromQuery] int postId, [FromBody] EditPostReportViewModel info)
+        public async Task<IActionResult> EditPostReport([FromRoute] int postId, [FromBody] EditPostReportViewModel info)
         {
             #region Parameters validation
 
@@ -191,7 +191,7 @@ namespace Main.Controllers
         /// <param name="postId"></param>
         /// <returns></returns>
         [HttpDelete("")]
-        public async Task<IActionResult> DeletePostReport([FromQuery] int postId)
+        public async Task<IActionResult> DeletePostReport([FromRoute] int postId)
         {
             #region Find post reports
 

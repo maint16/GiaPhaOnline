@@ -104,7 +104,7 @@ namespace Main.Controllers
         /// <param name="postId"></param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task<IActionResult> StopFollowingPost([FromQuery] int postId)
+        public async Task<IActionResult> StopFollowingPost([FromRoute] int postId)
         {
             #region Check following duplicate
 

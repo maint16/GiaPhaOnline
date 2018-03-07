@@ -23,6 +23,7 @@ using SkiaSharp;
 
 namespace Main.Controllers
 {
+    [Route("api/[controller]")]
     public class CategoryController : Controller
     {
         #region Constructors
@@ -85,7 +86,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> FindCategory([FromQuery] int id)
+        public async Task<IActionResult> FindCategory([FromRoute] int id)
         {
             // Find category.
             var categories = _unitOfWork.Categories.Search();
@@ -161,7 +162,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCategory([FromQuery] int id, [FromBody] EditCategoryViewModel info)
+        public async Task<IActionResult> EditCategory([FromRoute] int id, [FromBody] EditCategoryViewModel info)
         {
             #region Parameters validations
 

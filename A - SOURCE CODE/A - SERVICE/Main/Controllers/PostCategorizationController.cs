@@ -139,7 +139,7 @@ namespace Main.Controllers
         /// <param name="categoryId"></param>
         /// <returns></returns>
         [HttpDelete("")]
-        public async Task<IActionResult> DeletePostCategorization([FromQuery] int postId, [FromQuery] int categoryId)
+        public async Task<IActionResult> DeletePostCategorization([FromRoute] int postId, [FromRoute] int categoryId)
         {
             // Get all categorization by using post and category information.
             var categorizations = _unitOfWork.PostCategorizations.Search();
