@@ -83,6 +83,11 @@ namespace SystemDatabase.Models.Contexts
         /// </summary>
         public virtual DbSet<Token> Tokens { get; set; }
 
+        /// <summary>
+        /// Devices list to send push notification
+        /// </summary>
+        public virtual DbSet<Device> Devices { get; set; }
+
         #endregion
 
         #region Methods
@@ -125,10 +130,11 @@ namespace SystemDatabase.Models.Contexts
             InitializePostReport(modelBuilder);
             InitializeSignalrConnection(modelBuilder);
             InitializeToken(modelBuilder);
+            InitializeDevice(modelBuilder);
 
             // Use model builder to specify composite primary keys.
             // Composite primary keys configuration
-        
+
             // This is for remove pluralization naming convention in database defined by Entity Framework.
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
                 entity.Relational().TableName = entity.DisplayName();
@@ -382,6 +388,22 @@ namespace SystemDatabase.Models.Contexts
 
             // Relationship between token and account.
             token.HasOne(x => x.Owner).WithMany(x => x.Tokens);
+        }
+
+        /// <summary>
+        /// Initialize device table.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void InitializeDevice(ModelBuilder modelBuilder)
+        {
+            // Find device instance.
+            var device = modelBuilder.Entity<Device>();
+
+            // Primary key initialization.
+            device.HasKey(x => x.Id);
+
+            // Relationship between account & device.
+            device.HasOne(x => x.Owner).WithMany(x => x.Devices);
         }
 
         #endregion

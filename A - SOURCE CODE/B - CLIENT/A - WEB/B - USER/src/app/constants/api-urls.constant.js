@@ -57,6 +57,10 @@ module.exports = function (ngModule) {
 
         postNotification:{
             getPostNotifications: 'api/post-notification/search'
+        },
+
+        pushNotification:{
+            addDevice: 'api/push-notification/device'
         }
 
     });

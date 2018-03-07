@@ -110,6 +110,11 @@ namespace SystemDatabase.Services
         /// </summary>
         private IRepository<SignalrConnection> _signalrConnections;
 
+        /// <summary>
+        /// Provide access to device database.
+        /// </summary>
+        private IRepository<Device> _devices;
+
         #endregion
 
         #region Repository accessors
@@ -186,6 +191,11 @@ namespace SystemDatabase.Services
         ///     Provides function to access token database.
         /// </summary>
         public IRepository<Token> Tokens => _tokens ?? (_tokens = new Repository<Token>(_dbContext));
+
+        /// <summary>
+        ///     Provides functions to access device database.
+        /// </summary>
+        public IRepository<Device> Devices => _devices ?? (_devices = new Repository<Device>(_dbContext));
 
         #endregion
 

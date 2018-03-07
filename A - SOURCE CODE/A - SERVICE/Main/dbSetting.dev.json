@@ -1,3 +1,9 @@
 ﻿{
-  
+  // Database connection string.
+  "connectionStrings": {
+    "sqlServerConnectionString": "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename='..\\iConfess.mdf';Integrated Security=True;Connect Timeout=30",
+    "sqlServerCompactConnectionString": "Data Source=..\\iConfess.sdf",
+    "sqliteConnectionString": "Data Source=.\\iConfess.db;"
+  }
+
 }

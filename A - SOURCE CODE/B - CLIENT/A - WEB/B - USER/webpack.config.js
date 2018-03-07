@@ -123,7 +123,7 @@ module.exports = {
             'angular-translate', 'angular-translate-loader-static-files',
             'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-summernote/dist/angular-summernote',
             'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector',
-            'angular-file-upload', 'ui-cropper'],
+            'angular-file-upload', 'ui-cropper', 'firebase/app', 'firebase/messaging'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {

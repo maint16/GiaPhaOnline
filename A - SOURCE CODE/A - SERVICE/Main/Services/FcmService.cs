@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Main.Interfaces.Services;
 using Main.Models.PushNotification;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Main.Services
 {
@@ -19,7 +21,12 @@ namespace Main.Services
         /// Fcm setting information.
         /// </summary>
         private readonly FcmSetting _fcmSetting;
-        
+
+        /// <summary>
+        /// Snake case serializer setting.
+        /// </summary>
+        private readonly JsonSerializerSettings _snakeCaseSerializerSettings;
+
         /// <summary>
         /// Url to send FCM notification message.
         /// </summary>
@@ -45,9 +52,21 @@ namespace Main.Services
         /// <param name="fcmSettingOptions"></param>
         public FcmService(IOptions<FcmSetting> fcmSettingOptions)
         {
+            // Initialize snake case naming convention.
+            _snakeCaseSerializerSettings = new JsonSerializerSettings();
+            var contractResolver = new DefaultContractResolver();
+            contractResolver.NamingStrategy = new SnakeCaseNamingStrategy();
+
+            // Initialize contract resolver.
+            _snakeCaseSerializerSettings.ContractResolver = contractResolver;
+
             _fcmSetting = fcmSettingOptions.Value;
+
+
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue($"key={_fcmSetting.ServerKey}");
+            //_httpClient.DefaultRequestHeaders.Add("Authorization", $"key={_fcmSetting.ServerKey}");
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={_fcmSetting.ServerKey}");
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("", $"key={_fcmSetting.ServerKey}");
         }
 
         #endregion
@@ -79,15 +98,12 @@ namespace Main.Services
         /// <param name="fcmMessage"></param>
         public async Task<HttpResponseMessage> SendNotification(FcmMessage fcmMessage)
         {
-            // Set base url to make request to.
-            _httpClient.BaseAddress = new Uri(UrlSendFcmNotification);
-
-            // Initialize http content to send to FCM Service.
-            var httpContent = new StringContent(JsonConvert.SerializeObject(fcmMessage));
-            httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
+            // Initialize http content.
+            var szHttpContent = JsonConvert.SerializeObject(fcmMessage, _snakeCaseSerializerSettings);
+            var httpContent = new StringContent(szHttpContent, Encoding.UTF8, "application/json");
+            
             // Make a request to notification server.
-            return await _httpClient.PostAsync("", httpContent);
+            return await _httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent);
         }
         
         #endregion

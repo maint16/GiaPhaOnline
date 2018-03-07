@@ -85,7 +85,7 @@ require('./configs/angular-paginator.config')(ngModule);
 * */
 ngModule.controller('appController', function ($transitions, $timeout,
                                                urlStates,
-                                               uiService,
+                                               uiService, pushNotificationService,
                                                $scope) {
 
     //#region Properties
@@ -109,6 +109,8 @@ ngModule.controller('appController', function ($transitions, $timeout,
     $transitions.onSuccess({}, function ($transition) {
 
         $timeout(function () {
+
+            // Reload window size.
             uiService.reloadWindowSize();
 
             // Initialize firebase.
@@ -121,19 +123,28 @@ ngModule.controller('appController', function ($transitions, $timeout,
             messaging.requestPermission()
                 .then(function () {
                     console.log('Notification permission granted.');
-                    // TODO(developer): Retrieve an Instance ID token for use with FCM.
-                    messaging.getToken()
-                        .then(function (currentToken) {
-                            console.log(currentToken);
-                            $('#txtToken').val(currentToken);
+                    return messaging.getToken()
+                        .then(function (fcmToken) {
+                            return fcmToken;
                         })
-                        .catch(function (err) {
+                        .catch(function (error) {
                             console.log('An error occurred while retrieving token. ', err);
+                            throw 'An error occurred while retrieving token.';
                         });
 
                 })
-                .catch(function (err) {
-                    console.log('Unable to get permission to notify.', err);
+                .then(function(fcmToken){
+
+                    // Initialize add device condition.
+                    var addDeviceCondition = {
+                        deviceId: fcmToken
+                    };
+
+                    // Call api service to add device.
+                    return pushNotificationService.addDevice(addDeviceCondition);
+                })
+                .catch(function (error) {
+                    console.log('Unable to get permission to notify.');
                 });
 
         }, 250);

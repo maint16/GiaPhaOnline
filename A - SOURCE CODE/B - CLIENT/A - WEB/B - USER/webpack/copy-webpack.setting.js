@@ -23,6 +23,10 @@ exports = module.exports = {
             {
                 from: path.resolve(src, 'favicon.ico'),
                 to: path.resolve(dist, 'favicon.ico')
+            },
+            {
+                from: path.resolve(app, 'firebase-messaging-sw.js'),
+                to: path.resolve(dist, 'firebase-messaging-sw.js')
             }]
     }
 };

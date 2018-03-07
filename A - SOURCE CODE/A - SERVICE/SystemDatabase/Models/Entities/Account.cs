@@ -160,6 +160,11 @@ namespace SystemDatabase.Models.Entities
         [JsonIgnore]
         public virtual ICollection<SignalrConnection> SignalrConnections { get; set; }
 
+        /// <summary>
+        /// One owner can have multiple devices.
+        /// </summary>
+        public virtual ICollection<Device> Devices { get; set; }
+
         #endregion
     }
 }

@@ -18,7 +18,6 @@ namespace Main.Models.PushNotification
         /// The value should be an array of registration tokens to which to send the multicast message. 
         /// The array must contain at least 1 and at most 1000 registration tokens. To send a message to a single device, use the to parameter.
         /// </summary>
-        [JsonProperty("registration_ids")]
         public List<string> RegistrationIds { get; set; }
 
         /// <summary>
@@ -32,7 +31,6 @@ namespace Main.Models.PushNotification
         /// This parameter identifies a group of messages (e.g., with collapse_key: "Updates Available") that can be collapsed, so that only the last message gets sent when delivery can be resumed. 
         /// This is intended to avoid sending too many of the same messages when the device comes back online or becomes active.
         /// </summary>
-        [JsonProperty("collapse_key")]
         public string CollapseKey { get; set; }
 
         /// <summary>
@@ -47,27 +45,23 @@ namespace Main.Models.PushNotification
         /// By default, notification messages are sent with high priority, and data messages are sent with normal priority. 
         /// Normal priority optimizes the client app's battery consumption and should be used unless immediate delivery is required. For messages with normal priority, the app may receive the message with unspecified delay.
         /// </summary>
-        [JsonProperty("content_available")]
-        public bool IsContentAvailable { get; set; }
+        public bool ContentAvailable { get; set; }
 
         /// <summary>
         /// This parameter specifies how long (in seconds) the message should be kept in FCM storage if the device is offline. The maximum time to live supported is 4 weeks, and the default value is 4 weeks
         /// For more information: https://firebase.google.com/docs/cloud-messaging/concept-options#ttl
         /// </summary>
-        [JsonProperty("time_to_live")]
         public int? TimeToLive { get; set; }
 
         /// <summary>
         /// This parameter specifies the package name of the application where the registration tokens must match in order to receive the message
         /// </summary>
-        [JsonProperty("restricted_package_name")]
         public string RestrictedPackageName { get; set; }
 
         /// <summary>
         /// This parameter, when set to true, allows developers to test a request without actually sending a message.
         /// </summary>
-        [JsonProperty("dry_run")]
-        public bool IsDryRun { get; set; } = false;
+        public bool DryRun { get; set; } = false;
 
         /// <summary>
         /// This parameter specifies the custom key-value pairs of the message's payload.

@@ -1,6 +1,8 @@
-﻿#define USE_SQL
+﻿#define USE_SQL_SERVER
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
@@ -13,6 +15,7 @@ using Main.Authentications.TokenValidators;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.ExternalAuthentication;
+using Main.Models.PushNotification;
 using Main.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -44,6 +47,11 @@ namespace Main
         /// </summary>
         public IConfigurationRoot Configuration { get; }
 
+        /// <summary>
+        /// Hosting environement configuration.
+        /// </summary>
+        public IHostingEnvironment HostingEnvironment { get; }
+
         #endregion
 
         #region Methods
@@ -58,9 +66,12 @@ namespace Main
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
-                //.AddJsonFile($"dbSetting.{env.EnvironmentName}.json", true)
+                .AddJsonFile($"dbSetting.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            // Set hosting environment.
+            HostingEnvironment = env;
         }
 
         /// <summary>
@@ -95,6 +106,9 @@ namespace Main
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();
+            services.AddScoped<IPushNotificationService, FcmService>();
+            services.AddScoped<ISendMailService, SendGridService>();
+            services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -102,11 +116,23 @@ namespace Main
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
 
+            // Get email cache option.
+            var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache").Get(typeof(Dictionary<string, EmailCacheOption>));
+            var emailCacheService = new EmailCacheService();
+            emailCacheService.HostingEnvironment = HostingEnvironment;
+            emailCacheService.ReadConfiguration(emailCacheOption);
+            services.AddSingleton<IEmailCacheService>(emailCacheService);
+
             // Load jwt configuration from setting files.
             services.Configure<JwtConfiguration>(Configuration.GetSection(nameof(JwtConfiguration)));
             services.Configure<ApplicationSetting>(Configuration.GetSection(nameof(ApplicationSetting)));
             services.Configure<GoogleCredential>(Configuration.GetSection(nameof(GoogleCredential)));
             services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
+            services.Configure<FcmSetting>(Configuration.GetSection(nameof(FcmSetting)));
+            services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
+
+            
+            
 
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();

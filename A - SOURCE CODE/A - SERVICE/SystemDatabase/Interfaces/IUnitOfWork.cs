@@ -73,6 +73,11 @@ namespace SystemDatabase.Interfaces
         /// </summary>
         IRepository<Token> Tokens { get; }
 
+        /// <summary>
+        /// Provides function to access Device datablase.
+        /// </summary>
+        IRepository<Device> Devices { get; }
+
         #endregion
 
         #region Methods

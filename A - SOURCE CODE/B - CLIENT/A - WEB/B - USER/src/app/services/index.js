@@ -14,4 +14,5 @@ module.exports = function (ngModule) {
     require('./oauth.service')(ngModule);
     require('./comment-report.service')(ngModule);
     require('./post-report.service')(ngModule);
+    require('./push-notification.service')(ngModule);
 };
