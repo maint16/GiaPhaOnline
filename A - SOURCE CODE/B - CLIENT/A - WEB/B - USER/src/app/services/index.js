@@ -4,6 +4,7 @@ module.exports = function (ngModule) {
     require('./user.service')(ngModule);
     require('./post.service')(ngModule);
     require('./post-categorization.service')(ngModule);
+    require('./post-notification.service')(ngModule);
     require('./comment.service')(ngModule);
     require('./category.service')(ngModule);
     require('./common.service')(ngModule);

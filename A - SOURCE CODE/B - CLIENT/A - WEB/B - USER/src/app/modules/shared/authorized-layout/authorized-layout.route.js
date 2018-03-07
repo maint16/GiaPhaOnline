@@ -15,7 +15,8 @@ module.exports = function (ngModule) {
             abstract: true,
             template: ngModuleHtmlTemplate,
             resolve: {
-                profile: function (userService, authenticationService) {
+                profile: function (notificationStatusConstant, appSettings,
+                                   userService, authenticationService, postNotificationService) {
 
                     // Get access token from storage.
                     var accessToken = authenticationService.getAuthenticationToken();
@@ -24,19 +25,50 @@ module.exports = function (ngModule) {
                     if (!accessToken || accessToken.length < 1)
                         return null;
 
-                    // Get profile from api.
-                    return userService.getProfile()
-                        .then(
-                            function success(getProfileResponse) {
-                                var getProfileResult = getProfileResponse.data;
-                                if (!getProfileResult)
-                                    return null;
+                    // Promises to be resolved.
+                    var promises = [];
 
-                                return getProfileResult;
-                            },
-                            function error(getProfileResponse){
-                                return null;
-                            });
+                    //#region Get profile
+
+                    // Get user profile promise.
+                    promises[0] = userService.getProfile()
+                        .then(function (getProfileResponse) {
+                            return getProfileResponse.data;
+                        });
+
+                    //#endregion
+
+                    //#region Get post notifications
+
+                    // Get post notification promise.
+                    var getPostNotificationCondition = {
+                        statuses: [notificationStatusConstant.unseen],
+                        pagination: {
+                            page: 1,
+                            records: appSettings.pagination.postNotifications
+                        }
+                    };
+
+                    // Add promise to queue.
+                    promises[1] = postNotificationService.search(getPostNotificationCondition)
+                        .then(function (getPostNotificationResponse) {
+                            return getPostNotificationResponse.data;
+                        });
+
+                    //#endregion
+
+                    return Promise.all(promises)
+                        .then(function (promiseResponses) {
+
+                            // Get profile.
+                            var profile = promiseResponses[0];
+                            var getPostNotificationResult = promiseResponses[1];
+
+                            // Merge profile information.
+                            profile['getPostNotificationsResult'] = getPostNotificationResult;
+
+                            return profile;
+                        });
                 }
             }
         });

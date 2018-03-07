@@ -71,7 +71,7 @@ namespace SystemDatabase.Interfaces
         /// <summary>
         ///     Provides functions to access token database.
         /// </summary>
-        IRepository<Token> RepositoryTokens { get; }
+        IRepository<Token> Tokens { get; }
 
         #endregion
 

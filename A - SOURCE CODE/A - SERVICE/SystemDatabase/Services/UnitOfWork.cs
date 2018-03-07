@@ -185,7 +185,7 @@ namespace SystemDatabase.Services
         /// <summary>
         ///     Provides function to access token database.
         /// </summary>
-        public IRepository<Token> RepositoryTokens => _tokens ?? (_tokens = new Repository<Token>(_dbContext));
+        public IRepository<Token> Tokens => _tokens ?? (_tokens = new Repository<Token>(_dbContext));
 
         #endregion
 

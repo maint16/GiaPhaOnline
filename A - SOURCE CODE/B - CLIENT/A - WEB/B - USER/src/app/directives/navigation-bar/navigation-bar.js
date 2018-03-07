@@ -14,6 +14,8 @@ module.exports = function (ngModule) {
             scope: {
                 profile: '=?',
                 ngApplicationTitle: '@',
+                postNotifications: '=',
+                totalPostNotifications: '=',
 
                 ngClickLogin: '&',
                 ngClickSignOut: '&'
