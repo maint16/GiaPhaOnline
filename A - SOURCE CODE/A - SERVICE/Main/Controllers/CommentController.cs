@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
@@ -137,7 +138,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditComment([FromQuery] int id, [FromBody] EditCommentViewModel info)
+        public async Task<IActionResult> EditComment([FromRoute] int id, [FromBody] EditCommentViewModel info)
         {
             #region Parameters validation
 
@@ -188,7 +189,7 @@ namespace Main.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteComment([FromQuery] int id)
+        public async Task<IActionResult> DeleteComment([FromRoute] int id)
         {
             #region Find comment
 
@@ -243,12 +244,22 @@ namespace Main.Controllers
 
             #region Search for information
 
+            // Get all comments
             var comments = UnitOfWork.Comments.Search();
             comments = SearchComments(comments, condition);
 
             #endregion
 
             #region Count and paging
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                comments =
+                    DbSharedService.Sort(comments, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                comments = DbSharedService.Sort(comments, SortDirection.Decending,
+                    CommentSort.CreatedTime);
 
             var result = new SearchResult<IList<Comment>>();
             result.Total = await comments.CountAsync();

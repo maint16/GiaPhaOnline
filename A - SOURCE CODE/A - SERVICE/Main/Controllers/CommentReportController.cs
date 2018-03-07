@@ -134,7 +134,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("")]
-        public async Task<IActionResult> EditCommentReport([FromQuery] int commentId, [FromBody] EditCommentReportViewModel info)
+        public async Task<IActionResult> EditCommentReport([FromRoute] int commentId, [FromBody] EditCommentReportViewModel info)
         {
             #region Parameters validation
 
@@ -185,7 +185,7 @@ namespace Main.Controllers
         /// <param name="commentId"></param>
         /// <returns></returns>
         [HttpDelete("")]
-        public async Task<IActionResult> DeleteCommentReport([FromQuery] int commentId)
+        public async Task<IActionResult> DeleteCommentReport([FromRoute] int commentId)
         {
             #region Comment report search
 

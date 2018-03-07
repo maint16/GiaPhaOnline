@@ -81,7 +81,7 @@ namespace Main.Controllers
         /// <param name="categoryId"></param>
         /// <returns></returns>
         [HttpGet("")]
-        public async Task<IActionResult> FollowCategory([FromQuery] int categoryId)
+        public async Task<IActionResult> FollowCategory([FromRoute] int categoryId)
         {
             #region Find category
 
@@ -140,7 +140,7 @@ namespace Main.Controllers
         /// <param name="categoryId"></param>
         /// <returns></returns>
         [HttpDelete("")]
-        public async Task<IActionResult> StopFollowingCategory([FromQuery] int categoryId)
+        public async Task<IActionResult> StopFollowingCategory([FromRoute] int categoryId)
         {
             // Find request identity.
             var identity = _identityService.GetProfile(HttpContext);
