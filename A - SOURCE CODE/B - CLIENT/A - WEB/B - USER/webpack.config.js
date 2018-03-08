@@ -76,18 +76,11 @@ if (!bProductionMode) {
     plugins.push(browserSyncPlugin);
 }
 
-// Using bluebird promise instead of native promise.
-plugins.push(new webpack.ProvidePlugin({
-    'jQuery': 'jquery',
-    '$': 'jquery',
-    Promise: 'bluebird',
-    'CodeMirror': 'codemirror',
-    'Rx': 'rxjs/bundles/Rx'
-}));
-
-plugins.push(new webpack.DefinePlugin({
-    'require.specified': 'require.resolve'
-}));
+// // Using bluebird promise instead of native promise.
+// plugins.push(new webpack.ProvidePlugin({
+//     Promise: 'bluebird',
+//     'Rx': 'rxjs/bundles/Rx'
+// }));
 
 /*
 * Enlist default plugins.
@@ -121,41 +114,41 @@ module.exports = {
         'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/Rx',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
-            'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-summernote/dist/angular-summernote',
+            'datatables.net/js/jquery.dataTables', 'angular-datatables',
             'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector',
             'angular-file-upload', 'ui-cropper', 'firebase/app', 'firebase/messaging'],
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {
         rules: [
-            // {
-            //     test: require.resolve('jquery'),
-            //     use: [{
-            //         loader: 'expose-loader',
-            //         options: 'jQuery'
-            //     }, {
-            //         loader: 'expose-loader',
-            //         options: '$'
-            //     }]
-            // },
-            // {
-            //     test: require.resolve('rxjs/bundles/Rx'),
-            //     use:[
-            //         {
-            //             loader: 'expose-loader',
-            //             options: 'Rx'
-            //         }
-            //     ]
-            // },
-            // {
-            //     test: require.resolve('codemirror'),
-            //     use:[
-            //         {
-            //             loader: 'expose-loader',
-            //             options: 'CodeMirror'
-            //         }
-            //     ]
-            // },
+            {
+                test: require.resolve('jquery'),
+                use: [{
+                    loader: 'expose-loader',
+                    options: 'jQuery'
+                }, {
+                    loader: 'expose-loader',
+                    options: '$'
+                }]
+            },
+            {
+                test: require.resolve('rxjs/bundles/Rx'),
+                use:[
+                    {
+                        loader: 'expose-loader',
+                        options: 'Rx'
+                    }
+                ]
+            },
+            {
+                test: require.resolve('bluebird'),
+                use:[
+                    {
+                        loader: 'expose-loader',
+                        options: 'Promise'
+                    }
+                ]
+            },
             {
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']

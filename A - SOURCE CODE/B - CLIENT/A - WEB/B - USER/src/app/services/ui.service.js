@@ -9,7 +9,6 @@ module.exports = function(ngModule){
         * */
         this.reloadWindowSize = function(){
             $(window).resize();
-            console.log('Resize');
         };
 
         /*

@@ -6,9 +6,9 @@ module.exports = function(ngModule){
         /*
         * Get user information.
         * */
-        this.loadUsers = function(ids){
+        this.loadUsers = function(conditions){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.loadUsers;
-            return $http.post(url, {ids: ids});
+            return $http.post(url, conditions);
         };
 
         /*

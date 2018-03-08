@@ -20,7 +20,7 @@ module.exports = function (ngModule) {
         post: {
             getPosts: 'api/post/search',
             addPost: 'api/post',
-            loadPosts: 'api/post/load'
+            loadPosts: 'api/post/load-posts'
         },
 
         postReport:{
