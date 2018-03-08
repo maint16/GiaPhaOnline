@@ -274,13 +274,17 @@ module.exports = function (ngModule) {
         * Confirm to add a post.
         * */
         $scope.fnAddPost = function (post) {
-            var model = {
-                title: post.title,
-                content: post.content,
-                type: post.type
-            };
+            // Add post to system.
+            postService.addPost(post)
+                .then(function(addPostResponse){
 
-            console.log('Hello world');
+                    // Dismiss the modal.
+                    if ($scope.modals.addPost)
+                        $scope.modals.addPost.dismiss();
+
+                    // Reload the post list.
+                    $scope.loadPosts(null);
+                });
         };
 
         /*

@@ -13,9 +13,9 @@ require('../../node_modules/angular-toastr/dist/angular-toastr.css');
 require('../../node_modules/font-awesome/css/font-awesome.css');
 require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
 require('../../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
-require('../../node_modules/summernote/dist/summernote.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
 require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
+require('../../node_modules/ng-multi-selector/ng-multi-selector.css');
 require('../../src/app/app.css');
 
 // Import jquery lib.
@@ -25,8 +25,7 @@ require('bootstrap');
 require('admin-lte');
 require('datatables.net/js/jquery.dataTables');
 require('moment');
-require('codemirror');
-require('summernote');
+
 require('rxjs/bundles/Rx');
 var firebase = require('firebase/app');
 require('firebase/messaging');
@@ -41,18 +40,16 @@ require('angular-translate-loader-static-files');
 require('angular-datatables');
 require('angular-moment');
 require('angular-ui-bootstrap');
-require('angular-summernote/dist/angular-summernote');
 require('angular-sanitize');
 require('angular-confirm1');
 require('ng-multi-selector');
 require('angular-file-upload');
 require('ui-cropper');
-
 // Module declaration.
 var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
     'ui.bootstrap', 'ngMultiSelector',
     'pascalprecht.translate',
-    'datatables', 'datatables.bootstrap', 'angularMoment', 'summernote', 'ngSanitize',
+    'datatables', 'datatables.bootstrap', 'angularMoment', 'ngSanitize',
     'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
 
 ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider, urlStates) {

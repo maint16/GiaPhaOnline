@@ -12,9 +12,9 @@ module.exports = function (ngModule) {
                 ngClickCreatePost: '&',
                 ngClickCancel: '&'
             },
-            controller: function($scope, urlStates, postTypeConstant,
-                                 appSettings,
-                                 categoryService){
+            controller: function ($scope, urlStates, postTypeConstant,
+                                  appSettings,
+                                  categoryService) {
 
                 //#region Properties
 
@@ -24,9 +24,9 @@ module.exports = function (ngModule) {
                 // Model which is for information binding.
                 $scope.model = {
                     title: null,
-                    content: null,
+                    body: null,
                     type: postTypeConstant.public,
-                    categories: null
+                    categories: []
                 };
 
                 // Cache information.
@@ -57,14 +57,14 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when cancel button is clicked.
                 * */
-                $scope.cancel = function(){
+                $scope.cancel = function () {
                     $scope.ngClickCancel();
                 };
 
                 /*
                 * Callback which is fired when component is initiated.
                 * */
-                $scope.fnInit = function(){
+                $scope.fnInit = function () {
                     // Search for categories.
                     $scope.fnGetCategories(null);
                 };
@@ -72,34 +72,39 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when post is created.
                 * */
-                $scope.fnClickCreatePost = function($event){
+                $scope.fnClickCreatePost = function ($event) {
                     // Event is valid. Prevent its default behaviour.
                     if ($event)
                         $event.preventDefault();
 
                     // Form is invalid.
-                    if (!$scope.postInitiatorForm.$invalid)
+                    if ($scope.postInitiatorForm.$invalid)
                         return;
 
-                    $scope.ngClickCreatePost({post: $scope.model});
+                    var model = angular.copy($scope.model);
+                    model.categories = $scope.model.categories.map(function (x) {
+                        return x.id;
+                    });
+
+                    $scope.ngClickCreatePost({post: model});
                 };
 
                 /*
                 * Event which is fired when multi selector control searches for a category.
                 * */
-                $scope.fnGetCategories = function(keyword){
+                $scope.fnGetCategories = function (keyword) {
 
                     // Build query condition.
                     var getCategoriesCondition = {
                         name: keyword,
-                        pagination:{
+                        pagination: {
                             page: 1,
                             records: appSettings.pagination.categoriesSelector
                         }
                     };
 
                     categoryService.getCategories(getCategoriesCondition)
-                        .then(function(getCategoriesResponse){
+                        .then(function (getCategoriesResponse) {
 
                             // Get the result.
                             var getCategoriesResult = getCategoriesResponse.data;
@@ -119,7 +124,7 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is raised when close button is clicked.
                 * */
-                $scope.fnClickCloseBox = function(){
+                $scope.fnClickCloseBox = function () {
                     $scope.ngClickCancel();
                 };
 

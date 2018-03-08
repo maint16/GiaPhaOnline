@@ -11,6 +11,22 @@ module.exports = function(ngModule){
             return $http.post(url, conditions);
         };
 
+        /*
+        * Add post to system.
+        * */
+        this.addPost = function(condition){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.post.addPost;
+            return $http.post(url, condition);
+        };
+
+        /*
+        * Search for posts by using indexes.
+        * */
+        this.loadPosts = function(conditions){
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.post.loadPosts;
+            return $http.post(url, conditions);
+        };
+
         //#endregion
     });
 };

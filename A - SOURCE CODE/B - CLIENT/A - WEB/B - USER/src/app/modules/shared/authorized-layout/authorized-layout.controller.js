@@ -3,7 +3,8 @@ module.exports = function (ngModule) {
         function (oAuthSettings,
                   $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window,
-                  authenticationService, userService) {
+                  notificationStatusConstant, paginationConstant,
+                  authenticationService, userService, postNotificationService) {
 
             //#region Properties
 
@@ -18,6 +19,17 @@ module.exports = function (ngModule) {
             // Whether google login has been loaded or not.
             $scope.bIsGoogleLoginLoaded = false;
             $scope.bIsFacebookLoginLoaded = false;
+
+            // Temporary data which is for caching.
+            $scope.buffer = {
+                users: {},
+                posts: {}
+            };
+
+            // Search result buffer.
+            $scope.result = {
+                postNotifications: []
+            };
 
             //#endregion
 
@@ -231,6 +243,78 @@ module.exports = function (ngModule) {
                 });
             };
 
+            /*
+            * Load post notifications list.
+            * */
+            $scope.fnLoadPostNotifications = function(){
+
+                // Build the load condition.
+                var getPostNotificationCondition = {
+                    statuses: [notificationStatusConstant.unseen],
+                    pagination:{
+                        page: 1,
+                        records: appSettings.pagination.postNotifications
+                    }
+                };
+
+                // Search post notification by using specific conditions.
+                postNotificationService.search(getPostNotificationCondition)
+                    .then(function(getPostNotificationResponse){
+                        // Get post notification result.
+                        var getPostNotificationResult = getPostNotificationResponse.data;
+
+                        if (!getPostNotificationResult)
+                            throw 'Cannot get post notifications';
+
+                        var notifications = getPostNotificationResult.records;
+                        if (!notifications || notifications.length < 1)
+                            throw 'Cannot get post notifications';
+
+                        return getPostNotificationResult;
+                    })
+                    .then(function(getPostNotificationResult){
+
+                        // Get list of notifications.
+                        var notifications = getPostNotificationResult.records;
+
+                        // Promises list to be complete.
+                        var promises = [];
+
+                        //#region Get users promises
+
+                        // Build a list of users that don't exist in buffer.
+                        var userIds = [];
+
+                        // Build a list of posts that don't exist in buffer.
+                        var postIds = [];
+
+                        // Find a list of users that are not in buffer.
+                        angular.forEach(notifications, function(notification, iterator){
+
+
+                            // Owner is not in buffer.
+                            if (!$scope.buffer.users[notification.ownerId]){
+                                userIds.push(notification.ownerId);
+                            }
+
+                            // Build a list of posts that are not in buffer.
+                            if (!$scope.buffer.posts[notification.postId]){
+                                postIds.push(notification.postId);
+                            }
+
+                        });
+                        //#endregion
+
+                        // Find a list of posts that don't exist in buffer.
+                        var postIds = notifications.map(function(notification){
+                            return !$scope.buffer.posts[notification.postId];
+                        });
+
+
+
+                    });
+
+            };
             //#endregion
         });
 };

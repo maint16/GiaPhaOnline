@@ -3,7 +3,7 @@
 }
 
 /* Truncate content of div tag */
-div.truncate{
+.truncate{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
