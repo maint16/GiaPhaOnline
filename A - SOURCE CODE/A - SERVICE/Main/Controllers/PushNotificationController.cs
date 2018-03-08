@@ -70,7 +70,7 @@ namespace Main.Controllers
         /// Add device to system.
         /// </summary>
         /// <returns></returns>
-        [HttpPost("")]
+        [HttpPost("device")]
         [AllowAnonymous]
         public async Task<IActionResult> AddDevice([FromBody] AddDeviceViewModel info)
         {
@@ -132,6 +132,17 @@ namespace Main.Controllers
             if (bHasInformationChanged)
                 await UnitOfWork.CommitAsync();
             return Ok();
+        }
+
+        /// <summary>
+        /// Search user devices by using specific conditions.
+        /// </summary>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        [HttpPost("device/search")]
+        public async Task<IActionResult> SearchDevices([FromBody] SearchUserDeviceViewModel conditions)
+        {
+            throw new NotImplementedException();
         }
 
 #if DEBUG
