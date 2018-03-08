@@ -32,14 +32,7 @@
                 <div class="col-sm-12">
                     <label>{{'Content' | translate}}</label> <b class="text-danger">*</b>
                     <div class="form-group note-cant-resize">
-                        <input class="hidden"
-                               name="txtPostContent"
-                               hidden
-                               ng-model="model.content"
-                               required>
-                        <summernote ng-model="model.content"
-                                    height="300"
-                                    config="editorOptions"></summernote>
+                        <textarea ng-model="model.body" rows="5" class="form-control"></textarea>
                     </div>
                 </div>
             </div>
@@ -75,6 +68,7 @@
         <div class="row">
             <div class="col-sm-12 text-center">
                 <button class="btn btn-flat btn-primary"
+                        type="submit"
                         ng-disabled="postInitiatorForm.$invalid">{{'OK' | translate}}
                 </button>
             </div>

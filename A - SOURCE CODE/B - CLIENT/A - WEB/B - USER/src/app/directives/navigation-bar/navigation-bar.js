@@ -13,8 +13,10 @@ module.exports = function (ngModule) {
             },
             scope: {
                 profile: '=?',
+                ngUsers: '=?',
                 ngApplicationTitle: '@',
-                postNotifications: '=',
+                ngPostNotifications: '=?',
+                ngPosts: '=?',
                 totalPostNotifications: '=',
 
                 ngClickLogin: '&',

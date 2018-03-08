@@ -118,7 +118,7 @@ plugins.push(new HtmlWebpackPlugin({
 module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
-        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'summernote', 'rxjs/bundles/Rx',
+        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/Rx',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
             'datatables.net/js/jquery.dataTables', 'angular-datatables', 'angular-summernote/dist/angular-summernote',

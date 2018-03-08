@@ -188,8 +188,9 @@
 
     <div class="row form-group">
         <div class="col-sm-12">
-            <button class="btn btn-flat btn-block btn-sm btn-primary"
-                    ng-click="fnClickAddPost()">Add</button>
+            <button class="btn btn-flat btn-block btn-primary"
+                    ng-if="profile"
+                    ng-click="fnClickAddPost()">{{'Add a post' | translate}}</button>
         </div>
     </div>
 
