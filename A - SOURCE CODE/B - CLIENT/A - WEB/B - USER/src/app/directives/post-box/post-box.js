@@ -113,8 +113,12 @@ module.exports = function (ngModule) {
                                         return comment.ownerId;
                                     });
 
+                                var getUsersCondition = {
+                                    userIds: userIds
+                                };
+
                                 // Load owners information.
-                                userService.loadUsers(userIds)
+                                userService.loadUsers(getUsersCondition)
                                     .then(function (getUsersResponse) {
                                         var getUsersResult = getUsersResponse.data;
                                         if (!getUsersResult)

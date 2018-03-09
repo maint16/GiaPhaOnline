@@ -7,6 +7,6 @@ module.exports = function(ngModule){
         uibPaginationConfig.nextText = '>';
         uibPaginationConfig.previousText = '<';
         uibPaginationConfig.firstText = '<<';
-        uibPaginationConfig.maxSize = 7;
+        uibPaginationConfig.maxSize = 5;
     });
 };

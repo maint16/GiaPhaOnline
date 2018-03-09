@@ -92,6 +92,9 @@ ngModule.controller('appController', function ($transitions, $timeout,
         layoutClass: ''
     };
 
+    // Check whether fcm service has been initialized before.
+    $scope.bIsFcmInitialized = false;
+
     //#endregion
 
     //#region Methods
@@ -110,39 +113,44 @@ ngModule.controller('appController', function ($transitions, $timeout,
             // Reload window size.
             uiService.reloadWindowSize();
 
-            // Initialize firebase.
-            firebase.initializeApp({
-                'messagingSenderId': '420319602777'
-            });
-
-            var messaging = firebase.messaging();
-            messaging.usePublicVapidKey("BKa5DHBtGv4JchD7XuP571kHQKM-7T-5Bdj5KM3flRjVFDVtTDtX6CEe_WEeHuwmoV0O1DaQ7KClP6kqG618--A");
-            messaging.requestPermission()
-                .then(function () {
-                    console.log('Notification permission granted.');
-                    return messaging.getToken()
-                        .then(function (fcmToken) {
-                            return fcmToken;
-                        })
-                        .catch(function (error) {
-                            console.log('An error occurred while retrieving token. ', err);
-                            throw 'An error occurred while retrieving token.';
-                        });
-
-                })
-                .then(function(fcmToken){
-
-                    // Initialize add device condition.
-                    var addDeviceCondition = {
-                        deviceId: fcmToken
-                    };
-
-                    // Call api service to add device.
-                    return pushNotificationService.addDevice(addDeviceCondition);
-                })
-                .catch(function (error) {
-                    console.log('Unable to get permission to notify.');
+            if (!$scope.bIsFcmInitialized){
+                // Initialize firebase.
+                firebase.initializeApp({
+                    'messagingSenderId': '420319602777'
                 });
+
+                // Request for push notification service.
+                var messaging = firebase.messaging();
+                messaging.usePublicVapidKey("BKa5DHBtGv4JchD7XuP571kHQKM-7T-5Bdj5KM3flRjVFDVtTDtX6CEe_WEeHuwmoV0O1DaQ7KClP6kqG618--A");
+                messaging.requestPermission()
+                    .then(function () {
+                        return messaging.getToken()
+                            .then(function (fcmToken) {
+                                return fcmToken;
+                            })
+                            .catch(function (error) {
+                                console.log('An error occurred while retrieving token. ', err);
+                                throw 'An error occurred while retrieving token.';
+                            });
+                    })
+                    .then(function(fcmToken){
+
+                        // Initialize add device condition.
+                        var addDeviceCondition = {
+                            deviceId: fcmToken
+                        };
+
+                        // Mark fcm service as has been initialized.
+                        $scope.bIsFcmInitialized = true;
+
+                        // Call api service to add device.
+                        return pushNotificationService.addDevice(addDeviceCondition);
+                    })
+                    .catch(function (error) {
+                        console.log('Unable to get permission to notify.');
+                    });
+            }
+
 
         }, 250);
 

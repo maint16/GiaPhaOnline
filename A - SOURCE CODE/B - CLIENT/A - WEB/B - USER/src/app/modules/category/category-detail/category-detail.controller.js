@@ -139,7 +139,13 @@ module.exports = function (ngModule) {
         * Load users
         * */
         $scope.loadUsers = function (ids) {
-            userService.loadUsers(ids)
+
+            // Build users loading condition.
+            var getUsersCondition = {
+                ids: ids
+            };
+
+            userService.loadUsers(getUsersCondition)
                 .then(function (loadUserResponse) {
                     var loadUserResult = loadUserResponse.data;
                     if (!loadUserResult)

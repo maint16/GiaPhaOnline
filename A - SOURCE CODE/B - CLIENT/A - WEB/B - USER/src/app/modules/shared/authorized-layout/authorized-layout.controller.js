@@ -1,10 +1,10 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
-        function (oAuthSettings,
-                  $scope, $state, $transitions, uiService, oAuthService,
+        function (oAuthSettings, appSettings,
+    $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window,
-                  notificationStatusConstant, paginationConstant,
-                  authenticationService, userService, postNotificationService) {
+                  notificationStatusConstant,
+                  authenticationService, userService, postNotificationService, postService) {
 
             //#region Properties
 
@@ -45,6 +45,9 @@ module.exports = function (ngModule) {
 
                 // Add facebook sdk to page.
                 oAuthService.addFacebookSdk();
+
+                // Load post notifications.
+                $scope.fnLoadPostNotifications();
             };
 
             /*
@@ -139,13 +142,8 @@ module.exports = function (ngModule) {
                     $scope.modals.login = null;
                 }
 
-                // FB.getLoginStatus(function(response) {
-                //     console.log(response);
-                //     debugger;
-                // });
-
                 // Sign user into system.
-                FB.login(function(response) {
+                FB.login(function (response) {
                     console.log(response);
 
                     // Not connected to facebook api.
@@ -163,7 +161,7 @@ module.exports = function (ngModule) {
 
 
                     userService.fnUseFacebookLogin({code: szAccessToken})
-                        .then(function(loginResponse){
+                        .then(function (loginResponse) {
                             var loginResult = loginResponse.data;
                             if (!loginResult)
                                 return;
@@ -205,7 +203,6 @@ module.exports = function (ngModule) {
                 $scope.modals.login = null;
             };
 
-
             /*
             * Event which is fired when Google SDK has been loaded.
             * */
@@ -229,7 +226,7 @@ module.exports = function (ngModule) {
             /*
             Event which is fired when facebook sdk has been initiated successfully.
             */
-            $window.fbAsyncInit = function() {
+            $window.fbAsyncInit = function () {
 
                 // Enable facebook o-auth.
                 $scope.bIsFacebookLoginLoaded = true;
@@ -246,12 +243,12 @@ module.exports = function (ngModule) {
             /*
             * Load post notifications list.
             * */
-            $scope.fnLoadPostNotifications = function(){
+            $scope.fnLoadPostNotifications = function () {
 
                 // Build the load condition.
                 var getPostNotificationCondition = {
                     statuses: [notificationStatusConstant.unseen],
-                    pagination:{
+                    pagination: {
                         page: 1,
                         records: appSettings.pagination.postNotifications
                     }
@@ -259,7 +256,7 @@ module.exports = function (ngModule) {
 
                 // Search post notification by using specific conditions.
                 postNotificationService.search(getPostNotificationCondition)
-                    .then(function(getPostNotificationResponse){
+                    .then(function (getPostNotificationResponse) {
                         // Get post notification result.
                         var getPostNotificationResult = getPostNotificationResponse.data;
 
@@ -272,7 +269,7 @@ module.exports = function (ngModule) {
 
                         return getPostNotificationResult;
                     })
-                    .then(function(getPostNotificationResult){
+                    .then(function (getPostNotificationResult) {
 
                         // Get list of notifications.
                         var notifications = getPostNotificationResult.records;
@@ -289,29 +286,93 @@ module.exports = function (ngModule) {
                         var postIds = [];
 
                         // Find a list of users that are not in buffer.
-                        angular.forEach(notifications, function(notification, iterator){
-
+                        angular.forEach(notifications, function (notification, iterator) {
 
                             // Owner is not in buffer.
-                            if (!$scope.buffer.users[notification.ownerId]){
+                            if (!$scope.buffer.users[notification.ownerId]) {
                                 userIds.push(notification.ownerId);
                             }
 
                             // Build a list of posts that are not in buffer.
-                            if (!$scope.buffer.posts[notification.postId]){
+                            if (!$scope.buffer.posts[notification.postId]) {
                                 postIds.push(notification.postId);
                             }
 
                         });
+
+                        //#region Load user
+
+                        // Build promises to load users.
+                        var getUsersCondition = {
+                            ids: userIds
+                        };
+
+                        // Build promise.
+                        var getUsersPromise = userService.loadUsers(getUsersCondition)
+                            .then(function (getUsersResponse) {
+                                // Get response result.
+                                var getUsersResult = getUsersResponse.data;
+
+                                if (!getUsersResult)
+                                    return;
+
+                                // Get users list.
+                                var users = getUsersResult.records;
+
+                                // List is empty.
+                                if (!users || users.length < 1)
+                                    return;
+
+                                // Add user to buffer.
+                                angular.forEach(users, function (user, iterator) {
+                                    $scope.buffer.users[user.id] = user;
+                                });
+                            });
+
+                        // Add promise to list.
+                        promises.push(getUsersPromise);
+
                         //#endregion
 
-                        // Find a list of posts that don't exist in buffer.
-                        var postIds = notifications.map(function(notification){
-                            return !$scope.buffer.posts[notification.postId];
+                        //#region Load posts
+
+                        // Build post loading condition.
+                        var getPostsCondition = {
+                            ids: postIds
+                        };
+
+                        // Build get posts promise.
+                        var getPostsPromise = postService.loadPosts(getPostsCondition)
+                            .then(function (getPostsResponse) {
+
+                                // Get response result.
+                                var getPostsResult = getPostsResponse.data;
+                                if (!getPostsResult)
+                                    return;
+
+                                // Get posts list.
+                                var posts = getPostsResult.records;
+                                if (!posts || posts.length < 1)
+                                    return;
+
+                                // Add post to buffer.
+                                angular.forEach(posts, function (post, iterator) {
+                                    $scope.buffer.posts[post.id] = post;
+                                });
+                            });
+
+                        // Add promise to array.
+                        promises.push(getPostsPromise);
+
+                        //#endregion
+
+                        // Wait for all promises to be resolved.
+                        return Promise.all(promises).then(function () {
+                            return getPostNotificationResult;
                         });
-
-
-
+                    })
+                    .then(function (getPostNotificationResult) {
+                        $scope.result.postNotifications = getPostNotificationResult;
                     });
 
             };

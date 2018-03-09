@@ -4,8 +4,10 @@
 
     <!--Navigation bar rendering-->
     <navigation-bar profile="profile"
-                    post-notifications="profile.getPostNotificationsResult.records"
-                    total-post-notifications="profile.getPostNotificationsResult.total"
+                    ng-users="buffer.users"
+                    ng-posts="buffer.posts"
+                    ng-post-notifications="result.postNotifications.records"
+                    total-post-notifications="result.postNotifications.total"
                     ng-application-title="iConfess"
                     ng-click-login="fnClickLogin()"
                     ng-click-sign-out="fnSignOut()">
