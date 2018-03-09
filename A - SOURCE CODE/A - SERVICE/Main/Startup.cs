@@ -1,4 +1,4 @@
-﻿#define USE_SQL_SERVER
+﻿#define USE_IN_MEMORY
 
 using System;
 using System.Collections.Generic;
@@ -91,6 +91,9 @@ namespace Main
             sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+#elif USE_IN_MEMORY
+            services.AddDbContext<RelationalDatabaseContext>(
+                options => options.UseInMemoryDatabase("iConfess"));
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(

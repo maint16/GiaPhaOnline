@@ -308,6 +308,7 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("basic-register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterAccountViewModel parameters)
         {
             #region Parameters validation
