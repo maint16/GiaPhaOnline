@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
+using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
@@ -24,6 +25,7 @@ using Microsoft.Extensions.Options;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels;
 using Shared.ViewModels.Accounts;
 
 namespace Main.Controllers
@@ -65,6 +67,9 @@ namespace Main.Controllers
             _applicationSettings = applicationSettings.Value;
             _logger = logger;
             _externalAuthenticationService = externalAuthenticationService;
+            _unitOfWork = unitOfWork;
+            _databaseFunction = dbSharedService;
+            _identityService = identityService;
         }
 
         #endregion
@@ -102,13 +107,13 @@ namespace Main.Controllers
 
             // Hash the password first.
             var hashedPassword = _encryptionService.Md5Hash(parameters.Password);
-            
+
             // Search for account which is active and information is correct.
             var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
                 x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase) &&
                 x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == AccountType.Basic);
-            
+
             // Find the first account in database.
             var account = await accounts.FirstOrDefaultAsync();
             if (account == null)
@@ -152,14 +157,14 @@ namespace Main.Controllers
             #region Authentication request
 
             // Find token information.
-            var tokenInfo =  await _externalAuthenticationService.GetGoogleTokenInfoAsync(info.Code);
+            var tokenInfo = await _externalAuthenticationService.GetGoogleTokenInfoAsync(info.Code);
             if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.Id))
-                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.GoogleCodeIsInvalid));
+                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.GoogleCodeIsInvalid));
 
             // Get the profile information.
             var profile = await _externalAuthenticationService.GetGoogleBasicProfileAsync(tokenInfo.Id);
             if (profile == null)
-                return StatusCode((int) HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
+                return StatusCode((int)HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
 
             #endregion
 
@@ -177,7 +182,7 @@ namespace Main.Controllers
             {
                 // Prevent account from logging into system because it is pending.
                 if (account.Status == AccountStatus.Pending)
-                    return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
+                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
 
                 // Prevent account from logging into system because it is deleted.
                 if (account.Status == AccountStatus.Disabled)
@@ -200,7 +205,7 @@ namespace Main.Controllers
             }
 
             #endregion
-            
+
             // Initialize access token.
             var jwt = InitializeAccountToken(account);
             return Ok(jwt);
@@ -293,7 +298,7 @@ namespace Main.Controllers
         [HttpGet("personal-profile")]
         public IActionResult FindProfile()
         {
-            var identity = (ClaimsIdentity) Request.HttpContext.User.Identity;
+            var identity = (ClaimsIdentity)Request.HttpContext.User.Identity;
             var claims = identity.Claims.ToDictionary(x => x.Type, x => x.Value);
             return Ok(claims);
         }
@@ -326,14 +331,14 @@ namespace Main.Controllers
             var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(
                 x => x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase));
-            
+
             // Find the first matched account.
             var account = await accounts.FirstOrDefaultAsync();
 
             // Account exists in system.
             if (account != null)
             {
-                Response.StatusCode = (int) HttpStatusCode.Conflict;
+                Response.StatusCode = (int)HttpStatusCode.Conflict;
                 return Json(new ApiResponse(HttpMessages.AccountIsInUse));
             }
 
@@ -385,9 +390,9 @@ namespace Main.Controllers
             #region Email search
 
             // Initiate search conditions.
-            var conditions = new SearchAccountViewModel();
+            var conditions = new RequestPasswordViewModel();
             conditions.Email = new TextSearch(TextSearchMode.EndsWithIgnoreCase, parameter.Email);
-            conditions.Statuses = new[] {AccountStatus.Available};
+            conditions.Statuses = new[] { AccountStatus.Available };
 
             // Search user in database.
             var accounts = UnitOfWork.Accounts.Search();
@@ -525,26 +530,180 @@ namespace Main.Controllers
             // Initiate token handler which is for generating token code.
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-            
+
             // Initialize jwt response.
             var jwt = new JwtResponse();
             jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
             jwt.LifeTime = _jwtConfiguration.LifeTime;
             jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
-            
+
 
             return jwt;
+        }
+
+        /// <summary>
+        /// Search for a list of accounts.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("search")]
+        public async Task<IActionResult> SearchAccounts([FromBody] SearchAccountViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new SearchAccountViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all accounts
+            var accounts = _unitOfWork.Accounts.Search();
+            accounts = SearchAccounts(accounts, condition);
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                accounts =
+                    _databaseFunction.Sort(accounts, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                accounts = _databaseFunction.Sort(accounts, SortDirection.Decending,
+                    AccountSort.JoinedTime);
+
+            // Result initialization.
+            var result = new SearchResult<IList<Account>>();
+            result.Total = await accounts.CountAsync();
+            result.Records = await _databaseFunction.Paginate(accounts, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Search accounts by using specific conditions.
+        /// </summary>
+        /// <param name="accounts"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        public IQueryable<Account> SearchAccounts(IQueryable<Account> accounts,
+            SearchAccountViewModel conditions)
+        {
+            if (conditions == null)
+                return accounts;
+
+            // Find identity in request.
+            var identity = _identityService.GetProfile(HttpContext);
+
+            // Id has been defined.
+            if (conditions.Id != null)
+                accounts = accounts.Where(x => x.Id == conditions.Id.Value);
+
+            // Email search condition has been defined.
+            if (conditions.Email != null && !string.IsNullOrWhiteSpace(conditions.Email))
+                accounts = _databaseFunction.SearchPropertyText(accounts, x => x.Email,
+                    new TextSearch(TextSearchMode.ContainIgnoreCase, conditions.Email));
+
+            // Search conditions which are based on roles.
+            if (identity?.Role == AccountRole.Admin)
+            {
+                // Statuses are defined.
+                if (conditions.Statuses != null && conditions.Statuses.Count > 0)
+                    accounts = accounts.Where(x => conditions.Statuses.Contains(x.Status));
+
+                // Roles are defined
+                if (conditions.Roles != null && conditions.Roles.Count > 0)
+                    accounts = accounts.Where(x => conditions.Roles.Contains(x.Role));
+            }
+
+            return accounts;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("load-users")]
+        public async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new SearchUserViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all users
+            var accounts = _unitOfWork.Accounts.Search();
+            accounts = LoadUsers(accounts, condition);
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                accounts =
+                    _databaseFunction.Sort(accounts, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                accounts = _databaseFunction.Sort(accounts, SortDirection.Decending,
+                    AccountSort.JoinedTime);
+
+            // Result initialization.
+            var result = new SearchResult<IList<Account>>();
+            result.Total = await accounts.CountAsync();
+            result.Records = await _databaseFunction.Paginate(accounts, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Load accounts by using specific conditions.
+        /// </summary>
+        /// <param name="accounts"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        public IQueryable<Account> LoadUsers(IQueryable<Account> accounts,
+            SearchUserViewModel conditions)
+        {
+            if (conditions == null)
+                return accounts;
+
+            // Id has been defined.
+            if (conditions.Ids != null && conditions.Ids.Count > 0)
+            {
+                conditions.Ids = conditions.Ids.Where(x => x > 0).ToList();
+                if (conditions.Ids.Count > 0)
+                    accounts = accounts.Where(x => conditions.Ids.Contains(x.Id));
+            }
+
+            return accounts;
         }
 
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         ///     Provides functions to encrypt/decrypt data.
         /// </summary>
         private readonly IEncryptionService _encryptionService;
-        
+
         /// <summary>
         ///     Configuration information of JWT.
         /// </summary>
@@ -564,6 +723,21 @@ namespace Main.Controllers
         /// Service which is for handling external authentication service.
         /// </summary>
         private readonly IExternalAuthenticationService _externalAuthenticationService;
+
+        /// <summary>
+        ///     Instance for accessing database.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// Provide access to generic database functions.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
+        /// <summary>
+        /// Instance which is for accessing identity attached in request.
+        /// </summary>
+        private readonly IIdentityService _identityService;
 
         #endregion
     }

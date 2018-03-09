@@ -20,12 +20,27 @@ using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
 using Shared.ViewModels.Comments;
+using Shared.ViewModels.Posts;
 
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
     public class CommentController : ApiBaseController
     {
+        #region Properties
+
+        /// <summary>
+        /// Instance which is for accessing to database.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// Service which is for accessing database function.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -38,6 +53,8 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         public CommentController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
+            _unitOfWork = unitOfWork;
+            _databaseFunction = dbSharedService;
         }
 
         #endregion
@@ -330,6 +347,75 @@ namespace Main.Controllers
             }
 
             #endregion
+
+            return comments;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("load-comments")]
+        public async Task<IActionResult> LoadComments([FromBody] LoadCommentViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new LoadCommentViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all comments
+            var comments = _unitOfWork.Comments.Search();
+            comments = LoadComments(comments, condition);
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                comments =
+                    _databaseFunction.Sort(comments, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                comments = _databaseFunction.Sort(comments, SortDirection.Decending,
+                    CommentSort.CreatedTime);
+
+            // Result initialization.
+            var result = new SearchResult<IList<Comment>>();
+            result.Total = await comments.CountAsync();
+            result.Records = await _databaseFunction.Paginate(comments, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Load comments by using specific conditions.
+        /// </summary>
+        /// <param name="comments"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        public IQueryable<Comment> LoadComments(IQueryable<Comment> comments,
+            LoadCommentViewModel conditions)
+        {
+            if (conditions == null)
+                return comments;
+
+            // Id has been defined.
+            if (conditions.Ids != null && conditions.Ids.Count > 0)
+            {
+                conditions.Ids = conditions.Ids.Where(x => x > 0).ToList();
+                if (conditions.Ids.Count > 0)
+                    comments = comments.Where(x => conditions.Ids.Contains(x.Id));
+            }
 
             return comments;
         }
