@@ -17,6 +17,7 @@ using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
+using Shared.ViewModels.FollowPosts;
 using Shared.ViewModels.Posts;
 
 namespace Main.Controllers
@@ -347,6 +348,75 @@ namespace Main.Controllers
             #endregion
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("load-posts")]
+        public async Task<IActionResult> LoadPosts([FromBody] LoadPostViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new LoadPostViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all posts
+            var posts = _unitOfWork.Posts.Search();
+            posts = LoadPosts(posts, condition);
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                posts =
+                    _databaseFunction.Sort(posts, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                posts = _databaseFunction.Sort(posts, SortDirection.Decending,
+                    PostSort.CreatedTime);
+
+            // Result initialization.
+            var result = new SearchResult<IList<Post>>();
+            result.Total = await posts.CountAsync();
+            result.Records = await _databaseFunction.Paginate(posts, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Load posts by using specific conditions.
+        /// </summary>
+        /// <param name="posts"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        public IQueryable<Post> LoadPosts(IQueryable<Post> posts,
+            LoadPostViewModel conditions)
+        {
+            if (conditions == null)
+                return posts;
+
+            // Id has been defined.
+            if (conditions.Ids != null && conditions.Ids.Count > 0)
+            {
+                conditions.Ids = conditions.Ids.Where(x => x > 0).ToList();
+                if (conditions.Ids.Count > 0)
+                    posts = posts.Where(x => conditions.Ids.Contains(x.Id));
+            }
+
+            return posts;
         }
 
         #endregion

@@ -20,6 +20,7 @@ using Shared.ViewModels.FollowPosts;
 
 namespace Main.Controllers
 {
+    [Route("api/follow-post")]
     public class FollowPostController : ApiBaseController
     {
         #region Constructors
@@ -34,11 +35,23 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         public FollowPostController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
+            _unitOfWork = unitOfWork;
+            _databaseFunction = dbSharedService;
         }
 
         #endregion
 
         #region Properties
+
+        /// <summary>
+        ///     Instance for accessing database.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// Provide access to generic database functions.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
 
         #endregion
 
@@ -200,7 +213,7 @@ namespace Main.Controllers
                         condition.Sort.Property);
             else
                 followPosts = DbSharedService.Sort(followPosts, SortDirection.Decending,
-                    CategoriesSort.CreatedTime);
+                    FollowPostSort.CreatedTime);
 
             #endregion
 
@@ -214,6 +227,75 @@ namespace Main.Controllers
             #endregion
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("load")]
+        public async Task<IActionResult> LoadFollowingPosts([FromBody]LoadFollowPostViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new LoadFollowPostViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all follow posts
+            var followPosts = _unitOfWork.FollowPosts.Search();
+            followPosts = LoadFollowingPosts(followPosts, condition);
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                followPosts =
+                    _databaseFunction.Sort(followPosts, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                followPosts = _databaseFunction.Sort(followPosts, SortDirection.Decending,
+                    FollowPostSort.CreatedTime);
+
+            // Result initialization.
+            var result = new SearchResult<IList<FollowPost>>();
+            result.Total = await followPosts.CountAsync();
+            result.Records = await _databaseFunction.Paginate(followPosts, condition.Pagination).ToListAsync();
+
+            #endregion
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        ///     Load follow post by using specific conditions.
+        /// </summary>
+        /// <param name="followPosts"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
+        public IQueryable<FollowPost> LoadFollowingPosts(IQueryable<FollowPost> followPosts,
+            LoadFollowPostViewModel conditions)
+        {
+            if (conditions == null)
+                return followPosts;
+
+            // PostId has been defined.
+            if (conditions.PostIds != null && conditions.PostIds.Count > 0)
+            {
+                conditions.PostIds = conditions.PostIds.Where(x => x > 0).ToList();
+                if (conditions.PostIds.Count > 0)
+                    followPosts = followPosts.Where(x => conditions.PostIds.Contains(x.PostId));
+            }
+
+            return followPosts;
         }
 
         #endregion
