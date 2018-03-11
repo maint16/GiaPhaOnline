@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
+using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Main.ViewModels.RealtimeConnection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PusherServer;
 using Shared.Interfaces.Services;
 using Shared.Models;
@@ -38,7 +42,7 @@ namespace Main.Controllers
         /// <param name="dbSharedService"></param>
         /// <param name="identityService"></param>
         /// <param name="pusherService"></param>
-        public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, 
+        public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
             IDbSharedService dbSharedService, IIdentityService identityService, IPusherService pusherService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
             _pusherService = pusherService;
@@ -76,24 +80,89 @@ namespace Main.Controllers
 
             // Authentication result.
             IAuthenticationData authenticationData = null;
-           
+
             // Channel is private.
             if (profile.Role != AccountRole.Admin)
             {
                 if (info.ChannelName.StartsWith("private-", StringComparison.InvariantCultureIgnoreCase))
-                    return StatusCode((int) HttpStatusCode.Forbidden,
+                    return StatusCode((int)HttpStatusCode.Forbidden,
                         new ApiResponse(HttpMessages.CannotAccessToPrivateChannel));
             }
 
             // Authenticate channel.
             authenticationData = _pusherService.Authenticate(info.ChannelName, info.SocketId);
             if (authenticationData == null)
-                return StatusCode((int) HttpStatusCode.Forbidden,
+                return StatusCode((int)HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotAuthenticateToChannel));
 
             #endregion
-            
+
             return Ok(authenticationData);
+        }
+
+        /// <summary>
+        /// Authorize SignalR connection.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("signalr/authorize")]
+        public async Task<IActionResult> AuthorizeSignalR([FromBody] AuthorizeSignalrViewModel info)
+        {
+            #region Parameters validation
+
+            if (info == null)
+            {
+                info = new AuthorizeSignalrViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            // Get requester identity.
+            var profile = IdentityService.GetProfile(HttpContext);
+
+            #region Connection existence check
+
+            // Find real-time connections.
+            var realTimeConnections = UnitOfWork.SignalrConnections.Search();
+            realTimeConnections = realTimeConnections.Where(x => x.Id.Equals(info.Id));
+
+            // Find the first connection.
+            var realTimeConnection = await realTimeConnections.FirstOrDefaultAsync();
+            if (realTimeConnection != null)
+            {
+                // Owner is different.
+                if (realTimeConnection.OwnerId != profile.Id)
+                {
+                    realTimeConnection.OwnerId = profile.Id;
+                    await UnitOfWork.CommitAsync();
+                }
+
+                return Ok(realTimeConnection);
+            }
+
+            #endregion
+
+            #region Connection initialization
+
+            // Initialize real-time connection.
+            realTimeConnection = new SignalrConnection();
+            realTimeConnection.Id = info.Id;
+            realTimeConnection.OwnerId = profile.Id;
+            realTimeConnection.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+
+            // Save connection information into system.
+            UnitOfWork.SignalrConnections.Insert(realTimeConnection);
+
+            // Save changes.
+            await UnitOfWork.CommitAsync();
+
+            #endregion
+
+            return Ok(realTimeConnection);
         }
 
         #endregion
