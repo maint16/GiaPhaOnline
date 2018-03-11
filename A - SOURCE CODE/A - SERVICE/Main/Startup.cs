@@ -1,4 +1,4 @@
-﻿#define USE_IN_MEMORY
+﻿#define USE_SQL_SERVER
 
 using System;
 using System.Collections.Generic;
@@ -114,6 +114,7 @@ namespace Main
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IPusherService, PusherService>();
 
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
@@ -133,9 +134,7 @@ namespace Main
             services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
             services.Configure<FcmSetting>(Configuration.GetSection(nameof(FcmSetting)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
-
-            
-            
+            services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
 
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();

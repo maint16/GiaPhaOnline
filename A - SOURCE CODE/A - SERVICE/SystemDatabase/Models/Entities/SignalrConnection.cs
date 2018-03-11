@@ -25,7 +25,7 @@ namespace SystemDatabase.Models.Entities
         /// </summary>
         [Key]
         public string Id { get; set; }
-
+        
         /// <summary>
         ///     Id of account which created the connection.
         /// </summary>
