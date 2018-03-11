@@ -50,6 +50,8 @@ module.exports = function (ngModule) {
                 .withBootstrap()
                 .withDataProp('data')
                 .withDisplayLength(appSettings.pagination.default)
+                .withOption('responsive', true)
+                .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
                     function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                         $compile(nRow)($scope);
@@ -111,6 +113,8 @@ module.exports = function (ngModule) {
                 .withBootstrap()
                 .withDataProp('data')
                 .withDisplayLength(appSettings.pagination.default)
+                .withOption('responsive', true)
+                .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
                     function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                         $compile(nRow)($scope);
@@ -172,6 +176,8 @@ module.exports = function (ngModule) {
                 .withBootstrap()
                 .withDataProp('data')
                 .withDisplayLength(appSettings.pagination.default)
+                .withOption('responsive', true)
+                .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
                     function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                         $compile(nRow)($scope);
@@ -233,6 +239,8 @@ module.exports = function (ngModule) {
                 .withBootstrap()
                 .withDataProp('data')
                 .withDisplayLength(appSettings.pagination.default)
+                .withOption('responsive', true)
+                .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
                     function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                         $compile(nRow)($scope);

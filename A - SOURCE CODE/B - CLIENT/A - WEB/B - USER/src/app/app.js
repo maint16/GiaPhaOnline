@@ -9,6 +9,9 @@ require('../../node_modules/admin-lte/dist/css/skins/skin-green-light.css');
 
 require('../../node_modules/angular-toastr/dist/angular-toastr.css');
 
+// Import angularjs data-table.
+require('../../node_modules/datatables.net-responsive-dt/css/responsive.dataTables.css');
+
 // Font awesome.
 require('../../node_modules/font-awesome/css/font-awesome.css');
 require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
@@ -24,6 +27,7 @@ require('bluebird');
 require('bootstrap');
 require('admin-lte');
 require('datatables.net/js/jquery.dataTables');
+require('datatables.net-responsive');
 require('moment');
 
 require('rxjs/bundles/Rx');
@@ -45,6 +49,8 @@ require('angular-confirm1');
 require('ng-multi-selector');
 require('angular-file-upload');
 require('ui-cropper');
+require('pusher-js');
+
 // Module declaration.
 var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
     'ui.bootstrap', 'ngMultiSelector',

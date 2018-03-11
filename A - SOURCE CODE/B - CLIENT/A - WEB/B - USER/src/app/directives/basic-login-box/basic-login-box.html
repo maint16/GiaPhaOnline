@@ -49,7 +49,7 @@
 
         <!--Sign in by using Google-->
         <div class="row"
-             ng-disabled="!ngSupportGoogleLogin">
+             ng-if="ngSupportGoogleLogin">
             <div class="col-sm-12">
                 <div class="form-group">
                     <a href="javascript:void(0);"
@@ -62,7 +62,7 @@
 
         <!--Sign in by using Facebook-->
         <div class="row"
-             ng-disabled="!ngSupportFacebookLogin">
+             ng-if="ngSupportFacebookLogin">
             <div class="col-sm-12">
                 <div class="form-group">
                     <a href="javascript:void(0);"

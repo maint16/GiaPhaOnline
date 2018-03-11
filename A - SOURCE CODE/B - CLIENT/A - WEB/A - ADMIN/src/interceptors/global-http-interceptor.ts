@@ -32,6 +32,13 @@ export class GlobalHttpInterceptor extends Http {
   * Catch request function and analyze its responses.
   * */
   public request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
+
+    // Get authorization token.
+    let authorizationToken = this.authenticationService.getAuthorization();
+    options = new RequestOptions();
+    options.headers = new Headers();
+    options.headers.append('Authorization', `Bearer ${authorizationToken.code}`);
+
     return super.request(url, options)
       .catch((x: Response) => {
       // Unauthorize response.
