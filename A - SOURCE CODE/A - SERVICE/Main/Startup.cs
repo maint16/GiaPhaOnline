@@ -1,8 +1,9 @@
-﻿#define USE_SQL_SERVER
+﻿#define USE_IN_MEMORY
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
@@ -21,8 +22,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -91,6 +94,9 @@ namespace Main
             sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+#elif USE_IN_MEMORY
+            services.AddDbContext<RelationalDatabaseContext>(
+                options => options.UseInMemoryDatabase("iConfess"));
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(
@@ -111,6 +117,7 @@ namespace Main
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IPusherService, PusherService>();
 
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
@@ -130,9 +137,7 @@ namespace Main
             services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
             services.Configure<FcmSetting>(Configuration.GetSection(nameof(FcmSetting)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
-
-            
-            
+            services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
 
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
@@ -187,7 +192,8 @@ namespace Main
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                });
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1); ;
 
             #endregion
         }
@@ -210,10 +216,30 @@ namespace Main
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
 
-            app.UseExceptionHandler();
+            // Use exception handler for errors handling.
+            app.UseExceptionHandler(options => {
+                options.Run(
+                    async context =>
+                    {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        context.Response.ContentType = "text/html";
+                        var ex = context.Features.Get<IExceptionHandlerFeature>();
+                        if (ex != null)
+                        {
+                            var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
+                            await context.Response.WriteAsync(err).ConfigureAwait(false);
+                        }
+                    });
+            });
+
+            // Use strict transport security.
+            app.UseHsts();
 
             // Use JWT Bearer authentication in the system.
             app.UseAuthentication();
+
+            // Use https redirection.
+            //app.UseHttpsRedirection();
 
             // Enable cors.
             app.UseCors("AllowAll");

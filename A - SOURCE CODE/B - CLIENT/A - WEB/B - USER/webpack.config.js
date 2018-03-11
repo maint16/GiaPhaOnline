@@ -112,9 +112,10 @@ module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
         'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/Rx',
+            'pusher-js',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
-            'datatables.net/js/jquery.dataTables', 'angular-datatables',
+            'datatables.net/js/jquery.dataTables', 'datatables.net-responsive', 'angular-datatables',
             'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector',
             'angular-file-upload', 'ui-cropper', 'firebase/app', 'firebase/messaging'],
         'app': path.resolve(paths.app, 'app.js')
@@ -123,17 +124,19 @@ module.exports = {
         rules: [
             {
                 test: require.resolve('jquery'),
-                use: [{
-                    loader: 'expose-loader',
-                    options: 'jQuery'
-                }, {
-                    loader: 'expose-loader',
-                    options: '$'
-                }]
+                use: [
+                    {
+                        loader: 'expose-loader',
+                        options: 'jQuery'
+                    }, {
+                        loader: 'expose-loader',
+                        options: '$'
+                    }
+                ]
             },
             {
                 test: require.resolve('rxjs/bundles/Rx'),
-                use:[
+                use: [
                     {
                         loader: 'expose-loader',
                         options: 'Rx'
@@ -142,10 +145,19 @@ module.exports = {
             },
             {
                 test: require.resolve('bluebird'),
-                use:[
+                use: [
                     {
                         loader: 'expose-loader',
                         options: 'Promise'
+                    }
+                ]
+            },
+            {
+                test: require.resolve('pusher-js'),
+                use:[
+                    {
+                        loader: 'expose-loader',
+                        options: 'Pusher'
                     }
                 ]
             },

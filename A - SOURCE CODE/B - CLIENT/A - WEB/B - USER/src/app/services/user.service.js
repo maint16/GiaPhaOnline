@@ -76,6 +76,13 @@ module.exports = function(ngModule){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.uploadProfileImage;
             return $http.post(url, {image: avatar});
         };
+
+        /*
+        * Using specific information to authorize
+        * */
+        this.fnAuthorizePusherRealTimeChannel = function(){
+
+        };
     });
 
 };

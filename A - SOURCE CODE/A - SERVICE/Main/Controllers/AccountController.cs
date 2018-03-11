@@ -123,6 +123,18 @@ namespace Main.Controllers
 
             #endregion
 
+            #region Account state validation
+
+            switch (account.Status)
+            {
+                case AccountStatus.Pending:
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
+                case AccountStatus.Disabled:
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.AccountIsDisabled));
+            }
+
+            #endregion
+
 #else
             var account = new Account();
             account.Email = "redplane_dt@yahoo.com.vn";
@@ -310,6 +322,7 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("basic-register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterAccountViewModel parameters)
         {
             #region Parameters validation
@@ -352,6 +365,7 @@ namespace Main.Controllers
             account = new Account();
             account.Email = parameters.Email;
             account.Password = _encryptionService.Md5Hash(parameters.Password);
+            account.Nickname = parameters.Nickname;
 
             // Add account into database.
             UnitOfWork.Accounts.Insert(account);

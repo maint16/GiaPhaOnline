@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 
 namespace SystemDatabase.Models.Entities
@@ -25,7 +24,7 @@ namespace SystemDatabase.Models.Entities
         /// </summary>
         [Key]
         public string Id { get; set; }
-
+        
         /// <summary>
         ///     Id of account which created the connection.
         /// </summary>

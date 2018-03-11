@@ -3,7 +3,9 @@ module.exports = function (ngModule) {
         function (oAuthSettings, appSettings,
     $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window,
-                  notificationStatusConstant,
+                  notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant,
+                  pusherConfigConstant,
+                  pusherService,
                   authenticationService, userService, postNotificationService, postService) {
 
             //#region Properties
@@ -23,7 +25,8 @@ module.exports = function (ngModule) {
             // Temporary data which is for caching.
             $scope.buffer = {
                 users: {},
-                posts: {}
+                posts: {},
+                initializedRealTimeChannels: {}
             };
 
             // Search result buffer.
@@ -48,6 +51,9 @@ module.exports = function (ngModule) {
 
                 // Load post notifications.
                 $scope.fnLoadPostNotifications();
+
+                // Subscribe to real-time channels.
+                $scope.fnSubscribeRealTimeChannels();
             };
 
             /*
@@ -245,6 +251,10 @@ module.exports = function (ngModule) {
             * */
             $scope.fnLoadPostNotifications = function () {
 
+                // User is not authorized.
+                if (!$scope.profile)
+                    return;
+
                 // Build the load condition.
                 var getPostNotificationCondition = {
                     statuses: [notificationStatusConstant.unseen],
@@ -376,6 +386,35 @@ module.exports = function (ngModule) {
                     });
 
             };
+
+            /*
+            * Subscribe to realtime channels.
+            * */
+            $scope.fnSubscribeRealTimeChannels = function(){
+
+                // Open a connection to pusher server.
+                pusherService.init(pusherConfigConstant.appKey, pusherConfigConstant.appCluster,
+                    pusherConfigConstant.encrypted, $scope.fnAuthorizeRealTimeConnection, false);
+
+                // Profile is defined.
+                if (profile){
+
+                    // User is admin, subscribe to channels belong to admin.
+                    if (profile.role === userRoleConstant.admin){
+                        pusherService.subscribeChannel(realTimeChannelConstant.admin.userRegistration)
+                            .listenToEvent(realTimeEventConstant.userRegistrationEvent, function(data){
+                                console.log(data);
+                            });
+                    }
+                }
+            };
+
+            /*
+            * Callback function which is raised when user connects to a private channel.
+            * */
+            $scope.fnAuthorizeRealTimeConnection = function(channel, options){
+            };
+
             //#endregion
         });
 };

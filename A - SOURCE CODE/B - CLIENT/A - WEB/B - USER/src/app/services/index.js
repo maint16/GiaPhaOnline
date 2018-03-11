@@ -15,4 +15,5 @@ module.exports = function (ngModule) {
     require('./comment-report.service')(ngModule);
     require('./post-report.service')(ngModule);
     require('./push-notification.service')(ngModule);
+    require('./pusher.service')(ngModule);
 };

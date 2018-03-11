@@ -10,19 +10,18 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchUrl": "api/values",
+      "launchBrowser": true,
       "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORT": "44300",
         "ASPNETCORE_ENVIRONMENT": "dev"
       }
     },
     "Main": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:61357/"
+      }
     }
   }
 }

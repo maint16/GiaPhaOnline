@@ -12,9 +12,6 @@ export class ApiService implements IApiService{
 
   //#region Common properties
 
-  // Key which is for storing access token.
-  public tokenStorage: string;
-
   /*
   * Request options.
   * */
@@ -25,8 +22,7 @@ export class ApiService implements IApiService{
   //#region Constructors
 
   // Initiate service with settings.
-  public constructor(@Inject('IAuthenticationService') private authenticationService,
-                     public http: Http,
+  public constructor(public http: Http,
                      public clientRoutingService: Router) {
   }
 
@@ -50,7 +46,7 @@ export class ApiService implements IApiService{
       fullUrl = `${fullUrl}?${this.encryptUrlParameters(parameters)}`;
 
     // Request to api to obtain list of available categories in system.
-    return this.http.get(fullUrl, this.getOptions());
+    return this.http.get(fullUrl);
   }
 
   /*
@@ -69,7 +65,7 @@ export class ApiService implements IApiService{
       fullUrl = `${fullUrl}?${this.encryptUrlParameters(parameters)}`;
 
     // Request to api to obtain list of available categories in system.
-    return this.http.post(fullUrl, body, this.getOptions());
+    return this.http.post(fullUrl, body);
   }
 
   /*
@@ -88,7 +84,7 @@ export class ApiService implements IApiService{
       fullUrl = `${fullUrl}?${this.encryptUrlParameters(parameters)}`;
 
     // Request to api to obtain list of available categories in system.
-    return this.http.put(fullUrl, body, this.getOptions());
+    return this.http.put(fullUrl, body);
   }
 
   /*
@@ -107,7 +103,7 @@ export class ApiService implements IApiService{
       url = `${url}?${this.encryptUrlParameters(parameters)}`;
 
     // Request to api to obtain list of available categories in system.
-    return this.http.delete(fullUrl, this.getOptions());
+    return this.http.delete(fullUrl);
   }
 
   /*
@@ -148,24 +144,6 @@ export class ApiService implements IApiService{
       return;
     }
     this.options = value;
-  }
-
-  /*
-  * Get option which should be attached into request.
-  * */
-  public getOptions(): RequestOptions{
-    if (!this.options){
-      this.initOptions(null);
-    }
-
-    // Find authorization information attached into local storage.
-    let authorization = this.authenticationService.getAuthorization();
-    if (authorization){
-      if (!this.options.headers.has('Authorization'))
-        this.options.headers.append('Authorization', `Bearer ${authorization.code}`);
-    }
-
-    return this.options;
   }
 
   //#endregion

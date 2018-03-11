@@ -106,6 +106,24 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CANNOT_ACCESS_TO_PRIVATE_CHANNEL.
+        /// </summary>
+        public static string CannotAccessToPrivateChannel {
+            get {
+                return ResourceManager.GetString("CannotAccessToPrivateChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CANNOT_AUTHENTICATE_CHANNEL.
+        /// </summary>
+        public static string CannotAuthenticateToChannel {
+            get {
+                return ResourceManager.GetString("CannotAuthenticateToChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CATEGORIZATION_NOT_FOUND.
         /// </summary>
         public static string CategorizationNotFound {

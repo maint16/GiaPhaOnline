@@ -134,6 +134,12 @@
   <data name="AccountIsPending" xml:space="preserve">
     <value>ACCOUNT_IS_PENDING</value>
   </data>
+  <data name="CannotAccessToPrivateChannel" xml:space="preserve">
+    <value>CANNOT_ACCESS_TO_PRIVATE_CHANNEL</value>
+  </data>
+  <data name="CannotAuthenticateToChannel" xml:space="preserve">
+    <value>CANNOT_AUTHENTICATE_CHANNEL</value>
+  </data>
   <data name="CategorizationNotFound" xml:space="preserve">
     <value>CATEGORIZATION_NOT_FOUND</value>
   </data>
