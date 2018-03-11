@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -27,6 +28,7 @@ using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
 using Shared.ViewModels.Accounts;
+using SkiaSharp;
 
 namespace Main.Controllers
 {
@@ -693,6 +695,50 @@ namespace Main.Controllers
             }
 
             return accounts;
+        }
+
+        /// <summary>
+        /// Upload Avatar
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("upload-avatar")]
+        public async Task<IActionResult> UploadAvatar([FromBody] UploadPhotoViewModel info)
+        {
+            #region Parameters Validation
+
+            if (info == null)
+            {
+                info = new UploadPhotoViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #region Image proccessing
+
+            var photo = info.Image.Split(",");
+            var binaryPhoto = Convert.FromBase64String(photo[1]);
+            var memoryStream = new MemoryStream(binaryPhoto);
+            var skManagedStream = new SKManagedStream(memoryStream);
+            var skBitmap = SKBitmap.Decode(skManagedStream);
+            var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+
+            #endregion
+
+            #region Account initialization
+
+            var account = new Account();
+            //todo:
+
+            // Commit changes.
+            await _unitOfWork.CommitAsync();
+            #endregion
+
+            return Ok(account);
+
+            #endregion
         }
 
         #endregion

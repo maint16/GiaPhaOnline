@@ -18,6 +18,7 @@ using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
+using Shared.ViewModels.Accounts;
 using Shared.ViewModels.Categories;
 using SkiaSharp;
 
@@ -122,15 +123,16 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Image proccessing
+            //#region Image proccessing
 
-            var binaryPhoto = Convert.FromBase64String(info.Photo);
-            var memoryStream = new MemoryStream(binaryPhoto);
-            var skManagedStream = new SKManagedStream(memoryStream);
-            var skBitmap = SKBitmap.Decode(skManagedStream);
-            var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            //var photo = info.Photo.Split(",");
+            //var binaryPhoto = Convert.FromBase64String(photo[1]);
+            //var memoryStream = new MemoryStream(binaryPhoto);
+            //var skManagedStream = new SKManagedStream(memoryStream);
+            //var skBitmap = SKBitmap.Decode(skManagedStream);
+            //var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
 
-            #endregion
+            //#endregion
 
             #region Category initialization
 
@@ -212,7 +214,8 @@ namespace Main.Controllers
             // Photo is defined.
             if (!string.IsNullOrEmpty(info.Photo))
             {
-                var binaryPhoto = Convert.FromBase64String(info.Photo);
+                var photo = info.Photo.Split(",");
+                var binaryPhoto = Convert.FromBase64String(photo[1]);
                 var memoryStream = new MemoryStream(binaryPhoto);
                 var skManagedStream = new SKManagedStream(memoryStream);
                 var skBitmap = SKBitmap.Decode(skManagedStream);
@@ -327,6 +330,50 @@ namespace Main.Controllers
             }
 
             return categories;
+        }
+
+        /// <summary>
+        /// Upload Photo
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("upload-photo")]
+        public async Task<IActionResult> UploadPhoto([FromBody] UploadCategoryPhotoViewModel info)
+        {
+            #region Parameters Validation
+
+            if (info == null)
+            {
+                info = new UploadCategoryPhotoViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #region Image proccessing
+
+            var photo = info.Photo.Split(",");
+            var binaryPhoto = Convert.FromBase64String(photo[1]);
+            var memoryStream = new MemoryStream(binaryPhoto);
+            var skManagedStream = new SKManagedStream(memoryStream);
+            var skBitmap = SKBitmap.Decode(skManagedStream);
+            var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+
+            #endregion
+
+            #region Category initialization
+
+            var category = new Category();
+            //todo:
+
+            // Commit changes.
+            await _unitOfWork.CommitAsync();
+            #endregion
+
+            return Ok(category);
+
+            #endregion
         }
 
         #endregion
