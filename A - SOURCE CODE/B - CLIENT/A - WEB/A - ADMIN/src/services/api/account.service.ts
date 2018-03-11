@@ -9,10 +9,6 @@ import {IAccountService} from "../../interfaces/services/api/account-service.int
 import {IApiService} from "../../interfaces/services/api/api-service.interface";
 import {environment} from "../../environments/environment";
 import {ApiUrl} from "../../constants/api-url";
-import {IDictionary} from "../../interfaces/dictionary.interface";
-import {KeyValuePair} from "../../models/key-value-pair";
-import {AccountStatus} from "../../enumerations/account-status";
-import {Observable} from "rxjs/Observable";
 
 /*
  * Service which handles category business.
@@ -92,10 +88,17 @@ export class AccountService implements IAccountService {
   /*
   * Request service to return account profile.
   * */
-  public getClientProfile(): Promise<Response> {
+  public getClientProfile(id): Promise<Response> {
+
+    if (id == null)
+      id = 0;
+
+    let szUrl = `${environment.baseUrl}/${ApiUrl.getAccountProfile}`;
+    szUrl = szUrl.replace('{id}', id);
+
     return this.apiService
       .get(
-        environment.baseUrl, ApiUrl.getAccountProfile,
+        environment.baseUrl, ApiUrl.getAccountProfile.replace('{id}', id),
         null).toPromise();
   }
 

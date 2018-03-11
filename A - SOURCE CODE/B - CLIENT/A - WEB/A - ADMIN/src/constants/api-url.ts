@@ -30,7 +30,8 @@ export class ApiUrl {
   /*
   * Url which is for getting account profile.
   * */
-  public static getAccountProfile: string = 'api/account/personal-profile';
+  public static getAccountProfile: string = 'api/user/personal-profile/{id}';
+
   //#endregion
 
   //#region Categories

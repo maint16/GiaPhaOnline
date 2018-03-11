@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {CalendarModule, DataTableModule, SharedModule} from "primeng/primeng";
 import {MomentModule} from "angular2-moment";
-import {NgxOrdinaryPagerModule} from "ngx-numeric-paginator";
 import {ModalModule} from "ngx-bootstrap";
 import {NgxMultiSelectorModule} from "ngx-multi-selector";
 import {CategoryManagementComponent} from "./category-management.component";
@@ -27,7 +26,6 @@ import {AccountManagementModule} from "../account/account-management.module";
     SharedModule,
 
     // Personal plugins
-    NgxOrdinaryPagerModule,
     NgxMultiSelectorModule,
 
     AccountManagementModule,
