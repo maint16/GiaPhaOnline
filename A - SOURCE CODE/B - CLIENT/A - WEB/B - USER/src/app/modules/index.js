@@ -3,4 +3,5 @@ module.exports = function(ngModule){
     require('./dashboard')(ngModule);
     require('./account')(ngModule);
     require('./category')(ngModule);
+    require('./control-panel')(ngModule);
 };

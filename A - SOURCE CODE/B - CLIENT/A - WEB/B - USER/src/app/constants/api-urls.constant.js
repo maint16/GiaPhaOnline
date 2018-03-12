@@ -2,9 +2,9 @@ module.exports = function (ngModule) {
     ngModule.constant('apiUrls', {
 
         user: {
-            getUser: 'api/account/{id}',
-            getUsers: 'api/account/search',
-            loadUsers: 'api/account/load-users',
+            getUser: 'api/user/{id}',
+            getUsers: 'api/user/search',
+            loadUsers: 'api/user/load-users',
             getPersonalProfile: 'api/user/personal-profile/{id}',
             changePassword: 'api/user/change-password/{id}',
             basicLogin: 'api/user/login',

@@ -36,6 +36,23 @@ module.exports = function (ngModule) {
           }
         },
 
+        controlPanel:{
+            masterLayout: {
+                name: 'control-panel-master-layout',
+                url: '/control-panel'
+            },
+
+            userManagement:{
+                name: 'user-management',
+                url: '/user-management'
+            },
+
+            categoryManagement:{
+                name: 'category-management',
+                url: '/category-management'
+            }
+        },
+
         authorizedLayout: {
             name: 'authorized-layout'
         },

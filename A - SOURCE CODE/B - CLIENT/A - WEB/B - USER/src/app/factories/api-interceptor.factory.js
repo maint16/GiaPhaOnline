@@ -63,15 +63,8 @@
 
                     var szMessage = '';
                     switch (x.status) {
-                        case 400:
-                            szMessage = 'Bad request';
-                            break;
                         case 401:
                             szMessage = 'Your credential is invalid.';
-                            break;
-                        case 403:
-                            if (x.data)
-                                szMessage = translate.instant(x.data.message);
                             break;
                         case 500:
                             szMessage = 'Internal server error';
