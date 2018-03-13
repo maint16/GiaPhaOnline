@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
@@ -14,6 +15,7 @@ using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
+using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.ViewModels.Users;
@@ -48,9 +50,12 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         /// <param name="systemTimeService"></param>
         /// <param name="externalAuthenticationService"></param>
+        /// <param name="sendMailService"></param>
+        /// <param name="emailCacheService"></param>
         /// <param name="jwtConfigurationOptions"></param>
         /// <param name="applicationSettings"></param>
         /// <param name="logger"></param>
+
         public AccountController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -60,6 +65,8 @@ namespace Main.Controllers
             IIdentityService identityService,
             ITimeService systemTimeService,
             IExternalAuthenticationService externalAuthenticationService,
+            ISendMailService sendMailService,
+            IEmailCacheService emailCacheService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<AccountController> logger) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
@@ -72,6 +79,8 @@ namespace Main.Controllers
             _unitOfWork = unitOfWork;
             _databaseFunction = dbSharedService;
             _identityService = identityService;
+            _sendMailService = sendMailService;
+            _emailCacheService = emailCacheService;
         }
 
         #endregion
@@ -394,7 +403,17 @@ namespace Main.Controllers
             // Save changes asychronously.
             await UnitOfWork.CommitAsync();
 
-            // TODO: Implement instruction email.
+            #region Send email
+
+            var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
+
+            if (emailTemplate != null)
+            {
+                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+            }
+
+            #endregion
+
             // TODO: Implement notification service which notifies administrators about the registration.
 
             #endregion
@@ -467,7 +486,15 @@ namespace Main.Controllers
 
             #region Email broadcast
 
-            //TODO: Send instruction email.
+            var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ForgotPasswordRequest);
+
+            if (emailTemplate != null)
+            {
+                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject,
+                    emailTemplate.Content, false, CancellationToken.None);
+
+                _logger.LogInformation($"Sent message to {account.Email} with subject {emailTemplate.Subject}");
+            }
 
             #endregion
 
@@ -769,7 +796,15 @@ namespace Main.Controllers
             var memoryStream = new MemoryStream(binaryPhoto);
             var skManagedStream = new SKManagedStream(memoryStream);
             var skBitmap = SKBitmap.Decode(skManagedStream);
-            var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            try
+            {
+                var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+            }
+            
 
             #endregion
 
@@ -785,6 +820,51 @@ namespace Main.Controllers
             return Ok(account);
 
             #endregion
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("resend-activation-code")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendAccountActivationCode([FromBody] ResendActivationCodeViewModel info)
+        {
+            #region Parameters validation
+
+            if (info == null)
+            {
+                info = new ResendActivationCodeViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            var accounts = _unitOfWork.Accounts.Search();
+            accounts = accounts.Where(x => x.Email.Equals(info.Email) && x.Status == AccountStatus.Pending && x.Type == AccountType.Basic);
+
+            // Find the first matched account.
+            var account = await accounts.FirstOrDefaultAsync();
+
+            // User is not found.
+            if (account == null)
+                return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
+
+            #region send email
+
+            var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ResendAccountActivationCode);
+
+            if (emailTemplate != null)
+            {
+                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+            }
+
+            #endregion
+
+            return Ok();
         }
 
         #endregion
@@ -830,6 +910,13 @@ namespace Main.Controllers
         /// Instance which is for accessing identity attached in request.
         /// </summary>
         private readonly IIdentityService _identityService;
+
+        /// <summary>
+        /// Send email service
+        /// </summary>
+        private readonly ISendMailService _sendMailService;
+
+        private readonly IEmailCacheService _emailCacheService;
 
         #endregion
     }

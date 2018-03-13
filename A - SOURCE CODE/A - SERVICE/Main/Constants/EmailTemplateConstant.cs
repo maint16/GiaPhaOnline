@@ -1,4 +1,6 @@
-﻿namespace Main.Constants
+﻿using Microsoft.CodeAnalysis.Operations;
+
+namespace Main.Constants
 {
     public class EmailTemplateConstant
     {
@@ -7,7 +9,13 @@
         /// <summary>
         /// Name of password request submission.
         /// </summary>
-        public const string SubmitPasswordRequest = "SubmitPasswordRequest";
+        public const string SubmitPasswordRequest = nameof(SubmitPasswordRequest);
+
+        public const string ResendAccountActivationCode = nameof(ResendAccountActivationCode);
+
+        public const string RegisterBasicAccount = nameof(RegisterBasicAccount);
+
+        public const string ForgotPasswordRequest = nameof(ForgotPasswordRequest);
 
         #endregion
     }

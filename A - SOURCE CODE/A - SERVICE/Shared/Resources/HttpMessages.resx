@@ -161,6 +161,9 @@
   <data name="GoogleCodeIsInvalid" xml:space="preserve">
     <value>GOOGLE_CODE_IS_INVALID</value>
   </data>
+  <data name="ImageIsInvalid" xml:space="preserve">
+    <value>IMAGE_IS_INVALID</value>
+  </data>
   <data name="InformationNotFound" xml:space="preserve">
     <value>INFORMATION_NOT_FOUND</value>
   </data>
