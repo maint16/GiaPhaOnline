@@ -13,7 +13,8 @@ module.exports = function (ngModule) {
     require('./task-status.constant')(ngModule);
     require('./task-result.constant')(ngModule);
     require('./notification-status.constant')(ngModule);
-    require('../constants/real-time-channel.constant')(ngModule);
-    require('../constants/real-time-event.constant')(ngModule);
-    require('../constants/pusher-setting.constant')(ngModule);
+    require('./real-time-channel.constant')(ngModule);
+    require('./real-time-event.constant')(ngModule);
+    require('./pusher-setting.constant')(ngModule);
+    require('./item-status.constant')(ngModule);
 };

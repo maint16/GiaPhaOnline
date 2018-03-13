@@ -54,6 +54,7 @@
 
                     // Find state.
                     var state = $injector.get('$state');
+                    var urlStates = $injector.get('urlStates');
 
                     // Find toastr notification from injector.
                     var toastr = $injector.get('toastr');
@@ -61,9 +62,24 @@
                     // Find translate service using injector.
                     var translate = $injector.get('$translate');
 
+                    // Find authentication service.
+                    var authenticationService = $injector.get('authenticationService');
+
                     var szMessage = '';
                     switch (x.status) {
                         case 401:
+                            var a = x;
+                            var szAuthenticateError = x.headers('WWW-Authenticate');
+
+                            // Token is invalid.
+                            if (szAuthenticateError.indexOf('invalid_token')){
+                                // Clear token from local storage.
+                                authenticationService.clearAuthenticationToken();
+
+                                // Redirect user to dashboard page.
+                                state.go(urlStates.dashboard.name);
+                            }
+                            debugger;
                             szMessage = 'Your credential is invalid.';
                             break;
                         case 500:

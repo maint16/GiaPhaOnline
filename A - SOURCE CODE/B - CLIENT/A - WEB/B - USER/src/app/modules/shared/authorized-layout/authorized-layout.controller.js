@@ -15,7 +15,8 @@ module.exports = function (ngModule) {
 
             // Modal dialogs list.
             $scope.modals = {
-                login: null
+                login: null,
+                basicUserRegistration: null
             };
 
             // Whether google login has been loaded or not.
@@ -207,6 +208,48 @@ module.exports = function (ngModule) {
 
                 $scope.modals.login.dismiss();
                 $scope.modals.login = null;
+            };
+
+            /*
+            * Function is called when basic user registration form cancel button is clicked.
+            * */
+            $scope.fnCancelBasicRegister = function(){
+
+                // User registration modal is valid. Dismiss it.
+                if ($scope.modals.basicUserRegistration){
+                    $scope.modals.basicUserRegistration.dismiss();
+                    $scope.modals.basicUserRegistration = null;
+                }
+            };
+            /*
+            * Event which is fired when basic registration button is clicked.
+            * */
+            $scope.fnOpenBasicRegister = function(){
+
+                // Dismiss the login modal first.
+                if ($scope.modals.login)
+                    $scope.modals.login.dismiss();
+
+                // Open basic user registration box.
+                if ($scope.modals.basicUserRegistration)
+                    $scope.modals.basicUserRegistration = $uibModal.open({
+                        templateUrl: 'basic-register.html',
+                        scope: $scope,
+                        size: 'lg'
+                    });
+            };
+
+            /*
+            * Submit a request with specific information to register a basic account.
+            * */
+            $scope.fnBasicRegister = function(user){
+                userService.basicRegister(user)
+                    .then(function(basicUserRegistrationResponse){
+                        // User registration is successful.
+                        // Modal dialog is valid. Dismiss it first.
+                        if ($scope.modals.basicUserRegistration)
+                            $scope.modals.basicUserRegistration.dismiss();
+                    });
             };
 
             /*

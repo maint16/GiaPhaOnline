@@ -8,4 +8,5 @@ module.exports = function(ngModule){
     require('./post-box/post-box')(ngModule);
     require('./post-initiator/post-initiator')(ngModule);
     require('./basic-login-box/basic-login-box')(ngModule);
+    require('./basic-register-box/basic-register-box')(ngModule);
 };

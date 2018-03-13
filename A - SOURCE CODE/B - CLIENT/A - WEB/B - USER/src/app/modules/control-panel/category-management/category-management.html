@@ -1,1 +1,21 @@
-<div></div>
+<!--Category management panel-->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="box box-default">
+            <div class="box-header">
+                <div class="box-tools pull-right">
+                    <button class="btn btn-flat btn-primary" uib-tooltip="{{'Add a category' | translate}}">
+                        <span class="fa fa-folder-open-o"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+                <table class="table table-condensed"
+                       datatable
+                       dt-options="dtOptions.categoryManagement"
+                       dt-columns="dtColumns.categoryManagement"
+                       dt-instance="dtInstances.categoryManagement"></table>
+            </div>
+        </div>
+    </div>
+</div>

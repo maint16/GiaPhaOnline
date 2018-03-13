@@ -14,7 +14,8 @@ module.exports = function (ngModule) {
                 ngCancel: '&',
                 ngClickBasicLogin: '&',
                 ngClickGoogleLogin: '&',
-                ngClickFacebookLogin: '&'
+                ngClickFacebookLogin: '&',
+                ngClickBasicRegister: '&'
             },
             controller: function ($scope, urlStates, userService) {
 
@@ -69,6 +70,13 @@ module.exports = function (ngModule) {
                 * */
                 $scope.fnCancel = function () {
                     $scope.ngCancel();
+                };
+
+                /*
+                * Event which is fired when basic registration button is clicked.
+                * */
+                $scope.fnClickBasicRegister = function(){
+                    $scope.ngClickBasicRegister();
                 };
 
                 //#endregion

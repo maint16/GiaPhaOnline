@@ -11,6 +11,12 @@ module.exports = function (ngModule) {
 
         //#region Properties
 
+        // Constant reflection.
+        $scope.urlStates = urlStates;
+
+        // Services reflection.
+        $scope.userService = userService;
+
         // Data-table options.
         $scope.dtOptions = {
             userManagement: DTOptionsBuilder.newOptions()
@@ -77,7 +83,12 @@ module.exports = function (ngModule) {
         $scope.dtColumns = {
             userManagement: [
                 // Email
-                DTColumnBuilder.newColumn('email').withTitle($translate('Email')).notSortable(),
+                DTColumnBuilder.newColumn('email').withTitle($translate('Email')).notSortable().renderWith(
+                    function (data, type, item, meta) {
+                        var szProfilePage = userService.getProfilePage(item.id);
+                        return '<a ui-sref="' + szProfilePage + '">' + item.email +'</a>'
+                    }
+                ),
                 // Nickname
                 DTColumnBuilder.newColumn('nickname').withTitle($translate('Nickname')).notSortable(),
                 // Status

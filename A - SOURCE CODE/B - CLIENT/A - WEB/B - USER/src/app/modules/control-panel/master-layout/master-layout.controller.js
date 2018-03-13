@@ -41,7 +41,7 @@ module.exports = function (ngModule) {
                 $state.go(urlStateControlPanel.userManagement.name);
                 return;
             }
-            
+
             $scope.$applyAsync();
         };
 

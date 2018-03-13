@@ -23,6 +23,9 @@ module.exports = function(ngModule){
         * Exchange access token for a profile information.
         * */
         this.getProfile = function(id){
+            if (id == null)
+                id = 0;
+
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.getPersonalProfile;
             url = url.replace('{id}', id);
             return $http.get(url);
@@ -83,6 +86,14 @@ module.exports = function(ngModule){
         this.fnAuthorizePusherRealTimeChannel = function(){
 
         };
+
+        /*
+        * Use specific information to register an account.
+        * */
+        this.basicRegister = function(info){
+            var fullUrl = appSettings.endPoint.apiService + '/' + apiUrls.user.basicRegister;
+            return $http.post(fullUrl, info);
+        }
     });
 
 };
