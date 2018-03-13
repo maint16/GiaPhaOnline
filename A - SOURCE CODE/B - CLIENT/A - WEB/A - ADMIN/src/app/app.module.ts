@@ -32,6 +32,8 @@ import {CategoryManagementModule} from "./components/category/category-managemen
 import {MomentModule} from "angular2-moment";
 import {PaginationConfig, PaginationModule} from "ngx-bootstrap";
 import {ApplicationSetting} from "../constants/application-setting";
+import {HttpClientModule} from "@angular/common/http";
+import {UserService} from "../services/user.service";
 
 //#region Route configuration
 
@@ -48,26 +50,6 @@ const appRoutes: Routes = [
       {
         path: 'management',
         component: AccountManagementComponent,
-        pathMatch: 'full'
-      },
-      {
-        path: '',
-        redirectTo: 'management',
-        pathMatch: 'full'
-      }
-    ]
-  },
-  {
-    path: 'category',
-    component: AuthorizeLayoutComponent,
-    canActivate: [IsAuthorizedGuard],
-    resolve:{
-      profile: ProfileResolve
-    },
-    children: [
-      {
-        path: 'management',
-        component: CategoryManagementComponent,
         pathMatch: 'full'
       },
       {
@@ -115,14 +97,13 @@ const appRoutes: Routes = [
   imports: [
     FormsModule,
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(), // ToastrModule added
     MomentModule,
 
     // Application modules.
     AccountManagementModule,
-    CategoryManagementModule,
 
     // Import router configuration.
     RouterModule.forRoot(appRoutes)
@@ -130,16 +111,12 @@ const appRoutes: Routes = [
   providers: [
     IsAuthorizedGuard,
     {provide: 'IApiService', useClass: ApiService},
-    {provide: 'IAccountService', useClass: AccountService},
-    {provide: 'ICategoryService', useClass: CategoryService},
+    {provide: 'IUserService', useClass: UserService},
     {provide: 'IAuthenticationService', useClass: AuthenticationService},
     {provide: 'ITimeService', useClass: TimeService},
     {provide: 'IConfigurationService', useClass: ConfigurationService},
     {provide: PaginationConfig, useValue: {main: {boundaryLinks: true, directionLinks: true,  firstText: '&lt;&lt;', previousText: '&lt;', nextText: '&gt;', lastText: '&gt;&gt;', itemsPerPage: ApplicationSetting.maxPageRecords, maxSize: 5}}},
     ConstraintService,
-
-    // Handle common behaviour of http request / response.
-    {provide: Http, useClass: GlobalHttpInterceptor},
 
     // Resolvers.
     ProfileResolve

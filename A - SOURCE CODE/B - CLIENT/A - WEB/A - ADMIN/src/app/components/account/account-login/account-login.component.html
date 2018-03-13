@@ -20,8 +20,8 @@
                class="form-control"
                placeholder="Email"
                autofocus="true"
-               [(ngModel)]="loginViewModel.email"
-               [readonly]="isBusy"
+               [(ngModel)]="basicLoginInfo.email"
+               [readonly]="bIsBusy"
 
                required="required"
                maxlength="128"
@@ -45,8 +45,8 @@
                type="password"
                class="form-control"
                placeholder="Password"
-               [readonly]="isBusy"
-               [(ngModel)]="loginViewModel.password"
+               [readonly]="bIsBusy"
+               [(ngModel)]="basicLoginInfo.password"
 
                required="required"
                minlength="6"

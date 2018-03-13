@@ -1,12 +1,13 @@
 import {Component, Inject, ViewChild} from "@angular/core";
-import {Response} from "@angular/http";
 import {Router} from "@angular/router";
-import {FormBuilder, FormGroup, NgForm} from "@angular/forms";
-import {LoginViewModel} from "../../../../viewmodels/accounts/login.view-model";
-import {IAccountService} from "../../../../interfaces/services/api/account-service.interface";
-import {IAuthenticationService} from "../../../../interfaces/services/authentication-service.interface";
+import {NgForm} from "@angular/forms";
 import {AuthorizationToken} from "../../../../models/authorization-token";
 import {ToastrService} from "ngx-toastr";
+import {BasicLoginViewModel} from "../../../../viewmodels/user/basic-login.view-model";
+import {IUserService} from "../../../../interfaces/services/user-service.interface";
+import {IAuthenticationService} from "../../../../interfaces/services/authentication-service.interface";
+import 'rxjs/add/operator/catch';
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'account-login',
@@ -18,14 +19,19 @@ export class AccountLoginComponent {
   //#region Properties
 
   // Whether login function is being executed or not.
-  private isBusy: boolean;
+  private bIsLoading: boolean;
 
   // Login view model.
-  private loginViewModel: LoginViewModel;
+  private loginViewModel: BasicLoginViewModel;
 
   // Login form group.
   @ViewChild("loginPanel")
   public loginPanel: NgForm;
+
+  /*
+  * Basic login information.
+  * */
+  private basicLoginInfo: BasicLoginViewModel;
 
   //#endregion
 
@@ -34,12 +40,12 @@ export class AccountLoginComponent {
   /*
   * Initiate component with default settings.
   * */
-  public constructor(@Inject("IAuthenticationService") public authenticationService: IAuthenticationService,
-                     @Inject("IAccountService") public accountService: IAccountService,
+  public constructor(@Inject('IUserService') public userService: IUserService,
+                     @Inject('IAuthenticationService') public authenticationService: IAuthenticationService,
                      public toastr: ToastrService,
                      public router: Router) {
 
-    this.loginViewModel = new LoginViewModel();
+    this.loginViewModel = new BasicLoginViewModel();
   }
 
   //#endregion
@@ -55,26 +61,20 @@ export class AccountLoginComponent {
     event.preventDefault();
 
     // Make component be loaded.
-    this.isBusy = true;
+    this.bIsLoading = true;
 
     // Call service api to authenticate do authentication.
-    this.accountService.login(this.loginViewModel)
-      .then((x: Response) => {
-        // Convert response from service to AuthenticationToken data type.
-        let clientAuthenticationDetail = <AuthorizationToken> x.json();
+    let loginObservable = this.userService.basicLogin(this.loginViewModel)
+      .subscribe((authenticationToken: AuthorizationToken) => {
 
-        // Save the client authentication information.
-        this.authenticationService.setAuthorization(clientAuthenticationDetail);
+        // Store authentication token into local storage.
+        this.authenticationService.attachAuthorizationToken(authenticationToken);
 
-        // Redirect user to account management page.
+        // Cancel loading state.
+        this.bIsLoading = false;
+
+        // Navigate user to account management page.
         this.router.navigate(['/account/management']);
-
-        // Cancel loading process.
-        this.isBusy = false;
-      })
-      .catch((response: Response) => {
-        // Unfreeze the UI.
-        this.isBusy = false;
       });
   }
 

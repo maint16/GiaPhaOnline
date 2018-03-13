@@ -26,36 +26,35 @@ export class AuthenticationService implements IAuthenticationService {
   /*
    * Store identity into local storage.
    * */
-  public setAuthorization(identity: AuthorizationToken): void {
-    localStorage.setItem(ApplicationSetting.identityStorage, JSON.stringify(identity));
-  }
-
-  /*
-   * Remove identity from cache.
-   * */
-  public clearIdentity(): void {
-    localStorage.removeItem(ApplicationSetting.identityStorage);
+  public attachAuthorizationToken(authorizationToken: AuthorizationToken): void {
+    localStorage.setItem(ApplicationSetting.identityStorage, JSON.stringify(authorizationToken));
   }
 
   /*
   * Get authorization token from local storage.
   * */
-  public getAuthorization(): AuthorizationToken{
+  public getAuthorizationToken(): AuthorizationToken{
 
     // Get authorization token from local storage.
-    let authorizationToken = localStorage.getItem(ApplicationSetting.identityStorage);
+    let szAuthorizationToken = localStorage.getItem(ApplicationSetting.identityStorage);
 
     // Authorization is invalid.
-    if (authorizationToken == null || authorizationToken.length < 1)
+    if (szAuthorizationToken == null || szAuthorizationToken.length < 1)
       return null;
 
-    return <AuthorizationToken> JSON.parse(authorizationToken);
+    // Parse authorization token.
+    let authorizationToken = <AuthorizationToken> JSON.parse(szAuthorizationToken);
+
+    if (!this.bIsAuthorizationValid(authorizationToken))
+      return null;
+
+    return authorizationToken;
   };
 
   /*
   * Check whether authorization token is valid or not.
   * */
-  public isAuthorizationValid(authorizationToken: AuthorizationToken): boolean{
+  private bIsAuthorizationValid(authorizationToken: AuthorizationToken): boolean{
 
     // Token is not valid.
     if (authorizationToken == null)
@@ -78,5 +77,6 @@ export class AuthenticationService implements IAuthenticationService {
   public redirectToLogin(): void{
     this.router.navigate(['/login']);
   }
+
   //#endregion
 }
