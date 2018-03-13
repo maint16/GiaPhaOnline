@@ -25,15 +25,15 @@ export class IsAuthorizedGuard implements CanActivate {
   * */
   public canActivate(): boolean {
 
-    // Find identity stored in cache.
-    let identity = this.authenticationService.getAuthorization();
-
-    // No identity has been found.
-    if (!this.authenticationService.isAuthorizationValid(identity)) {
-      // Redirect to login.
-      this.router.navigate(['/login']);
-      return false;
-    }
+    // // Find identity stored in cache.
+    // let identity = this.authenticationService.getAuthorization();
+    //
+    // // No identity has been found.
+    // if (!this.authenticationService.isAuthorizationValid(identity)) {
+    //   // Redirect to login.
+    //   this.router.navigate(['/login']);
+    //   return false;
+    // }
 
     return true;
   }

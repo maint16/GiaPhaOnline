@@ -1,7 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Response} from "@angular/http";
-import {IAccountService} from "../../../../interfaces/services/api/account-service.interface";
 import {IAuthenticationService} from "../../../../interfaces/services/authentication-service.interface";
 
 @Component({
@@ -34,11 +32,11 @@ export class NavigationBarComponent implements OnInit {
   * Sign the user out.
   * */
   public clickSignOut(): void {
-    // Clear the authentication service.
-    this.authenticationService.clearIdentity();
-
-    // Re-direct to login page.
-    this.router.navigate(['/login']);
+    // // Clear the authentication service.
+    // this.authenticationService.clearIdentity();
+    //
+    // // Re-direct to login page.
+    // this.router.navigate(['/login']);
   }
 
   /*

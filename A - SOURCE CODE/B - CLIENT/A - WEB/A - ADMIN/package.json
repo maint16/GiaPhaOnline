@@ -26,7 +26,7 @@
     "angular2-moment": "^1.8.0",
     "core-js": "^2.5.3",
     "ngx-bootstrap": "^2.0.2",
-    "ngx-multi-selector": "^3.0.3",
+    "ngx-multi-selector": "^3.0.4",
     "ngx-toastr": "^8.3.0",
     "primeng": "^5.2.3",
     "rxjs": "^5.4.2",

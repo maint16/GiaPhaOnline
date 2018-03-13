@@ -1,10 +1,9 @@
 import {Component, Inject} from "@angular/core";
 import {Router} from "@angular/router";
-import {Response} from "@angular/http";
-import {SubmitPasswordViewModel} from "../../../../viewmodels/accounts/submit-password.view-model";
-import {IAccountService} from "../../../../interfaces/services/api/account-service.interface";
 import {ToastrService} from "ngx-toastr";
 import {ConstraintService} from "../../../../services/constraint.service";
+import {SubmitPasswordViewModel} from "../../../../viewmodels/user/submit-password.view-model";
+import {IUserService} from "../../../../interfaces/services/user-service.interface";
 
 @Component({
   selector: 'account-submit-password',
@@ -32,7 +31,7 @@ export class AccountSubmitPasswordComponent {
   /*
   * Initiate component with injectors.
   * */
-  public constructor(@Inject("IAccountService") private accountService: IAccountService,
+  public constructor(@Inject('IUserService') private accountService: IUserService,
                      private toastr: ToastrService,
                      private constraintService: ConstraintService,
                      private router: Router) {
@@ -48,28 +47,28 @@ export class AccountSubmitPasswordComponent {
   * */
   public clickSubmitPassword(event: any): void {
 
-    // Make component be busy.
-    this.bIsBusy = true;
-
-    // Prevent default behavior.
-    event.preventDefault();
-
-    // Call service to change password.
-    this.accountService.submitPasswordReset(this.information)
-      .then((response: Response) => {
-        // Tell user password has been changed successfully.
-        this.toastr.success('SUBMIT_PASSWORD_SUCCESSFULLY', 'System message');
-
-        // Redirect user to login page.
-        this.router.navigate(['/']);
-
-        // Cancel busy state.
-        this.bIsBusy = false;
-      })
-      .catch((response: Response) => {
-        // Proceed common response.
-        this.bIsBusy = false;
-      });
+    // // Make component be busy.
+    // this.bIsBusy = true;
+    //
+    // // Prevent default behavior.
+    // event.preventDefault();
+    //
+    // // Call service to change password.
+    // this.accountService.submitPasswordReset(this.information)
+    //   .then((response: Response) => {
+    //     // Tell user password has been changed successfully.
+    //     this.toastr.success('SUBMIT_PASSWORD_SUCCESSFULLY', 'System message');
+    //
+    //     // Redirect user to login page.
+    //     this.router.navigate(['/']);
+    //
+    //     // Cancel busy state.
+    //     this.bIsBusy = false;
+    //   })
+    //   .catch((response: Response) => {
+    //     // Proceed common response.
+    //     this.bIsBusy = false;
+    //   });
   }
 
   //#endregion

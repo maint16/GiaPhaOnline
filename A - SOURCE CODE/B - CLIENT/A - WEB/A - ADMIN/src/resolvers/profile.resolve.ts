@@ -1,9 +1,7 @@
-import {IAccountService} from "../interfaces/services/api/account-service.interface";
 import {Inject, Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from "@angular/router";
-import {Account} from '../models/entities/account';
 import {Observable} from "rxjs/Observable";
-import {Response} from '@angular/http';
+import {IUserService} from "../interfaces/services/user-service.interface";
 
 @Injectable()
 export class ProfileResolve implements Resolve<Account> {
@@ -13,7 +11,7 @@ export class ProfileResolve implements Resolve<Account> {
   /*
   * Initiate resolver with injectors.
   * */
-  public constructor(@Inject('IAccountService') private accountService: IAccountService) {
+  public constructor(@Inject('IUserService') private accountService: IUserService) {
   }
 
   //#endregion
@@ -24,7 +22,8 @@ export class ProfileResolve implements Resolve<Account> {
   * Resolve service value.
   * */
   public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Account | Observable<Account> | Promise<Account> {
-    return this.accountService.getClientProfile().then((x: Response) => {return <Account> x.json();});
+    // return this.accountService.getClientProfile().then((x: Response) => {return <Account> x.json();});
+    return null;
   }
 
 //#endregion
