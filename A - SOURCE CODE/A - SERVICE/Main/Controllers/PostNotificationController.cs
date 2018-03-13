@@ -17,6 +17,7 @@ using Shared.ViewModels.PostNotification;
 
 namespace Main.Controllers
 {
+    [Route("api/post-notification")]
     public class PostNotificationController : ApiBaseController
     {
         #region Constructors

@@ -146,6 +146,7 @@ namespace Main
             // Cors configuration.
             var corsBuilder = new CorsPolicyBuilder();
             corsBuilder.AllowAnyHeader();
+            corsBuilder.WithExposedHeaders("WWW-Authenticate");
             corsBuilder.AllowAnyMethod();
             corsBuilder.AllowAnyOrigin();
             corsBuilder.AllowCredentials();

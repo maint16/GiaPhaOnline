@@ -32,7 +32,7 @@ using SkiaSharp;
 
 namespace Main.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class AccountController : ApiBaseController
     {
         #region Constructors
@@ -308,13 +308,34 @@ namespace Main.Controllers
         /// <summary>
         ///     Find personal profile.
         /// </summary>
+        /// <param name="id">Id of user.</param>
         /// <returns></returns>
-        [HttpGet("personal-profile")]
-        public IActionResult FindProfile()
+        [HttpGet("personal-profile/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FindProfile([FromRoute] int? id)
         {
-            var identity = (ClaimsIdentity)Request.HttpContext.User.Identity;
-            var claims = identity.Claims.ToDictionary(x => x.Type, x => x.Value);
-            return Ok(claims);
+            // Get requester identity.
+            var profile = IdentityService.GetProfile(HttpContext);
+            
+            // Search for accounts.
+            var accounts = UnitOfWork.Accounts.Search();
+
+            if (id == null || id < 1)
+            {
+                if (profile != null)
+                    accounts = accounts.Where(x => x.Id == profile.Id);
+                else
+                    return Ok();
+            }
+            else
+                accounts = accounts.Where(x => x.Id == id);
+
+            // Only search for active account.
+            accounts = accounts.Where(x => x.Status == AccountStatus.Available);
+
+            // Find the first account in system.
+            var account = await accounts.FirstOrDefaultAsync();
+            return Ok(account);
         }
 
         /// <summary>
@@ -533,11 +554,7 @@ namespace Main.Controllers
             var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
 
             // Claims initalization.
-            var claims = new List<Claim>();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
-            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
+            var claims = InitUserClaim(account);
 
             // Write a security token.
             var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
@@ -553,8 +570,23 @@ namespace Main.Controllers
             jwt.LifeTime = _jwtConfiguration.LifeTime;
             jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
 
-
             return jwt;
+        }
+
+        /// <summary>
+        /// Initialize user claim.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        private IList<Claim> InitUserClaim(Account account)
+        {
+            var claims = new List<Claim>();
+            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
+            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
+
+            return claims;
         }
 
         /// <summary>
