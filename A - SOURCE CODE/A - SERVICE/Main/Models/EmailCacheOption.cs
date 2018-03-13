@@ -15,7 +15,12 @@ namespace Main.Models
         /// Whether path is absolute or not.
         /// </summary>
         public bool IsAbsolutePath { get; set; }
-        
+
+        /// <summary>
+        /// Email subject.
+        /// </summary>
+        public string Subject { get; set; }
+
         /// <summary>
         /// Content of cache.
         /// </summary>

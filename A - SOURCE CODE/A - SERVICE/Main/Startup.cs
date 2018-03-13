@@ -1,4 +1,4 @@
-﻿#define USE_IN_MEMORY
+﻿#define USE_SQLSERVER
 
 using System;
 using System.Collections.Generic;

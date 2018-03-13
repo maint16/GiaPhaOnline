@@ -12,6 +12,7 @@ using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
@@ -358,7 +359,14 @@ namespace Main.Controllers
             var memoryStream = new MemoryStream(binaryPhoto);
             var skManagedStream = new SKManagedStream(memoryStream);
             var skBitmap = SKBitmap.Decode(skManagedStream);
-            var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            try
+            {
+                var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+            }
 
             #endregion
 

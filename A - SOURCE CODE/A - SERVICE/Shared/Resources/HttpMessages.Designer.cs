@@ -187,6 +187,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IMAGE_IS_INVALID.
+        /// </summary>
+        public static string ImageIsInvalid {
+            get {
+                return ResourceManager.GetString("ImageIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to INFORMATION_NOT_FOUND.
         /// </summary>
         public static string InformationNotFound {
