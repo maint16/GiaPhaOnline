@@ -36,8 +36,7 @@ namespace Main.Authentications.Handlers
         }
 
         #endregion
-
-
+        
         #region Methods
 
         /// <summary>

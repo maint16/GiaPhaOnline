@@ -31,6 +31,8 @@ using Shared.Resources;
 using Shared.ViewModels;
 using Shared.ViewModels.Accounts;
 using SkiaSharp;
+using VgySdk.Interfaces;
+using VgySdk.Models;
 
 namespace Main.Controllers
 {
@@ -55,7 +57,7 @@ namespace Main.Controllers
         /// <param name="jwtConfigurationOptions"></param>
         /// <param name="applicationSettings"></param>
         /// <param name="logger"></param>
-
+        /// <param name="vgyService"></param>
         public AccountController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -69,7 +71,8 @@ namespace Main.Controllers
             IEmailCacheService emailCacheService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
-            ILogger<AccountController> logger) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
+            ILogger<AccountController> logger,
+            IVgyService vgyService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
             _encryptionService = encryptionService;
             _jwtConfiguration = jwtConfigurationOptions.Value;
@@ -81,6 +84,7 @@ namespace Main.Controllers
             _identityService = identityService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
+            _vgyService = vgyService;
         }
 
         #endregion
@@ -317,7 +321,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Find personal profile.
         /// </summary>
-        /// <param name="id">Id of user.</param>
+        /// <param name="id">Id of user. 0 for the request sender profile.</param>
         /// <returns></returns>
         [HttpGet("personal-profile/{id}")]
         [AllowAnonymous]
@@ -325,7 +329,7 @@ namespace Main.Controllers
         {
             // Get requester identity.
             var profile = IdentityService.GetProfile(HttpContext);
-            
+
             // Search for accounts.
             var accounts = UnitOfWork.Accounts.Search();
 
@@ -403,6 +407,8 @@ namespace Main.Controllers
             // Save changes asychronously.
             await UnitOfWork.CommitAsync();
 
+            #endregion
+
             #region Send email
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
@@ -412,7 +418,6 @@ namespace Main.Controllers
                 await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
             }
 
-            #endregion
 
             // TODO: Implement notification service which notifies administrators about the registration.
 
@@ -776,7 +781,8 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("upload-avatar")]
-        public async Task<IActionResult> UploadAvatar([FromBody] UploadPhotoViewModel info)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel info)
         {
             #region Parameters Validation
 
@@ -789,37 +795,45 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            #endregion
+
+            // Get requester profile.
+            var profile = IdentityService.GetProfile(HttpContext);
+
             #region Image proccessing
 
-            var photo = info.Image.Split(",");
-            var binaryPhoto = Convert.FromBase64String(photo[1]);
-            var memoryStream = new MemoryStream(binaryPhoto);
-            var skManagedStream = new SKManagedStream(memoryStream);
-            var skBitmap = SKBitmap.Decode(skManagedStream);
-            try
+            // Reflect image variable.
+            var image = info.Image;
+
+            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
             {
-                var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+                var skBitmap = SKBitmap.Decode(skManagedStream);
+                try
+                {
+                    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+
+                    // Initialize file name.
+                    var fileName = Guid.NewGuid().ToString("D");
+                    var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(resizedSkBitmap.Bytes,
+                        image.ContentType, fileName,
+                        CancellationToken.None);
+
+                    profile.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
+                    profile.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
+
+                    // Save changes into database.
+                    await _unitOfWork.CommitAsync();
+
+                    return Ok(profile);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception.Message, exception);
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+                }
+
+                #endregion
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
-            }
-            
-
-            #endregion
-
-            #region Account initialization
-
-            var account = new Account();
-            //todo:
-
-            // Commit changes.
-            await _unitOfWork.CommitAsync();
-            #endregion
-
-            return Ok(account);
-
-            #endregion
         }
 
         /// <summary>
@@ -916,7 +930,15 @@ namespace Main.Controllers
         /// </summary>
         private readonly ISendMailService _sendMailService;
 
+        /// <summary>
+        /// Email cache service.
+        /// </summary>
         private readonly IEmailCacheService _emailCacheService;
+
+        /// <summary>
+        /// Service which is for handling file upload to vgy.me hosting.
+        /// </summary>
+        private readonly IVgyService _vgyService;
 
         #endregion
     }

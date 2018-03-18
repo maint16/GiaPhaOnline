@@ -8,6 +8,7 @@ using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Models;
@@ -21,7 +22,7 @@ namespace Main.Controllers
     /// <summary>
     /// Controller which provides api to handle post categorization.
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/post-categorization")]
     public class PostCategorizationController : Controller
     {
         #region Properties
@@ -161,6 +162,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [AllowAnonymous]
         public async Task<IActionResult> SearchForPostCategorizations([FromBody] SearchPostCategorizationViewModel info)
         {
             #region Parameters validation
