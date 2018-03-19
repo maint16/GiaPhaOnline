@@ -903,11 +903,35 @@ namespace Main.Controllers
             #region Token generation
 
             // Find the existing token.
-            // TODO: Generate new code.
+            var tokens = _unitOfWork.Tokens.Search();
+            tokens = tokens.Where(x => x.OwnerId == account.Id && x.Type == TokenType.AccountActivation );
+
+            // Find the first matched token.
+            var token = await tokens.FirstOrDefaultAsync();
+
+            if (token != null)
+                _unitOfWork.Tokens.Remove(token);
+            else
+            {
+                // Find current system time.
+                var systemTime = DateTime.UtcNow;
+                var expiration = systemTime.AddSeconds(_applicationSettings.PasswordResetTokenLifeTime);
+
+                token = new Token();
+                token.Code = Guid.NewGuid().ToString("D");
+                token.OwnerId = account.Id;
+                token.IssuedTime = TimeService.DateTimeUtcToUnix(systemTime);
+                token.ExpiredTime = TimeService.DateTimeUtcToUnix(expiration);
+                token.Type = TokenType.AccountReactiveCode;
+
+                // Add token into database
+                _unitOfWork.Tokens.Insert(token);
+            }
+
+            // Save changes asychronously.
+            await UnitOfWork.CommitAsync();
 
             #endregion
-
-
 
             #region Send email
 
