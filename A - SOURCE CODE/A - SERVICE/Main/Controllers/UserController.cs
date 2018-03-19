@@ -85,6 +85,7 @@ namespace Main.Controllers
             _identityService = identityService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
+            _systemTimeService = systemTimeService;
             _vgyService = vgyService;
         }
 
@@ -513,66 +514,81 @@ namespace Main.Controllers
         /// <param name="code"></param>
         /// <param name="parameter"></param>
         /// <returns></returns>
+        [HttpPost("submit-password-reset")]
+        [AllowAnonymous]
         public async Task<IActionResult> SubmitPassword(
             [FromQuery] [Required(ErrorMessageResourceType = typeof(HttpValidationMessages),
                 ErrorMessageResourceName = "InformationIsRequired")] string code,
             [FromBody] SubmitPasswordResetViewModel parameter)
         {
-            throw new NotImplementedException();
-            //#region Model validation
+            #region Model validation
 
-            //if (parameter == null)
-            //{
-            //    parameter = new SubmitPasswordResetViewModel();
-            //    TryValidateModel(parameter);
-            //}
+            if (parameter == null)
+            {
+                parameter = new SubmitPasswordResetViewModel();
+                TryValidateModel(parameter);
+            }
 
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            //#endregion
+            #endregion
 
-            //#region Information search
+            #region Information search
 
-            //// Find active accounts.
-            //var accounts = _unitOfWork.Accounts.Search();
-            //accounts = accounts.Where(x => x.Status == AccountStatus.Available);
+            // Find active accounts.
+            var accounts = _unitOfWork.Accounts.Search();
+            accounts = accounts.Where(x => x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Available);
 
-            //// Find active token.
-            //var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            //var tokens = _unitOfWork.Tokens.Search();
+            // Find active token.
+            var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            var tokens = _unitOfWork.Tokens.Search();
 
-            //// Find token.
-            //var result = from account in accounts
-            //    from token in tokens
-            //    where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
-            //    select new SearchAccountTokenResult
-            //    {
-            //        Token = token,
-            //        Account = account
-            //    };
+            // Find token.
+            var result = from account in accounts
+                         from token in tokens
+                         where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
+                         select new SearchAccountTokenResult
+                         {
+                             Token = token,
+                             Account = account
+                         };
 
-            //// No active token is found.
-            //if (!await result.AnyAsync())
-            //    return NotFound(HttpMessages.InformationNotFound);
+            // No active token is found.
+            if (!await result.AnyAsync())
+                return NotFound(HttpMessages.InformationNotFound);
 
-            //#endregion
+            #endregion
 
-            //#region Information change
+            #region Information change
 
-            //// Hash the password.
-            //var password = _encryptionService.Md5Hash(parameter.Password);
+            // Hash the password.
+            var password = _encryptionService.Md5Hash(parameter.Password);
 
-            //// Delete all found tokens.
-            //_unitOfWork.Tokens.Remove(result.Select(x => x.Token));
-            //await result.ForEachAsync(x => x.Account.Password = password);
+            // Delete all found tokens.
+            _unitOfWork.Tokens.Remove(result.Select(x => x.Token));
+            await result.ForEachAsync(x => x.Account.Password = password);
 
-            //// Commit changes.
-            //await _unitOfWork.CommitAsync();
+            // Commit changes.
+            await _unitOfWork.CommitAsync();
 
-            //#endregion
+            #endregion
 
-            //return Ok();
+            #region Send email
+
+            // Find the first matched account.
+            var accountSendMail = await accounts.FirstOrDefaultAsync();
+
+            var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordReset);
+
+            if (emailTemplate != null)
+            {
+                await _sendMailService.SendAsync(new HashSet<string> { accountSendMail.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+            }
+
+            #endregion
+
+            return Ok();
         }
 
         /// <summary>
@@ -888,11 +904,35 @@ namespace Main.Controllers
             #region Token generation
 
             // Find the existing token.
-            // TODO: Generate new code.
+            var tokens = _unitOfWork.Tokens.Search();
+            tokens = tokens.Where(x => x.OwnerId == account.Id && x.Type == TokenType.AccountActivation );
+
+            // Find the first matched token.
+            var token = await tokens.FirstOrDefaultAsync();
+
+            if (token != null)
+                _unitOfWork.Tokens.Remove(token);
+            else
+            {
+                // Find current system time.
+                var systemTime = DateTime.UtcNow;
+                var expiration = systemTime.AddSeconds(_applicationSettings.PasswordResetTokenLifeTime);
+
+                token = new Token();
+                token.Code = Guid.NewGuid().ToString("D");
+                token.OwnerId = account.Id;
+                token.IssuedTime = TimeService.DateTimeUtcToUnix(systemTime);
+                token.ExpiredTime = TimeService.DateTimeUtcToUnix(expiration);
+                token.Type = TokenType.AccountReactiveCode;
+
+                // Add token into database
+                _unitOfWork.Tokens.Insert(token);
+            }
+
+            // Save changes asychronously.
+            await UnitOfWork.CommitAsync();
 
             #endregion
-
-
 
             #region Send email
 
@@ -959,6 +999,8 @@ namespace Main.Controllers
         /// Email cache service.
         /// </summary>
         private readonly IEmailCacheService _emailCacheService;
+
+        private readonly ITimeService _systemTimeService;
 
         /// <summary>
         /// Service which is for handling file upload to vgy.me hosting.
