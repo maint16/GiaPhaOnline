@@ -38,6 +38,8 @@ using Newtonsoft.Json.Serialization;
 using Serilog;
 using Shared.Interfaces.Services;
 using Shared.Services;
+using VgySdk.Interfaces;
+using VgySdk.Service;
 
 namespace Main
 {
@@ -118,6 +120,9 @@ namespace Main
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IPusherService, PusherService>();
+
+            // Initialize vgy service.
+            services.AddScoped<IVgyService, VgyService>();
 
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();

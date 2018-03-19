@@ -88,10 +88,11 @@ namespace Main.Controllers
         /// Add device to system.
         /// </summary>
         /// <returns></returns>
-        [HttpPost("")]
+        [HttpPost("device")]
         [AllowAnonymous]
         public async Task<IActionResult> AddDevice([FromBody] AddDeviceViewModel info)
         {
+            return Ok();
             #region Parameters validation
 
             // Information hasn't been initialized.

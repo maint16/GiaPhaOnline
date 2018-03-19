@@ -26,6 +26,7 @@ namespace SystemDatabase.Models.Entities
         /// <summary>
         ///     Password of account.
         /// </summary>
+        [JsonIgnore]
         public string Password { get; set; }
 
         /// <summary>
