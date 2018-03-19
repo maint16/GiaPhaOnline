@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Models;
 using SystemDatabase.Interfaces;
+using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -66,6 +67,13 @@ namespace Main.Authentications.Handlers
             // Email is invalid.
             if (string.IsNullOrEmpty(email))
             {
+                // Method or controller authorization can be by passed.
+                if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
+                {
+                    context.Succeed(requirement);
+                    return;
+                }
+                
                 context.Fail();
                 return;
             }

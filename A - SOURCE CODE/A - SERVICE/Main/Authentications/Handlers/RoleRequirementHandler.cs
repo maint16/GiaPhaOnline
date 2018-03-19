@@ -2,9 +2,11 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using SystemDatabase.Models.Entities;
+using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Main.Authentications.Handlers
 {
@@ -21,6 +23,10 @@ namespace Main.Authentications.Handlers
 
         #region Constructor
 
+        /// <summary>
+        /// Initialize role requirement handler with injector.
+        /// </summary>
+        /// <param name="httpContextAccessor"></param>
         public RoleRequirementHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -38,6 +44,9 @@ namespace Main.Authentications.Handlers
         /// <returns></returns>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
         {
+            // Convert authorization filter context into authorization filter context.
+            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
+
             // Check context solidity.
             if (_httpContextAccessor == null || _httpContextAccessor.HttpContext == null)
             {
@@ -51,20 +60,44 @@ namespace Main.Authentications.Handlers
             // Find account which has been embeded into HttpContext.
             if (!httpContext.Items.ContainsKey(ClaimTypes.Actor))
             {
+                // Controller or method allow by pass information analyze.
+                if (IsAbleToByPass(authorizationFilterContext))
+                {
+                    context.Succeed(requirement);
+                    return Task.CompletedTask;
+                }
+
                 context.Fail();
                 return Task.CompletedTask;
             }
 
             // Find account validity.
-            var account = (Account) httpContext.Items[ClaimTypes.Actor];
+            var account = (Account)httpContext.Items[ClaimTypes.Actor];
             if (account == null || !requirement.Roles.Contains(account.Role))
             {
+                // Controller or method allow by pass information analyze.
+                if (IsAbleToByPass(authorizationFilterContext))
+                {
+                    context.Succeed(requirement);
+                    return Task.CompletedTask;
+                }
+
                 context.Fail();
                 return Task.CompletedTask; ;
             }
-            
+
             context.Succeed(requirement);
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Whether controller or method can be by passed.
+        /// </summary>
+        /// <param name="authorizationFilterContext"></param>
+        /// <returns></returns>
+        private bool IsAbleToByPass(AuthorizationFilterContext authorizationFilterContext)
+        {
+            return authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute);
         }
 
         #endregion

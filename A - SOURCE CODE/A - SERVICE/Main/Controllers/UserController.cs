@@ -15,6 +15,7 @@ using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Models;
@@ -324,7 +325,7 @@ namespace Main.Controllers
         /// <param name="id">Id of user. 0 for the request sender profile.</param>
         /// <returns></returns>
         [HttpGet("personal-profile/{id}")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> FindProfile([FromRoute] int? id)
         {
             // Get requester identity.

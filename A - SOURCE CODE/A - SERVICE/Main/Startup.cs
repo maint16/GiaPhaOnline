@@ -168,18 +168,24 @@ namespace Main
                 // You also need to update /wwwroot/app/scripts/app.js
                 o.SecurityTokenValidators.Clear();
                 o.SecurityTokenValidators.Add(new JwtBearerValidator());
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidAudience = jwtBearerSettings.Audience,
-                    ValidIssuer = jwtBearerSettings.Issuer,
-                    IssuerSigningKey = jwtBearerSettings.SigningKey
-                };
+
+                // Initialize token validation parameters.
+                var tokenValidationParameters = new TokenValidationParameters();
+                tokenValidationParameters.ValidAudience = jwtBearerSettings.Audience;
+                tokenValidationParameters.ValidIssuer = jwtBearerSettings.Issuer;
+                tokenValidationParameters.IssuerSigningKey = jwtBearerSettings.SigningKey;
+
+#if DEBUG
+                tokenValidationParameters.ValidateLifetime = false;
+#endif
+
+                o.TokenValidationParameters = tokenValidationParameters;
             });
 
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
-            #region Mvc builder
+#region Mvc builder
 
             // Construct mvc options.
             services.AddMvc(mvcOptions =>
@@ -201,7 +207,7 @@ namespace Main
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1); ;
 
-            #endregion
+#endregion
         }
 
         /// <summary>
@@ -255,6 +261,6 @@ namespace Main
         }
         
 
-        #endregion
+#endregion
     }
 }
