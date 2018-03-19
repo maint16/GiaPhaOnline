@@ -808,19 +808,32 @@ namespace Main.Controllers
             using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
             {
                 var skBitmap = SKBitmap.Decode(skManagedStream);
+
                 try
                 {
+                    // Resize image to 512x512 size.
                     var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
 
                     // Initialize file name.
-                    var fileName = Guid.NewGuid().ToString("D");
-                    var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(resizedSkBitmap.Bytes,
-                        image.ContentType, fileName,
-                        CancellationToken.None);
+                    var fileName = $"{Guid.NewGuid():D}.png";
 
-                    profile.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
-                    profile.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
+                    using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
+                    using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        skData.SaveTo(memoryStream);
+                        var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(memoryStream.ToArray(),
+                            image.ContentType, fileName,
+                            CancellationToken.None);
 
+                        // Response is empty.
+                        if (vgySuccessRespone == null || vgySuccessRespone.IsError)
+                            return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+
+                        profile.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
+                        profile.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
+                    }
+                    
                     // Save changes into database.
                     await _unitOfWork.CommitAsync();
 
@@ -837,7 +850,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// 
+        ///  Request service to send another email to obtain new account activation code.
         /// </summary>
         /// <returns></returns>
         [HttpPost("resend-activation-code")]
@@ -857,6 +870,8 @@ namespace Main.Controllers
 
             #endregion
 
+            #region Search for account
+
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x => x.Email.Equals(info.Email) && x.Status == AccountStatus.Pending && x.Type == AccountType.Basic);
 
@@ -867,15 +882,24 @@ namespace Main.Controllers
             if (account == null)
                 return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
 
-            #region send email
+            #endregion
+
+            #region Token generation
+
+            // Find the existing token.
+            // TODO: Generate new code.
+
+            #endregion
+
+
+
+            #region Send email
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ResendAccountActivationCode);
 
             if (emailTemplate != null)
-            {
                 await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
-            }
-
+            
             #endregion
 
             return Ok();
