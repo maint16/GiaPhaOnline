@@ -36,8 +36,8 @@ using VgySdk.Models;
 
 namespace Main.Controllers
 {
-    [Route("api/user")]
-    public class AccountController : ApiBaseController
+    [Route("api/[controller]")]
+    public class UserController : ApiBaseController
     {
         #region Constructors
 
@@ -58,7 +58,7 @@ namespace Main.Controllers
         /// <param name="applicationSettings"></param>
         /// <param name="logger"></param>
         /// <param name="vgyService"></param>
-        public AccountController(
+        public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
@@ -71,7 +71,7 @@ namespace Main.Controllers
             IEmailCacheService emailCacheService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
-            ILogger<AccountController> logger,
+            ILogger<UserController> logger,
             IVgyService vgyService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
             _encryptionService = encryptionService;
