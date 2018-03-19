@@ -17,6 +17,8 @@ namespace Main.Constants
 
         public const string ForgotPasswordRequest = nameof(ForgotPasswordRequest);
 
+        public const string SubmitPasswordReset = nameof(SubmitPasswordReset);
+
         #endregion
     }
 }
