@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
@@ -12,10 +13,12 @@ using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Interfaces.Services;
+using Main.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
@@ -23,6 +26,8 @@ using Shared.ViewModels;
 using Shared.ViewModels.Accounts;
 using Shared.ViewModels.Categories;
 using SkiaSharp;
+using VgySdk.Interfaces;
+using VgySdk.Models;
 
 namespace Main.Controllers
 {
@@ -39,14 +44,19 @@ namespace Main.Controllers
         /// <param name="unitOfWork">Instance for accessing database.</param>
         /// <param name="databaseFunction"></param>
         /// <param name="mapper">Instance for mapping objects</param>
-        public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork, IDbSharedService databaseFunction,
-            IMapper mapper)
+        /// <param name="vgyService"></param>
+        /// <param name="logger"></param>
+        public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
+            IDbSharedService databaseFunction,
+            IMapper mapper, IVgyService vgyService, ILogger<UserController> logger)
         {
             _identityService = identityService;
             _timeService = timeService;
             _unitOfWork = unitOfWork;
             _databaseFunction = databaseFunction;
             _mapper = mapper;
+            _vgyService = vgyService;
+            _logger = logger;
         }
 
         #endregion
@@ -67,7 +77,7 @@ namespace Main.Controllers
         ///     Instance for accessing database.
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
-        
+
         /// <summary>
         ///     Instance for mapping objects.
         /// </summary>
@@ -77,6 +87,16 @@ namespace Main.Controllers
         /// Provide access to generic database functions.
         /// </summary>
         private readonly IDbSharedService _databaseFunction;
+
+        /// <summary>
+        /// Service which is for handling file upload to vgy.me hosting.
+        /// </summary>
+        private readonly IVgyService _vgyService;
+
+        /// <summary>
+        /// Logging instance.
+        /// </summary>
+        private readonly ILogger _logger;
 
         #endregion
 
@@ -101,7 +121,7 @@ namespace Main.Controllers
             // Cannot find the category.
             if (category == null)
                 return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
-            
+
             return Ok(category);
         }
 
@@ -222,7 +242,7 @@ namespace Main.Controllers
                 var skManagedStream = new SKManagedStream(memoryStream);
                 var skBitmap = SKBitmap.Decode(skManagedStream);
                 var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-                
+
                 bHasInformationChanged = true;
             }
 
@@ -340,6 +360,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("upload-photo")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadPhoto([FromBody] UploadCategoryPhotoViewModel info)
         {
             #region Parameters Validation
@@ -353,38 +374,66 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            #endregion
+
+            // Get requester profile.
+            var profile = _identityService.GetProfile(HttpContext);
+
             #region Image proccessing
 
-            var photo = info.Photo.Split(",");
-            var binaryPhoto = Convert.FromBase64String(photo[1]);
-            var memoryStream = new MemoryStream(binaryPhoto);
-            var skManagedStream = new SKManagedStream(memoryStream);
-            var skBitmap = SKBitmap.Decode(skManagedStream);
-            try
+            // Reflect image variable.
+            var image = info.Photo;
+
+            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
             {
-                var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+                var skBitmap = SKBitmap.Decode(skManagedStream);
+
+                try
+                {
+                    // Resize image to 512x512 size.
+                    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+
+                    // Initialize file name.
+                    var fileName = $"{Guid.NewGuid():D}.png";
+
+                    using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
+                    using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        skData.SaveTo(memoryStream);
+                        var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(
+                            memoryStream.ToArray(),
+                            image.ContentType, fileName,
+                            CancellationToken.None);
+
+                        // Response is empty.
+                        if (vgySuccessRespone == null || vgySuccessRespone.IsError)
+                            return StatusCode(StatusCodes.Status403Forbidden,
+                                new ApiResponse(HttpMessages.ImageIsInvalid));
+
+                        var category = new Category
+                        {
+                            PhotoRelativeUrl = vgySuccessRespone.ImageUrl,
+                            PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl
+                        };
+
+                        _unitOfWork.Categories.Insert(category);
+                    }
+
+                    // Save changes into database.
+                    await _unitOfWork.CommitAsync();
+
+                    return Ok(profile);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception.Message, exception);
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+                }
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
-            }
-
-            #endregion
-
-            #region Category initialization
-
-            var category = new Category();
-            //todo:
-
-            // Commit changes.
-            await _unitOfWork.CommitAsync();
-            #endregion
-
-            return Ok(category);
 
             #endregion
         }
-
         #endregion
     }
 }
