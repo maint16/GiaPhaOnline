@@ -10,6 +10,7 @@ using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Models.PushNotification;
@@ -89,7 +90,7 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("device")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> AddDevice([FromBody] AddDeviceViewModel info)
         {
             return Ok();
@@ -242,7 +243,7 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("send")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> Send([FromBody] FcmMessage fcmMessage)
         {
             await _fcmService.SendNotification(fcmMessage);
@@ -250,7 +251,7 @@ namespace Main.Controllers
         }
 
         [HttpPost("send-mail")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> SendMail()
         {
             var option = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordRequest);

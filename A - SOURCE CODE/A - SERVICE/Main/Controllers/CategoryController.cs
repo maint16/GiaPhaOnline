@@ -10,6 +10,7 @@ using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -87,7 +88,7 @@ namespace Main.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> FindCategory([FromRoute] int id)
         {
             // Find category.
@@ -240,7 +241,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> SearchCategories([FromBody] SearchCategoryViewModel condition)
         {
             #region Parameters validation

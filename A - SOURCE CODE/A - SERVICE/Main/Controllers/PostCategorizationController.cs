@@ -8,6 +8,7 @@ using SystemConstant.Enumerations.Order;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
+using Main.Authentications.ActionFilters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -162,7 +163,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> SearchForPostCategorizations([FromBody] SearchPostCategorizationViewModel info)
         {
             #region Parameters validation

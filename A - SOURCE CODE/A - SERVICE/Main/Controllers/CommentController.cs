@@ -11,6 +11,7 @@ using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -243,7 +244,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        [AllowAnonymous]
+        [ByPassAuthorization]
         public async Task<IActionResult> SearchComments([FromBody] SearchCommentViewModel condition)
         {
             #region Parameters validation
