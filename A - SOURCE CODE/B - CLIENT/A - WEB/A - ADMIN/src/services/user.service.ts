@@ -9,8 +9,11 @@ import {environment} from "../environments/environment";
 import {UserApiUrlConstant} from "../constants/api-urls/user-api-url.constant";
 import 'rxjs/add/operator/map';
 import {AuthorizationToken} from "../models/authorization-token";
+import {Injectable} from "@angular/core";
 
+@Injectable()
 export class UserService implements IUserService{
+
 
   //#region Constructor
 
@@ -22,6 +25,15 @@ export class UserService implements IUserService{
   //#endregion
 
   //#region Methods
+
+  /*
+  * Get user personal profile
+  * Pass id to get personal profile or specific person. Null for the requester's
+  * */
+  public getPersonalProfile(id?: number): Observable<User> {
+    let fullUrl = `${environment.baseUrl}/${UserApiUrlConstant.getPersonalProfile}/${id == null ? 0: id}`;
+    return this.httpClient.get<User>(fullUrl);
+  }
 
   /*
   * Exchanging user information for an access token.

@@ -94,22 +94,3 @@
     </div>
   </div>
 </div>
-
-<!-- Change account information modal dialog -->
-<div #profileBoxContainer="bs-modal"
-     bsModal
-     class="modal fade"
-     tabindex="-1"
-     role="dialog"
-     aria-hidden="true"
-     [config]="{backdrop: 'static', keyboard: false}">
-
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <account-profile-box #profileBox="account-profile-box"
-                           (click-close)="profileBoxContainer.hide()"
-                           (click-confirm)="clickConfirmAccountInfo()">
-      </account-profile-box>
-    </div>
-  </div>
-</div>

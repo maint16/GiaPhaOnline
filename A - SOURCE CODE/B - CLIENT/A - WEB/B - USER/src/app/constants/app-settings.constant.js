@@ -5,8 +5,8 @@ module.exports = function (ngModule) {
 
         // End-point configuration.
         endPoint: {
-            apiService: 'http://vlqy5vs38b4xkhqra.stoplight-proxy.io'
-            // apiService: 'http://localhost:61356'
+            // apiService: 'http://vlqy5vs38b4xkhqra.stoplight-proxy.io'
+            apiService: 'http://localhost:61356'
         },
 
         // Pagination configuration.

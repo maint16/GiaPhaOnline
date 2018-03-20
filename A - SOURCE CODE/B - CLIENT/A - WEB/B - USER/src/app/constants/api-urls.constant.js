@@ -7,7 +7,7 @@ module.exports = function (ngModule) {
             loadUsers: 'api/user/load-users',
             getPersonalProfile: 'api/user/personal-profile/{id}',
             changePassword: 'api/user/change-password/{id}',
-            basicLogin: 'api/user/login',
+            basicLogin: 'api/user/basic-login',
             basisRegister: 'api/user/basic-register',
             googleLogin: 'api/user/google-login',
             facebookLogin: 'api/user/facebook-login',
@@ -30,7 +30,7 @@ module.exports = function (ngModule) {
         },
 
         postCategorization:{
-            getPostCategorization: 'api/categorization/search'
+            getPostCategorization: 'api/post-categorization/search'
         },
 
         comment: {

@@ -77,14 +77,25 @@ module.exports = function(ngModule){
         * */
         this.uploadProfileAvatar = function(avatar){
             var url = appSettings.endPoint.apiService + '/' + apiUrls.user.uploadProfileImage;
-            return $http.post(url, {image: avatar});
+
+            // Initialize form data to upload image to server.
+            var formData = new FormData();
+            formData.append('image', avatar);
+
+            // Add multipart/form-data to request headers.
+            var options = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            };
+
+            return $http.post(url, formData, options);
         };
 
         /*
         * Using specific information to authorize
         * */
         this.fnAuthorizePusherRealTimeChannel = function(){
-
         };
 
         /*

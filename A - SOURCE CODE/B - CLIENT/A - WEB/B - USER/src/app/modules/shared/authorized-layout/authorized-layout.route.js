@@ -20,7 +20,7 @@ module.exports = function (ngModule) {
 
                     // Get access token from storage.
                     var accessToken = authenticationService.getAuthenticationToken();
-
+                    debugger;
                     // No access token has been defined.
                     if (!accessToken || accessToken.length < 1)
                         return null;
@@ -31,28 +31,9 @@ module.exports = function (ngModule) {
                     //#region Get profile
 
                     // Get user profile promise.
-                    promises[0] = userService.getProfile()
+                    promises[0] = userService.getProfile(0)
                         .then(function (getProfileResponse) {
                             return getProfileResponse.data;
-                        });
-
-                    //#endregion
-
-                    //#region Get post notifications
-
-                    // Get post notification promise.
-                    var getPostNotificationCondition = {
-                        statuses: [notificationStatusConstant.unseen],
-                        pagination: {
-                            page: 1,
-                            records: appSettings.pagination.postNotifications
-                        }
-                    };
-
-                    // Add promise to queue.
-                    promises[1] = postNotificationService.search(getPostNotificationCondition)
-                        .then(function (getPostNotificationResponse) {
-                            return getPostNotificationResponse.data;
                         });
 
                     //#endregion
@@ -62,11 +43,7 @@ module.exports = function (ngModule) {
 
                             // Get profile.
                             var profile = promiseResponses[0];
-                            var getPostNotificationResult = promiseResponses[1];
-
-                            // Merge profile information.
-                            profile['getPostNotificationsResult'] = getPostNotificationResult;
-
+                            debugger;
                             return profile;
                         });
                 }

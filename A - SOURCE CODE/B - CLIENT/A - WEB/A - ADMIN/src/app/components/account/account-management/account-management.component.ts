@@ -60,7 +60,7 @@ export class AccountManagementComponent implements OnInit {
   /*
   * Initiate component with injections.
   * */
-  public constructor(@Inject('IUserService') public accountService: IUserService,
+  public constructor(@Inject('IUserService') public userService: IUserService,
                      @Inject("ITimeService") public timeService: ITimeService,
                      public activatedRoute: ActivatedRoute) {
 

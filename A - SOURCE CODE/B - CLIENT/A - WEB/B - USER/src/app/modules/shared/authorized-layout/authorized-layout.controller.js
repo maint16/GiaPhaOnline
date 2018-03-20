@@ -80,9 +80,9 @@ module.exports = function (ngModule) {
 
                             // Login result.
                             var basicLoginResult = basicLoginResponse.data;
-
+                            debugger;
                             // Save access token into storage.
-                            authenticationService.initAuthenticationToken(basicLoginResult.accessToken);
+                            authenticationService.initAuthenticationToken(basicLoginResult.code);
 
                             // Dismiss the modal.
                             if ($scope.modals.login) {
@@ -221,6 +221,7 @@ module.exports = function (ngModule) {
                     $scope.modals.basicUserRegistration = null;
                 }
             };
+
             /*
             * Event which is fired when basic registration button is clicked.
             * */

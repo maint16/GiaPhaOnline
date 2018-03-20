@@ -10,6 +10,12 @@ export interface IUserService {
   //#region Methods
 
   /*
+  * Get user personal profile
+  * Pass id to get personal profile or specific person. Null for the requester's
+  * */
+  getPersonalProfile(id?: number): Observable<User>;
+
+  /*
   * Use basic account to exchange for an access token.
   * */
   basicLogin(info: BasicLoginViewModel) : Observable<AuthorizationToken>;

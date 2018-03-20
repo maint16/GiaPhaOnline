@@ -79,7 +79,6 @@
                                 // Redirect user to dashboard page.
                                 state.go(urlStates.dashboard.name);
                             }
-                            debugger;
                             szMessage = 'Your credential is invalid.';
                             break;
                         case 500:
