@@ -634,6 +634,7 @@ namespace Main.Controllers
             claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
             claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
+            claims.Add(new Claim(nameof(account.Id), account.Id.ToString()));
 
             return claims;
         }

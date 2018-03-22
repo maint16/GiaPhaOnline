@@ -236,7 +236,7 @@ namespace Main.Controllers
             if (sort != null)
                 followCategories = _databaseFunction.Sort(followCategories, sort.Direction, sort.Property);
             else
-                followCategories = _databaseFunction.Sort(followCategories, SortDirection.Decending, SortDirection.Decending);
+                followCategories = _databaseFunction.Sort(followCategories, SortDirection.Decending, FollowCategorySort.CreatedTime);
             
             var result = new SearchResult<IList<FollowCategory>>();
             result.Total = await followCategories.CountAsync();
