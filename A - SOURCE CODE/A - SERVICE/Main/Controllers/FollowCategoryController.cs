@@ -20,7 +20,7 @@ using Shared.ViewModels.Posts;
 
 namespace Main.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/follow-category")]
     public class FollowCategoryController : Controller
     {
         #region Properties

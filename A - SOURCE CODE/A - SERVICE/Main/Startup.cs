@@ -34,9 +34,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Shared.Interfaces.Services;
+using Shared.Models;
 using Shared.Services;
 using VgySdk.Interfaces;
 using VgySdk.Service;
@@ -185,7 +187,7 @@ namespace Main
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
-#region Mvc builder
+            #region Mvc builder
 
             // Construct mvc options.
             services.AddMvc(mvcOptions =>
@@ -207,7 +209,7 @@ namespace Main
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1); ;
 
-#endregion
+            #endregion
         }
 
         /// <summary>
@@ -229,18 +231,28 @@ namespace Main
                 .CreateLogger();
 
             // Use exception handler for errors handling.
-            app.UseExceptionHandler(options => {
+            app.UseExceptionHandler(options =>
+            {
                 options.Run(
                     async context =>
                     {
+                        // Mark the response status as 500.
                         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        context.Response.ContentType = "text/html";
-                        var ex = context.Features.Get<IExceptionHandlerFeature>();
-                        if (ex != null)
-                        {
-                            var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
-                            await context.Response.WriteAsync(err).ConfigureAwait(false);
-                        }
+                        context.Response.ContentType = "application/json";
+                        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+
+                        // No exception handler feature has been found.
+                        if (exceptionHandlerFeature == null || exceptionHandlerFeature.Error == null)
+                            return;
+
+                        // Current environment is not development.
+                        if (!env.IsDevelopment())
+                            return;
+
+                        // Initialize response asynchronously.
+                        var apiResponse = new ApiResponse(exceptionHandlerFeature.Error.Message);
+                        var szApiResponse = JsonConvert.SerializeObject(apiResponse);
+                        await context.Response.WriteAsync(szApiResponse).ConfigureAwait(false);
                     });
             });
 
@@ -259,8 +271,8 @@ namespace Main
             // Enable MVC features.
             app.UseMvc();
         }
-        
 
-#endregion
+
+        #endregion
     }
 }
