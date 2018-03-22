@@ -5,23 +5,23 @@ namespace Main.Interfaces.Services
 {
     public interface IValueCacheService<TKey, TValue>
     {
-        #region Properties
-
-        /// <summary>
-        /// List of key-value.
-        /// </summary>
-        IDictionary<TKey, TValue> Pairs { get; }
-
-        #endregion
-
         #region Methods
         
         /// <summary>
-        /// Add template.
+        /// Add key-value to cache with expiration time.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void Add(TKey key, TValue value);
+        /// <param name="expirationTime"></param>
+        void Add(TKey key, TValue value, DateTime? expirationTime = null);
+
+        /// <summary>
+        /// Add key-value to cache with expiration time (calculate by using life time (seconds))
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="lifeTime"></param>
+        void Add(TKey key, TValue value, int lifeTime);
 
         /// <summary>
         /// Get template by using specific key.

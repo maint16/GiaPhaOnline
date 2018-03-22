@@ -52,7 +52,8 @@ namespace Main.Services
                 var szFileContent = File.ReadAllText(fullPath);
                 option.Content = szFileContent;
 
-                Add(szTemplateName, option);
+                // Template will cached for application life time.
+                Add(szTemplateName, option, null);
             }
         }
 

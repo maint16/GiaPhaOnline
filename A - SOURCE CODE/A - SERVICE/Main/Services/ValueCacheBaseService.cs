@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Main.Interfaces.Services;
 
@@ -11,7 +12,7 @@ namespace Main.Services
         /// <summary>
         /// List of key-value pairs.
         /// </summary>
-        public IDictionary<TKey, TValue> Pairs { get; }
+        private readonly IDictionary<TKey, KeyValuePair<TValue, DateTime?>> _pairs;
 
         #endregion
 
@@ -22,7 +23,7 @@ namespace Main.Services
         /// </summary>
         public ValueCacheBaseService()
         {
-            Pairs = new ConcurrentDictionary<TKey, TValue>();
+            _pairs = new ConcurrentDictionary<TKey, KeyValuePair<TValue, DateTime?>>();
         }
 
         #endregion
@@ -34,16 +35,34 @@ namespace Main.Services
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public virtual void Add(TKey key, TValue value)
+        /// <param name="expirationTime"></param>
+        public virtual void Add(TKey key, TValue value, DateTime? expirationTime)
         {
             var actualKey = FindKey(key);
-            if (Pairs.ContainsKey(actualKey))
+            if (_pairs.ContainsKey(actualKey))
             {
-                Pairs[actualKey] = value;
+                _pairs[actualKey] = new KeyValuePair<TValue, DateTime?>(value, expirationTime);
                 return;
             }
 
-            Pairs.Add(actualKey, value);
+            _pairs.Add(actualKey, new KeyValuePair<TValue, DateTime?>(value, expirationTime));
+        }
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="lifeTime"></param>
+        public void Add(TKey key, TValue value, int lifeTime)
+        {
+            // Get current system time.
+            var currentTime = DateTime.Now;
+
+            // Calculate expiration time.
+            var expirationTime = currentTime.AddSeconds(lifeTime);
+
+            Add(key, value, expirationTime);
         }
 
         /// <summary>
@@ -51,13 +70,24 @@ namespace Main.Services
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public TValue Read(TKey key)
+        public virtual TValue Read(TKey key)
         {
             var actualKey = FindKey(key);
-            if (!Pairs.ContainsKey(actualKey))
+
+            // Key doesn't exist in pairs.
+            if (!_pairs.ContainsKey(actualKey))
                 return default(TValue);
 
-            return Pairs[actualKey];
+            // Value found. Check its expiration time.
+            var valueTimePair = _pairs[actualKey];
+
+            // No expiration time is attached to this current value, which means it is permanent.
+            if (valueTimePair.Value == null)
+                return valueTimePair.Key;
+
+            // Item is expired. Remove it from list.
+            _pairs.Remove(key);
+            return default(TValue);
         }
 
         /// <summary>
@@ -67,7 +97,7 @@ namespace Main.Services
         public void Remove(TKey key)
         {
             var actualKey = FindKey(key);
-            Pairs.Remove(actualKey);
+            _pairs.Remove(actualKey);
         }
 
 
@@ -81,7 +111,7 @@ namespace Main.Services
             return key;
         }
 
-        
+
         #endregion
     }
 }

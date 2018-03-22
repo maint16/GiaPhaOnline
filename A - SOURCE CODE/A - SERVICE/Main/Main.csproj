@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\Services\ITemporaryValueCacheService.cs" />
+    <Compile Remove="Services\TemporaryValueCacheService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
