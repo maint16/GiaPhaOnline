@@ -16,11 +16,11 @@ module.exports = function (ngModule) {
             template: ngModuleHtmlTemplate,
             resolve: {
                 profile: function (notificationStatusConstant, appSettings,
-                                   userService, authenticationService, postNotificationService) {
+                                   userService, authenticationService) {
 
                     // Get access token from storage.
                     var accessToken = authenticationService.getAuthenticationToken();
-                    debugger;
+
                     // No access token has been defined.
                     if (!accessToken || accessToken.length < 1)
                         return null;
@@ -43,7 +43,6 @@ module.exports = function (ngModule) {
 
                             // Get profile.
                             var profile = promiseResponses[0];
-                            debugger;
                             return profile;
                         });
                 }
