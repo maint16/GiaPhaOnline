@@ -116,7 +116,7 @@ namespace Main.Controllers
             else
             {
                 // Initialize follow category.
-                 followCategory = new FollowCategory();
+                followCategory = new FollowCategory();
                 followCategory.FollowerId = identity.Id;
                 followCategory.CategoryId = categoryId;
                 followCategory.Status = ItemStatus.Available;
@@ -133,7 +133,7 @@ namespace Main.Controllers
 
             return Ok(followCategory);
         }
-        
+
         /// <summary>
         /// Delete a specific post.
         /// </summary>
@@ -185,17 +185,23 @@ namespace Main.Controllers
             #endregion
 
             #region Search for information
-            
+
             // Find identity in request.
             var identity = _identityService.GetProfile(HttpContext);
 
             // Search for posts.
             var followCategories = _unitOfWork.FollowCategories.Search();
-            
+
             // Category id is defined.
-            if (condition.CategoryId != null)
-                followCategories = followCategories.Where(x => x.CategoryId == condition.CategoryId.Value);
-            
+            if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
+            {
+                var categoryIds = condition.CategoryIds.Where(x => x > 0).ToList();
+                if (categoryIds.Count > 0)
+                    followCategories = followCategories.Where(x => condition.CategoryIds.Contains(x.CategoryId));
+            }
+            //if (condition.CategoryIds != null)
+            //    followCategories = followCategories.Where(x => x.CategoryId == condition.CategoryIds.Value);
+
             // Search conditions which are based on roles.
             if (identity.Role == AccountRole.Admin)
             {
@@ -203,7 +209,7 @@ namespace Main.Controllers
                 if (condition.FollowerId != null)
                     followCategories = followCategories.Where(x => x.FollowerId == condition.FollowerId.Value);
 
-                
+
             }
             else
             {
@@ -225,19 +231,19 @@ namespace Main.Controllers
                 if (from != null)
                     followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, from.Value,
                         NumericComparision.GreaterEqual);
-                
+
                 if (to != null)
                     followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, to.Value,
                         NumericComparision.LowerEqual);
             }
-            
+
             // Sort property & direction.
             var sort = condition.Sort;
             if (sort != null)
                 followCategories = _databaseFunction.Sort(followCategories, sort.Direction, sort.Property);
             else
                 followCategories = _databaseFunction.Sort(followCategories, SortDirection.Decending, FollowCategorySort.CreatedTime);
-            
+
             var result = new SearchResult<IList<FollowCategory>>();
             result.Total = await followCategories.CountAsync();
             result.Records = await _databaseFunction.Paginate(followCategories, condition.Pagination).ToListAsync();
@@ -246,7 +252,7 @@ namespace Main.Controllers
 
             return Ok(result);
         }
-        
+
         #endregion
     }
 }

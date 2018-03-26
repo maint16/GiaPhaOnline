@@ -18,7 +18,7 @@ namespace Shared.ViewModels.FollowCategories
         /// <summary>
         /// Category id.
         /// </summary>
-        public int? CategoryId { get; set; }
+        public HashSet<int> CategoryIds { get; set; }
 
         /// <summary>
         /// Statuses of follow category.

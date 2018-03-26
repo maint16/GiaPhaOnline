@@ -7,6 +7,7 @@ using System.Net;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
+using SystemDatabase.Models.Entities;
 using SystemDatabase.Repositories;
 using SystemDatabase.Services;
 using AutoMapper;
@@ -129,6 +130,9 @@ namespace Main
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
+
+            // Store user information in cache
+            services.AddScoped<IValueCacheService<int, Account>, ProfileCacheService>();
 
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache").Get(typeof(Dictionary<string, EmailCacheOption>));

@@ -59,6 +59,7 @@ namespace Main.Controllers
         /// <param name="applicationSettings"></param>
         /// <param name="logger"></param>
         /// <param name="vgyService"></param>
+        /// <param name="profileCacheService"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -73,7 +74,8 @@ namespace Main.Controllers
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<UserController> logger,
-            IVgyService vgyService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
+            IVgyService vgyService,
+            IValueCacheService<int, Account> profileCacheService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
             _encryptionService = encryptionService;
             _jwtConfiguration = jwtConfigurationOptions.Value;
@@ -87,6 +89,7 @@ namespace Main.Controllers
             _emailCacheService = emailCacheService;
             _systemTimeService = systemTimeService;
             _vgyService = vgyService;
+            _profileCacheService = profileCacheService;
         }
 
         #endregion
@@ -619,6 +622,7 @@ namespace Main.Controllers
             jwt.LifeTime = _jwtConfiguration.LifeTime;
             jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
 
+            _profileCacheService.Add(account.Id, account, LifeTimeConstant.JwtLifeTime);
             return jwt;
         }
 
@@ -1001,12 +1005,20 @@ namespace Main.Controllers
         /// </summary>
         private readonly IEmailCacheService _emailCacheService;
 
+        /// <summary>
+        /// System time service
+        /// </summary>
         private readonly ITimeService _systemTimeService;
 
         /// <summary>
         /// Service which is for handling file upload to vgy.me hosting.
         /// </summary>
         private readonly IVgyService _vgyService;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly IValueCacheService<int, Account> _profileCacheService;
 
         #endregion
     }
