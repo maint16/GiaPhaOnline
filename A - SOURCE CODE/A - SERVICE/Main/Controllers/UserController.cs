@@ -22,6 +22,7 @@ using Main.Models;
 using Main.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Pages.Account.Manage.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -587,6 +588,49 @@ namespace Main.Controllers
             if (emailTemplate != null)
             {
                 await _sendMailService.SendAsync(new HashSet<string> { accountSendMail.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+            }
+
+            #endregion
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Using information submitted by user to change account password.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPost("change-password/{id}")]
+        public async Task<IActionResult> ChangePassword([FromRoute] int id, [FromBody] ChangePasswordViewModel info)
+        {
+            #region Parmeters validation
+
+            if (info == null)
+            {
+                info = new ChangePasswordViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Find account
+
+            // Hash the curent password.
+            var hashedCurrentPassword = _encryptionService.Md5Hash(info.CurrentPassword);
+
+            // Get user profile.
+            var profile = _identityService.GetProfile(HttpContext);
+
+            // Invalid index. That means current user wants to change his/her account password.
+            if (id < 1)
+            {
+                // Check current password.
+                if (profile.Password != hashedCurrentPassword)
+                    return Ok();
             }
 
             #endregion

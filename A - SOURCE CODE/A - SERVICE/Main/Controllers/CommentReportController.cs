@@ -11,32 +11,31 @@ using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
 using Shared.ViewModels.CommentReports;
-using Shared.ViewModels.PostReports;
 
 namespace Main.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/comment-report")]
     public class CommentReportController : ApiBaseController
     {
-
         #region Constructors
 
         /// <summary>
-        /// Initialize controller with injectors.
+        ///     Initialize controller with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
         /// <param name="timeService"></param>
         /// <param name="dbSharedService"></param>
         /// <param name="identityService"></param>
-        public CommentReportController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
+        public CommentReportController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+            IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService,
+            dbSharedService, identityService)
         {
         }
 
@@ -45,7 +44,7 @@ namespace Main.Controllers
         #region Methods
 
         /// <summary>
-        /// Add post report to the system.
+        ///     Add post report to the system.
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
@@ -101,7 +100,7 @@ namespace Main.Controllers
 
             // Post has been reported.
             if (commentReport != null)
-                return StatusCode((int)HttpStatusCode.Conflict, new ApiResponse(HttpMessages.CommentHasBeenReported));
+                return StatusCode((int) HttpStatusCode.Conflict, new ApiResponse(HttpMessages.CommentHasBeenReported));
 
             #endregion
 
@@ -128,13 +127,14 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Find post report and edit it.
+        ///     Find post report and edit it.
         /// </summary>
         /// <param name="commentId"></param>
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("")]
-        public async Task<IActionResult> EditCommentReport([FromRoute] int commentId, [FromBody] EditCommentReportViewModel info)
+        public async Task<IActionResult> EditCommentReport([FromRoute] int commentId,
+            [FromBody] EditCommentReportViewModel info)
         {
             #region Parameters validation
 
@@ -180,7 +180,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Delete a post report from system.
+        ///     Delete a post report from system.
         /// </summary>
         /// <param name="commentId"></param>
         /// <returns></returns>
@@ -217,7 +217,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Search for post reports.
+        ///     Search for post reports.
         /// </summary>
         /// <returns></returns>
         [HttpPost("search")]
@@ -320,19 +320,19 @@ namespace Main.Controllers
             #endregion
 
             #region Result search and count
-            
+
             // Result initialization.
             var result = new SearchResult<IList<CommentReport>>();
-            
+
             result.Total = await commentReports.CountAsync();
-            result.Records = await DbSharedService.Paginate(commentReports, condition.Pagination).ToListAsync();;
+            result.Records = await DbSharedService.Paginate(commentReports, condition.Pagination).ToListAsync();
+            ;
 
             #endregion
 
             return Ok(result);
         }
-        
+
         #endregion
-        
     }
 }
