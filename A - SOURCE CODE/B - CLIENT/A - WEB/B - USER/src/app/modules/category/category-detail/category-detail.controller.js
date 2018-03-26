@@ -3,7 +3,7 @@ module.exports = function (ngModule) {
                                                               profile,
                                                               appSettings, urlStates, details, taskStatusConstant, taskResultConstant,
                                                               $uibModal, toastr, $translate,
-                                                              postService, followPostService,
+                                                              postService, followPostService, commonService,
                                                               commentService, userService, followCategoryService) {
 
         //#region Properties
@@ -51,6 +51,11 @@ module.exports = function (ngModule) {
             }
         };
 
+        // Collection of data which are splitted into chunks.
+        $scope.chunks = {
+            posts: []
+        };
+
         // Data load condition
         $scope.loadDataCondition = {
             post: {
@@ -90,16 +95,37 @@ module.exports = function (ngModule) {
 
             // Call api to load data.
             return postService.getPosts(loadDataCondition)
-                .then(function (x) {
-                    var result = x.data;
-                    if (!result)
-                        return null;
+                .then(function (getPostsResponse) {
 
-                    // Get posts list.
-                    var posts = result.records;
+                    // Initialize default items.
+                    var defaultResponse = {
+                        records: [],
+                        total: 0
+                    };
 
-                    // Posts list.
-                    $scope.loadDataResult.posts = result;
+                    // Get result from response.
+                    var getPostsResult = getPostsResponse.data;
+                    if (!getPostsResult) {
+                        $scope.loadDataResult.posts = defaultResponse;
+                        throw 'Cannot get posts list.'
+                    }
+
+                    // No post has been found.
+                    var posts = getPostsResult.records;
+                    if (!posts || posts.length < 1) {
+                        $scope.loadDataResult.posts = defaultResponse;
+                        throw 'Cannot get posts list.'
+                    }
+
+                    return getPostsResult;
+                })
+                // Load following posts.
+                .then(function (getPostsResult) {
+
+                    // Build a list of promises which should be resolved
+                    var promises = [];
+
+                    //#region Get user list
 
                     // Get users list.
                     var userIds = posts
@@ -110,17 +136,13 @@ module.exports = function (ngModule) {
                         });
 
                     // Load users list.
-                    $scope.loadUsers(userIds);
+                    var loadUsersPromises = $scope.loadUsers(userIds);
+                    if (loadUsersPromises && loadUsersPromises.length > 0)
+                        promises = promises.concat(loadUsersPromises);
 
-                    return result;
-                })
+                    //#endregion
 
-                // Load following posts.
-                .then(function (getPostsResult) {
-
-                    // Get post result.
-                    if (!getPostsResult)
-                        return null;
+                    //#region Get post list
 
                     var posts = getPostsResult.records;
                     var postIds = posts
@@ -131,7 +153,21 @@ module.exports = function (ngModule) {
                             return post.id;
                         });
 
-                    $scope.loadFollowingPosts(postIds);
+                    // Load following post promises.
+                    var loadFollowingPostsPromises = $scope.loadFollowingPosts(postIds);
+                    if (loadFollowingPostsPromises && loadFollowingPostsPromises.length > 0)
+                        promises = promises.concat(loadFollowingPostsPromises);
+
+                    //#endregion
+
+                    return Promise.all(promises)
+                        .then(function () {
+                            return getPostsResult;
+                        })
+                })
+                .then(function (getPostsResult) {
+                    // Posts list.
+                    $scope.loadDataResult.posts = getPostsResult;
                 });
         };
 
@@ -145,7 +181,7 @@ module.exports = function (ngModule) {
                 ids: ids
             };
 
-            userService.loadUsers(getUsersCondition)
+            var loadUsersPromise = userService.loadUsers(getUsersCondition)
                 .then(function (loadUserResponse) {
                     var loadUserResult = loadUserResponse.data;
                     if (!loadUserResult)
@@ -163,13 +199,15 @@ module.exports = function (ngModule) {
                         $scope.buffer.users[user.id] = user;
                     });
                 });
+
+            return [loadUsersPromise];
         };
 
         /*
         * Get following posts list.
         * */
         $scope.loadFollowingPosts = function (postIds) {
-            followPostService.loadFollowPosts(postIds)
+            var loadFollowingPostsPromise = followPostService.loadFollowPosts(postIds)
                 .then(function (loadFollowPostsResponse) {
 
                     var loadFollowPostsResult = loadFollowPostsResponse.data;
@@ -185,6 +223,8 @@ module.exports = function (ngModule) {
                         return followPost;
                     });
                 });
+
+            return [loadFollowingPostsPromise];
         };
 
         /*
@@ -282,7 +322,7 @@ module.exports = function (ngModule) {
         $scope.fnAddPost = function (post) {
             // Add post to system.
             postService.addPost(post)
-                .then(function(addPostResponse){
+                .then(function (addPostResponse) {
 
                     // Dismiss the modal.
                     if ($scope.modals.addPost)

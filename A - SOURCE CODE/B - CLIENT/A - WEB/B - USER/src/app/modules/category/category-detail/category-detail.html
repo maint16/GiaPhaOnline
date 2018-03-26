@@ -186,6 +186,7 @@
         </form>
     </div>
 
+    <!--Add a post button-->
     <div class="row form-group">
         <div class="col-sm-12">
             <button class="btn btn-flat btn-block btn-primary"
@@ -198,7 +199,6 @@
     <div class="row form-group">
         <div class="col-sm-4"
              ng-repeat="post in loadDataResult.posts.records">
-
             <post-box ng-post="post"
                       ng-is-following-post="buffer.followingPosts[post.id]"
                       ng-is-comment-available="false"

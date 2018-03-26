@@ -80,7 +80,10 @@
                                 <tbody>
                                 <tr>
                                     <th>{{'Posts' | translate}}</th>
-                                    <td>{{buffer.categoryPostsCounter[category.id]}}</td>
+                                    <td>
+                                        <span ng-if="buffer.categoryPostsCounter[category.id]">{{buffer.categoryPostsCounter[category.id]}}</span>
+                                        <span ng-if="!buffer.categoryPostsCounter[category.id]">0</span>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

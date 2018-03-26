@@ -6,7 +6,7 @@ module.exports = function (ngModule) {
                                                              $timeout, $state,
                                                              appSettings, urlStates,
                                                              profile,
-                                                             categoryService, postCategorizationService, followCategoryService) {
+                                                             categoryService, postCategorizationService, followCategoryService, commonService) {
 
         //#region Properties
 
@@ -35,6 +35,13 @@ module.exports = function (ngModule) {
                     records: appSettings.pagination.default
                 }
             }
+        };
+
+        /*
+        * Chunks of split data parts.
+        * */
+        $scope.chunks = {
+            categories: {}
         };
 
         //#endregion
@@ -143,7 +150,7 @@ module.exports = function (ngModule) {
                         if (profile) {
                             // Build condition for getting category following status
                             var getCategoryFollowingStatus = {
-                                categoryId: category.id,
+                                categoryIds: [category.id],
                                 pagination: {
                                     page: 1,
                                     records: 1
@@ -186,6 +193,10 @@ module.exports = function (ngModule) {
                         });
                 })
                 .then(function(getCategoriesResult){
+
+                    // Get categories.
+                    var categories = getCategoriesResult.records;
+
                     $scope.result.getCategories = getCategoriesResult;
                 });
         };

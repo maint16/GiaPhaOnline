@@ -8,6 +8,10 @@
     white-space: normal !important;
 }
 
-.category-image {
-    max-height: 150px;
+.category-detail-box .category-image {
+    height: 150px !important;
+}
+
+.category-detail-box .category-description {
+    height: 200px !important;
 }
