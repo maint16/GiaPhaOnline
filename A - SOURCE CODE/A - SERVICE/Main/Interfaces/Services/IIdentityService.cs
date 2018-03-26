@@ -2,7 +2,9 @@
 using System.Security.Principal;
 using SystemDatabase.Models.Entities;
 using Main.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Main.Interfaces.Services
 {
@@ -41,6 +43,11 @@ namespace Main.Interfaces.Services
         /// <returns></returns>
         T DecodeJwt<T>(string token);
 
+        /// <summary>
+        /// Allow identity to be parsed and set to both anonymous & authenticated users.
+        /// </summary>
+        void BypassAuthorizationFilter(AuthorizationHandlerContext authorizationHandlerContext, IAuthorizationRequirement requirement, bool bAnonymousAccessAttributeCheck = false);
+        
         #endregion
     }
 }

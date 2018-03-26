@@ -265,7 +265,7 @@ namespace Main.Controllers
         public async Task<IActionResult> SearchCategories([FromBody] SearchCategoryViewModel condition)
         {
             #region Parameters validation
-
+            
             if (condition == null)
             {
                 condition = new SearchCategoryViewModel();

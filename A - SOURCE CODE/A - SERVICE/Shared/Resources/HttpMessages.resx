@@ -155,6 +155,9 @@
   <data name="CommentReportNotFound" xml:space="preserve">
     <value>COMMENT_REPORT_NOT_FOUND</value>
   </data>
+  <data name="CurrentPasswordIsInvalid" xml:space="preserve">
+    <value>CURRENT_PASSWORD_IS_INVALID</value>
+  </data>
   <data name="FacebookCodeIsInvalid" xml:space="preserve">
     <value>FACEBOOK_CODE_IS_INVALID</value>
   </data>

@@ -169,6 +169,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CURRENT_PASSWORD_IS_INVALID.
+        /// </summary>
+        public static string CurrentPasswordIsInvalid {
+            get {
+                return ResourceManager.GetString("CurrentPasswordIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FACEBOOK_CODE_IS_INVALID.
         /// </summary>
         public static string FacebookCodeIsInvalid {

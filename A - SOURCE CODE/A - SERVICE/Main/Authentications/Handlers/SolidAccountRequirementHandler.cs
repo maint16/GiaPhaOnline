@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Models;
@@ -37,7 +38,7 @@ namespace Main.Authentications.Handlers
         }
 
         #endregion
-        
+
         #region Methods
 
         /// <summary>
@@ -50,13 +51,13 @@ namespace Main.Authentications.Handlers
             SolidAccountRequirement requirement)
         {
             // Convert authorization filter context into authorization filter context.
-            var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
+            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
 
             //var httpContext = authorizationFilterContext.HttpContext;
             var httpContext = _httpContextAccessor.HttpContext;
 
             // Find claim identity attached to principal.
-            var claimIdentity = (ClaimsIdentity) httpContext.User.Identity;
+            var claimIdentity = (ClaimsIdentity)httpContext.User.Identity;
 
             // Find email from claims list.
             var email =
@@ -70,14 +71,14 @@ namespace Main.Authentications.Handlers
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
                 {
-                    context.Succeed(requirement);
+                    _identityService.BypassAuthorizationFilter(context, requirement);
                     return;
                 }
-                
+
                 context.Fail();
                 return;
             }
-            
+
             // Find accounts based on conditions.
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
@@ -88,7 +89,17 @@ namespace Main.Authentications.Handlers
 
             // Account is not found.
             if (account == null)
+            {
+                // Method or controller authorization can be by passed.
+                if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
+                {
+                    _identityService.BypassAuthorizationFilter(context, requirement);
+                    return;
+                }
+
+                context.Fail();
                 return;
+            }
 
             // Initiate claim identity with newer information from database.
             var claimsIdentity = new ClaimsIdentity();

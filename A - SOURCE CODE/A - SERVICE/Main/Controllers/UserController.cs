@@ -626,12 +626,28 @@ namespace Main.Controllers
             var profile = _identityService.GetProfile(HttpContext);
 
             // Invalid index. That means current user wants to change his/her account password.
-            if (id < 1)
+            if (id < 1 || profile.Id == id)
             {
                 // Check current password.
                 if (profile.Password != hashedCurrentPassword)
-                    return Ok();
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.CurrentPasswordIsInvalid));
+                
+                profile.Password = _encryptionService.Md5Hash(info.NewPassword);
             }
+            else
+            {
+                var accounts = _unitOfWork.Accounts.Search();
+                accounts = accounts.Where(x => x.Id == id && x.Status == AccountStatus.Available);
+
+                // Get the first matched account
+                var account = await accounts.FirstOrDefaultAsync();
+                if (account == null)
+                    return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
+
+                account.Password = _encryptionService.Md5Hash(info.NewPassword);
+            }
+
+            await UnitOfWork.CommitAsync();
 
             #endregion
 
