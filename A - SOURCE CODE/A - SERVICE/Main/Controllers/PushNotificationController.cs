@@ -93,7 +93,6 @@ namespace Main.Controllers
         [ByPassAuthorization]
         public async Task<IActionResult> AddDevice([FromBody] AddDeviceViewModel info)
         {
-            return Ok();
             #region Parameters validation
 
             // Information hasn't been initialized.
