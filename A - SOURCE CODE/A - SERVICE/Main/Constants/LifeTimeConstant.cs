@@ -11,5 +11,10 @@ namespace Main.Constants
         /// How many seconds that a jwt exists
         /// </summary>
         public const int JwtLifeTime = 18000;
+
+        /// <summary>
+        /// How many seconds that a cache exists
+        /// </summary>
+        public const int ProfileCacheLifeTime = 300;
     }
 }

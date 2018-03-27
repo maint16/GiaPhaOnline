@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Models;
 using SystemDatabase.Interfaces;
+using SystemDatabase.Models.Entities;
 using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
+using Main.Constants;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Data.OData;
 using Microsoft.EntityFrameworkCore;
 using Shared.ViewModels.Accounts;
 
@@ -28,13 +31,16 @@ namespace Main.Authentications.Handlers
         /// <param name="unitOfWork"></param>
         /// <param name="identityService"></param>
         /// <param name="httpContextAccessor"></param>
+        /// <param name="profileCacheService"></param>
         public SolidAccountRequirementHandler(
             IUnitOfWork unitOfWork,
-            IIdentityService identityService, IHttpContextAccessor httpContextAccessor)
+            IIdentityService identityService, IHttpContextAccessor httpContextAccessor,
+            IValueCacheService<int, Account> profileCacheService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
             _httpContextAccessor = httpContextAccessor;
+            _profileCacheService = profileCacheService;
         }
 
         #endregion
@@ -59,14 +65,14 @@ namespace Main.Authentications.Handlers
             // Find claim identity attached to principal.
             var claimIdentity = (ClaimsIdentity)httpContext.User.Identity;
 
-            // Find email from claims list.
-            var email =
-                claimIdentity.Claims.Where(x => x.Type.Equals(ClaimTypes.Email))
-                    .Select(x => x.Value)
-                    .FirstOrDefault();
+            // Find id from claims list.
+            var id = claimIdentity.Claims.Where(x => x.Type.Equals("Id"))
+                .Select(x => x.Value)
+                .FirstOrDefault();
 
-            // Email is invalid.
-            if (string.IsNullOrEmpty(email))
+
+            // Id is invalid
+            if (string.IsNullOrEmpty(id) || !int.TryParse(id, out int iId))
             {
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
@@ -79,13 +85,25 @@ namespace Main.Authentications.Handlers
                 return;
             }
 
+            var account = _profileCacheService.Read(iId);
+
+            // Account is found in cache. By pass authentication.
+            if (account != null)
+            {
+                //ClaimsIdentity(account);
+                // Update claim identity.
+                _identityService.SetProfile(httpContext, account);
+                context.Succeed(requirement);
+                return;
+            }
+
             // Find accounts based on conditions.
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
-                x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Available);
+                x.Id == iId && x.Status == AccountStatus.Available);
 
             // Find the first matched account in the system.
-            var account = await accounts.FirstOrDefaultAsync();
+            account = await accounts.FirstOrDefaultAsync();
 
             // Account is not found.
             if (account == null)
@@ -101,18 +119,28 @@ namespace Main.Authentications.Handlers
                 return;
             }
 
-            // Initiate claim identity with newer information from database.
-            var claimsIdentity = new ClaimsIdentity();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, email));
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Authentication,
-                Enum.GetName(typeof(AccountStatus), account.Status)));
-
-            // Update claim identity.
+            //// Initiate claim identity with newer information from database.
+            //var claimsIdentity = new ClaimsIdentity();
+            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, account.Email));
+            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
+            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
+            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Authentication,
+            //    Enum.GetName(typeof(AccountStatus), account.Status)));
+            _profileCacheService.Add(iId, account, LifeTimeConstant.ProfileCacheLifeTime);
             _identityService.SetProfile(httpContext, account);
             context.Succeed(requirement);
         }
+
+        //private ClaimsIdentity ClaimsIdentity(Account account)
+        //{
+        //    // Initiate claim identity with newer information from database.
+        //    var claimsIdentity = new ClaimsIdentity();
+        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, account.Email));
+        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
+        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
+        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Authentication,
+        //        Enum.GetName(typeof(AccountStatus), account.Status)));
+        //}
 
         #endregion
 
@@ -132,6 +160,11 @@ namespace Main.Authentications.Handlers
         ///     Context accessor.
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly IValueCacheService<int, Account> _profileCacheService;
 
         #endregion
     }

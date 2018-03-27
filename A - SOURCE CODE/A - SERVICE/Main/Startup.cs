@@ -124,16 +124,16 @@ namespace Main
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IPusherService, PusherService>();
 
+            // Store user information in cache
+            services.AddSingleton<IValueCacheService<int, Account>, ProfileCacheService>();
+
             // Initialize vgy service.
             services.AddScoped<IVgyService, VgyService>();
 
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
-
-            // Store user information in cache
-            services.AddScoped<IValueCacheService<int, Account>, ProfileCacheService>();
-
+            
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache").Get(typeof(Dictionary<string, EmailCacheOption>));
             var emailCacheService = new EmailCacheService();

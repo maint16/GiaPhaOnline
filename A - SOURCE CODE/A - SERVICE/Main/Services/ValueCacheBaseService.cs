@@ -86,8 +86,13 @@ namespace Main.Services
                 return valueTimePair.Key;
 
             // Item is expired. Remove it from list.
-            _pairs.Remove(key);
-            return default(TValue);
+            if (valueTimePair.Value < DateTime.Now)
+            {
+                _pairs.Remove(key);
+                return default(TValue);
+            }
+
+            return valueTimePair.Key;
         }
 
         /// <summary>
