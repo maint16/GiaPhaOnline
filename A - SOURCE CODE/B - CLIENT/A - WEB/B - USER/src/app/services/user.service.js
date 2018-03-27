@@ -85,7 +85,7 @@ module.exports = function(ngModule){
             // Add multipart/form-data to request headers.
             var options = {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': undefined
                 }
             };
 

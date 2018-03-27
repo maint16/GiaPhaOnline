@@ -67,7 +67,7 @@
                        ng-click="fnLogin()">
 
                         <span ng-if="profile">
-                            <img ng-src="{{profile.photo}}"
+                            <img ng-src="{{profile.photo ? profile.photo : '/assets/images/avatar.png'}}"
                                  class="user-image"
                                  alt="User Image">
                             <span class="hidden-xs">{{profile.nickname}}
@@ -89,7 +89,7 @@
                         ng-transclude="userMenu">
                         <!-- The user image in the menu -->
                         <li class="user-header">
-                            <img ng-src="{{profile.photo}}"
+                            <img ng-src="{{profile.photo ? profile.photo : '/assets/images/avatar.png'}}"
                                  class="img-circle"
                                  alt="User Image">
                             <p>

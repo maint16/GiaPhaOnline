@@ -29,7 +29,7 @@ module.exports = function (ngModule) {
         $scope.model = {
             changePassword: {
                 currentPassword: null,
-                password: null,
+                newPassword: null,
                 confirmPassword: null
             },
 
@@ -621,6 +621,10 @@ module.exports = function (ngModule) {
                     if (!changePasswordResult) {
                         return;
                     }
+
+                    // Display success message.
+                    toastr.success($translate.instant('Changed password successfully'));
+
                     // As user is changing his/her own password. Obtain the access token returned by this api.
                     if (profile.id === $scope.personalProfile.id) {
                         var szAccessToken = changePasswordResult.accessToken;
@@ -738,7 +742,6 @@ module.exports = function (ngModule) {
         * Upload profile avatar to server.
         * */
         $scope.fnUploadProfileAvatar = function () {
-
             // Cropped image hasn't been defined.
             if (!$scope.model.profile.croppedImage)
                 return;

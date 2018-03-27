@@ -318,8 +318,10 @@ module.exports = function (ngModule) {
                             throw 'Cannot get post notifications';
 
                         var notifications = getPostNotificationResult.records;
-                        if (!notifications || notifications.length < 1)
-                            throw 'Cannot get post notifications';
+                        if (!notifications || notifications.length < 1) {
+                            $scope.result.postNotifications = getPostNotificationResult;
+                            throw 'No post notification for the current user.';
+                        }
 
                         return getPostNotificationResult;
                     })

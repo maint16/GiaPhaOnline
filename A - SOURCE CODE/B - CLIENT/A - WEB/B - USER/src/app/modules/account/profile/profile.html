@@ -28,11 +28,12 @@
                 </div>
 
                 <div class="box-body">
+                    <!--User avatar-->
                     <div class="col-lg-4">
                         <div class="row">
                             <div class="col-xs-12 text-center">
                                 <div class="form-group">
-                                    <img ng-src="http://via.placeholder.com/512x512"
+                                    <img ng-src="{{personalProfile.photo ? personalProfile.photo: 'http://via.placeholder.com/512x512'}}"
                                          class="img img-responsive img-thumbnail"
                                          width="256px"
                                          height="256px">
@@ -248,7 +249,7 @@
                     <div class="form-group">
                         <input class="form-control"
                                type="password"
-                               ng-model="model.changePassword.password"
+                               ng-model="model.changePassword.newPassword"
 
                                required>
                     </div>
@@ -306,7 +307,7 @@
                             <ui-cropper image="model.profile.originalImage"
                                         area-type="square"
                                         canvas-scalemode="full-width"
-                                        result-image="model.profile.croppedImage"
+                                        result-blob="model.profile.croppedImage"
                                         result-image-size="'max'"></ui-cropper>
                         </div>
                     </div>

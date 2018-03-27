@@ -105,87 +105,75 @@ module.exports = function (ngModule) {
                     // Clear buffer.
                     $scope.buffer.categoryPostsCounter = {};
 
+                    // List of categories which needs searching for the relationship to the current user.
+                    var followingCategoryIds = {};
+                    var categorizedCategoryIds = {};
+
                     angular.forEach(categories, function (category, iterator) {
 
-                        //#region Get category posts counter
+                        // Get categorized category id.
+                        if (!categorizedCategoryIds[category.id])
+                            categorizedCategoryIds[category.id] = true;
 
-                        // Build condition for getting post categorizations.
-                        var getPostCategorizationCondition = {
-                            categoryId: category.id,
-                            pagination: {
-                                page: 1,
-                                records: 1
-                            }
-                        };
-
-                        // Get category post counter promise.
-                        var pGetCategoryPostCounterPromise = postCategorizationService.getPostCategorizations(getPostCategorizationCondition)
-                            .then(function (getPostCategorizationResponse) {
-
-                                // Get api returned result.
-                                var getPostCategorizationResult = getPostCategorizationResponse.data;
-                                if (!getPostCategorizationResult)
-                                    return;
-
-                                // Get the first result.
-                                var categorizations = getPostCategorizationResult.records;
-                                if (!categorizations || categorizations.length < 1)
-                                    return;
-
-                                var categorization = categorizations[0];
-                                if (!categorization)
-                                    return;
-
-                                $scope.buffer.categoryPostsCounter[categorization.categoryId] = getPostCategorizationResult.total;
-                            });
-
-                        // Add promise to queue.
-                        pPromises.push(pGetCategoryPostCounterPromise);
-
-                        //#endregion
-
-                        //#region Get category following status
 
                         // If user is authenticated. Search for his/her following category.
                         if (profile) {
-                            // Build condition for getting category following status
-                            var getCategoryFollowingStatus = {
-                                categoryIds: [category.id],
-                                pagination: {
-                                    page: 1,
-                                    records: 1
-                                }
-                            };
-
-                            // Build get category following status promise.
-                            var pGetCategoryFollowingStatusPromise = followCategoryService.getFollowingCategories(getCategoryFollowingStatus)
-                                .then(function (getCategoryFollowingStatusResponse) {
-
-                                    // Get following status result.
-                                    var getCategoryFollowingStatusResult = getCategoryFollowingStatusResponse.data;
-                                    if (getCategoryFollowingStatusResult == null)
-                                        return;
-
-                                    // No record is found.
-                                    var records = getCategoryFollowingStatusResult.records;
-                                    if (records == null || records.length < 1)
-                                        return;
-
-                                    var record = records[0];
-                                    if (record == null)
-                                        return;
-
-                                    $scope.buffer.followingCategory[record.categoryId] = true;
-
-
-                                });
-
-                            // Add promise to list.
-                            pPromises.push(pGetCategoryFollowingStatusPromise);
+                            if (!followingCategoryIds[category.id])
+                                followingCategoryIds[category.id] = true;
                         }
 
-                        //#endregion
                     });
+
+                    // Get categorized categories.
+
+                    // Convert hashset back to array.
+                    categorizedCategoryIds = Object.keys(categorizedCategoryIds);
+
+                    if (categorizedCategoryIds.length > 0) {
+                        // TODO: Implement categorization counter.
+                        // // Add promise to queue.
+                        // pPromises.push(pGetCategoryPostCounterPromise);
+                    }
+
+                    //#endregion
+
+                    //#region Get category following status
+
+                    // Convert following category indexes list.
+                    followingCategoryIds = Object.keys(followingCategoryIds);
+
+                    if (followingCategoryIds.length > 0) {
+                        // Build condition for getting category following status
+                        var getCategoryFollowingStatus = {
+                            categoryIds: followingCategoryIds
+                        };
+
+                        // Build get category following status promise.
+                        var pGetCategoryFollowingStatusPromise = followCategoryService.getFollowingCategories(getCategoryFollowingStatus)
+                            .then(function (getCategoryFollowingStatusResponse) {
+
+                                // Get following status result.
+                                var getCategoryFollowingStatusResult = getCategoryFollowingStatusResponse.data;
+                                if (getCategoryFollowingStatusResult == null)
+                                    return;
+
+                                // No record is found.
+                                var records = getCategoryFollowingStatusResult.records;
+                                if (records == null || records.length < 1)
+                                    return;
+
+                                var record = records[0];
+                                if (record == null)
+                                    return;
+
+                                $scope.buffer.followingCategory[record.categoryId] = true;
+                            });
+
+                        // Add promise to list.
+                        pPromises.push(pGetCategoryFollowingStatusPromise);
+                    }
+
+                    //#endregion
 
                     return Promise.all(pPromises)
                         .then(function (x) {
@@ -193,10 +181,6 @@ module.exports = function (ngModule) {
                         });
                 })
                 .then(function(getCategoriesResult){
-
-                    // Get categories.
-                    var categories = getCategoriesResult.records;
-
                     $scope.result.getCategories = getCategoriesResult;
                 });
         };
