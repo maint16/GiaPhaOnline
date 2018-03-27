@@ -16,6 +16,7 @@ using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels;
 using Shared.ViewModels.Categories;
+using Shared.ViewModels.FollowPosts;
 using Shared.ViewModels.PostCategorization;
 
 namespace Main.Controllers
@@ -185,12 +186,20 @@ namespace Main.Controllers
             var categorizations = _unitOfWork.PostCategorizations.Search();
 
             // Category has been defined.
-            if (info.CategoryId != null)
-                categorizations = categorizations.Where(x => x.CategoryId == info.CategoryId);
+            if (info.CategoryIds != null && info.CategoryIds.Count > 0)
+            {
+                var categoryIds = info.CategoryIds.Where(x => x > 0).ToList();
+                if (categoryIds.Count > 0)
+                    categorizations = categorizations.Where(x => info.CategoryIds.Contains(x.CategoryId));
+            }
 
             // Post has been defined.
-            if (info.PostId != null)
-                categorizations = categorizations.Where(x => x.PostId == info.PostId);
+            if (info.PostIds != null && info.PostIds.Count > 0)
+            {
+                var pategoryIds = info.PostIds.Where(x => x > 0).ToList();
+                if (pategoryIds.Count > 0)
+                    categorizations = categorizations.Where(x => info.PostIds.Contains(x.PostId));
+            }
 
             // Categorization time is defined.
             var categorizationTime = info.CategorizationTime;
@@ -229,6 +238,94 @@ namespace Main.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("count-posts")]
+        [ByPassAuthorization]
+        public async Task<IActionResult> GetCategoryPostsCounter([FromBody] CountPostCategorizationViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new CountPostCategorizationViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for information
+
+            // Get all follow posts
+            var postCategorizations = _unitOfWork.PostCategorizations.Search();
+
+            if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
+            {
+                var categoryIds = condition.CategoryIds.Where(x => x > 0).ToList();
+                if (categoryIds.Count > 0)
+                    postCategorizations = postCategorizations.Where(x => condition.CategoryIds.Contains(x.CategoryId));
+            }
+
+            var categoryGroups = postCategorizations.GroupBy(x => x.CategoryId).Select(x => new CategoryPostCounterModel
+            {
+                CategoryId = x.Key,
+                TotalPosts = x.Count()
+            });
+            
+
+            // Sort by properties.
+            if (condition.Sort != null)
+                categoryGroups =
+                    _databaseFunction.Sort(categoryGroups, condition.Sort.Direction,
+                        condition.Sort.Property);
+            else
+                categoryGroups = _databaseFunction.Sort(categoryGroups, SortDirection.Ascending,
+                    PostCategorizationSort.CategoryId);
+
+            // Result initialization.
+            var result = new SearchResult<IList<CategoryPostCounterModel>>();
+            result.Total = categoryGroups.Count(model => model.CategoryId > 0);
+            result.Records = await _databaseFunction.Paginate(categoryGroups, condition.Pagination).ToListAsync();
+
+            #endregion
+            return Ok(result);
+        }
+
+        ///// <summary>
+        /////     Load categorizations by using specific conditions.
+        ///// </summary>
+        ///// <param name="categorizations"></param>
+        ///// <param name="conditions"></param>
+        ///// <returns></returns>
+        //public IQueryable<Categorization> GetCategoryPostsCounter(IQueryable<Categorization> categorizations,
+        //    CountPostCategorizationViewModel conditions)
+        //{
+        //    if (conditions == null)
+        //        return categorizations;
+
+        //    // PostId has been defined.
+        //    if (conditions.CategoryIds != null && conditions.CategoryIds.Count > 0)
+        //    {
+        //        var categoryIds = conditions.CategoryIds.Where(x => x > 0).ToList();
+        //        if (categoryIds.Count > 0)
+        //            categorizations = categorizations.Where(x => conditions.CategoryIds.Contains(x.CategoryId));
+        //    }
+
+        //    var a = categorizations.GroupBy(x => x.CategoryId).Select(x => new
+        //    {
+        //        CategoryId = x.Key,
+        //        Total = x.Count()
+        //    });
+
+        //    return categorizations;
+        //}
 
         #endregion
     }

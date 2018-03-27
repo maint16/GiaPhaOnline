@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using Shared.Models;
 
 namespace Shared.ViewModels.PostCategorization
 {
-    public class SearchPostCategorizationViewModel
+    public class CountPostCategorizationViewModel
     {
         #region Properties
 
@@ -15,22 +17,12 @@ namespace Shared.ViewModels.PostCategorization
         public HashSet<int> CategoryIds { get; set; }
 
         /// <summary>
-        /// Post id.
-        /// </summary>
-        public HashSet<int> PostIds { get; set; }
-
-        /// <summary>
-        /// Time when categorization was created.
-        /// </summary>
-        public Range<double?, double?> CategorizationTime { get; set; }
-
-        /// <summary>
-        /// Post categorization sort.
+        /// Sorted property & direction.
         /// </summary>
         public Sort<PostCategorizationSort> Sort { get; set; }
 
         /// <summary>
-        /// Pagination information.
+        ///     Pagination of records filter.
         /// </summary>
         public Pagination Pagination { get; set; }
 
