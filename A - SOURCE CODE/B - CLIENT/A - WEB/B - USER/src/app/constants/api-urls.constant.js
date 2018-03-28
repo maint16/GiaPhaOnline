@@ -64,6 +64,11 @@ module.exports = function (ngModule) {
 
         pushNotification:{
             addDevice: 'api/push-notification/device'
+        },
+
+
+        realtime:{
+            authorizePusher: 'api/realtime-connection/pusher/authorize'
         }
 
     });

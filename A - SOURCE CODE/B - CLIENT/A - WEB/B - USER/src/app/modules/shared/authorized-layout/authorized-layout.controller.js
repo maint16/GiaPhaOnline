@@ -1,10 +1,9 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
         function (oAuthSettings, appSettings,
-    $scope, $state, $transitions, uiService, oAuthService,
+                  $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window,
-                  notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant,
-                  pusherConfigConstant,
+                  notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant,
                   pusherService,
                   authenticationService, userService, postNotificationService, postService) {
 
@@ -213,10 +212,10 @@ module.exports = function (ngModule) {
             /*
             * Function is called when basic user registration form cancel button is clicked.
             * */
-            $scope.fnCancelBasicRegister = function(){
+            $scope.fnCancelBasicRegister = function () {
 
                 // User registration modal is valid. Dismiss it.
-                if ($scope.modals.basicUserRegistration){
+                if ($scope.modals.basicUserRegistration) {
                     $scope.modals.basicUserRegistration.dismiss();
                     $scope.modals.basicUserRegistration = null;
                 }
@@ -225,7 +224,7 @@ module.exports = function (ngModule) {
             /*
             * Event which is fired when basic registration button is clicked.
             * */
-            $scope.fnOpenBasicRegister = function(){
+            $scope.fnOpenBasicRegister = function () {
 
                 // Dismiss the login modal first.
                 if ($scope.modals.login)
@@ -243,9 +242,9 @@ module.exports = function (ngModule) {
             /*
             * Submit a request with specific information to register a basic account.
             * */
-            $scope.fnBasicRegister = function(user){
+            $scope.fnBasicRegister = function (user) {
                 userService.basicRegister(user)
-                    .then(function(basicUserRegistrationResponse){
+                    .then(function (basicUserRegistrationResponse) {
                         // User registration is successful.
                         // Modal dialog is valid. Dismiss it first.
                         if ($scope.modals.basicUserRegistration)
@@ -436,29 +435,80 @@ module.exports = function (ngModule) {
             /*
             * Subscribe to realtime channels.
             * */
-            $scope.fnSubscribeRealTimeChannels = function(){
+            $scope.fnSubscribeRealTimeChannels = function () {
 
-                // Open a connection to pusher server.
-                pusherService.init(pusherConfigConstant.appKey, pusherConfigConstant.appCluster,
-                    pusherConfigConstant.encrypted, $scope.fnAuthorizeRealTimeConnection, false);
+                // // Initialize socket.
+                var socket = new Pusher(pusherOptionConstant.appKey, {
+                    cluster: pusherOptionConstant.cluster,
+                    encrypted: pusherOptionConstant.encrypted,
+                    authorizer: function (channel, options) {
+                        return {
+                            authorize: function (socketId, callback) {
+                                pusherService.authorizeRealTimeChannel(channel.name, socketId)
+                                    .then(function(authorizeClientDeviceResponse){
+                                       var authorizeClientDeviceResult = authorizeClientDeviceResponse.data;
+                                       if (!authorizeClientDeviceResult)
+                                           return;
 
-                // Profile is defined.
-                if (profile){
-
-                    // User is admin, subscribe to channels belong to admin.
-                    if (profile.role === userRoleConstant.admin){
-                        pusherService.subscribeChannel(realTimeChannelConstant.admin.userRegistration)
-                            .listenToEvent(realTimeEventConstant.userRegistrationEvent, function(data){
-                                console.log(data);
-                            });
+                                        callback(false, authorizeClientDeviceResult);
+                                    });
+                            }
+                        };
                     }
-                }
+                });
+
+                socket.subscribe('private-message-channel')
+                    .bind('my-event', function(data) {
+                        alert('An event was triggered with message: ' + data.message);
+                    });
+
+                // Save the socket connection.
+                pusherService.setInstance(socket);
+
+                // // Open a connection to pusher server.
+                // var socket = pusherService.init(pusherConfigConstant.appKey, pusherConfigConstant.appCluster,
+                //     pusherConfigConstant.encrypted, $scope.fnAuthorizeRealTimeConnection, false);
+                //
+                // // Profile is defined.
+                // if (profile) {
+                //     // User is admin, subscribe to channels belong to admin.
+                //     if (profile.role === userRoleConstant.admin) {
+                //         socket.subscribe('private-message-channel')
+                //             .bind('my-event', function(data) {
+                //                 alert('An event was triggered with message: ' + data.message);
+                //             });
+                //         //
+                //         // var channel = pusherService.subscribeChannel(realTimeChannelConstant.admin.userRegistration);
+                //         // debugger;
+                //         // pusherService.listenToEvent(channel, 'user-register',
+                //         //     function (data) {
+                //         //         console.log(data);
+                //         //     });
+                //     }
+                // }
             };
 
             /*
             * Callback function which is raised when user connects to a private channel.
             * */
-            $scope.fnAuthorizeRealTimeConnection = function(channel, options){
+            $scope.fnAuthorizeRealTimeConnection = function (channel, options) {
+                return {
+                    authorize: function (socketId, callback) {
+                        return pusherService.authorizeRealTimeChannel(channel.name, socketId)
+                            .then(function (channelAuthenticationResponse) {
+                                if (!channelAuthenticationResponse)
+                                    return;
+
+
+                                var channelAuthenticationResult = channelAuthenticationResponse.data;
+                                if (!channelAuthenticationResult)
+                                    return;
+
+                                var auth = channelAuthenticationResult.auth;
+                                callback(false, auth);
+                            });
+                    }
+                }
             };
 
             //#endregion

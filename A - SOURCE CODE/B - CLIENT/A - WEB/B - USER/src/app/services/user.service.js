@@ -93,12 +93,6 @@ module.exports = function(ngModule){
         };
 
         /*
-        * Using specific information to authorize
-        * */
-        this.fnAuthorizePusherRealTimeChannel = function(){
-        };
-
-        /*
         * Use specific information to register an account.
         * */
         this.basicRegister = function(info){

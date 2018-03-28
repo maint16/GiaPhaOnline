@@ -30,7 +30,7 @@ require('datatables.net/js/jquery.dataTables');
 require('datatables.net-responsive');
 require('moment');
 
-require('rxjs/bundles/Rx');
+require('rxjs/bundles/rxjs.umd');
 var firebase = require('firebase/app');
 require('firebase/messaging');
 

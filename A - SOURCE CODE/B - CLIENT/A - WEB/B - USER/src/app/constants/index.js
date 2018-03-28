@@ -15,6 +15,6 @@ module.exports = function (ngModule) {
     require('./notification-status.constant')(ngModule);
     require('./real-time-channel.constant')(ngModule);
     require('./real-time-event.constant')(ngModule);
-    require('./pusher-setting.constant')(ngModule);
+    require('./pusher-option.constant')(ngModule);
     require('./item-status.constant')(ngModule);
 };

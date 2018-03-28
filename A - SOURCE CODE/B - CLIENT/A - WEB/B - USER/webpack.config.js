@@ -111,7 +111,7 @@ plugins.push(new HtmlWebpackPlugin({
 module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
-        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/Rx',
+        'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/rxjs.umd',
             'pusher-js',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
@@ -135,7 +135,7 @@ module.exports = {
                 ]
             },
             {
-                test: require.resolve('rxjs/bundles/Rx'),
+                test: require.resolve('rxjs/bundles/rxjs.umd'),
                 use: [
                     {
                         loader: 'expose-loader',

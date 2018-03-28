@@ -3,67 +3,45 @@ module.exports = function(ngModule){
     /*
     * Initialize pusher service with configurations.
     * */
-    ngModule.service('pusherService', function(){
+    ngModule.service('pusherService', function(appSettings, apiUrls,
+                                               $http){
 
         //#region Properties
 
         // Instance of pusher.
-        this._pusher = null;
+        this._socket = null;
 
         //#endregion
 
         //#region Methods
 
         /*
-        * Initialize pusher instance to subscribe to real-time channels.
+        * Set socket instance.
         * */
-        this.init = function(appKey, appCluster, encrypted, authorizer, bIsOverwritten){
-
-            // Instance shouldn't be overwritten.
-            if (!bIsOverwritten && this._pusher){
-                return this._pusher;
-            }
-
-            // Pusher options.
-            var options = {};
-            options['cluster'] = appCluster;
-            options['encrypted'] = encrypted == null ? false: encrypted;
-
-            // Authorizer function is defined.
-            if (authorizer)
-                options['authorizer'] = authorizer;
-
-            // Initialize pusher.
-            this._pusher = new Pusher(appKey, options);
-            return this._pusher;
+        this.setInstance = function(socket){
+            this._socket = socket;
         };
 
         /*
-        * Subscribe to a specific channel.
+        * Get pusher instance.
         * */
-        this.subscribeChannel = function(szChannelName){
-            // Channel name is empty.
-            if (!szChannelName || szChannelName.length < 1)
-                throw 'Channel name is invalid';
-
-            this._pusher.subscribe(szChannelName);
-            return this._pusher;
+        this.getInstance = function(){
+            return this._socket;
         };
 
         /*
-        * Listen to a specific event.
+        * Using specific information to authorize
         * */
-        this.listenToEvent = function(szEventName, callbackFunction){
-            // Event name is empty.
-            if (!szEventName || szEventName.length < 1)
-                throw 'Event name is empty';
+        this.authorizeRealTimeChannel = function(channelName, deviceId){
+            // Initialize request options.
+            var options = {
+                socketId: deviceId,
+                channelName: channelName
+            };
 
-            // Callback function is undefined.
-            if (!callbackFunction)
-                throw 'Callback function is invalid';
-
-            this._pusher.bind(szEventName, callbackFunction);
-            return this._pusher;
+            // Build url to make request to.
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.realtime.authorizePusher;
+            return $http.post(url, options);
         };
 
         //#endregion
