@@ -809,25 +809,48 @@ namespace Main.Controllers
 
             #endregion
 
+            var result = new SearchResult<IList<Account>>();
+
             #region Search for information
 
             // Get all users
             var accounts = _unitOfWork.Accounts.Search();
-            accounts = LoadUsers(accounts, condition);
+
+            // List of account that will be returned.
+            List<Account> filteredAccounts;
+
+            // Id has been defined.
+            if (condition.Ids != null && condition.Ids.Count > 0)
+            {
+                // Get all valid items in cache.
+                var cacheValues = _profileCacheService.ReadValues();
+                filteredAccounts = cacheValues.Where(x => condition.Ids.Contains(x.Id)).ToList();
+
+                // 
+                condition.Ids = condition.Ids.Where(x => x > 0 && filteredAccounts.All(y => y.Id != x)).ToList();
+
+                if (condition.Ids.Count > 0)
+                    accounts = accounts.Where(x => condition.Ids.Contains(x.Id));
+            }
+            else
+                return Ok(result);
+
+            //accounts = LoadUsers(accounts, condition);
 
             // Sort by properties.
-            if (condition.Sort != null)
-                accounts =
-                    _databaseFunction.Sort(accounts, condition.Sort.Direction,
-                        condition.Sort.Property);
-            else
-                accounts = _databaseFunction.Sort(accounts, SortDirection.Decending,
-                    AccountSort.JoinedTime);
+            //if (condition.Sort != null)
+            //    accounts =
+            //        _databaseFunction.Sort(accounts, condition.Sort.Direction,
+            //            condition.Sort.Property);
+            //else
+            //    accounts = _databaseFunction.Sort(accounts, SortDirection.Decending,
+            //        AccountSort.JoinedTime);
 
             // Result initialization.
-            var result = new SearchResult<IList<Account>>();
-            result.Total = await accounts.CountAsync();
+            
+            result.Total = await accounts.CountAsync() + filteredAccounts.Count;
             result.Records = await _databaseFunction.Paginate(accounts, condition.Pagination).ToListAsync();
+            result.Records = result.Records.Concat(filteredAccounts).ToList();
 
             #endregion
 

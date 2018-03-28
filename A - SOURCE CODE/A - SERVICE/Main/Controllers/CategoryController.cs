@@ -12,6 +12,7 @@ using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
+using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -46,9 +47,11 @@ namespace Main.Controllers
         /// <param name="mapper">Instance for mapping objects</param>
         /// <param name="vgyService"></param>
         /// <param name="logger"></param>
+        /// <param name="categoryCacheService"></param>
         public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
             IDbSharedService databaseFunction,
-            IMapper mapper, IVgyService vgyService, ILogger<UserController> logger)
+            IMapper mapper, IVgyService vgyService, ILogger<UserController> logger,
+            IValueCacheService<int, Category> categoryCacheService)
         {
             _identityService = identityService;
             _timeService = timeService;
@@ -57,6 +60,7 @@ namespace Main.Controllers
             _mapper = mapper;
             _vgyService = vgyService;
             _logger = logger;
+            _categoryCacheService = categoryCacheService;
         }
 
         #endregion
@@ -97,6 +101,11 @@ namespace Main.Controllers
         /// Logging instance.
         /// </summary>
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// Category cache
+        /// </summary>
+        private readonly IValueCacheService<int, Category> _categoryCacheService;
 
         #endregion
 
@@ -352,6 +361,81 @@ namespace Main.Controllers
             }
 
             return categories;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [HttpPost("load-categories")]
+        public async Task<IActionResult> LoadCategories([FromBody] LoadCategoryViewModel condition)
+        {
+            #region Parameters validation
+
+            if (condition == null)
+            {
+                condition = new LoadCategoryViewModel();
+                TryValidateModel(condition);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            var result = new SearchResult<IList<Category>>();
+
+            #region Search for information
+
+            // Get all category
+            var categories = _unitOfWork.Categories.Search();
+
+            // List of account that will be returned.
+            List<Category> filteredCategories;
+
+            // Id has been defined.
+            if (condition.Ids != null && condition.Ids.Count > 0)
+            {
+                // Get all valid items in cache.
+                var cacheValues = _categoryCacheService.ReadValues();
+                filteredCategories = cacheValues.Where(x => condition.Ids.Contains(x.Id)).ToList();
+
+                condition.Ids = condition.Ids.Where(x => x > 0 && filteredCategories.All(y => y.Id != x)).ToList();
+
+                if (condition.Ids.Count > 0)
+                {
+                    categories = categories.Where(x => condition.Ids.Contains(x.Id));
+
+                    foreach (var id in condition.Ids)
+                    {
+                        var category = await categories.Where(x => x.Id == id).FirstOrDefaultAsync();
+                        _categoryCacheService.Add(id, category, LifeTimeConstant.CategoryCacheLifeTime);
+                    }
+                }
+            }
+            else
+                return Ok(result);
+
+            //// Sort by properties.
+            //if (condition.Sort != null)
+            //    categories =
+            //        _databaseFunction.Sort(categories, condition.Sort.Direction,
+            //            condition.Sort.Property);
+            //else
+            //    categories = _databaseFunction.Sort(categories, SortDirection.Decending,
+            //        CategoriesSort.CreatedTime);
+
+            // Result initialization.
+            
+            result.Total = await categories.CountAsync() + filteredCategories.Count;
+            result.Records = await _databaseFunction.Paginate(categories, condition.Pagination).ToListAsync();
+            result.Records = result.Records.Concat(filteredCategories).ToList();
+
+            #endregion
+
+            return Ok(result);
         }
 
         /// <summary>

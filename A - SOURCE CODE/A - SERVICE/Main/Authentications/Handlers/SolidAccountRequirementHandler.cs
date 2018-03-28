@@ -131,17 +131,6 @@ namespace Main.Authentications.Handlers
             context.Succeed(requirement);
         }
 
-        //private ClaimsIdentity ClaimsIdentity(Account account)
-        //{
-        //    // Initiate claim identity with newer information from database.
-        //    var claimsIdentity = new ClaimsIdentity();
-        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, account.Email));
-        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
-        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
-        //    claimsIdentity.AddClaim(new Claim(ClaimTypes.Authentication,
-        //        Enum.GetName(typeof(AccountStatus), account.Status)));
-        //}
-
         #endregion
 
         #region Properties

@@ -31,6 +31,12 @@ namespace Main.Interfaces.Services
         TValue Read(TKey key);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        IList<TValue> ReadValues();
+
+        /// <summary>
         /// Remove a value from dictionary.
         /// </summary>
         /// <param name="key"></param>

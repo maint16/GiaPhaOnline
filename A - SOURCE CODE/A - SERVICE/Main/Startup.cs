@@ -126,6 +126,10 @@ namespace Main
 
             // Store user information in cache
             services.AddSingleton<IValueCacheService<int, Account>, ProfileCacheService>();
+            services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
+
+            // Store category information in cache
+            //services.AddSingleton()
 
             // Initialize vgy service.
             services.AddScoped<IVgyService, VgyService>();

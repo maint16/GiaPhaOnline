@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Main.Interfaces.Services;
 
 namespace Main.Services
@@ -96,6 +97,18 @@ namespace Main.Services
         }
 
         /// <summary>
+        /// Get value by search for specific key.
+        /// </summary>
+        /// <returns></returns>
+        public IList<TValue> ReadValues()
+        {
+            // Get value that aren't expired. 
+            var getValuePairs = _pairs.Values.Where(x => x.Value > DateTime.Now);
+
+            return getValuePairs.Select(x => x.Key).ToList();
+        }
+
+        /// <summary>
         /// Remove value from dictionary.
         /// </summary>
         /// <param name="key"></param>
@@ -115,7 +128,6 @@ namespace Main.Services
         {
             return key;
         }
-
 
         #endregion
     }
