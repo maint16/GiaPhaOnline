@@ -92,6 +92,8 @@ namespace Main.Services
         /// <returns></returns>
         public IAuthenticationData Authenticate(string channelName, string socketId, PresenceChannelData presenceChannelData)
         {
+            if (presenceChannelData == null)
+                return _pusher.Authenticate(channelName, socketId);
             return _pusher.Authenticate(channelName, socketId, presenceChannelData);
         }
         

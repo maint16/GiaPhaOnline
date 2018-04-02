@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using AutoMapper;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Main.ViewModels.RealtimeConnection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PusherServer;
@@ -19,7 +21,7 @@ using Shared.Resources;
 
 namespace Main.Controllers
 {
-    [Route("realtime-connection")]
+    [Route("api/realtime-connection")]
     public class RealtimeConnectionController : ApiBaseController
     {
         #region Properties
@@ -95,6 +97,9 @@ namespace Main.Controllers
                 return StatusCode((int)HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotAuthenticateToChannel));
 
+#if DEBUG
+            Debug.WriteLine($"Authenticated socket id: {info.ChannelName} into channel ${info.SocketId}. Authentication data: {authenticationData.auth}");
+#endif
             #endregion
 
             return Ok(authenticationData);
@@ -165,6 +170,36 @@ namespace Main.Controllers
             return Ok(realTimeConnection);
         }
 
+#if DEBUG
+
+        /// <summary>
+        /// Send pusher notification
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("pusher/send")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendPusher([FromBody] SendPusherMessageViewModel information)
+        {
+            #region Parameters validation
+
+            if (information == null)
+            {
+                information = new SendPusherMessageViewModel();
+                TryValidateModel(information);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+           var triggerResult = await  _pusherService.SendAsync(information.SocketId, information.ChannelName, information.EventName,
+                information.Information);
+
+            return Ok();
+        }
+
+#endif
         #endregion
 
     }

@@ -12,13 +12,7 @@ namespace Main.ViewModels
         /// </summary>
         [Required(ErrorMessageResourceType = typeof(HttpValidationMessages), ErrorMessageResourceName = "InformationIsRequired")]
         public string DeviceId { get; set; }
-
-        /// <summary>
-        /// Name of channel that user wants to subscribe to.
-        /// </summary>
-        [Required(ErrorMessageResourceType = typeof(HttpValidationMessages), ErrorMessageResourceName = "InformationIsRequired")]
-        public string ChannelName { get; set; }
-
+       
         #endregion
     }
 }
