@@ -14,6 +14,7 @@ using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
+using Main.Models.PushNotification;
 using Main.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -44,12 +45,14 @@ namespace Main.Controllers
         /// <param name="timeService">Service which is for handling time calculation.</param>
         /// <param name="unitOfWork">Instance for accessing database.</param>
         /// <param name="databaseFunction"></param>
+        /// <param name="pushNotificationService"></param>
         /// <param name="mapper">Instance for mapping objects</param>
         /// <param name="vgyService"></param>
         /// <param name="logger"></param>
         /// <param name="categoryCacheService"></param>
         public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
             IDbSharedService databaseFunction,
+            IPushNotificationService pushNotificationService,
             IMapper mapper, IVgyService vgyService, ILogger<UserController> logger,
             IValueCacheService<int, Category> categoryCacheService)
         {
@@ -57,6 +60,7 @@ namespace Main.Controllers
             _timeService = timeService;
             _unitOfWork = unitOfWork;
             _databaseFunction = databaseFunction;
+            _pushNotificationService = pushNotificationService;
             _mapper = mapper;
             _vgyService = vgyService;
             _logger = logger;
@@ -91,6 +95,11 @@ namespace Main.Controllers
         /// Provide access to generic database functions.
         /// </summary>
         private readonly IDbSharedService _databaseFunction;
+
+        /// <summary>
+        /// Instance to send push notification to clients.
+        /// </summary>
+        private readonly IPushNotificationService _pushNotificationService;
 
         /// <summary>
         /// Service which is for handling file upload to vgy.me hosting.
@@ -183,6 +192,9 @@ namespace Main.Controllers
             // Commit changes.
             await _unitOfWork.CommitAsync();
 
+            // Send push notification to clients.
+            var fcmMessage = new FcmMessage();
+            //_pushNotificationService.SendNotification(new)
             #endregion
 
             return Ok(category);
@@ -274,7 +286,7 @@ namespace Main.Controllers
         public async Task<IActionResult> SearchCategories([FromBody] SearchCategoryViewModel condition)
         {
             #region Parameters validation
-            
+
             if (condition == null)
             {
                 condition = new SearchCategoryViewModel();
@@ -393,45 +405,30 @@ namespace Main.Controllers
             var categories = _unitOfWork.Categories.Search();
 
             // List of account that will be returned.
-            List<Category> filteredCategories;
 
-            // Id has been defined.
-            if (condition.Ids != null && condition.Ids.Count > 0)
+            // Get all valid items in cache.
+            var cacheValues = _categoryCacheService.ReadValues();
+            var filteredCategories = cacheValues.Where(x => condition.Ids.Contains(x.Id)).ToList();
+            result.Records = filteredCategories;
+
+            // Get remaining categories that aren't in cache.
+            condition.Ids = condition.Ids.Where(x => x > 0 && filteredCategories.All(y => y.Id != x)).ToList();
+
+            // At least 1 element has been found.
+            if (condition.Ids.Count > 0)
             {
-                // Get all valid items in cache.
-                var cacheValues = _categoryCacheService.ReadValues();
-                filteredCategories = cacheValues.Where(x => condition.Ids.Contains(x.Id)).ToList();
+                // Get all remaining items from database to memory.
+                // Later, all these items will be added to cache.
+                var inMemoryCategories = await categories.Where(x => condition.Ids.Contains(x.Id)).ToListAsync();
 
-                condition.Ids = condition.Ids.Where(x => x > 0 && filteredCategories.All(y => y.Id != x)).ToList();
+                foreach (var inMemoryCategory in inMemoryCategories)
+                    _categoryCacheService.Add(inMemoryCategory.Id, inMemoryCategory, LifeTimeConstant.CategoryCacheLifeTime);
 
-                if (condition.Ids.Count > 0)
-                {
-                    categories = categories.Where(x => condition.Ids.Contains(x.Id));
-
-                    foreach (var id in condition.Ids)
-                    {
-                        var category = await categories.Where(x => x.Id == id).FirstOrDefaultAsync();
-                        _categoryCacheService.Add(id, category, LifeTimeConstant.CategoryCacheLifeTime);
-                    }
-                }
+                result.Records = filteredCategories.Concat(inMemoryCategories).ToList();
             }
-            else
-                return Ok(result);
-
-            //// Sort by properties.
-            //if (condition.Sort != null)
-            //    categories =
-            //        _databaseFunction.Sort(categories, condition.Sort.Direction,
-            //            condition.Sort.Property);
-            //else
-            //    categories = _databaseFunction.Sort(categories, SortDirection.Decending,
-            //        CategoriesSort.CreatedTime);
 
             // Result initialization.
-            
-            result.Total = await categories.CountAsync() + filteredCategories.Count;
-            result.Records = await _databaseFunction.Paginate(categories, condition.Pagination).ToListAsync();
-            result.Records = result.Records.Concat(filteredCategories).ToList();
+            result.Total = result.Records.Count;
 
             #endregion
 
