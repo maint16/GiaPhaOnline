@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
@@ -14,6 +15,8 @@ namespace Shared.ViewModels.Categories
         /// <summary>
         ///     Id of Category.
         /// </summary>
+        [Required]
+        [MinLength(1)]
         public List<int> Ids { get; set; }
 
         /// <summary>

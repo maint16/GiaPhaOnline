@@ -19,7 +19,7 @@ using Shared.Resources;
 
 namespace Main.Controllers
 {
-    [Route("realtime-connection")]
+    [Route("api/realtime-connection")]
     public class RealtimeConnectionController : ApiBaseController
     {
         #region Properties
