@@ -11,6 +11,7 @@
                 * */
                 request: function (x) {
 
+                    console.log(x);
                     // Turn on loading screen.
                     //blockUI.start();
 
@@ -20,6 +21,7 @@
                     // As authentication token is found. Attach it into the request.
                     if (authenticationToken)
                         x.headers.Authorization = 'Bearer ' + authenticationToken;
+                    console.log(x);
                     return x;
                 },
 

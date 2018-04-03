@@ -112,7 +112,7 @@ module.exports = {
     context: settings.paths.getSource(__dirname),
     entry: {
         'vendor': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/rxjs.umd',
-            'pusher-js',
+            'pusher-js', '@aspnet/signalr/dist/cjs',
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
             'datatables.net/js/jquery.dataTables', 'datatables.net-responsive', 'angular-datatables',
@@ -158,6 +158,15 @@ module.exports = {
                     {
                         loader: 'expose-loader',
                         options: 'Pusher'
+                    }
+                ]
+            },
+            {
+                test: require.resolve('@aspnet/signalr/dist/cjs'),
+                use:[
+                    {
+                        loader: 'expose-loader',
+                        options: 'signalR'
                     }
                 ]
             },

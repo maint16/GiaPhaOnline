@@ -16,4 +16,5 @@ module.exports = function (ngModule) {
     require('./post-report.service')(ngModule);
     require('./push-notification.service')(ngModule);
     require('./pusher.service')(ngModule);
+    require('./real-time.service')(ngModule);
 };

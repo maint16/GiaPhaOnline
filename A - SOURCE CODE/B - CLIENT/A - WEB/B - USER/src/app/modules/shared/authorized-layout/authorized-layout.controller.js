@@ -3,8 +3,8 @@ module.exports = function (ngModule) {
         function (oAuthSettings, appSettings,
                   $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window,
-                  notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant,
-                  pusherService,
+                  notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant, hubConstant,
+                  pusherService, realTimeService,
                   authenticationService, userService, postNotificationService, postService) {
 
             //#region Properties
@@ -53,7 +53,10 @@ module.exports = function (ngModule) {
                 $scope.fnLoadPostNotifications();
 
                 // Subscribe to real-time channels.
-                $scope.fnSubscribeRealTimeChannels();
+                // $scope.fnSubscribeRealTimeChannels();
+
+                // Subscribe real-time hub.
+                $scope.fnSubscribeSignalrConnection();
             };
 
             /*
@@ -436,7 +439,6 @@ module.exports = function (ngModule) {
             * Subscribe to realtime channels.
             * */
             $scope.fnSubscribeRealTimeChannels = function () {
-
                 // // Initialize socket.
                 var socket = new Pusher(pusherOptionConstant.appKey, {
                     cluster: pusherOptionConstant.cluster,
@@ -464,28 +466,22 @@ module.exports = function (ngModule) {
 
                 // Save the socket connection.
                 pusherService.setInstance(socket);
+            };
 
-                // // Open a connection to pusher server.
-                // var socket = pusherService.init(pusherConfigConstant.appKey, pusherConfigConstant.appCluster,
-                //     pusherConfigConstant.encrypted, $scope.fnAuthorizeRealTimeConnection, false);
-                //
-                // // Profile is defined.
-                // if (profile) {
-                //     // User is admin, subscribe to channels belong to admin.
-                //     if (profile.role === userRoleConstant.admin) {
-                //         socket.subscribe('private-message-channel')
-                //             .bind('my-event', function(data) {
-                //                 alert('An event was triggered with message: ' + data.message);
-                //             });
-                //         //
-                //         // var channel = pusherService.subscribeChannel(realTimeChannelConstant.admin.userRegistration);
-                //         // debugger;
-                //         // pusherService.listenToEvent(channel, 'user-register',
-                //         //     function (data) {
-                //         //         console.log(data);
-                //         //     });
-                //     }
-                // }
+            /*
+            * Subscribe to signalr connection.
+            * */
+            $scope.fnSubscribeSignalrConnection = function(){
+
+                // Get hub name constants.
+                var hubNameConstant = hubConstant.hubName;
+
+                // Add signalr hubs declaration.
+                var notificationHubConnection = realTimeService.addHub(hubNameConstant.notificationHub);
+                notificationHubConnection.on('ReceiveNotification', $scope.fnOnReceiveNotification);
+                notificationHubConnection.start().then(function() {
+                    console.log('Notification hub connection has been initialized');
+                });
             };
 
             /*
@@ -509,6 +505,18 @@ module.exports = function (ngModule) {
                             });
                     }
                 }
+            };
+
+            //#endregion
+
+            //#region Hub events
+
+            /*
+            * Function which is raised when notification which sent from service is received.
+            * */
+            $scope.fnOnReceiveNotification = function(notification){
+                alert('Receive notification' + notification);
+                console.log(notification);
             };
 
             //#endregion
