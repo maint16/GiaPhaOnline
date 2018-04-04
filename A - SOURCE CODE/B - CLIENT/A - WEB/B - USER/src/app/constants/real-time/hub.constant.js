@@ -2,7 +2,7 @@ module.exports = function (ngModule) {
     ngModule.constant('hubConstant', {
 
         hubName: {
-            notificationHub: 'notification-hub'
+            notificationHub: 'hub/notification'
         },
 
         hubEvent:{

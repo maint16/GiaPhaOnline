@@ -476,8 +476,12 @@ module.exports = function (ngModule) {
                 // Get hub name constants.
                 var hubNameConstant = hubConstant.hubName;
 
+                var parameters = {
+                    accessToken: authenticationService.getAuthenticationToken()
+                };
+
                 // Add signalr hubs declaration.
-                var notificationHubConnection = realTimeService.addHub(hubNameConstant.notificationHub);
+                var notificationHubConnection = realTimeService.addHub(hubNameConstant.notificationHub, parameters);
                 notificationHubConnection.on('ReceiveNotification', $scope.fnOnReceiveNotification);
                 notificationHubConnection.start().then(function() {
                     console.log('Notification hub connection has been initialized');
@@ -494,7 +498,6 @@ module.exports = function (ngModule) {
                             .then(function (channelAuthenticationResponse) {
                                 if (!channelAuthenticationResponse)
                                     return;
-
 
                                 var channelAuthenticationResult = channelAuthenticationResponse.data;
                                 if (!channelAuthenticationResult)

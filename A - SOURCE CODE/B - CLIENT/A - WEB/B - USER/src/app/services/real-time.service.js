@@ -13,17 +13,32 @@ module.exports = function(ngModule){
       /*
       * Add hub to a list.
       * */
-      this.addHub = function(hubName, options){
+      this.addHub = function(hubName, queryString, options){
 
           if (this._hubs[hubName])
               return this.getHub(hubName);
 
+          debugger;
+          // Get raw hub end-point.
+          var hubEndPoint = this.getHubEndPoint(hubName);
+
+          if (queryString){
+              var keys = Object.keys(queryString);
+              var parameters = keys.map(function(key){
+                  return '' + key + '=' + queryString[key];
+              });
+
+              hubEndPoint += '?' + parameters.join('&')
+          }
+
           // Initialize hub connection.
-          var hubConnection = new signalR.HubConnection(this.getHubEndPoint(hubName));
+          var hubConnection = new signalR.HubConnection(hubEndPoint);
+
 
           // Add connection to hashset.
           this._hubs[hubName] = {
               hubConnection: hubConnection,
+              parameter:parameters,
               options: options
           };
 
