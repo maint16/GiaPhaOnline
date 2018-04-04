@@ -13,14 +13,18 @@ using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
+using Main.Hubs;
 using Main.Interfaces.Services;
+using Main.Models;
 using Main.Models.PushNotification;
 using Main.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
@@ -50,11 +54,15 @@ namespace Main.Controllers
         /// <param name="vgyService"></param>
         /// <param name="logger"></param>
         /// <param name="categoryCacheService"></param>
+        /// <param name="realTimeNotificationService"></param>
+        /// <param name="notificationHubContext"></param>
         public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
             IDbSharedService databaseFunction,
             IPushNotificationService pushNotificationService,
             IMapper mapper, IVgyService vgyService, ILogger<UserController> logger,
-            IValueCacheService<int, Category> categoryCacheService)
+            IValueCacheService<int, Category> categoryCacheService,
+            IRealTimeNotificationService realTimeNotificationService,
+            IHubContext<NotificationHub> notificationHubContext)
         {
             _identityService = identityService;
             _timeService = timeService;
@@ -65,6 +73,8 @@ namespace Main.Controllers
             _vgyService = vgyService;
             _logger = logger;
             _categoryCacheService = categoryCacheService;
+            _realTimeNotificationService = realTimeNotificationService;
+            _notificationHubContext = notificationHubContext;
         }
 
         #endregion
@@ -115,6 +125,16 @@ namespace Main.Controllers
         /// Category cache
         /// </summary>
         private readonly IValueCacheService<int, Category> _categoryCacheService;
+
+        /// <summary>
+        /// Realtime notification
+        /// </summary>
+        private readonly IRealTimeNotificationService _realTimeNotificationService;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
 
         #endregion
 
@@ -192,9 +212,44 @@ namespace Main.Controllers
             // Commit changes.
             await _unitOfWork.CommitAsync();
 
-            // Send push notification to clients.
-            var fcmMessage = new FcmMessage();
+            #region Broadcast real-time notification
+
+            // Find accounts have admin role
+            var accounts = _unitOfWork.Accounts.Search();
+            accounts = accounts.Where(x => x.Role == AccountRole.Admin);
+
+            var signalrConnections = _unitOfWork.SignalrConnections.Search();
+            var connectionIds = (from signalrConnection in signalrConnections
+                                 join account in accounts on signalrConnection.OwnerId equals account.Id
+                                 select signalrConnection.Id).ToList();
+
+            // At least one connection has been found.
+            if (connectionIds.Count > 0)
+            {
+                var clientProxy = _notificationHubContext.Clients.Clients(connectionIds);
+
+                // Additional data.
+                var additionalInfo = new Dictionary<string, object>();
+                additionalInfo.Add("creator", profile.Nickname);
+                additionalInfo.Add("category", category);
+
+                // Initialize notification to broadcast to clients.
+                var realTimeNotification =
+                    new RealTimeNotification(NotificationCategory.Category, NotificationAction.Add, additionalInfo);
+                
+                await _realTimeNotificationService.BroadcastAsync(clientProxy, HubMethodConstant.MethodName, realTimeNotification);
+            }
+
+            #endregion
+
+            #region Send push notification
+
+            // TODO: Implement.
+            //var fcmMessage = new FcmMessage();
             //_pushNotificationService.SendNotification(new)
+
+            #endregion
+            
             #endregion
 
             return Ok(category);

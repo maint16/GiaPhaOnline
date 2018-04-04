@@ -14,6 +14,8 @@ using AutoMapper;
 using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
+using Main.Constants;
+using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.ExternalAuthentication;
@@ -127,9 +129,9 @@ namespace Main
             // Store user information in cache
             services.AddSingleton<IValueCacheService<int, Account>, ProfileCacheService>();
             services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
-
-            // Store category information in cache
-            //services.AddSingleton()
+            
+            // Initialize real-time notification service as single instance.
+            services.AddSingleton<IRealTimeNotificationService, RealTimeNotificationService>();
 
             // Initialize vgy service.
             services.AddScoped<IVgyService, VgyService>();
@@ -194,6 +196,9 @@ namespace Main
 
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
+
+            // Add signalr service.
+            services.AddSignalR();
 
             #region Mvc builder
 
@@ -272,12 +277,15 @@ namespace Main
 
             // Use https redirection.
             //app.UseHttpsRedirection();
-
+            
             // Enable cors.
             app.UseCors("AllowAll");
-
+            
             // Enable MVC features.
             app.UseMvc();
+
+            // Use signalr connection.
+            app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
         }
 
 

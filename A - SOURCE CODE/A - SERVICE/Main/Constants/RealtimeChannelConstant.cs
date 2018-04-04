@@ -9,6 +9,11 @@
         /// </summary>
         public const string PrivateEventUserRegistered = "private-user_registered";
 
+        /// <summary>
+        /// Hub to send notification to users
+        /// </summary>
+        public const string NotificationHubName = "/notification-hub";
+
         #endregion
     }
 }

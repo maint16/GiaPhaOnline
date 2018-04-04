@@ -8,14 +8,18 @@ using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Constants;
+using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.ViewModels.RealtimeConnection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PusherServer;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels.SignalrConnections;
 
 namespace Main.Controllers
 {
@@ -28,6 +32,10 @@ namespace Main.Controllers
         /// Pusher service to send realtime data.
         /// </summary>
         private readonly IPusherService _pusherService;
+
+        private readonly IRealTimeNotificationService _realTimeNotificationService;
+
+        private readonly IHubContext<NotificationHub> _notificationHubContext;
 
         #endregion
 
@@ -42,10 +50,16 @@ namespace Main.Controllers
         /// <param name="dbSharedService"></param>
         /// <param name="identityService"></param>
         /// <param name="pusherService"></param>
+        /// <param name="realTimeNotificationService"></param>
+        /// <param name="notificationHubContext"></param>
         public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
-            IDbSharedService dbSharedService, IIdentityService identityService, IPusherService pusherService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
+            IDbSharedService dbSharedService, IIdentityService identityService, 
+            IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService,
+            IHubContext<NotificationHub> notificationHubContext) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
             _pusherService = pusherService;
+            _realTimeNotificationService = realTimeNotificationService;
+            _notificationHubContext = notificationHubContext;
         }
 
         #endregion
@@ -165,7 +179,38 @@ namespace Main.Controllers
             return Ok(realTimeConnection);
         }
 
-        #endregion
+#if DEBUG
+
+        /// <summary>
+        /// Broadcast signalr notification to all clients.
+        /// </summary>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost("signalr/send")]
+        public async Task<IActionResult> BroadcastSignalrNotification([FromBody] BroadcastSignalrNotificationViewModel info)
+        {
+            if (info == null)
+            {
+                info = new BroadcastSignalrNotificationViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            // Find client.
+            IClientProxy clientProxy;
+            if (info.Clients != null && info.Clients.Count > 0)
+                clientProxy = _notificationHubContext.Clients.Clients(info.Clients.ToList());
+            else
+                clientProxy = _notificationHubContext.Clients.All;
+
+            await _realTimeNotificationService.BroadcastAsync(clientProxy, info.MethodName, info.Data);
+            return Ok();
+        }
+
+#endif
+#endregion
 
     }
 }
