@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace Main.Controllers
         /// <param name="realTimeNotificationService"></param>
         /// <param name="notificationHubContext"></param>
         public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
-            IDbSharedService dbSharedService, IIdentityService identityService, 
+            IDbSharedService dbSharedService, IIdentityService identityService,
             IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService,
             IHubContext<NotificationHub> notificationHubContext) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
@@ -109,6 +110,9 @@ namespace Main.Controllers
                 return StatusCode((int)HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotAuthenticateToChannel));
 
+#if DEBUG
+            Debug.WriteLine($"Authenticated socket id: {info.ChannelName} into channel ${info.SocketId}. Authentication data: {authenticationData.auth}");
+#endif
             #endregion
 
             return Ok(authenticationData);
@@ -182,6 +186,34 @@ namespace Main.Controllers
 #if DEBUG
 
         /// <summary>
+        /// Send pusher notification
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("pusher/send")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SendPusher([FromBody] SendPusherMessageViewModel information)
+        {
+            #region Parameters validation
+
+            if (information == null)
+            {
+                information = new SendPusherMessageViewModel();
+                TryValidateModel(information);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            var triggerResult = await _pusherService.SendAsync(information.SocketId, information.ChannelName, information.EventName,
+                 information.Information);
+
+            return Ok();
+        }
+
+
+        /// <summary>
         /// Broadcast signalr notification to all clients.
         /// </summary>
         /// <returns></returns>
@@ -197,7 +229,7 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             // Find client.
             IClientProxy clientProxy;
             if (info.Clients != null && info.Clients.Count > 0)
@@ -210,7 +242,6 @@ namespace Main.Controllers
         }
 
 #endif
-#endregion
-
+        #endregion
     }
 }

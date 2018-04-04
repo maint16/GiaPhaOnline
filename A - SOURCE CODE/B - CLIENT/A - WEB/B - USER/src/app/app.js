@@ -50,6 +50,7 @@ require('ng-multi-selector');
 require('angular-file-upload');
 require('ui-cropper');
 require('pusher-js');
+require('@aspnet/signalr/dist/cjs');
 
 // Module declaration.
 var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
