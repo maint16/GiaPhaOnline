@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
@@ -129,7 +130,8 @@ namespace Main
             // Store user information in cache
             services.AddSingleton<IValueCacheService<int, Account>, ProfileCacheService>();
             services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
-            
+            services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
+
             // Initialize real-time notification service as single instance.
             services.AddSingleton<IRealTimeNotificationService, RealTimeNotificationService>();
 
@@ -139,7 +141,7 @@ namespace Main
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
-            
+
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache").Get(typeof(Dictionary<string, EmailCacheOption>));
             var emailCacheService = new EmailCacheService();
@@ -155,7 +157,7 @@ namespace Main
             services.Configure<FcmSetting>(Configuration.GetSection(nameof(FcmSetting)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
             services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
-
+            
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
             var jwtBearerSettings = servicesProvider.GetService<IOptions<JwtConfiguration>>().Value;
@@ -192,13 +194,35 @@ namespace Main
 #endif
 
                 o.TokenValidationParameters = tokenValidationParameters;
+
+                o.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Path.ToString().StartsWith("/HUB/", StringComparison.InvariantCultureIgnoreCase))
+                            context.Token = context.Request.Query["accessToken"];
+                        return Task.CompletedTask;
+                    },
+                };
             });
 
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
+            #region Signalr builder
+
             // Add signalr service.
             services.AddSignalR();
+
+            // Initialize signalr policy.
+            //var signalrConnectionPolicy  = 
+            services.AddAuthorization(x => x.AddPolicy(PolicyConstant.DefaultSignalRPolicyName, builder =>
+            {
+                builder.RequireAuthenticatedUser()
+                .AddRequirements(new SolidAccountRequirement());
+            }));
+
+            #endregion
 
             #region Mvc builder
 
@@ -277,10 +301,10 @@ namespace Main
 
             // Use https redirection.
             //app.UseHttpsRedirection();
-            
+
             // Enable cors.
             app.UseCors("AllowAll");
-            
+
             // Enable MVC features.
             app.UseMvc();
 

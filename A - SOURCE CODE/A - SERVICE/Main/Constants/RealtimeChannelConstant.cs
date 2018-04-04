@@ -12,7 +12,7 @@
         /// <summary>
         /// Hub to send notification to users
         /// </summary>
-        public const string NotificationHubName = "/notification-hub";
+        public const string NotificationHubName = "/hub/notification";
 
         #endregion
     }

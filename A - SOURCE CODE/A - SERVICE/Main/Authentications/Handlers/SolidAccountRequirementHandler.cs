@@ -118,14 +118,8 @@ namespace Main.Authentications.Handlers
                 context.Fail();
                 return;
             }
-
-            //// Initiate claim identity with newer information from database.
-            //var claimsIdentity = new ClaimsIdentity();
-            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, account.Email));
-            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, account.Nickname));
-            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, Enum.GetName(typeof(AccountRole), account.Role)));
-            //claimsIdentity.AddClaim(new Claim(ClaimTypes.Authentication,
-            //    Enum.GetName(typeof(AccountStatus), account.Status)));
+            
+            // Add the newly found account to cache for faster querying.
             _profileCacheService.Add(iId, account, LifeTimeConstant.ProfileCacheLifeTime);
             _identityService.SetProfile(httpContext, account);
             context.Succeed(requirement);
@@ -151,7 +145,7 @@ namespace Main.Authentications.Handlers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// 
+        /// Service which is for caching user information.
         /// </summary>
         private readonly IValueCacheService<int, Account> _profileCacheService;
 
