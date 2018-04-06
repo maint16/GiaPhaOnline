@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Main.Models.PushNotification.Notification;
 using Newtonsoft.Json;
 
@@ -67,7 +68,7 @@ namespace Main.Models.PushNotification
         /// This parameter specifies the custom key-value pairs of the message's payload.
         /// For example, with data:{"score":"3x1"}:
         /// </summary>
-        public Dictionary<string, string> Data { get; set; }
+        public IDictionary Data { get; set; }
 
         /// <summary>
         /// Fcm notification

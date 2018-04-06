@@ -17,6 +17,7 @@ using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.PushNotification;
+using Main.Models.PushNotification.Notification;
 using Main.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -49,7 +50,7 @@ namespace Main.Controllers
         /// <param name="timeService">Service which is for handling time calculation.</param>
         /// <param name="unitOfWork">Instance for accessing database.</param>
         /// <param name="databaseFunction"></param>
-        /// <param name="pushNotificationService"></param>
+        /// <param name="pushService"></param>
         /// <param name="mapper">Instance for mapping objects</param>
         /// <param name="vgyService"></param>
         /// <param name="logger"></param>
@@ -58,7 +59,7 @@ namespace Main.Controllers
         /// <param name="notificationHubContext"></param>
         public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
             IDbSharedService databaseFunction,
-            IPushNotificationService pushNotificationService,
+            IPushService pushService,
             IMapper mapper, IVgyService vgyService, ILogger<UserController> logger,
             IValueCacheService<int, Category> categoryCacheService,
             IRealTimeNotificationService realTimeNotificationService,
@@ -68,7 +69,7 @@ namespace Main.Controllers
             _timeService = timeService;
             _unitOfWork = unitOfWork;
             _databaseFunction = databaseFunction;
-            _pushNotificationService = pushNotificationService;
+            _pushService = pushService;
             _mapper = mapper;
             _vgyService = vgyService;
             _logger = logger;
@@ -109,7 +110,7 @@ namespace Main.Controllers
         /// <summary>
         /// Instance to send push notification to clients.
         /// </summary>
-        private readonly IPushNotificationService _pushNotificationService;
+        private readonly IPushService _pushService;
 
         /// <summary>
         /// Service which is for handling file upload to vgy.me hosting.
@@ -218,7 +219,12 @@ namespace Main.Controllers
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x => x.Role == AccountRole.Admin);
 
+            // Get all connection indexes.
             var signalrConnections = _unitOfWork.SignalrConnections.Search();
+
+            // Get all devices to send push notification to.
+            var devices = _unitOfWork.Devices.Search();
+            
             var connectionIds = (from signalrConnection in signalrConnections
                                  join account in accounts on signalrConnection.OwnerId equals account.Id
                                  select signalrConnection.Id).ToList();
@@ -226,7 +232,6 @@ namespace Main.Controllers
             // At least one connection has been found.
             if (connectionIds.Count > 0)
             {
-                var clientProxy = _notificationHubContext.Clients.Clients(connectionIds);
 
                 // Additional data.
                 var additionalInfo = new Dictionary<string, object>();
@@ -237,19 +242,18 @@ namespace Main.Controllers
                 var realTimeNotification =
                     new RealTimeNotification(NotificationCategory.Category, NotificationAction.Add, additionalInfo);
                 
-                await _realTimeNotificationService.BroadcastAsync(clientProxy, HubMethodConstant.MethodName, realTimeNotification);
+                await _realTimeNotificationService.BroadcastAsync(_notificationHubContext, connectionIds, HubMethodConstant.ClientReceiveNotification, realTimeNotification);
             }
 
             #endregion
 
             #region Send push notification
-
-            // TODO: Implement.
-            //var fcmMessage = new FcmMessage();
-            //_pushNotificationService.SendNotification(new)
+            
+            //fcmMessage.
+            //_pushService.SendNotification(new)
 
             #endregion
-            
+
             #endregion
 
             return Ok(category);

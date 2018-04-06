@@ -9,6 +9,7 @@ using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Interfaces.Services;
 
@@ -56,24 +57,24 @@ namespace Main.Hubs
         /// Called when user connected to hub.
         /// </summary>
         /// <returns></returns>
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             // Find http context.
             var httpContext = Context.Connection.GetHttpContext();
             if (httpContext == null)
-                return base.OnConnectedAsync();
+                return;
 
             // Get profile in request.
             var user = _identityService.GetProfile(httpContext);
             if (user == null)
-                return base.OnConnectedAsync();
+                return;
             
             // Check whether connection string has been saved into cache or not.
             var connection = _realTimeConnectionCacheService.Read(Context.ConnectionId);
 
             // Already in cache.
             if (connection != null)
-                return base.OnConnectedAsync();
+                return;
 
             // Not in cache. Find the connection in the database. If the connection doesnt exist in database, initialize it.
             // Get instance of UnitOfWork.
@@ -87,12 +88,12 @@ namespace Main.Hubs
             realTimeConnections = realTimeConnections.Where(x => x.OwnerId == user.Id);
 
             // Find the first connection.
-            var realTimeConnection = realTimeConnections.FirstOrDefault();
+            var realTimeConnection = await realTimeConnections.FirstOrDefaultAsync();
             if (realTimeConnection != null)
             {
                 // Add to cache.
                 _realTimeConnectionCacheService.Add(Context.ConnectionId, user);
-                return base.OnConnectedAsync();
+                return;
             }
 
             // Add this connection to cache.
@@ -107,7 +108,7 @@ namespace Main.Hubs
             unitOfWork.SignalrConnections.Insert(realTimeConnection);
             unitOfWork.Commit();
 
-            return base.OnConnectedAsync();
+            return;
         }
 
         #endregion

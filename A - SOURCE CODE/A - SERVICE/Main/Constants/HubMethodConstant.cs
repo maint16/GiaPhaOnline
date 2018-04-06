@@ -12,7 +12,7 @@ namespace Main.Constants
         /// <summary>
         /// 
         /// </summary>
-        public const string MethodName = "ReceiveNotification";
+        public const string ClientReceiveNotification = "event-receive-notification";
 
         #endregion
 

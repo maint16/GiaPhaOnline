@@ -120,7 +120,7 @@ namespace Main
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();
-            services.AddScoped<IPushNotificationService, FcmService>();
+            services.AddScoped<IPushService, FcmService>();
             services.AddScoped<ISendMailService, SendGridService>();
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();

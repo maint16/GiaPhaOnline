@@ -233,7 +233,10 @@ namespace Main.Controllers
             // Find client.
             IClientProxy clientProxy;
             if (info.Clients != null && info.Clients.Count > 0)
-                clientProxy = _notificationHubContext.Clients.Clients(info.Clients.ToList());
+            {
+                var clientIds = info.Clients.ToList();
+                clientProxy = _notificationHubContext.Clients.Clients(clientIds);
+            }
             else
                 clientProxy = _notificationHubContext.Clients.All;
 

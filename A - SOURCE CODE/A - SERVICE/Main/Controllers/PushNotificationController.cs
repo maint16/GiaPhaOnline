@@ -33,7 +33,7 @@ namespace Main.Controllers
         /// <summary>
         /// Firebase cloud messaging service.
         /// </summary>
-        private readonly IPushNotificationService _fcmService;
+        private readonly IPushService _fcmService;
 
         /// <summary>
         /// Email caching service
@@ -71,7 +71,7 @@ namespace Main.Controllers
         /// <param name="emailCacheService"></param>
         /// <param name="sendMailService"></param>
         public PushNotificationController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService,
-            IIdentityService identityService, IPushNotificationService fcmService,
+            IIdentityService identityService, IPushService fcmService,
             IEmailCacheService emailCacheService, ISendMailService sendMailService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
         {
             _fcmService = fcmService;
@@ -245,7 +245,7 @@ namespace Main.Controllers
         [ByPassAuthorization]
         public async Task<IActionResult> Send([FromBody] FcmMessage fcmMessage)
         {
-            await _fcmService.SendNotification(fcmMessage);
+            await _fcmService.SendNotification(fcmMessage, CancellationToken.None);
             return Ok();
         }
 
