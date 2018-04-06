@@ -14,6 +14,7 @@ using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Hubs;
+using Main.Interfaces;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.PushNotification;
@@ -57,13 +58,15 @@ namespace Main.Controllers
         /// <param name="categoryCacheService"></param>
         /// <param name="realTimeNotificationService"></param>
         /// <param name="notificationHubContext"></param>
+        /// <param name="notifyService"></param>
         public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
             IDbSharedService databaseFunction,
             IPushService pushService,
             IMapper mapper, IVgyService vgyService, ILogger<UserController> logger,
             IValueCacheService<int, Category> categoryCacheService,
             IRealTimeNotificationService realTimeNotificationService,
-            IHubContext<NotificationHub> notificationHubContext)
+            IHubContext<NotificationHub> notificationHubContext,
+            INotifyService notifyService)
         {
             _identityService = identityService;
             _timeService = timeService;
@@ -76,6 +79,7 @@ namespace Main.Controllers
             _categoryCacheService = categoryCacheService;
             _realTimeNotificationService = realTimeNotificationService;
             _notificationHubContext = notificationHubContext;
+            _notifyService = notifyService;
         }
 
         #endregion
@@ -136,6 +140,11 @@ namespace Main.Controllers
         /// 
         /// </summary>
         private readonly IHubContext<NotificationHub> _notificationHubContext;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly INotifyService _notifyService;
 
         #endregion
 
@@ -219,36 +228,24 @@ namespace Main.Controllers
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x => x.Role == AccountRole.Admin);
 
-            // Get all connection indexes.
-            var signalrConnections = _unitOfWork.SignalrConnections.Search();
+            // Additional data.
+            var additionalInfo = new Dictionary<string, object>();
+            additionalInfo.Add("creator", profile.Nickname);
+            additionalInfo.Add("category", category);
 
-            // Get all devices to send push notification to.
-            var devices = _unitOfWork.Devices.Search();
-            
-            var connectionIds = (from signalrConnection in signalrConnections
-                                 join account in accounts on signalrConnection.OwnerId equals account.Id
-                                 select signalrConnection.Id).ToList();
+            // Initialize notification to broadcast to clients.
+            var realTimeNotification =
+                new RealTimeNotification(NotificationCategory.Category, NotificationAction.Add, additionalInfo);
 
-            // At least one connection has been found.
-            if (connectionIds.Count > 0)
-            {
+            _notifyService.NotifyClients<NotificationHub>(_notificationHubContext, new AccountRole[accounts.Count()], "added category", "added category",
+                HubMethodConstant.ClientReceiveNotification, additionalInfo);
 
-                // Additional data.
-                var additionalInfo = new Dictionary<string, object>();
-                additionalInfo.Add("creator", profile.Nickname);
-                additionalInfo.Add("category", category);
-
-                // Initialize notification to broadcast to clients.
-                var realTimeNotification =
-                    new RealTimeNotification(NotificationCategory.Category, NotificationAction.Add, additionalInfo);
-                
-                await _realTimeNotificationService.BroadcastAsync(_notificationHubContext, connectionIds, HubMethodConstant.ClientReceiveNotification, realTimeNotification);
-            }
+            //await _realTimeNotificationService.BroadcastAsync(_notificationHubContext, connectionIds, HubMethodConstant.ClientReceiveNotification, realTimeNotification);
 
             #endregion
 
             #region Send push notification
-            
+
             //fcmMessage.
             //_pushService.SendNotification(new)
 

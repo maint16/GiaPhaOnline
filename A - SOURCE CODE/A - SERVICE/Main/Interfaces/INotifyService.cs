@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
+using SystemDatabase.Models.Entities;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Main.Interfaces
@@ -16,9 +17,11 @@ namespace Main.Interfaces
         /// <param name="roles"></param>
         /// <param name="title"></param>
         /// <param name="message"></param>
+        /// <param name="eventName"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task[] NotifyClients(IHubContext<Hub> hubContext, AccountRole[] roles, string title, string message, Dictionary<string, string> data);
+        Task[] NotifyClients<THub>(IHubContext<THub> hubContext, AccountRole[] roles, string title, string message,
+            string eventName, Dictionary<string, object> data) where THub : Hub;
 
         #endregion
     }

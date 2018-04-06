@@ -17,6 +17,7 @@ using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
 using Main.Constants;
 using Main.Hubs;
+using Main.Interfaces;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.ExternalAuthentication;
@@ -121,6 +122,7 @@ namespace Main
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();
             services.AddScoped<IPushService, FcmService>();
+            services.AddScoped<INotifyService, NotifyService>();
             services.AddScoped<ISendMailService, SendGridService>();
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
