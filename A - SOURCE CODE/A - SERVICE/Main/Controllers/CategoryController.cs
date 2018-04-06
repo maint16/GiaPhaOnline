@@ -230,24 +230,16 @@ namespace Main.Controllers
 
             // Additional data.
             var additionalInfo = new Dictionary<string, object>();
-            additionalInfo.Add("creator", profile.Nickname);
-            additionalInfo.Add("category", category);
 
-            // Initialize notification to broadcast to clients.
-            var realTimeNotification =
-                new RealTimeNotification(NotificationCategory.Category, NotificationAction.Add, additionalInfo);
+            var data = new Dictionary<string, object>();
+            data.Add("creator", profile.Nickname);
+            data.Add("category", category);
+            additionalInfo.Add("data", data);
+            additionalInfo.Add("action", NotificationAction.Add);
+            additionalInfo.Add("notificationKind", NotificationCategory.Category);
 
-            _notifyService.NotifyClients<NotificationHub>(_notificationHubContext, new AccountRole[accounts.Count()], "added category", "added category",
-                HubMethodConstant.ClientReceiveNotification, additionalInfo);
-
-            //await _realTimeNotificationService.BroadcastAsync(_notificationHubContext, connectionIds, HubMethodConstant.ClientReceiveNotification, realTimeNotification);
-
-            #endregion
-
-            #region Send push notification
-
-            //fcmMessage.
-            //_pushService.SendNotification(new)
+            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new []{AccountRole.Admin}, "added category", "added category",
+                HubMethodConstant.ClientReceiveNotification, additionalInfo));
 
             #endregion
 

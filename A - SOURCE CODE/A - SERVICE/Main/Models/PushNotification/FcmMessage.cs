@@ -24,7 +24,7 @@ namespace Main.Models.PushNotification
         /// <summary>
         /// This parameter specifies a logical expression of conditions that determine the message target.
         /// Supported condition: Topic, formatted as "'yourTopic' in topics". This value is case-insensitive.
-        /// Supported operators: &&, ||. Maximum two operators per topic message supported.
+        /// Supported operators: &amp;&amp;, ||. Maximum two operators per topic message supported.
         /// </summary>
         public string Condition { get; set; }
 

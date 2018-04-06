@@ -10,6 +10,8 @@ using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.PushNotification.Notification;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections;
+using Main.Models.PushNotification;
 
 namespace Main.Services
 {
@@ -25,12 +27,12 @@ namespace Main.Services
         /// <summary>
         /// Service to send push notification,
         /// </summary>
-        private IPushService _pushService;
+        private readonly IPushService _pushService;
 
         /// <summary>
         /// Service to send realtime data.
         /// </summary>
-        private IRealTimeNotificationService _realTimeNotificationService;
+        private readonly IRealTimeNotificationService _realTimeNotificationService;
 
         #endregion
 
@@ -110,6 +112,46 @@ namespace Main.Services
             }
 
             #endregion
+
+            return tasks.ToArray();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <typeparam name="THub"></typeparam>
+        /// <param name="hubContext"></param>
+        /// <param name="groups"></param>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="eventName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public Task[] NotifyClients<THub>(IHubContext<THub> hubContext, IReadOnlyList<string> groups, string title, string message, string eventName, IDictionary data) where THub : Hub
+        {
+            // Initialize list of tasks that should be awaited.
+            var tasks = new List<Task>();
+
+            // Broadcast signal notification.
+            var signalrTask = hubContext.Clients.Groups(groups).SendAsync(eventName, data);
+            tasks.Add(signalrTask);
+
+            // Broadcast push notification.
+            foreach (var group in groups)
+            {
+                var fcmMessage = new FcmMessage();
+                fcmMessage.CollapseKey = eventName;
+                fcmMessage.Data = data;
+                fcmMessage.Condition = $"'group in {group}'";
+
+                // Initialize fcm notification.
+                var webFcmNotification = new WebFcmNotification();
+                webFcmNotification.Title = title;
+                webFcmNotification.Body = message;
+
+                var fcmTask = _pushService.SendNotification(fcmMessage, CancellationToken.None);
+                tasks.Add(fcmTask);
+            }
 
             return tasks.ToArray();
         }
