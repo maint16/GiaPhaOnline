@@ -18,4 +18,6 @@ module.exports = function (ngModule) {
     require('./pusher-option.constant')(ngModule);
     require('./item-status.constant')(ngModule);
     require('./real-time/hub.constant')(ngModule);
+    require('./notification/notification-category.constant')(ngModule);
+    require('./notification/notification-action.constant')(ngModule);
 };

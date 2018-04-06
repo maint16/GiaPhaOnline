@@ -1,8 +1,8 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
-        function (oAuthSettings, appSettings,
+        function (oAuthSettings, appSettings, notificationCategoryConstant, notificationActionConstant,
                   $scope, $state, $transitions, uiService, oAuthService,
-                  profile, $uibModal, $timeout, $window,
+                  profile, $uibModal, $timeout, $window, $translate, toastr,
                   notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant, hubConstant,
                   pusherService, realTimeService,
                   authenticationService, userService, postNotificationService, postService) {
@@ -82,7 +82,7 @@ module.exports = function (ngModule) {
 
                             // Login result.
                             var basicLoginResult = basicLoginResponse.data;
-                            debugger;
+
                             // Save access token into storage.
                             authenticationService.initAuthenticationToken(basicLoginResult.code);
 
@@ -96,7 +96,7 @@ module.exports = function (ngModule) {
                             $state.reload();
                         },
                         function error(basicLoginResponse) {
-                            $scope.ngLoginFailingly();
+                            // $scope.ngLoginFailingly();
                         });
 
             };
@@ -435,38 +435,38 @@ module.exports = function (ngModule) {
 
             };
 
-            /*
-            * Subscribe to realtime channels.
-            * */
-            $scope.fnSubscribeRealTimeChannels = function () {
-                // // Initialize socket.
-                var socket = new Pusher(pusherOptionConstant.appKey, {
-                    cluster: pusherOptionConstant.cluster,
-                    encrypted: pusherOptionConstant.encrypted,
-                    authorizer: function (channel, options) {
-                        return {
-                            authorize: function (socketId, callback) {
-                                pusherService.authorizeRealTimeChannel(channel.name, socketId)
-                                    .then(function(authorizeClientDeviceResponse){
-                                       var authorizeClientDeviceResult = authorizeClientDeviceResponse.data;
-                                       if (!authorizeClientDeviceResult)
-                                           return;
-
-                                        callback(false, authorizeClientDeviceResult);
-                                    });
-                            }
-                        };
-                    }
-                });
-
-                socket.subscribe('private-message-channel')
-                    .bind('my-event', function(data) {
-                        alert('An event was triggered with message: ' + data.message);
-                    });
-
-                // Save the socket connection.
-                pusherService.setInstance(socket);
-            };
+            // /*
+            // * Subscribe to realtime channels.
+            // * */
+            // $scope.fnSubscribeRealTimeChannels = function () {
+            //     // // Initialize socket.
+            //     var socket = new Pusher(pusherOptionConstant.appKey, {
+            //         cluster: pusherOptionConstant.cluster,
+            //         encrypted: pusherOptionConstant.encrypted,
+            //         authorizer: function (channel, options) {
+            //             return {
+            //                 authorize: function (socketId, callback) {
+            //                     pusherService.authorizeRealTimeChannel(channel.name, socketId)
+            //                         .then(function(authorizeClientDeviceResponse){
+            //                            var authorizeClientDeviceResult = authorizeClientDeviceResponse.data;
+            //                            if (!authorizeClientDeviceResult)
+            //                                return;
+            //
+            //                             callback(false, authorizeClientDeviceResult);
+            //                         });
+            //                 }
+            //             };
+            //         }
+            //     });
+            //
+            //     socket.subscribe('private-message-channel')
+            //         .bind('my-event', function(data) {
+            //             alert('An event was triggered with message: ' + data.message);
+            //         });
+            //
+            //     // Save the socket connection.
+            //     pusherService.setInstance(socket);
+            // };
 
             /*
             * Subscribe to signalr connection.
@@ -482,7 +482,7 @@ module.exports = function (ngModule) {
 
                 // Add signalr hubs declaration.
                 var notificationHubConnection = realTimeService.addHub(hubNameConstant.notificationHub, parameters);
-                notificationHubConnection.on('ReceiveNotification', $scope.fnOnReceiveNotification);
+                notificationHubConnection.on(hubConstant.hubEvent.receiveNotification, $scope.fnOnReceiveNotification);
                 notificationHubConnection.start().then(function() {
                     console.log('Notification hub connection has been initialized');
                 });
@@ -518,8 +518,29 @@ module.exports = function (ngModule) {
             * Function which is raised when notification which sent from service is received.
             * */
             $scope.fnOnReceiveNotification = function(notification){
-                alert('Receive notification' + notification);
-                console.log(notification);
+                var notificationCategory = notification.category;
+                var notificationAction = notification.action;
+                var data = notification.data;
+
+                // Construct a message to display to user.
+                var szMessage = '';
+
+                switch (notificationAction){
+                    case notificationActionConstant.add:
+                        szMessage = $translate.instant('User created a category', {username: data.creator, category: data.category});
+                        break;
+
+                    case notificationAction.update:
+                        szMessage = $translate.instant('User updated a category', {username: data.creator, category: data.category});
+                        break;
+
+                    case notificationAction.delete:
+                        szMessage = $translate.instant('User deleted a category', {username: data.creator, category: data.category});
+                        break;
+                }
+
+                if (szMessage)
+                    toastr.info(szMessage);
             };
 
             //#endregion

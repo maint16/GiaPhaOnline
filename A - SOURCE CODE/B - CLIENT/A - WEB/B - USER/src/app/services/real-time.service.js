@@ -18,7 +18,6 @@ module.exports = function(ngModule){
           if (this._hubs[hubName])
               return this.getHub(hubName);
 
-          debugger;
           // Get raw hub end-point.
           var hubEndPoint = this.getHubEndPoint(hubName);
 

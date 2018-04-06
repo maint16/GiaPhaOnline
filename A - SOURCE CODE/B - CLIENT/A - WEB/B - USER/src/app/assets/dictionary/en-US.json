@@ -106,5 +106,9 @@
   "Followed category successfully": "Followed category successfully",
   "Change profile image": "Change profile image",
   "Please select a valid image": "Please select a valid image",
-  "Changed password successfully": "Changed password successfully."
+  "Changed password successfully": "Changed password successfully.",
+
+  "User created a category": "{{username}} created a category: {{category.name}}",
+  "User updated a category": "{{username}} updated category {{category.name}}",
+  "User deleted a category": "{{username}} deleted a {{category.name}} from system"
 }
