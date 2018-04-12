@@ -1099,10 +1099,10 @@ namespace Main.Controllers
         private readonly IVgyService _vgyService;
 
         /// <summary>
-        /// 
+        /// Service which is for handling profile caching.
         /// </summary>
         private readonly IValueCacheService<int, Account> _profileCacheService;
-
+        
         #endregion
     }
 }

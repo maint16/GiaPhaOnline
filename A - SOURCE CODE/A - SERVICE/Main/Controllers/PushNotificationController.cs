@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SystemConstant.Enumerations;
 using SystemConstant.Enumerations.Order;
-using SystemConstant.Models;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
@@ -15,12 +17,10 @@ using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Models.PushNotification;
 using Main.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
 using Shared.ViewModels;
-using Shared.ViewModels.Categories;
 using Shared.ViewModels.Device;
 
 namespace Main.Controllers
@@ -28,39 +28,10 @@ namespace Main.Controllers
     [Route("api/push-notification")]
     public class PushNotificationController : ApiBaseController
     {
-        #region Properties
-
-        /// <summary>
-        /// Firebase cloud messaging service.
-        /// </summary>
-        private readonly IPushService _fcmService;
-
-        /// <summary>
-        /// Email caching service
-        /// </summary>
-        private readonly IEmailCacheService _emailCacheService;
-
-        /// <summary>
-        /// Service which is for sending mail.
-        /// </summary>
-        private readonly ISendMailService _sendMailService;
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// Provide access to generic database functions.
-        /// </summary>
-        private readonly IDbSharedService _databaseFunction;
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Initialize controller with injectors.
+        ///     Initialize controller with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
@@ -70,9 +41,11 @@ namespace Main.Controllers
         /// <param name="fcmService"></param>
         /// <param name="emailCacheService"></param>
         /// <param name="sendMailService"></param>
-        public PushNotificationController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService,
+        public PushNotificationController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+            IDbSharedService dbSharedService,
             IIdentityService identityService, IPushService fcmService,
-            IEmailCacheService emailCacheService, ISendMailService sendMailService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
+            IEmailCacheService emailCacheService, ISendMailService sendMailService) : base(unitOfWork, mapper,
+            timeService, dbSharedService, identityService)
         {
             _fcmService = fcmService;
             _emailCacheService = emailCacheService;
@@ -83,11 +56,109 @@ namespace Main.Controllers
 
         #endregion
 
-        #region Methods
+        #region Properties
 
         /// <summary>
-        /// Add device to system.
+        ///     Firebase cloud messaging service.
         /// </summary>
+        private readonly IPushService _fcmService;
+
+        /// <summary>
+        ///     Email caching service
+        /// </summary>
+        private readonly IEmailCacheService _emailCacheService;
+
+        /// <summary>
+        ///     Service which is for sending mail.
+        /// </summary>
+        private readonly ISendMailService _sendMailService;
+
+        /// <summary>
+        ///     Instance for accessing database.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        ///     Provide access to generic database functions.
+        /// </summary>
+        private readonly IDbSharedService _databaseFunction;
+
+        #endregion
+
+        #region Methods
+
+        ///// <summary>
+        /////     Add device to system.
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpPost("device")]
+        //[ByPassAuthorization]
+        //public async Task<IActionResult> AddDevice([FromBody] AddDeviceViewModel info)
+        //{
+        //    #region Parameters validation
+
+        //    // Information hasn't been initialized.
+        //    if (info == null)
+        //    {
+        //        info = new AddDeviceViewModel();
+        //        TryValidateModel(info);
+        //    }
+
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    #endregion
+
+        //    #region Find device & update information.
+
+        //    // Flag to check whether information has been changed or not.
+        //    var bHasInformationChanged = false;
+
+        //    // Find request identity.
+        //    var identity = IdentityService.GetProfile(HttpContext);
+
+        //    // Find a list of devices.
+        //    var devices = UnitOfWork.Devices.Search();
+        //    devices = devices.Where(x => x.Id.Equals(info.DeviceId, StringComparison.InvariantCultureIgnoreCase));
+
+        //    // Find the first device in system.
+        //    var device = await devices.FirstOrDefaultAsync();
+
+        //    // Device is not available. Initialize it.
+        //    if (device == null)
+        //    {
+        //        device = new Device();
+        //        device.Id = info.DeviceId;
+
+        //        // User is authenticated. Update the identity.
+        //        if (identity != null)
+        //            device.OwnerId = identity.Id;
+
+        //        device.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+        //        UnitOfWork.Devices.Insert(device);
+        //    }
+        //    else
+        //    {
+        //        // Owner is defined.
+        //        if (device.OwnerId != identity.Id)
+        //        {
+        //            device.OwnerId = identity.Id;
+        //            bHasInformationChanged = true;
+        //        }
+        //    }
+
+        //    #endregion
+
+        //    // Save changes into system
+        //    if (bHasInformationChanged)
+        //        await UnitOfWork.CommitAsync();
+        //    return Ok();
+        //}
+
+        /// <summary>
+        /// Add device to system
+        /// </summary>
+        /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("device")]
         [ByPassAuthorization]
@@ -95,7 +166,6 @@ namespace Main.Controllers
         {
             #region Parameters validation
 
-            // Information hasn't been initialized.
             if (info == null)
             {
                 info = new AddDeviceViewModel();
@@ -107,54 +177,64 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find device & update information.
+            #region Enlist groups to add device to.
 
-            // Flag to check whether information has been changed or not.
-            var bHasInformationChanged = false;
+            // List of groups to add connection to.
+            var groups = new List<string>();
 
-            // Find request identity.
-            var identity = IdentityService.GetProfile(HttpContext);
+            // Get request profile.
+            var profile = IdentityService.GetProfile(HttpContext);
 
-            // Find a list of devices.
-            var devices = UnitOfWork.Devices.Search();
-            devices = devices.Where(x => x.Id.Equals(info.DeviceId, StringComparison.InvariantCultureIgnoreCase));
-
-            // Find the first device in system.
-            var device = await devices.FirstOrDefaultAsync();
-
-            // Device is not available. Initialize it.
-            if (device == null)
+            // Add user to admin group as he/she is admin.
+            if (profile != null)
             {
-                device = new Device();
-                device.Id = info.DeviceId;
+                // Add authenticated user to user group.
+                groups.Add(RealTimeGroupConstant.User);
 
-                // User is authenticated. Update the identity.
-                if (identity != null)
-                    device.OwnerId = identity.Id;
-
-                device.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                UnitOfWork.Devices.Insert(device);
+                if (profile.Role == AccountRole.Admin)
+                    groups.Add(RealTimeGroupConstant.Admin);
             }
             else
-            {
-                // Owner is defined.
-                if (device.OwnerId != identity.Id)
-                {
-                    device.OwnerId = identity.Id;
-                    bHasInformationChanged = true;
-                }
-            }
+                groups.Add(RealTimeGroupConstant.Anonymous);
 
             #endregion
 
-            // Save changes into system
-            if (bHasInformationChanged)
-                await UnitOfWork.CommitAsync();
+            // Add devices to group.
+            await _fcmService.AddDeviceToGroupAsync(new List<string> { info.DeviceId }, groups, CancellationToken.None);
             return Ok();
         }
 
         /// <summary>
-        /// Search for a list of devices.
+        /// Add device to system
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        [HttpDelete("device/{deviceId}")]
+        [ByPassAuthorization]
+        public async Task<IActionResult> AddDevice([FromRoute] [Required] string deviceId)
+        {
+            // Parameters validation.
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #region Enlist groups to delete device from.
+
+            // List of groups to add connection to.
+            var groups = new List<string>();
+            groups.Add(RealTimeGroupConstant.User);
+            groups.Add(RealTimeGroupConstant.Admin);
+            groups.Add(RealTimeGroupConstant.User);
+
+            #endregion
+
+            // Add devices to group.
+            await _fcmService.DeleteDevicesFromGroupsAsync(new List<string>(){deviceId} , groups, CancellationToken.None);
+            return Ok();
+        }
+
+
+        /// <summary>
+        ///     Search for a list of devices.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -237,8 +317,8 @@ namespace Main.Controllers
 #if DEBUG
 
         /// <summary>
-        /// Send push notification.
-        /// Available in debug mode.
+        ///     Send push notification.
+        ///     Available in debug mode.
         /// </summary>
         /// <returns></returns>
         [HttpPost("send")]
@@ -254,7 +334,8 @@ namespace Main.Controllers
         public async Task<IActionResult> SendMail()
         {
             var option = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordRequest);
-            await _sendMailService.SendAsync(new HashSet<string>() { "lightalakanzam@gmail.com" }, null, null, "Hello world",
+            await _sendMailService.SendAsync(new HashSet<string> { "lightalakanzam@gmail.com" }, null, null,
+                "Hello world",
                 "Content", false, CancellationToken.None);
             return Ok();
         }

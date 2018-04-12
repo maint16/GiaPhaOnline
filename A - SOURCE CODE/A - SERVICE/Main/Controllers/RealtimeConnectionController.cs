@@ -66,58 +66,7 @@ namespace Main.Controllers
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Authorize pusher connection
-        /// </summary>
-        /// <returns></returns>
-        /// <param name="info">Pusher connection information.</param>
-        [HttpPost("pusher/authorize")]
-        public IActionResult AuthorizePusher([FromBody] AuthorizePusherViewModel info)
-        {
-            #region Parameters validation
-
-            if (info == null)
-            {
-                info = new AuthorizePusherViewModel();
-                TryValidateModel(info);
-            }
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            #endregion
-
-            #region Get & authorize identity
-
-            // Get profile information.
-            var profile = IdentityService.GetProfile(HttpContext);
-
-            // Authentication result.
-            IAuthenticationData authenticationData = null;
-
-            // Channel is private.
-            if (profile.Role != AccountRole.Admin)
-            {
-                if (info.ChannelName.StartsWith("private-", StringComparison.InvariantCultureIgnoreCase))
-                    return StatusCode((int)HttpStatusCode.Forbidden,
-                        new ApiResponse(HttpMessages.CannotAccessToPrivateChannel));
-            }
-
-            // Authenticate channel.
-            authenticationData = _pusherService.Authenticate(info.ChannelName, info.SocketId);
-            if (authenticationData == null)
-                return StatusCode((int)HttpStatusCode.Forbidden,
-                    new ApiResponse(HttpMessages.CannotAuthenticateToChannel));
-
-#if DEBUG
-            Debug.WriteLine($"Authenticated socket id: {info.ChannelName} into channel ${info.SocketId}. Authentication data: {authenticationData.auth}");
-#endif
-            #endregion
-
-            return Ok(authenticationData);
-        }
-
+        
         /// <summary>
         /// Authorize SignalR connection.
         /// </summary>
@@ -211,8 +160,7 @@ namespace Main.Controllers
 
             return Ok();
         }
-
-
+        
         /// <summary>
         /// Broadcast signalr notification to all clients.
         /// </summary>

@@ -49,12 +49,11 @@ namespace Main.Hubs
         /// <summary>
         /// Initialize hub with injectors.
         /// </summary>
-        public AuthorizedBaseHub(IIdentityService identityService, IRealTimeConnectionCacheService realTimeConnectionCacheService, IServiceProvider serviceProvider, IPushService pushService)
+        public AuthorizedBaseHub(IIdentityService identityService, IRealTimeConnectionCacheService realTimeConnectionCacheService, IServiceProvider serviceProvider)
         {
             IdentityService = identityService;
             RealTimeConnectionCacheService = realTimeConnectionCacheService;
             ServiceProvider = serviceProvider;
-            PushService = pushService;
         }
 
         #endregion
@@ -125,8 +124,12 @@ namespace Main.Hubs
             {
                 case AccountRole.Admin:
                     // Add user to group task.
-                    var pAddUserToGroupTask = Groups.AddAsync(Context.ConnectionId, HubGroupConstant.Admin);
-                    tasks.Add(pAddUserToGroupTask);
+                    var pAddUserToAdminGroupTask = Groups.AddAsync(Context.ConnectionId, RealTimeGroupConstant.Admin);
+                    tasks.Add(pAddUserToAdminGroupTask);
+
+                    // Add user to ordinary user.
+                    var pAddUserToUserGroupTask = Groups.AddAsync(Context.ConnectionId, RealTimeGroupConstant.User);
+                    tasks.Add(pAddUserToUserGroupTask);
                     break;
             }
 
@@ -134,7 +137,7 @@ namespace Main.Hubs
             Task.WaitAll(tasks.ToArray());
             return;
         }
-
+        
         #endregion
     }
 }

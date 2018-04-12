@@ -78,6 +78,11 @@ namespace SystemDatabase.Interfaces
         /// </summary>
         IRepository<Device> Devices { get; }
 
+        /// <summary>
+        /// List of groups in FCM service.
+        /// </summary>
+        IRepository<FcmGroup> FcmGroups { get; }
+
         #endregion
 
         #region Methods

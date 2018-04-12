@@ -1,6 +1,6 @@
 ﻿namespace Main.Constants
 {
-    public class HubGroupConstant
+    public class RealTimeGroupConstant
     {
         #region Properties
 
@@ -14,6 +14,11 @@
         /// </summary>
         public const string User = nameof(User);
 
+        /// <summary>
+        /// User which haven't authenticated into system.
+        /// </summary>
+        public const string Anonymous = nameof(Anonymous);
+        
         #endregion
     }
 }

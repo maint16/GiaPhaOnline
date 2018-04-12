@@ -156,7 +156,7 @@ namespace Main
             services.Configure<ApplicationSetting>(Configuration.GetSection(nameof(ApplicationSetting)));
             services.Configure<GoogleCredential>(Configuration.GetSection(nameof(GoogleCredential)));
             services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
-            services.Configure<FcmSetting>(Configuration.GetSection(nameof(FcmSetting)));
+            services.Configure<FcmOption>(Configuration.GetSection(nameof(FcmOption)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
             services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
             
@@ -313,8 +313,7 @@ namespace Main
             // Use signalr connection.
             app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
         }
-
-
+        
         #endregion
     }
 }
