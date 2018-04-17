@@ -22,6 +22,7 @@
                 <button class="btn btn-flat"
                         ng-class="{'bg-red': (ngIsFollowingPost)}"
                         type="button"
+                        ng-if="ngPost.status === postStatusConstant.available"
                         ng-click="fnTogglePostFollow()">
                     <span class="fa"
                           ng-class="{'fa-heart': ngIsFollowingPost, 'fa-heart-o': !ngIsFollowingPost}">
@@ -47,16 +48,17 @@
     </div>
 
     <!--Box footer-->
-    <div class="box-footer box-comments"
-         ng-if="ngIsCommentAvailable">
-        <div class="box-comment"
-             ng-repeat="comment in result.getComments.records">
-            <img class="img-circle img-sm"
-                 style="cursor: pointer"
-                 ng-src="{{buffer.users[comment.ownerId].photo}}"
-                 ui-sref="{{urlStates.user.profile.name}}({profileId: ngPost.ownerId})"
-                 alt="User Image">
-            <div class="comment-text">
+    <div ng-transclude="postBoxFooter">
+        <div class="box-footer box-comments"
+             ng-if="ngIsCommentAvailable && result.getComments.records.length > 0">
+            <div class="box-comment"
+                 ng-repeat="comment in result.getComments.records">
+                <img class="img-circle img-sm"
+                     style="cursor: pointer"
+                     ng-src="{{buffer.users[comment.ownerId].photo}}"
+                     ui-sref="{{urlStates.user.profile.name}}({profileId: ngPost.ownerId})"
+                     alt="User Image">
+                <div class="comment-text">
                 <span class="username">
                     <a href="javascript:void(0);"
                        ui-sref="{{urlStates.user.profile.name}}({profileId: ngPost.ownerId})">
@@ -64,46 +66,51 @@
                     </a>
                     <span class="text-muted pull-right">{{comment.createdTime| amFromUnix | amDateFormat: 'LLL'}}</span>
                 </span>
-                <small>{{comment.content}}</small>
+                    <small>{{comment.content}}</small>
+                </div>
+            </div>
+            <div class="box-comment">
+                <div class="text-center">
+                    <ul uib-pagination
+                        class="pagination-sm"
+                        item-per-page="appSettingConstant.pagination.comments"
+                        total-items="result.getComments.total"
+                        ng-model="condition.getComments.pagination.page"
+                        ng-change="getComments()"></ul>
+                </div>
             </div>
         </div>
-        <div class="box-comment">
-            <div class="text-center">
-                <ul uib-pagination
-                    item-per-page="appSettings.pagination.comments"
-                    total-items="result.getComments.total"
-                    ng-model="condition.getComments.pagination.page"
-                    ng-change="getComments()"></ul>
-            </div>
-        </div>
-    </div>
 
-    <!--Comment box-->
-    <div class="box-footer"
-         ng-if="ngAudienceProfile && ngIsCommentSubmissionAvailable">
-        <form novalidate
-              ng-submit="addComment($event)"
-              name="addCommentForm">
-            <img class="img-responsive img-circle img-sm"
-                 ng-src="{{buffer.users[ngPost.ownerId].photo}}"
-                 alt="Alt Text">
-            <div class="img-push">
-                <div class="input-group">
-                    <input type="text"
-                           class="form-control input-sm"
-                           ng-model="model.content"
-                           placeholder="{{'Add a comment' | translate}}"
-
-                           required>
-                    <span class="input-group-btn">
+        <!--Comment box-->
+        <div class="box-footer"
+             ng-if="ngAudienceProfile && ngIsCommentSubmissionAvailable">
+            <form novalidate
+                  ng-submit="addComment($event)"
+                  name="addCommentForm">
+                <img class="img-responsive img-circle img-sm"
+                     ng-src="{{buffer.users[ngPost.ownerId].photo}}"
+                     alt="Alt Text">
+                <div class="img-push">
+                    <div class="input-group">
+                        <input type="text"
+                               class="form-control input-sm"
+                               ng-model="model.content"
+                               placeholder="{{'Add a comment' | translate}}"
+                               ng-disabled="ngPost.status !== postStatusConstant.available"
+                               ng-required="true">
+                        <span class="input-group-btn">
                         <button ng-disabled="addCommentForm.$invalid"
                                 type="submit"
                                 class="btn btn-sm btn-flat btn-primary">
                             <span class="fa fa-send"></span>
                         </button>
                     </span>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
+
+
+
 </div>

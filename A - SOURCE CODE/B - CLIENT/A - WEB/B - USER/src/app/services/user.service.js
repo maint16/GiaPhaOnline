@@ -1,13 +1,13 @@
 module.exports = function(ngModule){
 
     ngModule.service('userService', function($http, $interpolate,
-                                             appSettings, apiUrls, urlStates){
+                                             appSettingConstant, apiUrls, urlStates){
 
         /*
         * Get user information.
         * */
         this.loadUsers = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.loadUsers;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.loadUsers;
             return $http.post(url, conditions);
         };
 
@@ -15,7 +15,7 @@ module.exports = function(ngModule){
         * Get users by using specific conditions.
         * */
         this.getUsers = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.getUsers;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.getUsers;
             return $http.post(url, conditions);
         };
 
@@ -26,7 +26,7 @@ module.exports = function(ngModule){
             if (id == null)
                 id = 0;
 
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.getPersonalProfile;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.getPersonalProfile;
             url = url.replace('{id}', id);
             return $http.get(url);
         };
@@ -43,7 +43,7 @@ module.exports = function(ngModule){
         * Submit new password for a profile.
         * */
         this.changePassword = function(id, info){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.changePassword;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.changePassword;
             url = url.replace('{id}', id);
             return $http.post(url, info);
         };
@@ -52,7 +52,7 @@ module.exports = function(ngModule){
         * Use email & password to exchange with an access token.
         * */
         this.basicLogin = function(info){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.basicLogin;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.basicLogin;
             return $http.post(url, info);
         };
 
@@ -60,7 +60,7 @@ module.exports = function(ngModule){
         * Exchange google code for local access token.
         * */
         this.fnUseGoogleLogin = function(info){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.googleLogin;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.googleLogin;
             return $http.post(url, info);
         };
 
@@ -68,7 +68,7 @@ module.exports = function(ngModule){
         * Exchange facebook code for local access token.
         * */
         this.fnUseFacebookLogin = function (info) {
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.facebookLogin;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.facebookLogin;
             return $http.post(url, info);
         };
 
@@ -76,7 +76,7 @@ module.exports = function(ngModule){
         * Upload profile avatar to server.
         * */
         this.uploadProfileAvatar = function(avatar){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.user.uploadProfileImage;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.uploadProfileImage;
 
             // Initialize form data to upload image to server.
             var formData = new FormData();
@@ -96,9 +96,22 @@ module.exports = function(ngModule){
         * Use specific information to register an account.
         * */
         this.basicRegister = function(info){
-            var fullUrl = appSettings.endPoint.apiService + '/' + apiUrls.user.basicRegister;
+            var fullUrl = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.basicRegister;
             return $http.post(fullUrl, info);
-        }
+        };
+
+        /*
+        * Use specific information to search for user and change his/her status.
+        * */
+        this.editUserStatus = function(id, status){
+            var fullUrl = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.editUserStatus;
+            var info = {
+                userId: id,
+                status: status
+            };
+
+            return $http.put(fullUrl, info);
+        };
     });
 
 };

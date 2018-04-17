@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-    ngModule.service('postService', function($http, appSettings, apiUrls){
+    ngModule.service('postService', function($http, appSettingConstant, apiUrls){
 
         //#region Methods
 
@@ -7,7 +7,7 @@ module.exports = function(ngModule){
         * Get posts list by using specific conditions.
         * */
         this.getPosts = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.post.getPosts;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.post.getPosts;
             return $http.post(url, conditions);
         };
 
@@ -15,7 +15,7 @@ module.exports = function(ngModule){
         * Add post to system.
         * */
         this.addPost = function(condition){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.post.addPost;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.post.addPost;
             return $http.post(url, condition);
         };
 
@@ -23,7 +23,7 @@ module.exports = function(ngModule){
         * Search for posts by using indexes.
         * */
         this.loadPosts = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.post.loadPosts;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.post.loadPosts;
             return $http.post(url, conditions);
         };
 

@@ -22,10 +22,9 @@ module.exports = function(ngModule){
             template: ngPersonalProfileTemplate,
             resolve:{
                 // Profile information.
-                personalProfile: function($stateParams, userService){
+                personalProfile: function($stateParams, $state, userService){
                     var profileId = $stateParams.profileId;
                     profileId = parseInt(profileId) || null;
-
                     return userService.getProfile(profileId)
                         .then(function(getProfileResponse){
 

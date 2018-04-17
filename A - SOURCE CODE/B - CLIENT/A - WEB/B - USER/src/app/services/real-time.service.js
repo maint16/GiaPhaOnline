@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-  ngModule.service('realTimeService', function(appSettings){
+  ngModule.service('realTimeService', function(appSettingConstant){
 
       //#region Properties
 
@@ -64,7 +64,7 @@ module.exports = function(ngModule){
       * Get full url of hub end-point.
       * */
       this.getHubEndPoint = function(hubName){
-          return appSettings.endPoint.hubService + '/' + hubName;
+          return appSettingConstant.endPoint.hubService + '/' + hubName;
       }
       //#endregion
   });

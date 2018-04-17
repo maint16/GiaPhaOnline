@@ -10,7 +10,8 @@ module.exports = function (ngModule) {
                 template: ngModuleHtmlTemplate,
                 restrict: 'AE',
                 transclude:{
-                    postContent: '?postContent'
+                    postContent: '?postContent',
+                    postBoxFooter: '?postBoxFooter'
                 },
                 scope: {
                     ngPost: '=',
@@ -26,14 +27,16 @@ module.exports = function (ngModule) {
                     unfollowingPost: '&',
                     unfollowedPost: '&'
                 },
-                controller: function ($scope, urlStates, appSettings, postTypeConstant, taskStatusConstant, taskResultConstant,
+                controller: function ($scope, urlStates,
+                                      appSettingConstant, postTypeConstant, taskStatusConstant, taskResultConstant, postStatusConstant,
                                       userService, commentService, followPostService) {
 
                     //#region Properties
 
                     // Constants reflection.
                     $scope.urlStates = urlStates;
-                    $scope.appSettings = appSettings;
+                    $scope.appSettingConstant = appSettingConstant;
+                    $scope.postStatusConstant = postStatusConstant;
 
                     // Buffer data which is for client caching.
                     $scope.buffer = {
@@ -49,7 +52,7 @@ module.exports = function (ngModule) {
                             postId: 0,
                             pagination: {
                                 page: 1,
-                                records: appSettings.pagination.comments
+                                records: appSettingConstant.pagination.comments
                             }
                         }
                     };
@@ -126,12 +129,14 @@ module.exports = function (ngModule) {
 
                                         // Get users list.
                                         var users = getUsersResult.records;
-                                        users.map(function (user) {
-                                            if ($scope.buffer.users[user.id])
-                                                return user;
+                                        if (users) {
+                                            users.map(function (user) {
+                                                if ($scope.buffer.users[user.id])
+                                                    return user;
 
-                                            $scope.buffer.users[user.id] = user;
-                                        });
+                                                $scope.buffer.users[user.id] = user;
+                                            });
+                                        }
 
                                         $scope.result.getComments = getCommentsResult;
 

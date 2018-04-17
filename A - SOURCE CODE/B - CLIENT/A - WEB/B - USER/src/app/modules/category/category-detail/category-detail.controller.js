@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettings, urlStates, details, taskStatusConstant, taskResultConstant,
+                                                              appSettingConstant, urlStates, details, taskStatusConstant, taskResultConstant,
                                                               $uibModal, toastr, $translate,
                                                               postService, followPostService, commonService,
                                                               commentService, userService, followCategoryService) {
@@ -9,7 +9,7 @@ module.exports = function (ngModule) {
         //#region Properties
 
         // Constant reflection.
-        $scope.appSettings = appSettings;
+        $scope.appSettingConstant = appSettingConstant;
         $scope.urlStates = urlStates;
 
         // Resolver reflection.
@@ -62,13 +62,13 @@ module.exports = function (ngModule) {
                 title: null,
                 pagination: {
                     page: 1,
-                    records: appSettings.pagination.default
+                    records: appSettingConstant.pagination.default
                 }
 
             },
             comment: {
                 page: 1,
-                records: appSettings.pagination.default
+                records: appSettingConstant.pagination.default
             }
         };
 
@@ -125,6 +125,9 @@ module.exports = function (ngModule) {
                     // Build a list of promises which should be resolved
                     var promises = [];
 
+                    // Get posts list.
+                    var posts = getPostsResult.records;
+
                     //#region Get user list
 
                     // Get users list.
@@ -145,13 +148,23 @@ module.exports = function (ngModule) {
                     //#region Get post list
 
                     var posts = getPostsResult.records;
-                    var postIds = posts
-                        .filter(function (post) {
-                            return !$scope.buffer.followingPosts[post.id]
-                        })
-                        .map(function (post) {
-                            return post.id;
-                        });
+
+                    // List of post ids which must be loaded.
+                    var postIds = [];
+                    angular.forEach(posts, function(post){
+                        if ($scope.buffer.followingPosts[post.id])
+                            return;
+
+                        postIds.push(post.id);
+
+                        // Find maximum length of post.
+                        var iMaximumPostLength = appSettingConstant.maxLength.categoryDetailPostBody;
+
+                        // Truncate post.
+                        var szBody = post.body;
+                        if (szBody && szBody.length > iMaximumPostLength)
+                            post.body = post.body.substring(0, 250) + ' ...';
+                    });
 
                     // Load following post promises.
                     var loadFollowingPostsPromises = $scope.loadFollowingPosts(postIds);

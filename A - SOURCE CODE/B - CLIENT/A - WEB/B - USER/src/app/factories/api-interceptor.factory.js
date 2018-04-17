@@ -3,7 +3,7 @@
         function ($injector,
             $q,
             authenticationService,
-            appSettings) {
+                  appSettingConstant) {
 
             return {
                 /*

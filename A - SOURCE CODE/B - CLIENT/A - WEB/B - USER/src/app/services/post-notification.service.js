@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-    ngModule.service('postNotificationService', function(appSettings, apiUrls,
+    ngModule.service('postNotificationService', function(appSettingConstant, apiUrls,
                                                          $http){
 
         //#region Methods
@@ -8,7 +8,7 @@ module.exports = function(ngModule){
         * Search for post notification by using specific conditions.
         * */
         this.search = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.postNotification.getPostNotifications;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.postNotification.getPostNotifications;
             return $http.post(url, conditions);
         };
 

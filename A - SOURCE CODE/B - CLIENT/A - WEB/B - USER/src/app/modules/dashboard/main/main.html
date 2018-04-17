@@ -20,7 +20,8 @@
                       novalidate
                       ng-submit="fnSearchCategories($event)">
                     <input class="form-control"
-                           placeholder="{{'Search for categories' | translate}} ...">
+                           placeholder="{{'Search for categories' | translate}} ..."
+                           ng-model="condition.getCategories.name">
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-flat">
                             <span class="fa fa-search"></span>
@@ -58,20 +59,13 @@
                         <div class="box-body">
                             <div class="col-sm-12">
                                 <div class="form-group text-center">
-                                    <img class="img img-responsive img-thumbnail category-image"
-                                         ng-src="{{category.photo}}">
+                                    <!--<img class="img img-responsive img-thumbnail category-image"-->
+                                         <!--ng-src="{{category.photo}}">-->
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="truncate category-description slim-scrollbar">
-                                    orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                    Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                                    unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                    It has survived not only five centuries, but also the leap into electronic
-                                    typesetting, remaining essentially unchanged. It was popularised in the 1960s with
-                                    the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                                    with desktop publishing software like Aldus PageMaker including versions of Lorem
-                                    Ipsum
+                                    {{category.description}}
                                 </div>
                             </div>
                         </div>

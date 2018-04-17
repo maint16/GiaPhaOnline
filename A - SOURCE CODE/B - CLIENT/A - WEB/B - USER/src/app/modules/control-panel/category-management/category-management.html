@@ -4,7 +4,9 @@
         <div class="box box-default">
             <div class="box-header">
                 <div class="box-tools pull-right">
-                    <button class="btn btn-flat btn-primary" uib-tooltip="{{'Add a category' | translate}}">
+                    <button class="btn btn-flat btn-primary"
+                            uib-tooltip="{{'Add a category' | translate}}"
+                            ng-click="addCategory()">
                         <span class="fa fa-folder-open-o"></span>
                     </button>
                 </div>
@@ -19,3 +21,28 @@
         </div>
     </div>
 </div>
+
+<!--Add category-->
+<script type="text/ng-template"
+        id="add-category.tmpl.html">
+
+    <form name="addCategoryForm"
+          novalidate
+          ng-submit="$event.preventDefault()">
+        <label>{{"Category name" | translate}}</label>
+        <div class="form-group">
+            <input name="categoryName"
+                   class="form-control"
+                   ng-model="modalModel.addCategory.name"
+                   ng-required="true">
+        </div>
+
+        <!--Validation messages-->
+        <ul class="validation-summary"
+            ng-if="addCategoryForm.categoryName.$dirty && addCategoryForm.categoryName.$error"
+            ng-messages="addCategoryForm.categoryName.$error">
+            <li ng-message="required">{{'This field is required' | translate}}</li>
+        </ul>
+    </form>
+
+</script>

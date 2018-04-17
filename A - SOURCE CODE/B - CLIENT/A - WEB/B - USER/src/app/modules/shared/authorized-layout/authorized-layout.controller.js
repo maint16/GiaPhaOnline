@@ -1,6 +1,6 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
-        function (oAuthSettings, appSettings, notificationCategoryConstant, notificationActionConstant,
+        function (oAuthSettings, appSettingConstant, notificationCategoryConstant, notificationActionConstant,
                   $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window, $translate, toastr,
                   notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant, hubConstant,
@@ -306,7 +306,7 @@ module.exports = function (ngModule) {
                     statuses: [notificationStatusConstant.unseen],
                     pagination: {
                         page: 1,
-                        records: appSettings.pagination.postNotifications
+                        records: appSettingConstant.pagination.postNotifications
                     }
                 };
 
@@ -522,7 +522,6 @@ module.exports = function (ngModule) {
                 var notificationAction = notification.action;
                 var data = notification.data;
 
-                debugger;
                 console.log(notification);
 
                 // Construct a message to display to user.

@@ -20,4 +20,5 @@ module.exports = function (ngModule) {
     require('./real-time/hub.constant')(ngModule);
     require('./notification/notification-category.constant')(ngModule);
     require('./notification/notification-action.constant')(ngModule);
+    require('./user-status.constant')(ngModule);
 };

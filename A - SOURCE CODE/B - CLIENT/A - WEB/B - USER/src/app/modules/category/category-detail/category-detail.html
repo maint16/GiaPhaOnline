@@ -199,7 +199,8 @@
     <div class="row form-group">
         <div class="col-sm-4"
              ng-repeat="post in loadDataResult.posts.records">
-            <post-box ng-post="post"
+            <post-box class="category-detail-post-box"
+                      ng-post="post"
                       ng-is-following-post="buffer.followingPosts[post.id]"
                       ng-is-comment-available="false"
                       ng-is-follow-post-available="true"
@@ -208,10 +209,24 @@
 
                       followed-post="fnFollowedPost(id, status, result)"
                       unfollowed-post="fnUnfollowedPost(id, status, result)">
-                <post-content style="cursor: pointer;"
-                              ng-click="fnSelectPost(post)">
+                <post-content>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                 <h4 class="text-green text-bold">{{post.title}}</h4>
+                            </div>
+                        </div>
+                    </div>
                     {{post.body}}
                 </post-content>
+                <post-box-footer>
+                    <div class="box-footer">
+                        <button class="btn btn-flat btn-block btn-info"
+                                ng-click="fnSelectPost(post)">
+                            {{'See more' | translate}}
+                        </button>
+                    </div>
+                </post-box-footer>
             </post-box>
         </div>
     </div>
@@ -221,7 +236,7 @@
         <div class="col-lg-12">
             <div class="text-center">
                 <ul uib-pagination
-                    items-per-page="appSettings.pagination.categoryPosts"
+                    items-per-page="appSettingConstant.pagination.categoryPosts"
                     total-items="loadDataResult.posts.total"
                     ng-model="loadDataCondition.post.pagination.page"
                     ng-change="clickChangePage($event)"></ul>
