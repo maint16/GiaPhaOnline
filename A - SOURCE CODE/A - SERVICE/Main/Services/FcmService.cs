@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Models.Entities;
+using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
@@ -54,10 +55,7 @@ namespace Main.Services
         /// </summary>
         private const string UrlDeleteDevicesFromTopic = "https://iid.googleapis.com/iid/v1:batchRemove";
 
-        /// <summary>
-        /// Instance of http to make http request.
-        /// </summary>
-        private readonly HttpClient _httpClient;
+        private IHttpClientFactory _httpClientFactory;
 
         #endregion
 
@@ -66,9 +64,9 @@ namespace Main.Services
         /// <summary>
         /// Initialize service with options.
         /// </summary>
-        /// <param name="fcmOptions"></param>
+        /// <param name="httpClientFactory"></param>
         /// <param name="unitOfWork"></param>
-        public FcmService(IOptions<FcmOption> fcmOptions, IUnitOfWork unitOfWork)
+        public FcmService(IHttpClientFactory httpClientFactory , IUnitOfWork unitOfWork)
         {
             // Initialize snake case naming convention.
             _snakeCaseSerializerSettings = new JsonSerializerSettings();
@@ -78,12 +76,10 @@ namespace Main.Services
             // Initialize contract resolver.
             _snakeCaseSerializerSettings.ContractResolver = contractResolver;
 
-            _fcmOption = fcmOptions.Value;
+            _httpClientFactory = httpClientFactory;
             _unitOfWork = unitOfWork;
 
-            _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={_fcmOption.ServerKey}");
-            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("project_id", _fcmOption.SenderId);
+            
         }
 
         #endregion
@@ -129,8 +125,9 @@ namespace Main.Services
                 // Initialize http content.
                 var httpContent = new StringContent(JsonConvert.SerializeObject(data));
 
-                _httpClient.BaseAddress = new Uri(UrlAddDevicesIntoTopic);
-                var addDevicesToGroupTask = _httpClient.PostAsync("", httpContent, cancellationToken);
+                var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
+                httpClient.BaseAddress = new Uri(UrlAddDevicesIntoTopic);
+                var addDevicesToGroupTask = httpClient.PostAsync("", httpContent, cancellationToken);
                 addDeviceToGroupsTasks.Add(addDevicesToGroupTask);
             }
 
@@ -175,7 +172,8 @@ namespace Main.Services
             var httpContent = new StringContent(szHttpContent, Encoding.UTF8, "application/json");
 
             // Make a request to notification server.
-            return await _httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
+            var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
+            return await httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
         }
 
         /// <summary>
@@ -221,8 +219,9 @@ namespace Main.Services
                 // Initialize http content.
                 var httpContent = new StringContent(JsonConvert.SerializeObject(data));
 
-                _httpClient.BaseAddress = new Uri(UrlDeleteDevicesFromTopic);
-                var addDevicesToGroupTask = _httpClient.PostAsync("", httpContent, cancellationToken);
+                var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
+                httpClient.BaseAddress = new Uri(UrlDeleteDevicesFromTopic);
+                var addDevicesToGroupTask = httpClient.PostAsync("", httpContent, cancellationToken);
                 addDeviceToGroupsTasks.Add(addDevicesToGroupTask);
             }
 
@@ -259,7 +258,7 @@ namespace Main.Services
         {
             return await DeleteDevicesFromTopicsAsync(deviceIds, groups, cancellationToken);
         }
-
+        
         #endregion
     }
 }

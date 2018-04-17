@@ -164,6 +164,7 @@ namespace Main.Controllers
         [ByPassAuthorization]
         public async Task<IActionResult> AddDevice([FromBody] AddDeviceViewModel info)
         {
+            return Ok();
             #region Parameters validation
 
             if (info == null)

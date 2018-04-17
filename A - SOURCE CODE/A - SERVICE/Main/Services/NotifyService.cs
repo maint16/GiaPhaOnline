@@ -140,14 +140,16 @@ namespace Main.Services
             foreach (var group in groups)
             {
                 var fcmMessage = new FcmMessage();
-                fcmMessage.CollapseKey = eventName;
+                fcmMessage.CollapseKey = "ADD_CATEGORY";
                 fcmMessage.Data = data;
-                fcmMessage.Condition = $"'group in {group}'";
+                fcmMessage.To = $"/topics/{group}";
 
                 // Initialize fcm notification.
                 var webFcmNotification = new WebFcmNotification();
                 webFcmNotification.Title = title;
                 webFcmNotification.Body = message;
+                fcmMessage.Notification = webFcmNotification;
+                webFcmNotification.Tag = "ADD_CATEGORY";
 
                 var fcmTask = _pushService.SendNotification(fcmMessage, CancellationToken.None);
                 tasks.Add(fcmTask);

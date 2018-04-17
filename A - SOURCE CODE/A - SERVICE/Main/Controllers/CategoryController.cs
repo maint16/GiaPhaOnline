@@ -217,7 +217,7 @@ namespace Main.Controllers
             category.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Add category into database.
-            _unitOfWork.Categories.Insert(category);
+            //_unitOfWork.Categories.Insert(category);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
@@ -238,7 +238,7 @@ namespace Main.Controllers
             additionalInfo.Add("action", NotificationAction.Add);
             additionalInfo.Add("notificationKind", NotificationCategory.Category);
 
-            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new []{AccountRole.Admin}, "added category", "added category",
+            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new List<string>(){RealTimeGroupConstant.User, RealTimeGroupConstant.Admin}, "added category", "added category",
                 HubMethodConstant.ClientReceiveNotification, additionalInfo));
 
             #endregion
@@ -302,24 +302,77 @@ namespace Main.Controllers
                 bHasInformationChanged = true;
             }
 
-            // Photo is defined.
-            if (!string.IsNullOrEmpty(info.Photo))
-            {
-                var photo = info.Photo.Split(",");
-                var binaryPhoto = Convert.FromBase64String(photo[1]);
-                var memoryStream = new MemoryStream(binaryPhoto);
-                var skManagedStream = new SKManagedStream(memoryStream);
-                var skBitmap = SKBitmap.Decode(skManagedStream);
-                var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            //// Photo is defined.
+            //if (!string.IsNullOrEmpty(info.Photo))
+            //{
+            //    var photo = info.Photo.Split(",");
+            //    var binaryPhoto = Convert.FromBase64String(photo[1]);
+            //    var memoryStream = new MemoryStream(binaryPhoto);
+            //    var skManagedStream = new SKManagedStream(memoryStream);
+            //    var skBitmap = SKBitmap.Decode(skManagedStream);
+            //    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
 
-                bHasInformationChanged = true;
-            }
+            //    bHasInformationChanged = true;
+            //}
 
             // Commit changes to database.
             if (bHasInformationChanged)
+            {
+                // Update last modified time.
+                category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 await _unitOfWork.CommitAsync();
+            }
 
             #endregion
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Delete category by search for its index.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+        {
+            // Find category by using its index.
+            var categories = _unitOfWork.Categories.Search();
+            categories = categories.Where(x => x.Id == id && x.Status == ItemStatus.Available);
+
+            // Find the first matched category.
+            var category = await categories.FirstOrDefaultAsync();
+            if (category == null)
+                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
+
+            category.Status = ItemStatus.NotAvailable;
+            
+            // Commit change to database.
+            await _unitOfWork.CommitAsync();
+            return Ok();
+        }
+
+        /// <summary>
+        /// Restore deleted category.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("restore")]
+        public async Task<IActionResult> RestoreCategory([FromRoute] int id)
+        {
+            // Find category by using its index.
+            var categories = _unitOfWork.Categories.Search();
+            categories = categories.Where(x => x.Id == id && x.Status == ItemStatus.NotAvailable);
+
+            // Find the first matched category.
+            var category = await categories.FirstOrDefaultAsync();
+            if (category == null)
+                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
+
+            category.Status = ItemStatus.Available;
+
+            // Commit changes to database.
+            await _unitOfWork.CommitAsync();
 
             return Ok();
         }
@@ -384,17 +437,28 @@ namespace Main.Controllers
                 return categories;
 
             // Id has been defined.
-            if (conditions.Id != null)
-                categories = categories.Where(x => x.Id == conditions.Id.Value);
+            if (conditions.Ids != null)
+            {
+                var ids = conditions.Ids.Where(x => x > 0).ToList();
+                if (ids.Count > 0)
+                    categories = categories.Where(x => ids.Contains(x.Id));
+            }
 
             // Creator has been defined.
-            if (conditions.CreatorId != null)
-                categories = categories.Where(x => x.CreatorId == conditions.CreatorId.Value);
+            if (conditions.CreatorIds != null)
+            {
+                var creatorIds = conditions.CreatorIds.Where(x => x > 0).ToList();
+                if (creatorIds.Count > 0)
+                    categories = categories.Where(x => creatorIds.Contains(x.CreatorId));
+            }
 
             // Name search condition has been defined.
-            if (conditions.Name != null && !string.IsNullOrWhiteSpace(conditions.Name))
-                categories = _databaseFunction.SearchPropertyText(categories, x => x.Name,
-                    new TextSearch(TextSearchMode.ContainIgnoreCase, conditions.Name));
+            if (conditions.Names != null)
+            {
+                var names = conditions.Names.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                if (names.Count > 0)
+                    categories = categories.Where(x => names.Any(y => x.Name.Contains(y, StringComparison.InvariantCultureIgnoreCase)));
+            }
 
             // CreatedTime time range has been defined.
             if (conditions.CreatedTime != null)

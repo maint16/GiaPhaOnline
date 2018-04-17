@@ -63,13 +63,13 @@ namespace Main.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> StartFollowingPost([FromBody] int postId)
+        public async Task<IActionResult> StartFollowingPost([FromBody] FollowPostViewModel info)
         {
             #region Find post
 
             // Get posts by using id.
             var posts = UnitOfWork.Posts.Search();
-            posts = posts.Where(x => x.Id == postId && x.Status == PostStatus.Available);
+            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
             var post = await posts.FirstOrDefaultAsync();
 
             // Post is not found.
@@ -96,7 +96,7 @@ namespace Main.Controllers
             {
                 followPost = new FollowPost();
                 followPost.FollowerId = identity.Id;
-                followPost.PostId = postId;
+                followPost.PostId = info.PostId;
                 followPost.Status = ItemStatus.Available;
                 followPost.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
@@ -118,7 +118,7 @@ namespace Main.Controllers
         /// <param name="postId"></param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task<IActionResult> StopFollowingPost([FromRoute] int postId)
+        public async Task<IActionResult> StopFollowingPost([FromQuery] int postId)
         {
             #region Check following duplicate
 
