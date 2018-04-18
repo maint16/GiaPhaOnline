@@ -93,6 +93,9 @@ module.exports = function (ngModule) {
             if (loadDataCondition == null)
                 loadDataCondition = $scope.loadDataCondition.post;
 
+            // Block app UI.
+            commonService.blockAppUI();
+
             // Call api to load data.
             return postService.getPosts(loadDataCondition)
                 .then(function (getPostsResponse) {
@@ -168,6 +171,9 @@ module.exports = function (ngModule) {
                 .then(function (getPostsResult) {
                     // Posts list.
                     $scope.loadDataResult.posts = getPostsResult;
+                })
+                .finally(function(){
+                    commonService.unblockAppUI();
                 });
         };
 

@@ -1,5 +1,5 @@
 module.exports = function (ngModule) {
-    ngModule.service('commonService', function () {
+    ngModule.service('commonService', function (blockUI) {
 
         //#region Methods
 
@@ -25,6 +25,28 @@ module.exports = function (ngModule) {
             }
 
             return chunks;
+        };
+
+        /*
+        * Block application UI.
+        * */
+        this.blockAppUI = function(){
+            var appBlockUI = blockUI.instances.get('appBlockUI');
+            if (!appBlockUI)
+                return;
+
+            appBlockUI.start();
+        };
+
+        /*
+        * Unblock application UI.
+        * */
+        this.unblockAppUI = function(){
+            var appBlockUI = blockUI.instances.get('appBlockUI');
+            if (!appBlockUI)
+                return;
+
+            appBlockUI.stop();
         };
 
         //#endregion

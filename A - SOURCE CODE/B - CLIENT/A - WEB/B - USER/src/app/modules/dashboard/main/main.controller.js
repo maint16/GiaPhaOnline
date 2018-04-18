@@ -4,7 +4,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('mainDashboardController', function ($scope, toastr, $ngConfirm, $translate,
                                                              $timeout, $state,
-                                                             appSettings, urlStates,
+                                                             appSettingConstant, urlStates,
                                                              profile,
                                                              categoryService, postCategorizationService, followCategoryService, commonService) {
 
@@ -30,9 +30,10 @@ module.exports = function (ngModule) {
         // Search condition.
         $scope.condition = {
             getCategories: {
+                name: null,
                 pagination: {
                     page: 1,
-                    records: appSettings.pagination.default
+                    records: appSettingConstant.pagination.default
                 }
             }
         };
@@ -81,9 +82,20 @@ module.exports = function (ngModule) {
             $scope.result.records = [];
             $scope.result.total = 0;
 
+            // Block the application UI.
+            commonService.blockAppUI();
+
+            var getCategoriesCondition = {};
+            angular.copy($scope.condition.getCategories, getCategoriesCondition);
+            if (getCategoriesCondition.name){
+                getCategoriesCondition['names'] = [getCategoriesCondition.name];
+                delete getCategoriesCondition.name;
+            }
+
             // Do searching.
-            categoryService.getCategories($scope.condition.getCategories)
+            categoryService.getCategories(getCategoriesCondition)
                 .then(function (getCategoriesResponse) {
+                    console.log(getCategoriesResponse);
                     var getCategoriesResult = getCategoriesResponse.data;
                     if (!getCategoriesResult) {
                         // Reset search result.
@@ -96,9 +108,10 @@ module.exports = function (ngModule) {
                 .then(function (getCategoriesResult) {
 
                     var categories = getCategoriesResult.records;
-                    if (!categories || categories.length < 1)
+                    if (!categories || categories.length < 1) {
+                        $scope.result.getCategories = getCategoriesResult;
                         throw 'No category has been found';
-
+                    }
                     // Get all categories posts.
                     var pPromises = [];
 
@@ -107,15 +120,7 @@ module.exports = function (ngModule) {
 
                     // List of categories which needs searching for the relationship to the current user.
                     var followingCategoryIds = {};
-                    var categorizedCategoryIds = {};
-
                     angular.forEach(categories, function (category, iterator) {
-
-                        // Get categorized category id.
-                        if (!categorizedCategoryIds[category.id])
-                            categorizedCategoryIds[category.id] = true;
-
-
                         // If user is authenticated. Search for his/her following category.
                         if (profile) {
                             if (!followingCategoryIds[category.id])
@@ -123,19 +128,6 @@ module.exports = function (ngModule) {
                         }
 
                     });
-
-                    // Get categorized categories.
-
-                    // Convert hashset back to array.
-                    categorizedCategoryIds = Object.keys(categorizedCategoryIds);
-
-                    if (categorizedCategoryIds.length > 0) {
-                        // TODO: Implement categorization counter.
-                        // // Add promise to queue.
-                        // pPromises.push(pGetCategoryPostCounterPromise);
-                    }
-
-                    //#endregion
 
                     //#region Get category following status
 
@@ -182,6 +174,9 @@ module.exports = function (ngModule) {
                 })
                 .then(function(getCategoriesResult){
                     $scope.result.getCategories = getCategoriesResult;
+                })
+                .finally(function(){
+                    commonService.unblockAppUI();
                 });
         };
 
