@@ -208,10 +208,14 @@
 
                       followed-post="fnFollowedPost(id, status, result)"
                       unfollowed-post="fnUnfollowedPost(id, status, result)">
-                <post-content style="cursor: pointer;"
-                              ng-click="fnSelectPost(post)">
+                <post-content style="cursor: pointer;">
                     {{post.body}}
                 </post-content>
+                <post-box-footer>
+                    <div class="box-footer">
+                        <button class="btn btn-flat btn-block btn-info" ng-click="fnSelectPost(post)">{{"View" | translate}}</button>
+                    </div>
+                </post-box-footer>
             </post-box>
         </div>
     </div>

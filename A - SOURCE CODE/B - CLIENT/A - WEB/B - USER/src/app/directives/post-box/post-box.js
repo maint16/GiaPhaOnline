@@ -10,7 +10,8 @@ module.exports = function (ngModule) {
                 template: ngModuleHtmlTemplate,
                 restrict: 'AE',
                 transclude:{
-                    postContent: '?postContent'
+                    postContent: '?postContent',
+                    postBoxFooter: '?postBoxFooter'
                 },
                 scope: {
                     ngPost: '=',
