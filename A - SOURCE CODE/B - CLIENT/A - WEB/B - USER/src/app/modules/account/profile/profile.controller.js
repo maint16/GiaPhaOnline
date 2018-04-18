@@ -349,18 +349,18 @@ module.exports = function (ngModule) {
                     function (data, type, item, meta) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
-                        szUi += '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                        szUi += $translate.instant('Action') + ' ';
+                        szUi += '<button class="btn btn-default btn-flat dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
+                        szUi += '<span>{{"Action" | translate}}</span> ';
                         szUi += '<span class="caret"></span>';
                         szUi += '</button>';
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
-                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-eye"></span> ' + $translate.instant('View') + ' </a></li>';
+                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-eye"></span>{{"View" | translate}}</a></li>';
 
                         // Viewer is the profile owner.
                         if (profile && profile.id === $scope.personalProfile.id) {
                             // Item is still available. Which means it can be deleted.
                             if (item.status === postStatusConstant.available)
-                                szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
+                                szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> <b class="text-danger">{{"Delete" | translate}}</b> </a></li>';
                         }
 
                         szUi += '</ul>';

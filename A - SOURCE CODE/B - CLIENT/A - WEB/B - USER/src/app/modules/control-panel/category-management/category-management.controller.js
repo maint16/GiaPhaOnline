@@ -166,7 +166,11 @@ module.exports = function (ngModule) {
                 // Creator
                 DTColumnBuilder.newColumn(null).withTitle($translate('Creator')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        return '<a ui-sref="' + userService.getProfilePage(item.creatorId) +'">' + $scope.buffer.users[item.creatorId].nickname + '</a>';
+                        var creator = $scope.buffer.users[item.creatorId];
+                        if (!creator)
+                            return '';
+
+                        return '<a ui-sref="' + userService.getProfilePage(item.creatorId) +'">' + creator.nickname + '</a>';
                     }
                 ),
                 // Created time

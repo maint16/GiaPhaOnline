@@ -30,6 +30,7 @@
     background-color: #555;
 }
 
+/* Override bootstrap controls */
 .nav-tabs > li > a{
     border-radius: 0 !important;
 }

@@ -20,6 +20,7 @@
                       novalidate
                       ng-submit="fnSearchCategories($event)">
                     <input class="form-control"
+                           ng-model="condition.getCategories.name"
                            placeholder="{{'Search for categories' | translate}} ...">
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-flat">

@@ -92,6 +92,7 @@ module.exports = function (ngModule) {
                 delete getCategoriesCondition.name;
             }
 
+            console.log(getCategoriesCondition);
             // Do searching.
             categoryService.getCategories(getCategoriesCondition)
                 .then(function (getCategoriesResponse) {
