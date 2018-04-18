@@ -349,6 +349,9 @@ module.exports = function (ngModule) {
             if ($scope.bIsFollowingCategory)
                 return;
 
+            // Block UI.
+            commonService.blockAppUI();
+
             // Follow the category by using api call.
             followCategoryService.followCategory(categoryId)
                 .then(function (followCategoryResponse) {
@@ -356,6 +359,9 @@ module.exports = function (ngModule) {
 
                     // Change category to be followed.
                     $scope.bIsFollowingCategory = true;
+                })
+                .finally(function(){
+                    commonService.unblockAppUI();
                 });
         };
 
@@ -368,6 +374,9 @@ module.exports = function (ngModule) {
                 return;
             }
 
+            // Block UI.
+            commonService.blockAppUI();
+
             // Stop following the category.
             followCategoryService.unfollowCategory(categoryId)
                 .then(function (unfollowCategoryResponse) {
@@ -375,6 +384,9 @@ module.exports = function (ngModule) {
 
                     // Mark the category to be unfollowed.
                     $scope.bIsFollowingCategory = false;
+                })
+                .finally(function(){
+                    commonService.unblockAppUI();
                 });
         };
 
