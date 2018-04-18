@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-    ngModule.service('postReportService', function($http, apiUrls, appSettings){
+    ngModule.service('postReportService', function($http, apiUrls, appSettingConstant){
 
         //#region Methods
 
@@ -7,7 +7,7 @@ module.exports = function(ngModule){
         * Get post reports by using specific conditions.
         * */
         this.getPostReports = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.commentReports.getCommentReports;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.commentReports.getCommentReports;
             return $http.post(url, conditions);
         };
 
@@ -15,7 +15,7 @@ module.exports = function(ngModule){
         * Delete post report by using specific conditions.
         * */
         this.deletePostReport = function(postId){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.postReport.deletePostReport;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.postReport.deletePostReport;
             return $http.delete(url, {params :{postId: postId}});
         };
 

@@ -70,7 +70,7 @@
         <div class="box-comment">
             <div class="text-center">
                 <ul uib-pagination
-                    item-per-page="appSettings.pagination.comments"
+                    item-per-page="appSettingConstant.pagination.comments"
                     total-items="result.getComments.total"
                     ng-model="condition.getComments.pagination.page"
                     ng-change="getComments()"></ul>

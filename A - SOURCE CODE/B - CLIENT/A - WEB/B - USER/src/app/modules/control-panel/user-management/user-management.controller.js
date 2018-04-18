@@ -4,7 +4,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('userManagementController', function ($scope, toastr, $ngConfirm, $translate,
                                                               $timeout, $state, $compile,
-                                                              appSettings, urlStates, userRoleConstant,
+                                                              appSettingConstant, urlStates, userRoleConstant,
                                                               DTOptionsBuilder, DTColumnBuilder,
                                                               profile,
                                                               moment, commonService, userService) {
@@ -22,7 +22,7 @@ module.exports = function (ngModule) {
             userManagement: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettings.pagination.default)
+                .withDisplayLength(appSettingConstant.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -35,7 +35,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.pagination.default);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -44,7 +44,7 @@ module.exports = function (ngModule) {
                     var getUsersCondition = {
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettings.pagination.default
+                            records: appSettingConstant.pagination.default
                         }
                     };
 

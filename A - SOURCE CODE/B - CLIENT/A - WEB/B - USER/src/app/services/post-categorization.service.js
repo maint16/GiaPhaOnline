@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-  ngModule.service('postCategorizationService', function($http, appSettings, apiUrls){
+  ngModule.service('postCategorizationService', function($http, appSettingConstant, apiUrls){
 
       //#region Methods
 
@@ -7,7 +7,7 @@ module.exports = function(ngModule){
       * Get post categorizations by using specific conditions.
       * */
       this.getPostCategorizations = function(conditions){
-          var url = appSettings.endPoint.apiService + '/' + apiUrls.postCategorization.getPostCategorization;
+          var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.postCategorization.getPostCategorization;
           return $http.post(url, conditions);
       };
 

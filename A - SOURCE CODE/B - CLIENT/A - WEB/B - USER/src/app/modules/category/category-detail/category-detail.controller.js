@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettings, urlStates, details, taskStatusConstant, taskResultConstant,
+                                                              appSettingConstant, urlStates, details, taskStatusConstant, taskResultConstant,
                                                               $uibModal, toastr, $translate,
                                                               postService, followPostService, commonService,
                                                               commentService, userService, followCategoryService) {
@@ -9,7 +9,7 @@ module.exports = function (ngModule) {
         //#region Properties
 
         // Constant reflection.
-        $scope.appSettings = appSettings;
+        $scope.appSettingConstant = appSettingConstant;
         $scope.urlStates = urlStates;
 
         // Resolver reflection.
@@ -62,13 +62,13 @@ module.exports = function (ngModule) {
                 title: null,
                 pagination: {
                     page: 1,
-                    records: appSettings.pagination.default
+                    records: appSettingConstant.pagination.default
                 }
 
             },
             comment: {
                 page: 1,
-                records: appSettings.pagination.default
+                records: appSettingConstant.pagination.default
             }
         };
 
@@ -129,7 +129,7 @@ module.exports = function (ngModule) {
                     var promises = [];
 
                     //#region Get user list
-
+                    var posts = getPostsResult.records;
                     // Get users list.
                     var userIds = posts
                         .filter(function (post) {

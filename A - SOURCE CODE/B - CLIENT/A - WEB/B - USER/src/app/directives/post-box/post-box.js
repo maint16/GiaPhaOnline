@@ -26,14 +26,14 @@ module.exports = function (ngModule) {
                     unfollowingPost: '&',
                     unfollowedPost: '&'
                 },
-                controller: function ($scope, urlStates, appSettings, postTypeConstant, taskStatusConstant, taskResultConstant,
+                controller: function ($scope, urlStates, appSettingConstant, postTypeConstant, taskStatusConstant, taskResultConstant,
                                       userService, commentService, followPostService) {
 
                     //#region Properties
 
                     // Constants reflection.
                     $scope.urlStates = urlStates;
-                    $scope.appSettings = appSettings;
+                    $scope.appSettingConstant = appSettingConstant;
 
                     // Buffer data which is for client caching.
                     $scope.buffer = {
@@ -49,7 +49,7 @@ module.exports = function (ngModule) {
                             postId: 0,
                             pagination: {
                                 page: 1,
-                                records: appSettings.pagination.comments
+                                records: appSettingConstant.pagination.comments
                             }
                         }
                     };

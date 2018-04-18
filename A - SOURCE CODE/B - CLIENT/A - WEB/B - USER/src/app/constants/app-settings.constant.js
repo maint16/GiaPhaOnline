@@ -1,5 +1,5 @@
 module.exports = function (ngModule) {
-    ngModule.constant('appSettings', {
+    ngModule.constant('appSettingConstant', {
 
         identityStorage: 'iConfess',
 

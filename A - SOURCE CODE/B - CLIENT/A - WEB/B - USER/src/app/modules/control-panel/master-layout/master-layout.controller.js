@@ -4,7 +4,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('controlPanelMasterLayoutController', function ($scope, toastr, $ngConfirm, $translate,
                                                              $timeout, $state,
-                                                             appSettings, urlStates,
+                                                                        appSettingConstant, urlStates,
                                                              profile,
                                                              categoryService, postCategorizationService, followCategoryService) {
 

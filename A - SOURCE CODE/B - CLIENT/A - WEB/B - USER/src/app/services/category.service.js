@@ -3,7 +3,7 @@ module.exports = function (ngModule) {
     /*
     * Initialize service with injectors.
     * */
-    ngModule.service('categoryService', function ($http, appSettings, apiUrls) {
+    ngModule.service('categoryService', function ($http, appSettingConstant, apiUrls) {
 
         //#region Methods
 
@@ -11,7 +11,7 @@ module.exports = function (ngModule) {
         * Get categories by using specif
         * */
         this.getCategories = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.category.getCategories;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.category.getCategories;
             return $http.post(url, conditions);
         };
 

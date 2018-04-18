@@ -5,7 +5,7 @@ module.exports = function (ngModule) {
     * */
     ngModule.controller('profileController', function (profile, personalProfile,
                                                        DTOptionsBuilder, DTColumnBuilder,
-                                                       postTypeConstant, postStatusConstant, commentStatusConstant, appSettings, userRoleConstant,
+                                                       postTypeConstant, postStatusConstant, commentStatusConstant, appSettingConstant, userRoleConstant,
                                                        $ngConfirm, $uibModal, $translate, $state, $compile, moment, $interpolate,
                                                        $timeout, toastr,
                                                        uiService, userService, authenticationService, commonService, postService,
@@ -49,7 +49,7 @@ module.exports = function (ngModule) {
             posts: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettings.pagination.default)
+                .withDisplayLength(appSettingConstant.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -62,7 +62,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.maxPageRecords);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -72,7 +72,7 @@ module.exports = function (ngModule) {
                         ownerId: $scope.personalProfile.id,
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettings.pagination.default
+                            records: appSettingConstant.pagination.default
                         }
                     };
 
@@ -112,7 +112,7 @@ module.exports = function (ngModule) {
             postReports: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettings.pagination.default)
+                .withDisplayLength(appSettingConstant.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -125,7 +125,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.maxPageRecords);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -135,7 +135,7 @@ module.exports = function (ngModule) {
                         reporterId: $scope.personalProfile.id,
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettings.pagination.default
+                            records: appSettingConstant.pagination.default
                         }
                     };
 
@@ -175,7 +175,7 @@ module.exports = function (ngModule) {
             comments: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettings.pagination.default)
+                .withDisplayLength(appSettingConstant.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -188,7 +188,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.maxPageRecords);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -198,7 +198,7 @@ module.exports = function (ngModule) {
                         ownerId: $scope.personalProfile.id,
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettings.pagination.default
+                            records: appSettingConstant.pagination.default
                         }
                     };
 
@@ -238,7 +238,7 @@ module.exports = function (ngModule) {
             commentReports: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettings.pagination.default)
+                .withDisplayLength(appSettingConstant.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -251,7 +251,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.maxPageRecords);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -261,7 +261,7 @@ module.exports = function (ngModule) {
                         reporterId: $scope.personalProfile.id,
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettings.pagination.default
+                            records: appSettingConstant.pagination.default
                         }
                     };
 

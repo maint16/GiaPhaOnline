@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-    ngModule.service('commentService', function($http, appSettings, apiUrls){
+    ngModule.service('commentService', function($http, appSettingConstant, apiUrls){
 
         //#region Methods
 
@@ -7,7 +7,7 @@ module.exports = function(ngModule){
         * Get comments by using specific conditions.
         * */
         this.getComments = function(conditions){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.getComments;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.comment.getComments;
             return $http.post(url, conditions);
         };
 
@@ -15,7 +15,7 @@ module.exports = function(ngModule){
         * Load a list of comment using indexes.
         * */
         this.loadComments = function(ids){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.loadComments;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.comment.loadComments;
             return $http.post(url, {ids: ids});
         };
 
@@ -23,7 +23,7 @@ module.exports = function(ngModule){
         * Add a comment to a specific post.
         * */
         this.addComment = function(comment){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.addComment;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.comment.addComment;
             return $http.post(url, comment);
         };
 
@@ -31,7 +31,7 @@ module.exports = function(ngModule){
         * Delete comment by using specific information.
         * */
         this.deleteComment = function(id){
-            var url = appSettings.endPoint.apiService + '/' + apiUrls.comment.deleteComment;
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.comment.deleteComment;
             url = url.replace('{id}', id);
             return $http.delete(url);
         };

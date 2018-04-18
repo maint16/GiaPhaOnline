@@ -4,7 +4,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryManagementController', function ($scope, toastr, $ngConfirm, $translate,
                                                                   $timeout, $state,
-                                                                  appSettings, urlStates, itemStatusConstant,
+                                                                  appSettingConstant, urlStates, itemStatusConstant,
                                                                   profile,
                                                                   DTOptionsBuilder, DTColumnBuilder,
                                                                   moment, $compile, $interpolate,
@@ -23,7 +23,7 @@ module.exports = function (ngModule) {
             categoryManagement: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettings.pagination.default)
+                .withDisplayLength(appSettingConstant.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -36,7 +36,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.pagination.default);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -45,7 +45,7 @@ module.exports = function (ngModule) {
                     var getCategoriesCondition = {
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettings.pagination.default
+                            records: appSettingConstant.pagination.default
                         }
                     };
 
