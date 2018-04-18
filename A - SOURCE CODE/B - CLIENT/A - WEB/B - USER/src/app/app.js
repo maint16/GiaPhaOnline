@@ -83,12 +83,10 @@ ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider,
 
     // en-US is default selection.
     $translateProvider.use('en-US');
-
-    // BlockUI configuration.
-    blockUIConfig.autoInjectBodyBlock = false;
-    // blockUIConfig.template = '<div block-ui-container="" class="block-ui-container ng-scope"><div class="block-ui-overlay"></div><div class="block-ui-message-container" aria-live="assertive" aria-atomic="true"><div class="loader"></div></div></div>';
-    blockUIConfig.templateUrl = 'main-block-ui.html';
 });
+
+// Import blockUI.
+require('./configs/blockUI.config')(ngModule);
 
 // Import angular-dataTable configs.
 require('./configs/angular-dataTable.config')(ngModule);
