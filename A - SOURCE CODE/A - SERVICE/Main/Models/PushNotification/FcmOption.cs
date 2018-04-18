@@ -1,6 +1,6 @@
 ﻿namespace Main.Models.PushNotification
 {
-    public class FcmSetting
+    public class FcmOption
     {
         #region Properties
 
@@ -9,6 +9,11 @@
         /// </summary>
         public string ServerKey { get; set; }
         
+        /// <summary>
+        /// Id of project.
+        /// </summary>
+        public string SenderId { get; set; }
+
         #endregion
     }
 }

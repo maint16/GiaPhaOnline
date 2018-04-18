@@ -33,7 +33,7 @@ namespace Main.Models.PushNotification
         /// This is intended to avoid sending too many of the same messages when the device comes back online or becomes active.
         /// </summary>
         public string CollapseKey { get; set; }
-
+        
         /// <summary>
         /// Sets the priority of the message. Valid values are "normal" and "high." On iOS, these correspond to APNs priorities 5 and 10.
         /// By default, notification messages are sent with high priority, and data messages are sent with normal priority. Normal priority optimizes the client app's battery consumption and should be used unless immediate delivery is required. For messages with normal priority, the app may receive the message with unspecified delay.

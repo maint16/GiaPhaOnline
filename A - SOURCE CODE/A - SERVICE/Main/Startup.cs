@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using SystemConstant.Enumerations;
 using SystemDatabase.Interfaces;
 using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Contexts;
@@ -156,13 +157,14 @@ namespace Main
             services.Configure<ApplicationSetting>(Configuration.GetSection(nameof(ApplicationSetting)));
             services.Configure<GoogleCredential>(Configuration.GetSection(nameof(GoogleCredential)));
             services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
-            services.Configure<FcmSetting>(Configuration.GetSection(nameof(FcmSetting)));
+            services.Configure<FcmOption>(Configuration.GetSection(nameof(FcmOption)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
             services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
             
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
             var jwtBearerSettings = servicesProvider.GetService<IOptions<JwtConfiguration>>().Value;
+            var fcmOption = servicesProvider.GetService<IOptions<FcmOption>>().Value;
 
             // Cors configuration.
             var corsBuilder = new CorsPolicyBuilder();
@@ -211,6 +213,13 @@ namespace Main
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
+            // Add HttpClient factory.
+            services.AddHttpClient(HttpClientGroupConstant.FcmService, x =>
+            {
+                x.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={fcmOption.ServerKey}");
+                x.DefaultRequestHeaders.TryAddWithoutValidation("project_id", fcmOption.SenderId);
+            });
+
             #region Signalr builder
 
             // Add signalr service.
@@ -222,6 +231,11 @@ namespace Main
             {
                 builder.RequireAuthenticatedUser()
                 .AddRequirements(new SolidAccountRequirement());
+            }));
+
+            services.AddAuthorization(x => x.AddPolicy(PolicyConstant.IsAdminPolicy, builder =>
+            {
+                builder.AddRequirements(new RoleRequirement(new[] {AccountRole.Admin}));
             }));
 
             #endregion
@@ -313,8 +327,7 @@ namespace Main
             // Use signalr connection.
             app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
         }
-
-
+        
         #endregion
     }
 }

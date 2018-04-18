@@ -124,6 +124,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CANNOT_CHANGE_OWN_PROFILE_STATUS.
+        /// </summary>
+        public static string CannotChangeOwnProfileStatus {
+            get {
+                return ResourceManager.GetString("CannotChangeOwnProfileStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CATEGORIZATION_NOT_FOUND.
         /// </summary>
         public static string CategorizationNotFound {

@@ -13,9 +13,10 @@ using SystemDatabase.Models.Contexts;
 namespace Main.Migrations
 {
     [DbContext(typeof(RelationalDatabaseContext))]
-    partial class RelationalDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20180417073212_20180417001")]
+    partial class _20180417001
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

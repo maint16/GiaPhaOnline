@@ -17,7 +17,34 @@ namespace Main.Interfaces.Services
         /// </summary>
         /// <param name="deviceId"></param>
         /// <param name="group"></param>
-        Task<HttpResponseMessage> AddDeviceToGroupAsync(string deviceId, string group);
+        /// <param name="cancellationToken"></param>
+        Task<HttpResponseMessage> AddDeviceToGroupAsync(string deviceId, string group, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Add device to group.
+        /// </summary>
+        /// <param name="deviceIds"></param>
+        /// <param name="groups"></param>
+        /// <param name="cancellationToken"></param>
+        Task<IList<HttpResponseMessage>> AddDeviceToGroupAsync(IList<string> deviceIds, IList<string> groups, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Delete device from a specific group.
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <param name="group"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<HttpResponseMessage> DeleteDeviceFromGroupAsync(string deviceId, string group, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Delete device from a specific group.
+        /// </summary>
+        /// <param name="deviceIds"></param>
+        /// <param name="groups"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<IList<HttpResponseMessage>> DeleteDevicesFromGroupsAsync(IList<string> deviceIds, IList<string> groups, CancellationToken cancellationToken);
 
         /// <summary>
         /// Send push notification to a specific device.

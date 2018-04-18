@@ -1,4 +1,5 @@
-﻿using SystemConstant.Enumerations.Order;
+﻿using System.Collections.Generic;
+using SystemConstant.Enumerations.Order;
 using SystemConstant.Models;
 using Shared.Models;
 
@@ -9,17 +10,17 @@ namespace Shared.ViewModels.Categories
         /// <summary>
         ///     Id of category.
         /// </summary>
-        public int? Id { get; set; }
+        public HashSet<int> Ids { get; set; }
 
         /// <summary>
         ///     Id of creator.
         /// </summary>
-        public int? CreatorId { get; set; }
+        public HashSet<int> CreatorIds { get; set; }
 
         /// <summary>
         ///     Name of category.
         /// </summary>
-        public string Name { get; set; }
+        public HashSet<string> Names { get; set; }
 
         /// <summary>
         ///     When the category was created.

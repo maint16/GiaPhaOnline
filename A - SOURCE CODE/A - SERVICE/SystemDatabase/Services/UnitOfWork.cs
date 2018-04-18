@@ -115,6 +115,11 @@ namespace SystemDatabase.Services
         /// </summary>
         private IRepository<Device> _devices;
 
+        /// <summary>
+        /// List of groups in FCM services.
+        /// </summary>
+        private IRepository<FcmGroup> _fcmGroups;
+
         #endregion
 
         #region Repository accessors
@@ -197,6 +202,11 @@ namespace SystemDatabase.Services
         /// </summary>
         public IRepository<Device> Devices => _devices ?? (_devices = new Repository<Device>(_dbContext));
 
+        /// <summary>
+        ///     List of groups on FCM service.
+        /// </summary>
+        public IRepository<FcmGroup> FcmGroups => _fcmGroups ?? (_fcmGroups = new Repository<FcmGroup>(_dbContext));
+        
         #endregion
 
         #endregion

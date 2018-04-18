@@ -6,6 +6,8 @@ namespace Main.Models.PushNotification.Notification
     {
         #region Properties
 
+        public string Tag { get; set; }
+
         /// <summary>
         /// The URL to use for the notification's icon.
         /// </summary>

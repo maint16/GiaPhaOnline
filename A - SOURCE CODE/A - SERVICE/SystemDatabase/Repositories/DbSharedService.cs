@@ -134,7 +134,11 @@ namespace SystemDatabase.Repositories
         {
             if (pagination == null)
                 return list;
-            return list.Skip(pagination.Index * pagination.Records).Take(pagination.Records);
+
+            var iIndex = pagination.Page - 1;
+            if (iIndex < 0)
+                iIndex = 0;
+            return list.Skip(iIndex * pagination.Records).Take(pagination.Records);
         }
 
         /// <summary>

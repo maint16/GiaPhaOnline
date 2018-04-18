@@ -65,6 +65,11 @@ namespace SystemDatabase.Models.Entities
         public string Name { get; set; }
 
         /// <summary>
+        /// Category description.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
         ///     When the category was created.
         /// </summary>
         public double CreatedTime { get; set; }
@@ -73,7 +78,7 @@ namespace SystemDatabase.Models.Entities
         ///     When the category was lastly modified.
         /// </summary>
         public double? LastModifiedTime { get; set; }
-
+        
         #endregion
     }
 }

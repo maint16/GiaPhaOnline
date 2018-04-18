@@ -88,6 +88,11 @@ namespace SystemDatabase.Models.Contexts
         /// </summary>
         public virtual DbSet<Device> Devices { get; set; }
 
+        /// <summary>
+        /// Groups of FCM services.
+        /// </summary>
+        public virtual DbSet<FcmGroup> FcmGroups { get; set; }
+
         #endregion
 
         #region Methods
@@ -131,6 +136,7 @@ namespace SystemDatabase.Models.Contexts
             InitializeSignalrConnection(modelBuilder);
             InitializeToken(modelBuilder);
             InitializeDevice(modelBuilder);
+            InitializeFcmGroup(modelBuilder);
 
             // Use model builder to specify composite primary keys.
             // Composite primary keys configuration
@@ -404,6 +410,22 @@ namespace SystemDatabase.Models.Contexts
 
             // Relationship between account & device.
             device.HasOne(x => x.Owner).WithMany(x => x.Devices);
+        }
+
+        /// <summary>
+        /// Initialize device table.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void InitializeFcmGroup(ModelBuilder modelBuilder)
+        {
+            // Find device instance.
+            var device = modelBuilder.Entity<FcmGroup>();
+
+            // Primary key initialization.
+            device.HasKey(x => x.Name);
+            device.Property(x => x.Name).IsRequired();
+
+            device.Property(x => x.MessagingKey).IsRequired();
         }
 
         #endregion
