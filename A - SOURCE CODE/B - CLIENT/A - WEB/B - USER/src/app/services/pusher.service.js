@@ -3,7 +3,7 @@ module.exports = function(ngModule){
     /*
     * Initialize pusher service with configurations.
     * */
-    ngModule.service('pusherService', function(appSettingConstant, apiUrls,
+    ngModule.service('pusherService', function(appSettings, apiUrls,
                                                $http){
 
         //#region Properties
@@ -40,7 +40,7 @@ module.exports = function(ngModule){
             };
 
             // Build url to make request to.
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.realtime.authorizePusher;
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.realtime.authorizePusher;
             return $http.post(url, options);
         };
 

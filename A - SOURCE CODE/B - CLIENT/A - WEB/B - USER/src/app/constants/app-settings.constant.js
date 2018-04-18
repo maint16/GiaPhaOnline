@@ -1,5 +1,5 @@
 module.exports = function (ngModule) {
-    ngModule.constant('appSettingConstant', {
+    ngModule.constant('appSettings', {
 
         identityStorage: 'iConfess',
 
@@ -20,10 +20,6 @@ module.exports = function (ngModule) {
             comments: 50,
             categoriesSelector: 10,
             postNotifications: 20
-        },
-
-        maxLength:{
-            categoryDetailPostBody: 300
         }
     });
 };

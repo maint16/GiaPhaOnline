@@ -2,8 +2,8 @@ module.exports = function(ngModule){
     /*
     * AngularJS datatable default configuration.
     * */
-    ngModule.run(function(DTDefaultOptions, appSettingConstant) {
-        DTDefaultOptions.setDisplayLength(appSettingConstant.pagination.default);
+    ngModule.run(function(DTDefaultOptions, appSettings) {
+        DTDefaultOptions.setDisplayLength(appSettings.pagination.default);
         DTDefaultOptions.setOption('responsive', true);
         DTDefaultOptions.setOption('bFilter', false);
         DTDefaultOptions.setOption('processing', true);

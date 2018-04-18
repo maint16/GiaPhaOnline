@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-    ngModule.service('followPostService', function($http, appSettingConstant, apiUrls){
+    ngModule.service('followPostService', function($http, appSettings, apiUrls){
 
         //#region Methods
 
@@ -7,7 +7,7 @@ module.exports = function(ngModule){
         * Get post information which are followed by the current user.
         * */
         this.getFollowPosts = function(conditions){
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.followPost.getFollowPost;
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.followPost.getFollowPost;
             return $http.post(url, conditions);
         };
 
@@ -15,7 +15,7 @@ module.exports = function(ngModule){
         * Load following posts.
         * */
         this.loadFollowPosts = function(ids){
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.followPost.loadFollowPosts;
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.followPost.loadFollowPosts;
             return $http.post(url, {ids: ids});
         };
 
@@ -23,7 +23,7 @@ module.exports = function(ngModule){
         * Start following a post.
         * */
         this.followPost = function (id) {
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.followPost.followPost;
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.followPost.followPost;
             var body = {
                 postId: id
             };
@@ -35,7 +35,7 @@ module.exports = function(ngModule){
         * Stop following a post.
         * */
         this.unfollowPost = function(id){
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.followPost.unfollowPost;
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.followPost.unfollowPost;
             var query = {
                 postId: id
             };

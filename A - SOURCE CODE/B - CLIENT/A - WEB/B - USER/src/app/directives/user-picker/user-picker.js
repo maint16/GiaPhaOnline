@@ -15,7 +15,7 @@ module.exports = function (ngModule) {
             },
             controller: function ($scope, $translate, $compile,
                                   userService, commonService,
-                                  appSettingConstant,
+                                  appSettings,
                                   DTOptionsBuilder, DTColumnBuilder) {
 
                 // Whether component is busy or not.
@@ -33,7 +33,7 @@ module.exports = function (ngModule) {
                     userPicker: DTOptionsBuilder.newOptions()
                         .withBootstrap()
                         .withDataProp('data')
-                        .withDisplayLength(appSettingConstant.pagination.userSelector)
+                        .withDisplayLength(appSettings.pagination.userSelector)
                         .withOption('processing', true)
                         .withOption('serverSide', true)
                         .withOption('fnRowCallback',
@@ -49,7 +49,7 @@ module.exports = function (ngModule) {
                             var startIndex = aoData[3].value;
 
                             // Page calculation.
-                            var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.maxPageRecords);
+                            var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.maxPageRecords);
 
                             if (!iPage)
                                 iPage = 1;
@@ -58,7 +58,7 @@ module.exports = function (ngModule) {
                             var conditions = {
                                 pagination: {
                                     page: iPage,
-                                    records: appSettingConstant.pagination.userSelector
+                                    records: appSettings.pagination.userSelector
                                 }
                             };
 

@@ -4,7 +4,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryManagementController', function ($scope, toastr, $ngConfirm, $translate,
                                                                   $timeout, $state,
-                                                                  appSettingConstant, urlStates, itemStatusConstant,
+                                                                  appSettings, urlStates, itemStatusConstant,
                                                                   profile,
                                                                   DTOptionsBuilder, DTColumnBuilder,
                                                                   moment, $compile, $interpolate,
@@ -23,7 +23,7 @@ module.exports = function (ngModule) {
             categoryManagement: DTOptionsBuilder.newOptions()
                 .withBootstrap()
                 .withDataProp('data')
-                .withDisplayLength(appSettingConstant.pagination.default)
+                .withDisplayLength(appSettings.pagination.default)
                 .withOption('responsive', true)
                 .withDOM('<"top"i>rt<"dt-center-pagination"flp><"clear">')
                 .withOption('fnRowCallback',
@@ -36,7 +36,7 @@ module.exports = function (ngModule) {
 
                     // Start index calculation.
                     var startIndex = aoData[3].value;
-                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettingConstant.pagination.default);
+                    var iPage = commonService.getDataTableStartIndex(startIndex, appSettings.pagination.default);
 
                     if (!iPage)
                         iPage = 1;
@@ -45,7 +45,7 @@ module.exports = function (ngModule) {
                     var getCategoriesCondition = {
                         pagination: {
                             page: (!iPage || iPage < 1) ? 1 : iPage,
-                            records: appSettingConstant.pagination.default
+                            records: appSettings.pagination.default
                         }
                     };
 
@@ -62,7 +62,7 @@ module.exports = function (ngModule) {
 
                     // Get a list of categories.
                     categoryService.getCategories(getCategoriesCondition)
-                        .then(function (getCategoriesResponse) { // Get list of categories.
+                        .then(function(getCategoriesResponse){ // Get list of categories.
 
                             // Invalid user result.
                             var getCategoriesResult = getCategoriesResponse.data;
@@ -73,7 +73,7 @@ module.exports = function (ngModule) {
 
                             return getCategoriesResult;
                         })
-                        .then(function (getCategoriesResult) { // Get list of category creators.
+                        .then(function(getCategoriesResult){ // Get list of category creators.
 
                             // Get the list of categories.
                             var categories = getCategoriesResult.records;
@@ -86,7 +86,7 @@ module.exports = function (ngModule) {
                             var userIds = [];
 
                             // Get through every categories and retrieve the users who aren't in buffer.
-                            angular.forEach(categories, function (category, iterator) {
+                            angular.forEach(categories, function(category, iterator){
 
                                 // Update category into buffer.
                                 $scope.buffer.categories[category.id] = category;
@@ -99,21 +99,21 @@ module.exports = function (ngModule) {
                             });
 
                             // Users list has been found.
-                            if (userIds && userIds.length > 0) {
+                            if (userIds && userIds.length > 0){
                                 // Call api end-point to get a list of users.
                                 var loadUsersCondition = {
                                     ids: userIds
                                 };
 
                                 return userService.loadUsers(loadUsersCondition)
-                                    .then(function (loadUsersResponse) {
+                                    .then(function(loadUsersResponse){
                                         var loadUsersResult = loadUsersResponse.data;
                                         if (!loadUsersResult)
                                             return getCategoriesResult;
 
                                         var users = loadUsersResult.records;
                                         var bufferedUsers = {};
-                                        angular.forEach(users, function (user, iterator) {
+                                        angular.forEach(users, function(user, iterator){
                                             bufferedUsers[user.id] = user;
                                         });
 
@@ -124,7 +124,7 @@ module.exports = function (ngModule) {
 
                             return getCategoriesResult;
                         })
-                        .then(function (getCategoriesResult) {
+                        .then(function(getCategoriesResult){
                             // Build items list.
                             items.data = getCategoriesResult.records;
                             items.draw = draw;
@@ -132,7 +132,7 @@ module.exports = function (ngModule) {
                             items.recordsFiltered = getCategoriesResult.total;
                             fnCallback(items);
                         })
-                        .catch(function (getUsersError) {
+                        .catch(function(getUsersError){
                             fnCallback(items);
                         });
                 })
@@ -144,7 +144,7 @@ module.exports = function (ngModule) {
                 // Name
                 DTColumnBuilder.newColumn(null).withTitle($translate('Name')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        switch (item.status) {
+                        switch (item.status){
                             case itemStatusConstant.deleted:
                                 return '<span class="text-danger">' + item.name + '</span>';
                             default:
@@ -155,7 +155,7 @@ module.exports = function (ngModule) {
                 // Status
                 DTColumnBuilder.newColumn('status').withTitle($translate('Status')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        switch (item.status) {
+                        switch (item.status){
                             case itemStatusConstant.deleted:
                                 return '<span class="text-danger">{{"Deleted" | translate}}</span>';
                             default:
@@ -166,10 +166,7 @@ module.exports = function (ngModule) {
                 // Creator
                 DTColumnBuilder.newColumn(null).withTitle($translate('Creator')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        var creator = $scope.buffer.users[item.creatorId];
-                        if (!creator)
-                            return '';
-                        return '<a ui-sref="' + userService.getProfilePage(item.creatorId) + '">' + $scope.buffer.users[item.creatorId].nickname + '</a>';
+                        return '<a ui-sref="' + userService.getProfilePage(item.creatorId) +'">' + $scope.buffer.users[item.creatorId].nickname + '</a>';
                     }
                 ),
                 // Created time
@@ -198,12 +195,12 @@ module.exports = function (ngModule) {
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
 
                         // View button
-                        szUi += '<li><a href="javscript:void(0);" ui-sref="' + $scope.getCategoryPage(item.id) + '"><span class="fa fa-eye"></span> {{"View" | translate}} </a></li>';
+                        szUi += '<li><a href="javscript:void(0);" ui-sref="' + $scope.getCategoryPage(item.id) + '"><span class="fa fa-eye"></span> ' + $translate.instant('View') + ' </a></li>';
 
                         if (item.status !== itemStatusConstant.deleted) {
-                            szUi += '<li ng-click="fnDeleteCategory(' + item.id + ')"><a href="javscript:void(0);"><span class="fa fa-trash"></span> <b class="text-danger">{{"Delete" | translate}}</b> </a></li>';
+                            szUi += '<li ng-click="fnDeleteCategory(' + item.id + ')"><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
                         } else {
-                            szUi += '<li ng-click="fnRestoreCategory(' + item.id + ')"><a href="javscript:void(0);"><span class="fa fa-refresh"></span> {{"Restore" | translate}} </a></li>';
+                            szUi += '<li><a href="javscript:void(0);"><span class="fa fa-refresh"></span> ' + $translate.instant('Restore') + ' </a></li>';
                         }
 
                         szUi += '</ul>';
@@ -219,12 +216,6 @@ module.exports = function (ngModule) {
             categoryManagement: {}
         };
 
-        // Modal model.
-        $scope.modalModel = {
-            addCategory: {
-                name: null
-            }
-        };
 
         //#endregion
 
@@ -233,14 +224,14 @@ module.exports = function (ngModule) {
         /*
         * Get category page by using id.
         * */
-        $scope.getCategoryPage = function (categoryId) {
+        $scope.getCategoryPage = function(categoryId){
             return urlStates.category.postListing.name + '({categoryId:' + categoryId + '})';
         };
 
         /*
         * Function is called when category delete button is clicked.
         * */
-        $scope.fnDeleteCategory = function (id) {
+        $scope.fnDeleteCategory = function(id){
 
             // Category is not in buffer.
             if (!$scope.buffer.categories[id])
@@ -261,126 +252,24 @@ module.exports = function (ngModule) {
                     ok: {
                         text: $translate.instant('Ok'),
                         btnClass: 'btn btn-flat btn-danger',
-                        action: function (scope, button) {
-                            return categoryService.deleteCategory(id)
-                                .then(function () {
-                                    // Display success message.
-                                    var szMessage = $translate.instant('Category has been deleted successfully', {category: category});
-                                    toastr.success(szMessage);
-
-                                    // Reload the table.
-                                    $scope.dtInstances.categoryManagement.dataTable._fnDraw();
-                                    return true;
-                                })
-                                .catch(function () {
-                                    return false;
-                                });
+                        action: function(scope, button){
+                            scope.name = 'Booo!!';
+                            return false; // prevent close;
                         }
                     },
                     cancel: {
                         text: $translate.instant('Cancel'),
                         btnClass: 'btn btn-flat btn-default',
-                        action: function (scope, button) {
+                        action: function(scope, button){
                         }
                     }
                 }
             });
-        };
 
-        /*
-        * Function is called when category restore button is clicked.
-        * */
-        $scope.fnRestoreCategory = function (id) {
-            // Category is not in buffer.
-            if (!$scope.buffer.categories[id])
-                return;
-
-            // Find the category from buffer.
-            var category = $scope.buffer.categories[id];
-
-            // Category has been deleted before.
-            if (category.status !== itemStatusConstant.deleted)
-                return;
-
-            $ngConfirm({
-                title: ' ',
-                content: '<strong class="text-success">{{"Are you sure to restore this category ?" | translate}}</strong>',
-                scope: $scope,
-                buttons: {
-                    ok: {
-                        text: $translate.instant('Ok'),
-                        btnClass: 'btn btn-flat btn-info',
-                        action: function (scope, button) {
-                            var info = {
-                                status: itemStatusConstant.available
-                            };
-
-                            return categoryService.editCategory(id, info)
-                                .then(function () {
-
-                                    // Display success message.
-                                    var szMessage = $translate.instant('Category has been restored successfully', {category: $scope.buffer.categories[id]});
-                                    toastr.success(szMessage);
-
-                                    // Reload the table.
-                                    $scope.dtInstances.categoryManagement.dataTable._fnDraw();
-                                    return true;
-                                })
-                                .catch(function () {
-                                    return false;
-                                });
-                        }
-                    },
-                    cancel: {
-                        text: $translate.instant('Cancel'),
-                        btnClass: 'btn btn-flat btn-default',
-                        action: function (scope, button) {
-                        }
-                    }
-                }
-            });
-        };
-
-        /*
-        * Callback which is fired when add category button is clicked.
-        * */
-        $scope.addCategory = function () {
-            $ngConfirm({
-                title: ' ',
-                contentUrl: 'add-category.tmpl.html',
-                theme: 'bootstrap',
-                scope: $scope,
-                backgroundDismiss: true,
-                size: 'lg',
-                buttons: {
-                    ok: {
-                        text: $translate.instant('OK'),
-                        btnClass: 'btn btn-primary btn-flat',
-                        action: function (scope, button) {
-
-                            // Form is invalid.
-                            var form = $scope.addCategoryForm;
-                            if (!form.$valid)
-                                return;
-
-                            var info = {
-                                name: $scope.modalModel.addCategory.name
-                            };
-
-                            return categoryService.addCategory(info)
-                                .then(function () {
-                                    return true;
-                                })
-                                .catch(function(){
-                                    return false;
-                                });
-                        }
-                    }
-                }
-            });
-        };
-
+        }
 
         //#endregion
+
+
     });
 };

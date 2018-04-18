@@ -13,7 +13,7 @@ module.exports = function (ngModule) {
                 ngClickCancel: '&'
             },
             controller: function ($scope, urlStates, postTypeConstant,
-                                  appSettingConstant,
+                                  appSettings,
                                   categoryService) {
 
                 //#region Properties
@@ -99,7 +99,7 @@ module.exports = function (ngModule) {
                         name: keyword,
                         pagination: {
                             page: 1,
-                            records: appSettingConstant.pagination.categoriesSelector
+                            records: appSettings.pagination.categoriesSelector
                         }
                     };
 

@@ -1,52 +1,31 @@
-.note-cant-resize .note-resizebar {
+.note-cant-resize .note-resizebar{
     display: none !important;
 }
 
 /* Truncate content of div tag */
-.truncate {
+.truncate{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 /* Slim scrollbar. */
-.slim-scrollbar::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+.slim-scrollbar::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
     border-radius: 10px;
     background-color: #F5F5F5;
 }
 
-.slim-scrollbar::-webkit-scrollbar {
+.slim-scrollbar::-webkit-scrollbar
+{
     width: 12px;
     background-color: #F5F5F5;
 }
 
-.slim-scrollbar::-webkit-scrollbar-thumb {
+.slim-scrollbar::-webkit-scrollbar-thumb
+{
     border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: #555;
-}
-
-/* Post box*/
-post-box.category-detail-post-box .box-body {
-    height: 150px;
-}
-
-.label-flat {
-    border-radius: 0 !important;
-}
-
-/* Flat nav pill */
-.nav-tabs > li > a{
-    border-radius: 0 !important;
-}
-
-/* Override ng-confirm-button */
-.ng-confirm-buttons button.btn-flat{
-    border-radius: 0 !important;
-}
-
-ul.validation-summary li{
-    font-weight: bold !important;
-    color: red !important;
 }

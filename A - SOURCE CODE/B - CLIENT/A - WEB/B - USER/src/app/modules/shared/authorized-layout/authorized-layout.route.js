@@ -15,7 +15,7 @@ module.exports = function (ngModule) {
             abstract: true,
             template: ngModuleHtmlTemplate,
             resolve: {
-                profile: function (notificationStatusConstant, appSettingConstant,
+                profile: function (notificationStatusConstant, appSettings,
                                    userService, authenticationService) {
 
                     // Get access token from storage.

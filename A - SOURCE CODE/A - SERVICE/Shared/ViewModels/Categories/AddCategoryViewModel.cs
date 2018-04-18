@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Shared.Resources;
 
 namespace Shared.ViewModels.Categories
@@ -11,7 +12,7 @@ namespace Shared.ViewModels.Categories
         ///// Photo of category. Should be formatted as (512x512)
         ///// </summary>
         //[Required(ErrorMessageResourceType = typeof(HttpValidationMessages), ErrorMessageResourceName = "InformationIsRequired")]
-        //public string Photo { get; set; }
+        //public IFormFile Photo { get; set; }
 
         /// <summary>
         /// Name of category.

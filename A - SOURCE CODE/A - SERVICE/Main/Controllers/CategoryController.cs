@@ -224,9 +224,9 @@ namespace Main.Controllers
 
             #region Broadcast real-time notification
 
-            // Find accounts have admin role
-            var accounts = _unitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Role == AccountRole.Admin);
+            //// Find accounts have admin role
+            //var accounts = _unitOfWork.Accounts.Search();
+            //accounts = accounts.Where(x => x.Role == AccountRole.Admin);
 
             // Additional data.
             var additionalInfo = new Dictionary<string, object>();
@@ -237,7 +237,6 @@ namespace Main.Controllers
             additionalInfo.Add("data", data);
             additionalInfo.Add("action", NotificationAction.Add);
             additionalInfo.Add("notificationKind", NotificationCategory.Category);
-
             Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new List<string>(){RealTimeGroupConstant.User, RealTimeGroupConstant.Admin}, "added category", "added category",
                 HubMethodConstant.ClientReceiveNotification, additionalInfo));
 
@@ -302,18 +301,7 @@ namespace Main.Controllers
                 bHasInformationChanged = true;
             }
 
-            //// Photo is defined.
-            //if (!string.IsNullOrEmpty(info.Photo))
-            //{
-            //    var photo = info.Photo.Split(",");
-            //    var binaryPhoto = Convert.FromBase64String(photo[1]);
-            //    var memoryStream = new MemoryStream(binaryPhoto);
-            //    var skManagedStream = new SKManagedStream(memoryStream);
-            //    var skBitmap = SKBitmap.Decode(skManagedStream);
-            //    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-
-            //    bHasInformationChanged = true;
-            //}
+            
 
             // Commit changes to database.
             if (bHasInformationChanged)
@@ -322,6 +310,26 @@ namespace Main.Controllers
                 category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 await _unitOfWork.CommitAsync();
             }
+
+            #endregion
+
+            #region Broadcast real-time notification
+
+            // Find requester identity.
+            var profile = _identityService.GetProfile(Request.HttpContext);
+
+            // Additional data.
+            var additionalInfo = new Dictionary<string, object>();
+
+            var data = new Dictionary<string, object>();
+            data.Add("creator", profile.Nickname);
+            data.Add("category", category);
+            additionalInfo.Add("data", data);
+            additionalInfo.Add("action", NotificationAction.Update);
+            additionalInfo.Add("notificationKind", NotificationCategory.Category);
+
+            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new[] { AccountRole.Admin }, "update category", "update category",
+                HubMethodConstant.ClientReceiveNotification, additionalInfo));
 
             #endregion
 

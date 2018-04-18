@@ -1,5 +1,5 @@
 module.exports = function(ngModule){
-    ngModule.service('pushNotificationService', function(appSettingConstant, apiUrls, $http){
+    ngModule.service('pushNotificationService', function(appSettings, apiUrls, $http){
 
         //#region Methods
 
@@ -7,7 +7,7 @@ module.exports = function(ngModule){
         * Add device to push notification service.
         * */
         this.addDevice = function(conditions){
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.pushNotification.addDevice;
+            var url = appSettings.endPoint.apiService + '/' + apiUrls.pushNotification.addDevice;
             return $http.post(url, conditions);
         };
 

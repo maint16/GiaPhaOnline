@@ -1,6 +1,6 @@
 module.exports = function (ngModule) {
     ngModule.controller('authorizedLayoutController',
-        function (oAuthSettings, appSettingConstant, notificationCategoryConstant, notificationActionConstant,
+        function (oAuthSettings, appSettings, notificationCategoryConstant, notificationActionConstant,
                   $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window, $translate, toastr,
                   notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant, hubConstant,
@@ -306,7 +306,7 @@ module.exports = function (ngModule) {
                     statuses: [notificationStatusConstant.unseen],
                     pagination: {
                         page: 1,
-                        records: appSettingConstant.pagination.postNotifications
+                        records: appSettings.pagination.postNotifications
                     }
                 };
 
@@ -471,7 +471,7 @@ module.exports = function (ngModule) {
             /*
             * Subscribe to signalr connection.
             * */
-            $scope.fnSubscribeSignalrConnection = function () {
+            $scope.fnSubscribeSignalrConnection = function(){
 
                 // Get hub name constants.
                 var hubNameConstant = hubConstant.hubName;
@@ -482,8 +482,8 @@ module.exports = function (ngModule) {
 
                 // Add signalr hubs declaration.
                 var notificationHubConnection = realTimeService.addHub(hubNameConstant.notificationHub, parameters);
-                notificationHubConnection.on(hubConstant.hubEvent.receiveNotification, $scope.fnOnActionOnCategory);
-                notificationHubConnection.start().then(function () {
+                notificationHubConnection.on(hubConstant.hubEvent.receiveNotification, $scope.fnOnReceiveNotification);
+                notificationHubConnection.start().then(function() {
                     console.log('Notification hub connection has been initialized');
                 });
             };
@@ -517,43 +517,27 @@ module.exports = function (ngModule) {
             /*
             * Function which is raised when notification which sent from service is received.
             * */
-            $scope.fnOnActionOnCategory = function (notification) {
-                var notificationKind = notification.notificationKind;
+            $scope.fnOnReceiveNotification = function(notification){
+                var notificationCategory = notification.category;
                 var notificationAction = notification.action;
                 var data = notification.data;
-
-                console.log(notification);
 
                 // Construct a message to display to user.
                 var szMessage = '';
 
-                switch (notificationKind) {
-                    case notificationCategoryConstant.category:
-                        switch (notificationAction) {
-                            case notificationActionConstant.add:
-                                szMessage = $translate.instant('User created a category', {
-                                    username: data.creator,
-                                    category: data.category
-                                });
-                                break;
+                switch (notificationAction){
+                    case notificationActionConstant.add:
+                        szMessage = $translate.instant('User created a category', {username: data.creator, category: data.category});
+                        break;
 
-                            case notificationActionConstant.update:
-                                szMessage = $translate.instant('User updated a category', {
-                                    username: data.creator,
-                                    category: data.category
-                                });
-                                break;
+                    case notificationAction.update:
+                        szMessage = $translate.instant('User updated a category', {username: data.creator, category: data.category});
+                        break;
 
-                            case notificationActionConstant.delete:
-                                szMessage = $translate.instant('User deleted a category', {
-                                    username: data.creator,
-                                    category: data.category
-                                });
-                                break;
-                        }
+                    case notificationAction.delete:
+                        szMessage = $translate.instant('User deleted a category', {username: data.creator, category: data.category});
                         break;
                 }
-
 
                 if (szMessage)
                     toastr.info(szMessage);
