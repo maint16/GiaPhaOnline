@@ -63,7 +63,7 @@ namespace Main.Hubs
             var httpContext = Context.Connection.GetHttpContext();
             if (httpContext == null)
                 return;
-
+            
             // Get profile in request.
             var user = _identityService.GetProfile(httpContext);
             if (user == null)
@@ -107,8 +107,6 @@ namespace Main.Hubs
 
             unitOfWork.SignalrConnections.Insert(realTimeConnection);
             unitOfWork.Commit();
-
-            return;
         }
 
         #endregion

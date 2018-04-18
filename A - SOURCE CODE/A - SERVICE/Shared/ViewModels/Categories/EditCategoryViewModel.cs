@@ -1,4 +1,5 @@
 ﻿using SystemConstant.Enumerations;
+using Microsoft.AspNetCore.Http;
 
 namespace Shared.ViewModels.Categories
 {
@@ -16,10 +17,10 @@ namespace Shared.ViewModels.Categories
         /// </summary>
         public ItemStatus? Status { get; set; }
 
-        /// <summary>
-        /// Photo of category (base64 encoded)
-        /// </summary>
-        public string Photo { get; set; }
+        ///// <summary>
+        ///// Photo of category
+        ///// </summary>
+        //public IFormFile Photo { get; set; }
 
         #endregion
     }

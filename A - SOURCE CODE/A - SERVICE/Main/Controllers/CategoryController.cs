@@ -224,9 +224,9 @@ namespace Main.Controllers
 
             #region Broadcast real-time notification
 
-            // Find accounts have admin role
-            var accounts = _unitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Role == AccountRole.Admin);
+            //// Find accounts have admin role
+            //var accounts = _unitOfWork.Accounts.Search();
+            //accounts = accounts.Where(x => x.Role == AccountRole.Admin);
 
             // Additional data.
             var additionalInfo = new Dictionary<string, object>();
@@ -238,7 +238,7 @@ namespace Main.Controllers
             additionalInfo.Add("action", NotificationAction.Add);
             additionalInfo.Add("notificationKind", NotificationCategory.Category);
 
-            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new []{AccountRole.Admin}, "added category", "added category",
+            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new[] { AccountRole.Admin }, "added category", "added category",
                 HubMethodConstant.ClientReceiveNotification, additionalInfo));
 
             #endregion
@@ -302,22 +302,80 @@ namespace Main.Controllers
                 bHasInformationChanged = true;
             }
 
-            // Photo is defined.
-            if (!string.IsNullOrEmpty(info.Photo))
-            {
-                var photo = info.Photo.Split(",");
-                var binaryPhoto = Convert.FromBase64String(photo[1]);
-                var memoryStream = new MemoryStream(binaryPhoto);
-                var skManagedStream = new SKManagedStream(memoryStream);
-                var skBitmap = SKBitmap.Decode(skManagedStream);
-                var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+            //// Photo is defined.
+            //if (info.Photo != null)
+            //{
+            //    #region Image proccessing
 
-                bHasInformationChanged = true;
-            }
+            //    // Reflect image variable.
+            //    var image = info.Photo;
+
+            //    using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
+            //    {
+            //        var skBitmap = SKBitmap.Decode(skManagedStream);
+
+            //        try
+            //        {
+            //            // Resize image to 512x512 size.
+            //            var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+
+            //            // Initialize file name.
+            //            var fileName = $"{Guid.NewGuid():D}.png";
+
+            //            using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
+            //            using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+            //            using (var memoryStream = new MemoryStream())
+            //            {
+            //                skData.SaveTo(memoryStream);
+            //                var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(
+            //                    memoryStream.ToArray(),
+            //                    image.ContentType, fileName,
+            //                    CancellationToken.None);
+
+            //                // Response is empty.
+            //                if (vgySuccessRespone == null || vgySuccessRespone.IsError)
+            //                    return StatusCode(StatusCodes.Status403Forbidden,
+            //                        new ApiResponse(HttpMessages.ImageIsInvalid));
+
+            //                category.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
+            //                category.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
+            //            }
+            //        }
+            //        catch (Exception exception)
+            //        {
+            //            _logger.LogError(exception.Message, exception);
+            //            return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+            //        }
+            //    }
+
+            //    #endregion
+
+            //    bHasInformationChanged = true;
+            //}
 
             // Commit changes to database.
             if (bHasInformationChanged)
                 await _unitOfWork.CommitAsync();
+
+            #endregion
+
+            #region Broadcast real-time notification
+
+            // Find requester identity.
+            var profile = _identityService.GetProfile(Request.HttpContext);
+
+            // Additional data.
+            var additionalInfo = new Dictionary<string, object>();
+
+            var data = new Dictionary<string, object>();
+            data.Add("creator", profile.Nickname);
+            data.Add("category", category);
+            additionalInfo.Add("data", data);
+            additionalInfo.Add("action", NotificationAction.Update);
+            additionalInfo.Add("notificationKind", NotificationCategory.Category);
+
+            Task.WaitAll(_notifyService.NotifyClients(_notificationHubContext, new[] { AccountRole.Admin }, "update category", "update category",
+                HubMethodConstant.ClientReceiveNotification, additionalInfo));
 
             #endregion
 
