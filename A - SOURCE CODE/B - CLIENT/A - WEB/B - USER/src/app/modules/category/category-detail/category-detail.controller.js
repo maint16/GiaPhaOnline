@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
     ngModule.controller('categoryDetailController', function ($scope, $timeout,
                                                               profile,
-                                                              appSettingConstant, urlStates, details, taskStatusConstant, taskResultConstant,
+                                                              appSettingConstant, urlStates, details, taskStatusConstant, taskResultConstant, itemStatusConstant,
                                                               $uibModal, toastr, $translate,
                                                               postService, followPostService, commonService,
                                                               commentService, userService, followCategoryService) {
@@ -11,6 +11,7 @@ module.exports = function (ngModule) {
         // Constant reflection.
         $scope.appSettingConstant = appSettingConstant;
         $scope.urlStates = urlStates;
+        $scope.itemStatusConstant = itemStatusConstant;
 
         // Resolver reflection.
         $scope.profile = profile;
@@ -172,7 +173,7 @@ module.exports = function (ngModule) {
                     // Posts list.
                     $scope.loadDataResult.posts = getPostsResult;
                 })
-                .finally(function(){
+                .finally(function () {
                     commonService.unblockAppUI();
                 });
         };
@@ -378,31 +379,52 @@ module.exports = function (ngModule) {
         };
 
         /*
-        * Raised when post is followed.
+        * Event which is raised when post is follow/unfollow.
         * */
-        $scope.fnFollowedPost = function (id, status, result) {
-            // Task is not complete.
-            if (status !== taskStatusConstant.afterAction)
-                return;
+        $scope.clickUnfollowFollowPost = function (post, action) {
 
-            if (result !== taskResultConstant.success)
-                return;
+            if (!post)
+                return false;
 
-            $scope.buffer.followingPosts[id] = true;
-        };
+            // Block UI access.
+            commonService.blockAppUI();
 
-        /*
-        * Raised when post is unfollowed.
-        * */
-        $scope.fnUnfollowedPost = function (id, status, result) {
-            // Task is not complete.
-            if (status !== taskStatusConstant.afterAction)
-                return;
+            switch (action) {
+                // Unfollow a post.
+                case itemStatusConstant.deleted:
+                    return followPostService.unfollowPost(post.id)
+                        .then(function () {
+                            // Get the translated message.
+                            var szMessage = $translate.instant('Post has been unfollowed successfully', post);
+                            toastr.success(szMessage);
 
-            if (result !== taskResultConstant.success)
-                return;
+                            // Update post status.
+                            $scope.buffer.followingPosts[post.id] = false;
 
-            $scope.buffer.followingPosts[id] = false;
+                            return true;
+                        })
+                        .finally(function () {
+                            commonService.unblockAppUI();
+                        });
+                    break;
+
+                default:
+
+                    return followPostService.followPost(post.id)
+                        .then(function () {
+                            // Get the translated message.
+                            var szMessage = $translate.instant('Post is being followed', post);
+                            toastr.success(szMessage);
+
+                            // Update post status.
+                            $scope.buffer.followingPosts[post.id] = true;
+
+                            return true;
+                        })
+                        .finally(function () {
+                            commonService.unblockAppUI();
+                        });
+            }
         };
 
         /*

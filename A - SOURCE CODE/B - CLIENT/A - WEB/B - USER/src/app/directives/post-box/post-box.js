@@ -22,10 +22,7 @@ module.exports = function (ngModule) {
                     ngUsers: '=',
                     ngAudienceProfile: '=',
 
-                    followingPost: '&',
-                    followedPost: '&',
-                    unfollowingPost: '&',
-                    unfollowedPost: '&'
+                    ngClickFollowPost: '&'
                 },
                 controller: function ($scope, urlStates, appSettingConstant, itemStatusConstant,
                                       postTypeConstant, taskStatusConstant, taskResultConstant,
@@ -208,34 +205,14 @@ module.exports = function (ngModule) {
                     * Toggle post follow.
                     * */
                     $scope.fnTogglePostFollow = function(){
-
                         // Post is being followed. Unfollow it.
                         if ($scope.ngIsFollowingPost){
-                            // Raise the callback.
-                            $scope.unfollowingPost({status: taskStatusConstant.beforeAction, result: taskResultConstant.success});
-                            followPostService.unfollowPost($scope.ngPost.id)
-                                .then(function(){
-                                    // Raise the callback.
-                                    $scope.unfollowedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.success});
-                                })
-                                .catch(function(){
-                                    // Raise the callback.
-                                    $scope.unfollowedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.fail});
-                                });
+                            // Raise click follow post event.
+                            $scope.ngClickFollowPost({post: $scope.ngPost, action: itemStatusConstant.deleted});
                             return;
                         }
 
-                        // Raise the callback.
-                        $scope.followingPost({status: taskStatusConstant.beforeAction, result: taskResultConstant.success});
-                        followPostService.followPost($scope.ngPost.id)
-                            .then(function(){
-                                // Raise the callback.
-                                $scope.followedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.success});
-                            })
-                            .catch(function(){
-                                // Raise the callback.
-                                $scope.followedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.fail});
-                            });
+                        $scope.ngClickFollowPost({post: $scope.ngPost, action: itemStatusConstant.available});
                     };
 
                     /*
@@ -267,7 +244,7 @@ module.exports = function (ngModule) {
                         // Post follow status is not specified.
                         if (!$scope.ngIsFollowPostAvailable)
                             return false;
-                        
+
                         if ($scope.ngPost.status !== itemStatusConstant.available)
                             return false;
 

@@ -80,8 +80,8 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
-        [HttpGet("")]
-        public async Task<IActionResult> FollowCategory([FromRoute] int categoryId)
+        [HttpPost("")]
+        public async Task<IActionResult> FollowCategory([FromQuery] int categoryId)
         {
             #region Find category
 

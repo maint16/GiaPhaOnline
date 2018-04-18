@@ -32,3 +32,10 @@
 .dropdown-menu {
     border-radius: 0 !important;
 }
+
+/* Post box */
+post-box .box-body {
+    height: 150px !important;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
