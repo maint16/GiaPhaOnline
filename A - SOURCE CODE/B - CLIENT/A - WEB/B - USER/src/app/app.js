@@ -19,7 +19,8 @@ require('../../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
 require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
 require('../../node_modules/ng-multi-selector/ng-multi-selector.css');
-require('../../src/app/app.css');
+require('../app/loader.css');
+require('../app/app.css');
 
 // Import jquery lib.
 require('jquery');
@@ -60,7 +61,10 @@ var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
     'datatables', 'datatables.bootstrap', 'angularMoment', 'ngSanitize', 'ngMessages',
     'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
 
-ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider, urlStates) {
+ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider,
+                          blockUIConfig,
+                          urlStates) {
+
 
     // API interceptor
     $httpProvider.interceptors.push('apiInterceptor');
@@ -74,9 +78,16 @@ ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider,
         suffix: '.json'
     });
 
+    // Use sanitize.
+    $translateProvider.useSanitizeValueStrategy('sanitize');
+
     // en-US is default selection.
     $translateProvider.use('en-US');
 
+    // BlockUI configuration.
+    blockUIConfig.autoInjectBodyBlock = false;
+    // blockUIConfig.template = '<div block-ui-container="" class="block-ui-container ng-scope"><div class="block-ui-overlay"></div><div class="block-ui-message-container" aria-live="assertive" aria-atomic="true"><div class="loader"></div></div></div>';
+    blockUIConfig.templateUrl = 'main-block-ui.html';
 });
 
 // Import angular-dataTable configs.

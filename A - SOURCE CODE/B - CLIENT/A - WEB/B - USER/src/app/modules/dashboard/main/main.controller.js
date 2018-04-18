@@ -82,6 +82,9 @@ module.exports = function (ngModule) {
             $scope.result.records = [];
             $scope.result.total = 0;
 
+            // Block the application UI.
+            commonService.blockAppUI();
+
             var getCategoriesCondition = {};
             angular.copy($scope.condition.getCategories, getCategoriesCondition);
             if (getCategoriesCondition.name){
@@ -171,6 +174,9 @@ module.exports = function (ngModule) {
                 })
                 .then(function(getCategoriesResult){
                     $scope.result.getCategories = getCategoriesResult;
+                })
+                .finally(function(){
+                    commonService.unblockAppUI();
                 });
         };
 
