@@ -27,7 +27,8 @@ module.exports = function (ngModule) {
                     unfollowingPost: '&',
                     unfollowedPost: '&'
                 },
-                controller: function ($scope, urlStates, appSettingConstant, postTypeConstant, taskStatusConstant, taskResultConstant,
+                controller: function ($scope, urlStates, appSettingConstant, itemStatusConstant,
+                                      postTypeConstant, taskStatusConstant, taskResultConstant,
                                       userService, commentService, followPostService) {
 
                     //#region Properties
@@ -127,6 +128,11 @@ module.exports = function (ngModule) {
 
                                         // Get users list.
                                         var users = getUsersResult.records;
+                                        if (!users || users.length < 1){
+                                            $scope.result.getComments = getCommentsResult;
+                                            return;
+                                        }
+
                                         users.map(function (user) {
                                             if ($scope.buffer.users[user.id])
                                                 return user;
@@ -230,6 +236,43 @@ module.exports = function (ngModule) {
                                 // Raise the callback.
                                 $scope.followedPost({id: $scope.ngPost.id, status: taskStatusConstant.afterAction, result: taskResultConstant.fail});
                             });
+                    };
+
+                    /*
+                    * Check whether user is able to see comments or not.
+                    * */
+                    $scope.bIsAbleToSeeComment = function(){
+
+                        // Comment is not available.
+                        if (!$scope.ngIsCommentAvailable)
+                            return false;
+
+                        // No comment is in list.
+                        var comments = $scope.result.getComments.records;
+                        if (!comments)
+                            return false;
+
+                        return comments.length > 0;
+                    };
+
+                    /*
+                    * Check whether follow button is available on post or not.
+                    * */
+                    $scope.bIsAbleToFollowPost = function(){
+
+                        // No profile is attached.
+                        if (!$scope.ngAudienceProfile)
+                            return false;
+
+                        // Post follow status is not specified.
+                        if (!$scope.ngIsFollowPostAvailable)
+                            return false;
+                        
+                        if ($scope.ngPost.status !== itemStatusConstant.available)
+                            return false;
+
+                        return true;
+
                     };
 
                     //#endregion

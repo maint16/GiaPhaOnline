@@ -16,7 +16,7 @@
             </span>
         </div>
         <div class="pull-right box-tools"
-             ng-if="ngAudienceProfile && ngIsFollowPostAvailable">
+             ng-if="bIsAbleToFollowPost()">
             <div data-toggle="tooltip"
                  uib-tooltip="{{'Follow post' | translate}}">
                 <button class="btn btn-flat"
@@ -42,18 +42,17 @@
         <span class="pull-right text-muted">
             <span ng-if="buffer.followerCounter != null">{{buffer.followerCounter}} <span
                     class="fa fa-heart"></span></span>
-            <span ng-if="ngIsCommentAvailable"> {{result.getComments.total}} <span class="fa fa-comments"></span></span>
+            <span ng-if="ngIsCommentAvailable && result.getComments.records.length > 0"> {{result.getComments.total}} <span class="fa fa-comments"></span></span>
         </span>
     </div>
 
     <div ng-transclude="postBoxFooter">
         <!--Box footer-->
         <div class="box-footer box-comments"
-             ng-if="ngIsCommentAvailable">
+             ng-if="bIsAbleToSeeComment()">
             <div class="box-comment"
                  ng-repeat="comment in result.getComments.records">
                 <img class="img-circle img-sm"
-                     style="cursor: pointer"
                      ng-src="{{buffer.users[comment.ownerId].photo}}"
                      ui-sref="{{urlStates.user.profile.name}}({profileId: ngPost.ownerId})"
                      alt="User Image">
