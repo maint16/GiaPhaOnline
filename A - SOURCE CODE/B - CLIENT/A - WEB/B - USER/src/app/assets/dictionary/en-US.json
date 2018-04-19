@@ -109,7 +109,7 @@
   "Changed password successfully": "Changed password successfully.",
   "Post has been unfollowed successfully": "Post: {{post.title}} has been unfollowed successfully.",
   "Post is being followed": "Post: {{post.title}} has been followed successfully.",
-
+  "Add a new category": "Add a new category",
   "User created a category": "{{username}} created a category: {{category.name}}",
   "User updated a category": "{{username}} updated category {{category.name}}",
   "User deleted a category": "{{username}} deleted a {{category.name}} from system",

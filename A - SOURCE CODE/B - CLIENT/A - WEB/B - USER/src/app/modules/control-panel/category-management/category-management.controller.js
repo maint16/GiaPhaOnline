@@ -2,12 +2,13 @@
 * Module exports.
 * */
 module.exports = function (ngModule) {
+
     ngModule.controller('categoryManagementController', function ($scope, toastr, $ngConfirm, $translate,
                                                                   $timeout, $state,
                                                                   appSettingConstant, urlStates, itemStatusConstant,
                                                                   profile,
                                                                   DTOptionsBuilder, DTColumnBuilder,
-                                                                  moment, $compile, $interpolate,
+                                                                  moment, $compile, $interpolate, $uibModal,
                                                                   commonService, categoryService, userService) {
 
         //#region Properties
@@ -62,7 +63,7 @@ module.exports = function (ngModule) {
 
                     // Get a list of categories.
                     categoryService.getCategories(getCategoriesCondition)
-                        .then(function(getCategoriesResponse){ // Get list of categories.
+                        .then(function (getCategoriesResponse) { // Get list of categories.
 
                             // Invalid user result.
                             var getCategoriesResult = getCategoriesResponse.data;
@@ -73,7 +74,7 @@ module.exports = function (ngModule) {
 
                             return getCategoriesResult;
                         })
-                        .then(function(getCategoriesResult){ // Get list of category creators.
+                        .then(function (getCategoriesResult) { // Get list of category creators.
 
                             // Get the list of categories.
                             var categories = getCategoriesResult.records;
@@ -86,7 +87,7 @@ module.exports = function (ngModule) {
                             var userIds = [];
 
                             // Get through every categories and retrieve the users who aren't in buffer.
-                            angular.forEach(categories, function(category, iterator){
+                            angular.forEach(categories, function (category, iterator) {
 
                                 // Update category into buffer.
                                 $scope.buffer.categories[category.id] = category;
@@ -99,21 +100,21 @@ module.exports = function (ngModule) {
                             });
 
                             // Users list has been found.
-                            if (userIds && userIds.length > 0){
+                            if (userIds && userIds.length > 0) {
                                 // Call api end-point to get a list of users.
                                 var loadUsersCondition = {
                                     ids: userIds
                                 };
 
                                 return userService.loadUsers(loadUsersCondition)
-                                    .then(function(loadUsersResponse){
+                                    .then(function (loadUsersResponse) {
                                         var loadUsersResult = loadUsersResponse.data;
                                         if (!loadUsersResult)
                                             return getCategoriesResult;
 
                                         var users = loadUsersResult.records;
                                         var bufferedUsers = {};
-                                        angular.forEach(users, function(user, iterator){
+                                        angular.forEach(users, function (user, iterator) {
                                             bufferedUsers[user.id] = user;
                                         });
 
@@ -124,7 +125,7 @@ module.exports = function (ngModule) {
 
                             return getCategoriesResult;
                         })
-                        .then(function(getCategoriesResult){
+                        .then(function (getCategoriesResult) {
                             // Build items list.
                             items.data = getCategoriesResult.records;
                             items.draw = draw;
@@ -132,7 +133,7 @@ module.exports = function (ngModule) {
                             items.recordsFiltered = getCategoriesResult.total;
                             fnCallback(items);
                         })
-                        .catch(function(getUsersError){
+                        .catch(function (getUsersError) {
                             fnCallback(items);
                         });
                 })
@@ -144,7 +145,7 @@ module.exports = function (ngModule) {
                 // Name
                 DTColumnBuilder.newColumn(null).withTitle($translate('Name')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        switch (item.status){
+                        switch (item.status) {
                             case itemStatusConstant.deleted:
                                 return '<span class="text-danger">' + item.name + '</span>';
                             default:
@@ -155,7 +156,7 @@ module.exports = function (ngModule) {
                 // Status
                 DTColumnBuilder.newColumn('status').withTitle($translate('Status')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        switch (item.status){
+                        switch (item.status) {
                             case itemStatusConstant.deleted:
                                 return '<span class="text-danger">{{"Deleted" | translate}}</span>';
                             default:
@@ -170,7 +171,7 @@ module.exports = function (ngModule) {
                         if (!creator)
                             return '';
 
-                        return '<a ui-sref="' + userService.getProfilePage(item.creatorId) +'">' + creator.nickname + '</a>';
+                        return '<a ui-sref="' + userService.getProfilePage(item.creatorId) + '">' + creator.nickname + '</a>';
                     }
                 ),
                 // Created time
@@ -220,6 +221,18 @@ module.exports = function (ngModule) {
             categoryManagement: {}
         };
 
+        // Collection of modal instances.
+        $scope.modalInstances = {
+            addCategory: {}
+        };
+
+        // Collection of modal contexts.
+        $scope.modalContexts = {
+            addCategory: {
+                name: null,
+                description: null
+            }
+        };
 
         //#endregion
 
@@ -228,14 +241,14 @@ module.exports = function (ngModule) {
         /*
         * Get category page by using id.
         * */
-        $scope.getCategoryPage = function(categoryId){
+        $scope.getCategoryPage = function (categoryId) {
             return urlStates.category.postListing.name + '({categoryId:' + categoryId + '})';
         };
 
         /*
         * Function is called when category delete button is clicked.
         * */
-        $scope.fnDeleteCategory = function(id){
+        $scope.fnDeleteCategory = function (id) {
 
             // Category is not in buffer.
             if (!$scope.buffer.categories[id])
@@ -256,7 +269,7 @@ module.exports = function (ngModule) {
                     ok: {
                         text: $translate.instant('Ok'),
                         btnClass: 'btn btn-flat btn-danger',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                             scope.name = 'Booo!!';
                             return false; // prevent close;
                         }
@@ -264,7 +277,7 @@ module.exports = function (ngModule) {
                     cancel: {
                         text: $translate.instant('Cancel'),
                         btnClass: 'btn btn-flat btn-default',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                         }
                     }
                 }
@@ -272,8 +285,50 @@ module.exports = function (ngModule) {
 
         }
 
+        /*
+        * Callback which is raised when add category is clicked.
+        * */
+        $scope.clickAddCategory = function () {
+            $scope.modalInstances.addCategory = $uibModal.open({
+                templateUrl: 'add-category.html',
+                size: 'md',
+                scope: $scope
+            });
+
+        };
+
+        /*
+        * Callback which is raised when category is submitted.
+        * */
+        $scope.fnSubmitCategory = function ($event, addCategoryForm) {
+
+            // Event is valid. Prevent it.
+            if ($event)
+                $event.preventDefault();
+
+            debugger;
+            // Form is not valid.
+            if (!addCategoryForm || !addCategoryForm.$valid)
+                return;
+
+            // Block UI.
+            commonService.blockAppUI();
+
+            var info = $scope.modalContexts.addCategory;
+            categoryService.addCategory(info)
+                .then(function () {
+                    // Reload the category table.
+                    $scope.dtInstances.categoryManagement.dataTable._fnDraw();
+
+                    // Close the modal.
+                    if ($scope.modalInstances.addCategory)
+                        $scope.modalInstances.addCategory.dismiss();
+                })
+                .finally(function(){
+                    // Unblock application UI.
+                    commonService.unblockAppUI();
+                });
+        };
         //#endregion
-
-
-    });
+    })
 };

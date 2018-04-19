@@ -15,7 +15,8 @@ module.exports = function (ngModule) {
         },
 
         category: {
-            getCategories: 'api/category/search'
+            getCategories: 'api/category/search',
+            addCategory: 'api/category'
         },
 
         post: {

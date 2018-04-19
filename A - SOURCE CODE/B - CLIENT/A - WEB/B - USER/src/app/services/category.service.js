@@ -15,6 +15,14 @@ module.exports = function (ngModule) {
             return $http.post(url, conditions);
         };
 
+        /*
+        * Add a category into system.
+        * */
+        this.addCategory = function(info){
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.category.addCategory;
+            return $http.post(url, info);
+        };
+
         //#endregion
     });
 };
