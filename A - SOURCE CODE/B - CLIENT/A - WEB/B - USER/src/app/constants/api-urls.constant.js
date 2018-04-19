@@ -21,7 +21,8 @@ module.exports = function (ngModule) {
         post: {
             getPosts: 'api/post/search',
             addPost: 'api/post',
-            loadPosts: 'api/post/load-posts'
+            loadPosts: 'api/post/load-posts',
+            editPostStatus: 'api/post/status/{id}'
         },
 
         postReport:{

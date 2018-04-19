@@ -440,6 +440,26 @@ module.exports = function (ngModule) {
         };
 
         /*
+        * Event which is raised when comment is submitted.
+        * */
+        $scope.fnSubmitComment = function(comment){
+            // Block app UI.
+            commonService.blockAppUI();
+
+            // Add comment to api endpoint.
+            return commentService.addComment(comment)
+                .then(function(){
+                    return true;
+                })
+                .catch(function(){
+                    return false;
+                })
+                .finally(function(){
+                    commonService.unblockAppUI();
+                });
+        };
+
+        /*
         * Called when controller has been initialized.
         * */
         $timeout(function () {

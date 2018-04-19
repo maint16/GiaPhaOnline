@@ -39,3 +39,13 @@ post-box .box-body {
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
+.validation-summary li{
+    color: red;
+    font-weight: bold;
+}
+
+/* ng confirm */
+.ng-confirm-buttons button.btn-flat{
+    border-radius: 0 !important;
+}

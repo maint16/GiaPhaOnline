@@ -152,6 +152,7 @@
                                 <div class="col-xs-12">
                                     <table class="table table-responsive table-condensed"
                                            datatable
+                                           dt-instance="dtInstances.posts"
                                            dt-options="dtOptions.posts"
                                            dt-columns="dtColumns.posts"
                                            width="100%">
@@ -342,4 +343,30 @@
             </div>
         </div>
     </div>
+</script>
+
+<!--Change post status-->
+<script type="text/ng-template"
+        id="change-post-status.html">
+        <form name="editPostStatusForm"
+              novalidate>
+            <div class="row">
+                <div class="col-lg-12">
+                    <label>{{'Reason' | translate}}</label>
+                    <div class="form-group">
+                        <input name="reason"
+                               autofocus
+                               class="form-control"
+                               ng-model="reason"
+                               ng-required="true">
+
+                        <ul class="validation-summary"
+                            ng-if="editPostStatusForm.reason.$dirty && editPostStatusForm.reason.$error"
+                            ng-messages="editPostStatusForm.reason.$error">
+                            <li ng-message="required">{{'This information is required' | translate}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
 </script>

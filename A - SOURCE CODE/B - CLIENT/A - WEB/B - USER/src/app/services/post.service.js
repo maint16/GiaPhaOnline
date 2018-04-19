@@ -27,6 +27,21 @@ module.exports = function(ngModule){
             return $http.post(url, conditions);
         };
 
+        /*
+        * Edit post status
+        * */
+        this.editPostStatus = function(id, status, reason){
+            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.post.editPostStatus;
+            url = url.replace('{id}', id);
+
+            var info = {
+                status: status,
+                reason: reason
+            };
+
+            return $http.put(url, info);
+        };
+
         //#endregion
     });
 };

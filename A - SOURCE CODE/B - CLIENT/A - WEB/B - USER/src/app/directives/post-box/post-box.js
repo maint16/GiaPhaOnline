@@ -22,7 +22,9 @@ module.exports = function (ngModule) {
                     ngUsers: '=',
                     ngAudienceProfile: '=',
 
+                    ngSubmitComment: '&',
                     ngClickFollowPost: '&'
+
                 },
                 controller: function ($scope, urlStates, appSettingConstant, itemStatusConstant,
                                       postTypeConstant, taskStatusConstant, taskResultConstant,
@@ -33,6 +35,7 @@ module.exports = function (ngModule) {
                     // Constants reflection.
                     $scope.urlStates = urlStates;
                     $scope.appSettingConstant = appSettingConstant;
+                    $scope.itemStatusConstant = itemStatusConstant;
 
                     // Buffer data which is for client caching.
                     $scope.buffer = {
@@ -153,24 +156,25 @@ module.exports = function (ngModule) {
                             $event.preventDefault();
 
                         // Post is invalid.
-                        if (!$scope.post || !$scope.model.content || $scope.model.content.length < 1)
+                        var post = $scope.ngPost;
+                        if (!post || !$scope.model.content || $scope.model.content.length < 1)
                             return;
 
                         // Initialize comment entity.
                         var comment = {
-                            postId: $scope.post.id,
+                            postId: post.id,
                             content: $scope.model.content
                         };
 
-                        commentService.addComment(comment)
-                            .then(function (addCommentResponse) {
+                        // Raise comment submission event.
+                        if ($scope.ngSubmitComment({comment: comment})){
+                            // Clear input box.
+                            $scope.model.content = null;
 
-                                // Clear input box.
-                                $scope.model.content = null;
-
-                                // Reload comment lists.
-                                $scope.getComments();
-                            });
+                            // TODO: Concat comment, instead of reloading 'em.
+                            // Reload comment lists.
+                            $scope.getComments();
+                        }
                     };
 
                     /*
