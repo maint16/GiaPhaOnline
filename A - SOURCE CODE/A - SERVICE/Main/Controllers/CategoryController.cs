@@ -192,18 +192,7 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             #endregion
-
-            //#region Image proccessing
-
-            //var photo = info.Photo.Split(",");
-            //var binaryPhoto = Convert.FromBase64String(photo[1]);
-            //var memoryStream = new MemoryStream(binaryPhoto);
-            //var skManagedStream = new SKManagedStream(memoryStream);
-            //var skBitmap = SKBitmap.Decode(skManagedStream);
-            //var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-
-            //#endregion
-
+            
             #region Category initialization
 
             // Find requester identity.
@@ -217,7 +206,7 @@ namespace Main.Controllers
             category.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Add category into database.
-            //_unitOfWork.Categories.Insert(category);
+            _unitOfWork.Categories.Insert(category);
 
             // Commit changes.
             await _unitOfWork.CommitAsync();
