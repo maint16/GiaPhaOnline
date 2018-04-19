@@ -306,7 +306,6 @@ module.exports = function (ngModule) {
             if ($event)
                 $event.preventDefault();
 
-            debugger;
             // Form is not valid.
             if (!addCategoryForm || !addCategoryForm.$valid)
                 return;
@@ -319,6 +318,10 @@ module.exports = function (ngModule) {
                 .then(function () {
                     // Reload the category table.
                     $scope.dtInstances.categoryManagement.dataTable._fnDraw();
+
+                    // Reset category information.
+                    $scope.modalContexts.addCategory.name = null;
+                    $scope.modalContexts.addCategory.description = null;
 
                     // Close the modal.
                     if ($scope.modalInstances.addCategory)
