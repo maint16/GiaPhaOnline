@@ -12,6 +12,7 @@ using SystemDatabase.Interfaces.Repositories;
 using SystemDatabase.Models.Entities;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
+using Main.Constants;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,7 +93,7 @@ namespace Main.Controllers
             // Check whether post exists or not.
             var bIsPostAvailable = await posts.AnyAsync();
             if (!bIsPostAvailable)
-                return NotFound(new ApiResponse(HttpMessages.PostCategorizationNotFound));
+                return NotFound(new ApiResponse(HttpMessages.PostNotFound));
 
             #endregion
 
@@ -419,6 +420,64 @@ namespace Main.Controllers
             }
 
             return comments;
+        }
+
+        /// <summary>
+        /// Change comment status
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        [HttpPut("status/{id}")]
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
+        public async Task<IActionResult> ChangeCommentStatus([FromRoute] int id, [FromBody] ChangeCommentStatusViewModel info)
+        {
+            #region Parameters validation
+
+            if (info == null)
+            {
+                info = new ChangeCommentStatusViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Search for post
+
+            var comments = _unitOfWork.Comments.Search();
+            comments = comments.Where(x => x.Id == id);
+
+            // Find comment from list.
+            var comment = await comments.FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound(new ApiResponse(HttpMessages.CommentNotFound));
+
+            #endregion
+
+            #region Information update
+
+            // Whether information has been changed or not.
+            var bHasInformationChanged = false;
+
+            // Status has been defined.
+            if (info.Status != comment.Status)
+            {
+                comment.Status = info.Status;
+                bHasInformationChanged = true;
+            }
+
+            //todo: Reason
+
+            // Information has been changed.
+            if (bHasInformationChanged)
+                await _unitOfWork.CommitAsync();
+
+            #endregion
+
+            return Ok(comment);
         }
 
         #endregion
