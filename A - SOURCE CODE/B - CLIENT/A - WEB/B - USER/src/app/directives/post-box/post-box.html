@@ -93,9 +93,10 @@
                                class="form-control input-sm"
                                ng-model="model.content"
                                placeholder="{{'Add a comment' | translate}}"
+                               ng-disabled="ngPost.status === itemStatusConstant.deleted"
                                ng-required="true">
                         <span class="input-group-btn">
-                        <button ng-disabled="addCommentForm.$invalid"
+                        <button ng-disabled="addCommentForm.$invalid || ngPost.status === itemStatusConstant.deleted"
                                 type="submit"
                                 class="btn btn-sm btn-flat btn-primary">
                             <span class="fa fa-send"></span>

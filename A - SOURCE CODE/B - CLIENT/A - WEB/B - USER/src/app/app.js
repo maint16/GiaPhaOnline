@@ -30,6 +30,8 @@ require('admin-lte');
 require('datatables.net/js/jquery.dataTables');
 require('datatables.net-responsive');
 require('moment');
+require('@aspnet/signalr/dist/cjs');
+require('pusher-js');
 
 require('rxjs/bundles/rxjs.umd');
 var firebase = require('firebase/app');
@@ -50,12 +52,11 @@ require('angular-confirm1');
 require('ng-multi-selector');
 require('angular-file-upload');
 require('ui-cropper');
-require('pusher-js');
-require('@aspnet/signalr/dist/cjs');
+require('angular-messages');
 
 // Module declaration.
 var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
-    'ui.bootstrap', 'ngMultiSelector',
+    'ui.bootstrap', 'ngMultiSelector', 'ngMessages',
     'pascalprecht.translate',
     'datatables', 'datatables.bootstrap', 'angularMoment', 'ngSanitize',
     'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);

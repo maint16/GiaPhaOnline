@@ -206,9 +206,13 @@
                       ng-is-follow-post-available="true"
                       ng-users="buffer.users"
                       ng-audience-profile="profile"
+
                       ng-click-follow-post="clickUnfollowFollowPost(post, action)">
                 <post-content>
-                    <div class="form-group"><h4 class="text-bold text-success">{{post.title}}</h4></div>
+                    <div class="form-group">
+                        <h4 class="text-bold"
+                            ng-class="{'text-success': post.status === itemStatusConstant.available, 'text-gray': post.status !== itemStatusConstant.available}">{{post.title}}</h4>
+                    </div>
                     <div class="form-group">{{post.body}}</div>
                 </post-content>
                 <post-box-footer>
@@ -243,7 +247,9 @@
               ng-users="buffer.users"
               ng-audience-profile="profile"
               ng-is-comment-available="true"
-              ng-is-comment-submission-available="true">
+              ng-is-comment-submission-available="true"
+
+              ng-submit-comment="fnSubmitComment(comment)">
     </post-box>
 </script>
 

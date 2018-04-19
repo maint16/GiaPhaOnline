@@ -112,5 +112,8 @@
 
   "User created a category": "{{username}} created a category: {{category.name}}",
   "User updated a category": "{{username}} updated category {{category.name}}",
-  "User deleted a category": "{{username}} deleted a {{category.name}} from system"
+  "User deleted a category": "{{username}} deleted a {{category.name}} from system",
+  "This information is required": "This information is required",
+  "Delete post": "Delete post",
+  "Restore post": "Restore post"
 }

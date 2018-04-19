@@ -38,6 +38,7 @@
     "angular-confirm1": "^1.1.0",
     "angular-datatables": "^0.6.2",
     "angular-file-upload": "^2.5.0",
+    "angular-messages": "^1.6.10",
     "angular-moment": "^1.2.0",
     "angular-sanitize": "^1.6.9",
     "angular-summernote": "^0.8.1",

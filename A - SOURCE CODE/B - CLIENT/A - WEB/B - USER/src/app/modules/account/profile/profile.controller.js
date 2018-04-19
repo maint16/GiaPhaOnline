@@ -6,6 +6,7 @@ module.exports = function (ngModule) {
     ngModule.controller('profileController', function (profile, personalProfile,
                                                        DTOptionsBuilder, DTColumnBuilder,
                                                        postTypeConstant, postStatusConstant, commentStatusConstant, appSettingConstant, userRoleConstant,
+                                                       itemStatusConstant,
                                                        $ngConfirm, $uibModal, $translate, $state, $compile, moment, $interpolate,
                                                        $timeout, toastr,
                                                        uiService, userService, authenticationService, commonService, postService,
@@ -37,6 +38,12 @@ module.exports = function (ngModule) {
             profile: {
                 originalImage: null,
                 croppedImage: null
+            },
+
+            modal: {
+                editPostStatus: {
+                    reason: null
+                }
             }
         };
 
@@ -84,6 +91,9 @@ module.exports = function (ngModule) {
                         data: []
                     };
 
+                    // Clear the buffer.
+                    $scope.buffer.posts = {};
+
                     postService.getPosts(getPostsCondition)
                         .then(
                             function success(getPostsResponse) {
@@ -94,6 +104,16 @@ module.exports = function (ngModule) {
                                     fnCallback(items);
                                     return;
                                 }
+
+                                var posts = getPostsResult.records;
+                                var temporaryPostsBuffer = {};
+
+                                angular.forEach(posts, function (post) {
+                                    temporaryPostsBuffer[post.id] = post;
+                                });
+
+                                // Add to buffer.
+                                $scope.buffer.posts = temporaryPostsBuffer;
 
                                 // Build items list.
                                 items.data = getPostsResult.records;
@@ -321,11 +341,11 @@ module.exports = function (ngModule) {
                     function (data, type, item, meta) {
                         switch (item.status) {
                             case postStatusConstant.disabled:
-                                return '<span class="text-danger">' + $translate.instant('Disabled') + '</span>';
-                            case postTypeConstant.available:
-                                return '<span class="text-success">' + $translate.instant('Available') + '</span>';
+                                return '<span class="text-gray">{{"Disabled" | translate}}</span>';
+                            case postStatusConstant.available:
+                                return '<span class="text-success">{{"Available" | translate}}</span>';
                             default:
-                                return '<span class="text-danger">' + $translate.instant('Deleted') + '</span>';
+                                return '<span class="text-danger">{{"Deleted" | translate}}</span>';
 
                         }
                     }
@@ -354,15 +374,25 @@ module.exports = function (ngModule) {
                         szUi += '<span class="caret"></span>';
                         szUi += '</button>';
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
-                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-eye"></span>{{"View" | translate}}</a></li>';
+                        szUi += '<li><a href="javascript:void(0);"><span class="fa fa-eye"></span>{{"View" | translate}}</a></li>';
 
                         // Viewer is the profile owner.
-                        if (profile && profile.id === $scope.personalProfile.id) {
-                            // Item is still available. Which means it can be deleted.
-                            if (item.status === postStatusConstant.available)
-                                szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> <b class="text-danger">{{"Delete" | translate}}</b> </a></li>';
-                        }
+                        if (profile && (profile.id === $scope.personalProfile.id || profile.role === userRoleConstant.admin)) {
 
+                            var info = {
+                                postId: item.id
+                            };
+
+                            switch (item.status) {
+                                case postStatusConstant.deleted:
+                                case postStatusConstant.disabled:
+                                    szUi += $interpolate('<li ng-click="fnChangePostStatus({{postId}})"><a href="javascript:void(0);"><span class="fa fa-refresh text-bold text-info"></span>{{"Restore" | translate}}</a></li>')(info);
+                                    break;
+                                default:
+                                    szUi += $interpolate('<li ng-click="fnChangePostStatus({{postId}})"><a href="javascript:void(0);"><span class="fa fa-trash text-bold text-danger"></span>{{"Delete" | translate}}</a></li>')(info);
+                                    break;
+                            }
+                        }
                         szUi += '</ul>';
                         szUi += '</div>';
                         return szUi;
@@ -408,12 +438,12 @@ module.exports = function (ngModule) {
                     function (data, type, item, meta) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
-                        szUi += '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                        szUi += $translate.instant('Action') + ' ';
+                        szUi += '<button class="btn btn-flat btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
+                        szUi += '{{"Action" | translate}} ';
                         szUi += '<span class="caret"></span>';
                         szUi += '</button>';
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
-                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-eye"></span> ' + $translate.instant('View post') + ' </a></li>';
+                        szUi += '<li><a href="javascript:void(0);"><span class="fa fa-eye"></span> {{"View post" | translate}} </a></li>';
 
                         // Viewer is the profile owner.
                         if (profile && profile.id === $scope.personalProfile.id) {
@@ -470,12 +500,28 @@ module.exports = function (ngModule) {
                         szUi += '<span class="caret"></span>';
                         szUi += '</button>';
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
-                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-eye"></span> ' + $translate.instant('View post') + ' </a></li>';
+                        szUi += '<li><a href="javascript:void(0);"><span class="fa fa-eye"></span> ' + $translate.instant('View post') + ' </a></li>';
 
                         // Viewer is the profile owner.
-                        if (profile && profile.id === $scope.personalProfile.id) {
-                            szUi += $interpolate('<li ng-click="fnDeletePostReport({{postId}})"><a href="javscript:void(0);"><span class="fa fa-trash text-bold text-danger"></span>{{"Delete" | translate}}</a></li>')({postId: item.postId});
+                        if (profile && (profile.id === $scope.personalProfile.id || profile.role === userRoleConstant.admin)) {
+
+                            var info = {
+                                postId: item.id
+                            };
+
+                            switch (item.status) {
+                                case itemStatusConstant.available:
+                                    info['status'] = itemStatusConstant.deleted;
+                                    szUi += $interpolate('<li ng-click="fnChangePostStatus({{postId}}, {{status}})"><a href="javascript:void(0);"><span class="fa fa-trash text-bold text-danger"></span>{{"Delete" | translate}}</a></li>')(info);
+                                    break;
+                                default:
+                                    info['status'] = itemStatusConstant.available;
+                                    szUi += $interpolate('<li ng-click="fnChangePostStatus({{postId}}, {{status}})"><a href="javascript:void(0);"><span class="fa fa-trash text-bold text-danger"></span>{{"Restore" | translate}}</a></li>')(info);
+                                    break;
+                            }
                         }
+
+
                         szUi += '</ul>';
                         szUi += '</div>';
                         return szUi;
@@ -551,6 +597,7 @@ module.exports = function (ngModule) {
 
         // Data-table instances list.
         $scope.dtInstances = {
+            posts: {},
             comments: {},
             postReports: {}
         };
@@ -558,6 +605,11 @@ module.exports = function (ngModule) {
         // File uploaders collection.
         $scope.fileUploader = {
             profileImageSelector: new FileUploader()
+        };
+
+        // Temporary page buffer.
+        $scope.buffer = {
+            posts: {}
         };
 
         //#endregion
@@ -662,7 +714,7 @@ module.exports = function (ngModule) {
                                 });
                         }
                     },
-                    cancel:{
+                    cancel: {
                         text: $translate.instant('Cancel'),
                         btnClass: 'btn btn-default btn-flat',
                         action: function (scope, button) {
@@ -763,38 +815,69 @@ module.exports = function (ngModule) {
         /*
         * Delete a specific post report.
         * */
-        $scope.fnDeletePostReport = function (postId) {
+        $scope.fnChangePostStatus = function (postId) {
 
-            $ngConfirm({
-                title: $translate.instant('Confirmation'),
-                content: '<b class="text-danger">' + $translate.instant('Are you sure to delete this post report ?') + '</b>',
-                scope: $scope,
-                buttons: {
-                    ok: {
-                        text: $translate.instant('OK'),
-                        btnClass: 'btn btn-danger btn-flat',
-                        action: function (scope, button) {
-                            postReportService.deletePostReport(postId)
-                                .then(function (deletePostReportId) {
-                                    // Reload the post report data-table instant.
-                                    $scope.dtInstances.postReports.dataTable.fnDraw();
+            // Find the post.
+            var post = $scope.buffer.posts[postId];
+            if (!post)
+                return;
 
-                                    // Display success message.
-                                    toastr.success($translate.instant('Post report has been deleted successfully'));
-                                });
-                        }
-                    },
-                    cancel: {
-                        text: $translate.instant('Cancel'),
-                        btnClass: 'btn btn-default btn-flat',
-                        action: function ($scope, button) {
+            // Status to change post to.
+            var designatedStatus = null;
 
-                        }
-                    }
+            // Construct ngConfirm options.
+            var options = {
+                title: '',
+                contentUrl: 'change-post-status.html',
+                backgroundDismiss: true,
+                type: null,
+                buttons: {}
+            };
+
+            // Base on status to set modal title.
+            switch (post.status) {
+                case postStatusConstant.deleted:
+                case postStatusConstant.disabled:
+                    options.title = $translate.instant('Restore post');
+                    options.type = 'blue';
+                    designatedStatus = postStatusConstant.available;
+                    break;
+                default:
+                    options.type = 'red';
+                    options.title = $translate.instant('Delete post');
+                    designatedStatus = postStatusConstant.deleted;
+                    break;
+            }
+
+            // Construct ngConfirm options.
+            options.buttons['ok'] = {
+                text: $translate.instant('OK'),
+                btnClass: 'btn btn-danger btn-flat',
+                action: function (scope, button) {
+
+                    // Block app ui.
+                    commonService.blockAppUI();
+                    if (scope.editPostStatusForm.$invalid)
+                        return false;
+
+                    var reason = scope.reason;
+                    return postService.editPostStatus(postId, designatedStatus, reason)
+                        .then(function () {
+                            // Reload the data-table.
+                            $scope.dtInstances.posts.dataTable._fnDraw();
+                            return true;
+                        })
+                        .catch(function () {
+                            return false;
+                        })
+                        .finally(function(){
+                            commonService.unblockAppUI();
+                        });
                 }
-            });
+            };
 
 
+            $ngConfirm(options);
         };
 
         /*

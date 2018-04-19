@@ -116,7 +116,7 @@ module.exports = {
             'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
             'angular-translate', 'angular-translate-loader-static-files',
             'datatables.net/js/jquery.dataTables', 'datatables.net-responsive', 'angular-datatables',
-            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector',
+            'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector', 'angular-messages',
             'angular-file-upload', 'ui-cropper', 'firebase/app', 'firebase/messaging'],
         'app': path.resolve(paths.app, 'app.js')
     },
