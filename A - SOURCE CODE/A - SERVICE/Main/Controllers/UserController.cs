@@ -660,32 +660,57 @@ namespace Main.Controllers
         /// Change user status by searching for user id.
         /// </summary>
         /// <param name="info"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPut("status")]
+        [HttpPut("status/{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> ChangeUserStatus([FromBody] ChangeUserStatusViewModel info)
+        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id, [FromBody] ChangeUserStatusViewModel info)
         {
             // Find requester profile.
             var profile = IdentityService.GetProfile(HttpContext);
             
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
-            if (profile.Id == info.UserId)
+            if (profile.Id == id)
                 return StatusCode((int) HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotChangeOwnProfileStatus));
 
             // Find user by using index.
             var users = _unitOfWork.Accounts.Search();
-            users = users.Where(x => x.Id == info.UserId);
+            users = users.Where(x => x.Id == id);
 
             // Find the first record in database.
             var user = await users.FirstOrDefaultAsync();
             if (user == null)
                 return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
 
-            user.Status = info.Status;
+            #region Information update
 
-            // Save change to database.
-            await _unitOfWork.CommitAsync();
+            // Whether information has been changed or not.
+            var bHasInformationChanged = false;
+
+            // Status has been defined.
+            if (info.Status != user.Status)
+            {
+                if (info.Status == AccountStatus.Pending)
+                {
+                    user.Status = AccountStatus.Disabled;
+                    bHasInformationChanged = true;
+                }
+                else
+                {
+                    user.Status = info.Status;
+                    bHasInformationChanged = true;
+                }
+                
+            }
+
+            //todo: Reason
+
+            // Information has been changed.
+            if (bHasInformationChanged)
+                await _unitOfWork.CommitAsync();
+
+            #endregion
             return Ok();
         }
 
