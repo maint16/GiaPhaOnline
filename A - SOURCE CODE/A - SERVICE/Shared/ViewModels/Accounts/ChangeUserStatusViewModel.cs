@@ -1,4 +1,5 @@
-﻿using SystemConstant.Enumerations;
+﻿using System.ComponentModel.DataAnnotations;
+using SystemConstant.Enumerations;
 
 namespace Shared.ViewModels.Accounts
 {
@@ -7,9 +8,10 @@ namespace Shared.ViewModels.Accounts
         #region Properties
 
         /// <summary>
-        /// Id of user.
+        /// Reason of change.
         /// </summary>
-        public int UserId { get; set; }
+        [Required]
+        public string Reason { get; set; }
 
         /// <summary>
         /// Status of account.
