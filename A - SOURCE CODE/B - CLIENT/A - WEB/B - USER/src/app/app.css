@@ -33,6 +33,10 @@
     border-radius: 0 !important;
 }
 
+textarea.no-resize{
+    resize: none;
+}
+
 /* Post box */
 post-box .box-body {
     height: 150px !important;

@@ -10,6 +10,7 @@ module.exports = function (ngModule) {
     require('./o-auth.constant')(ngModule);
     require('./post-type.constant')(ngModule);
     require('./user-role.constant')(ngModule);
+    require('./user-status.constant')(ngModule);
     require('./task-status.constant')(ngModule);
     require('./task-result.constant')(ngModule);
     require('./notification-status.constant')(ngModule);

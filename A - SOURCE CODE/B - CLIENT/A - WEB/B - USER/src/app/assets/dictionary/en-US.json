@@ -114,6 +114,9 @@
   "User updated a category": "{{username}} updated category {{category.name}}",
   "User deleted a category": "{{username}} deleted a {{category.name}} from system",
   "This information is required": "This information is required",
+  "Are you sure to delete user": "Are you sure to delete {{nickname}} from system ?",
+  "Are you sure to restore user": "Are you sure to restore {{nickname}} to system ?",
+  "Are you sure to activate user": "Are you sure to activate {{nickname}} ?",
   "Delete post": "Delete post",
   "Restore post": "Restore post"
 }

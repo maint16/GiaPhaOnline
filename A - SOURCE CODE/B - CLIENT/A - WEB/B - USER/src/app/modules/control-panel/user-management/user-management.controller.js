@@ -3,8 +3,9 @@
 * */
 module.exports = function (ngModule) {
     ngModule.controller('userManagementController', function ($scope, toastr, $ngConfirm, $translate,
-                                                              $timeout, $state, $compile,
-                                                              appSettingConstant, urlStates, userRoleConstant,
+                                                              $timeout, $state, $compile, $interpolate, $uibModal,
+                                                              appSettingConstant, urlStates,
+                                                              userRoleConstant, userStatusConstant,
                                                               DTOptionsBuilder, DTColumnBuilder,
                                                               profile,
                                                               moment, commonService, userService) {
@@ -16,6 +17,11 @@ module.exports = function (ngModule) {
 
         // Services reflection.
         $scope.userService = userService;
+
+        // View temporary cache.
+        $scope.cache = {
+            users: {}
+        };
 
         // Data-table options.
         $scope.dtOptions = {
@@ -56,8 +62,11 @@ module.exports = function (ngModule) {
                         data: []
                     };
 
+                    // Block UI.
+                    commonService.blockAppUI();
+
                     userService.getUsers(getUsersCondition)
-                        .then(function(getUsersResponse){
+                        .then(function (getUsersResponse) {
 
                             // Invalid user result.
                             var getUserResult = getUsersResponse.data;
@@ -67,14 +76,26 @@ module.exports = function (ngModule) {
                             }
 
                             // Build items list.
-                            items.data = getUserResult.records;
+                            var users = getUserResult.records;
+                            var cachedUsers = {};
+                            angular.forEach(users, function (user) {
+                                cachedUsers[user.id] = user;
+                            });
+
+                            // Add users to cache.
+                            $scope.cache.users = cachedUsers;
+
+                            items.data = users;
                             items.draw = draw;
                             items.recordsTotal = getUserResult.total;
                             items.recordsFiltered = getUserResult.total;
                             fnCallback(items);
                         })
-                        .catch(function(getUsersError){
+                        .catch(function (getUsersError) {
                             fnCallback(items);
+                        })
+                        .finally(function () {
+                            commonService.unblockAppUI();
                         });
                 })
         };
@@ -86,17 +107,28 @@ module.exports = function (ngModule) {
                 DTColumnBuilder.newColumn('email').withTitle($translate('Email')).notSortable().renderWith(
                     function (data, type, item, meta) {
                         var szProfilePage = userService.getProfilePage(item.id);
-                        return '<a ui-sref="' + szProfilePage + '">' + item.email +'</a>'
+                        return '<a ui-sref="' + szProfilePage + '">' + item.email + '</a>'
                     }
                 ),
                 // Nickname
                 DTColumnBuilder.newColumn('nickname').withTitle($translate('Nickname')).notSortable(),
                 // Status
-                DTColumnBuilder.newColumn('status').withTitle($translate('Status')).notSortable(),
+                DTColumnBuilder.newColumn('status').withTitle($translate('Status')).notSortable().renderWith(
+                    function (data, type, item, meta) {
+                        switch (item.status) {
+                            case userStatusConstant.disabled:
+                                return '<b class="text-danger">{{"Disabled" | translate}}</b>';
+                            case userStatusConstant.pending:
+                                return '<b class="text-gray">{{"Pending" | translate}}</b>';
+                            default:
+                                return '<b class="text-success">{{"Available" | translate}}</b>';
+                        }
+                    }
+                ),
                 // Role
                 DTColumnBuilder.newColumn(null).withTitle($translate('Role')).notSortable().renderWith(
                     function (data, type, item, meta) {
-                        switch (item.role){
+                        switch (item.role) {
                             case userRoleConstant.user:
                                 return '<span>{{"User" | translate}}</span>';
                             default:
@@ -124,14 +156,28 @@ module.exports = function (ngModule) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
                         szUi += '<button class="btn btn-default btn-flat dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                        szUi += $translate.instant('Action') + ' ';
+                        szUi += '{{"Action" | translate}} ';
                         szUi += '<span class="caret"></span>';
                         szUi += '</button>';
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
-                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-eye"></span> ' + $translate.instant('View') + ' </a></li>';
+                        szUi += '<li><a href="javascript:void(0);"><span class="fa fa-eye"></span> {{"View" | translate}} </a></li>';
 
                         // Viewer is the profile owner.
-                        szUi += '<li><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
+                        if (profile.id !== item.id) {
+                            switch (item.status) {
+                                case userStatusConstant.pending:
+                                    szUi += $interpolate('<li ng-click="editUserStatus({{item.id}})"><a href="javascript:void(0);"><span class="fa fa-check"></span> <b class="text-green">{{"Activate" | translate}}</b> </a></li>')({item: item});
+                                    break;
+
+                                case userStatusConstant.disabled:
+                                    szUi += $interpolate('<li ng-click="editUserStatus({{item.id}})"><a href="javascript:void(0);"><span class="fa fa-refresh"></span> <b class="text-success">{{"Restore" | translate}}</b> </a></li>')({item: item});
+                                    break;
+
+                                default:
+                                    szUi += $interpolate('<li ng-click="editUserStatus({{item.id}})"><a href="javascript:void(0);"><span class="fa fa-trash"></span> <b class="text-danger"></b> {{"Delete" | translate}}</a></li>')({item: item});
+                                    break;
+                            }
+                        }
 
                         szUi += '</ul>';
                         szUi += '</div>';
@@ -147,5 +193,98 @@ module.exports = function (ngModule) {
         };
 
         //#endregion
-    });
+
+        //#region Methods
+
+        /*
+        * Callback which is raised when change user status button is clicked.
+        * */
+        $scope.editUserStatus = function (id) {
+
+            // User is not in cache.
+            var user = $scope.cache.users[id];
+            if (!user)
+                return;
+
+            var editUserStatusModal = $uibModal.open({
+                templateUrl: 'edit-user-status.tmpl.html',
+                size: 'md',
+                controller: 'editUserStatusController',
+                resolve: {
+                    user: function () {
+                        return user;
+                    }
+                }
+            });
+
+            editUserStatusModal.closed.then(function () {
+                $scope.dtInstances.userManagement.dataTable._fnDraw();
+            });
+        };
+
+        //#endregion
+    })
+        .controller('editUserStatusController', function (
+            user,
+            userStatusConstant,
+            commonService, userService,
+            $uibModalInstance,
+            $scope) {
+
+            //#region Properties
+
+            // Resolver reflection.
+            $scope.user = user;
+
+            // Constant reflection.
+            $scope.userStatusConstant = userStatusConstant;
+
+            // Model for information binding.
+            $scope.model = {
+                reason: null
+            };
+
+            //#endregion
+
+            //#region Methods
+
+            /*
+            * Callback which is fired when user status is submitted.
+            * */
+            $scope.editUserStatus = function () {
+
+                // Form is not valid.
+                var editUserStatusForm = $scope.editUserStatusForm;
+                if (!editUserStatusForm || !editUserStatusForm.$valid)
+                    return;
+
+                var designatedStatus = null;
+                switch (user.status) {
+                    case userStatusConstant.disabled:
+                    case userStatusConstant.pending:
+                        designatedStatus = userStatusConstant.active;
+                        break;
+
+                    default:
+                        designatedStatus = userStatusConstant.disabled;
+                }
+
+                // Block application UI.
+                commonService.blockAppUI();
+
+                return userService.editUserStatus(user.id, designatedStatus, $scope.model.reason)
+                    .then(function () {
+                        // Close modal instance.
+                        $uibModalInstance.close();
+                        return true;
+                    })
+                    .finally(function () {
+                        // Unblock UI.
+                        commonService.unblockAppUI();
+                    })
+
+            };
+
+            //#endregion
+        });
 };

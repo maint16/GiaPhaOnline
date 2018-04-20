@@ -11,7 +11,8 @@ module.exports = function (ngModule) {
             basisRegister: 'api/user/basic-register',
             googleLogin: 'api/user/google-login',
             facebookLogin: 'api/user/facebook-login',
-            uploadProfileImage: 'api/user/upload-avatar'
+            uploadProfileImage: 'api/user/upload-avatar',
+            editUserStatus: 'api/user/status/{userId}'
         },
 
         category: {

@@ -1,12 +1,12 @@
-module.exports = function(ngModule){
+module.exports = function (ngModule) {
 
-    ngModule.service('userService', function($http, $interpolate,
-                                             appSettingConstant, apiUrls, urlStates){
+    ngModule.service('userService', function ($http, $interpolate,
+                                              appSettingConstant, apiUrls, urlStates) {
 
         /*
         * Get user information.
         * */
-        this.loadUsers = function(conditions){
+        this.loadUsers = function (conditions) {
             var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.loadUsers;
             return $http.post(url, conditions);
         };
@@ -14,7 +14,7 @@ module.exports = function(ngModule){
         /*
         * Get users by using specific conditions.
         * */
-        this.getUsers = function(conditions){
+        this.getUsers = function (conditions) {
             var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.getUsers;
             return $http.post(url, conditions);
         };
@@ -22,7 +22,7 @@ module.exports = function(ngModule){
         /*
         * Exchange access token for a profile information.
         * */
-        this.getProfile = function(id){
+        this.getProfile = function (id) {
             if (id == null)
                 id = 0;
 
@@ -34,7 +34,7 @@ module.exports = function(ngModule){
         /*
         * Get profile state name.
         * */
-        this.getProfilePage = function(id){
+        this.getProfilePage = function (id) {
             var url = $interpolate('{{sref}}({profileId: {{id}}})')({sref: urlStates.user.profile.name, id: id});
             return url;
         };
@@ -42,7 +42,7 @@ module.exports = function(ngModule){
         /*
         * Submit new password for a profile.
         * */
-        this.changePassword = function(id, info){
+        this.changePassword = function (id, info) {
             var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.changePassword;
             url = url.replace('{id}', id);
             return $http.post(url, info);
@@ -51,7 +51,7 @@ module.exports = function(ngModule){
         /*
         * Use email & password to exchange with an access token.
         * */
-        this.basicLogin = function(info){
+        this.basicLogin = function (info) {
             var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.basicLogin;
             return $http.post(url, info);
         };
@@ -59,7 +59,7 @@ module.exports = function(ngModule){
         /*
         * Exchange google code for local access token.
         * */
-        this.fnUseGoogleLogin = function(info){
+        this.fnUseGoogleLogin = function (info) {
             var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.googleLogin;
             return $http.post(url, info);
         };
@@ -75,7 +75,7 @@ module.exports = function(ngModule){
         /*
         * Upload profile avatar to server.
         * */
-        this.uploadProfileAvatar = function(avatar){
+        this.uploadProfileAvatar = function (avatar) {
             var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.uploadProfileImage;
 
             // Initialize form data to upload image to server.
@@ -95,9 +95,25 @@ module.exports = function(ngModule){
         /*
         * Use specific information to register an account.
         * */
-        this.basicRegister = function(info){
+        this.basicRegister = function (info) {
             var fullUrl = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.basicRegister;
             return $http.post(fullUrl, info);
+        };
+
+        /*
+        * Edit user status.
+        * */
+        this.editUserStatus = function (userId, status, reason) {
+            var fullUrl = appSettingConstant.endPoint.apiService + '/' + apiUrls.user.editUserStatus;
+            fullUrl = fullUrl.replace('{userId}', userId);
+
+            // Initialize request body.
+            var info = {
+                status: status,
+                reason: reason
+            };
+
+            return $http.put(fullUrl, info);
         }
     });
 

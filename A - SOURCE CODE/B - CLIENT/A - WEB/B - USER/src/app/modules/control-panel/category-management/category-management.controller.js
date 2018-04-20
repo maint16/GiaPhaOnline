@@ -194,18 +194,18 @@ module.exports = function (ngModule) {
                         var szUi = '';
                         szUi += '<div class="dropdown">';
                         szUi += '<button class="btn btn-default btn-flat dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">';
-                        szUi += $translate.instant('Action') + ' ';
+                        szUi += '{{"Action" | translate}} ';
                         szUi += '<span class="caret"></span>';
                         szUi += '</button>';
                         szUi += '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">';
 
                         // View button
-                        szUi += '<li><a href="javscript:void(0);" ui-sref="' + $scope.getCategoryPage(item.id) + '"><span class="fa fa-eye"></span> ' + $translate.instant('View') + ' </a></li>';
+                        szUi += '<li><a href="javascript:void(0);" ui-sref="' + $scope.getCategoryPage(item.id) + '"><span class="fa fa-eye"></span> ' + $translate.instant('View') + ' </a></li>';
 
                         if (item.status !== itemStatusConstant.deleted) {
-                            szUi += '<li ng-click="fnDeleteCategory(' + item.id + ')"><a href="javscript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
+                            szUi += '<li ng-click="fnDeleteCategory(' + item.id + ')"><a href="javascript:void(0);"><span class="fa fa-trash"></span> ' + $translate.instant('Delete') + ' </a></li>';
                         } else {
-                            szUi += '<li><a href="javscript:void(0);"><span class="fa fa-refresh"></span> ' + $translate.instant('Restore') + ' </a></li>';
+                            szUi += '<li><a href="javascript:void(0);"><span class="fa fa-refresh"></span> ' + $translate.instant('Restore') + ' </a></li>';
                         }
 
                         szUi += '</ul>';
