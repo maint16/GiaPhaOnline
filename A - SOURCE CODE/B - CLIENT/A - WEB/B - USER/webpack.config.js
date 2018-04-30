@@ -8,6 +8,9 @@ var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 // Import webpack settings.
 var settings = require('./webpack/webpack-setting');
+var rules = require('./webpack/rules');
+console.log(rules);
+
 var options = {
     clean: require('./webpack/clean-webpack.setting').get(__dirname),
     copy: require('./webpack/copy-webpack.setting').get(__dirname)
@@ -19,7 +22,7 @@ var bProductionMode = false;
 
 // Get environment variable.
 var env = process.env.NODE_ENV;
-if (env && 'production' == env.trim().toLowerCase()) {
+if (env && 'production' === env.trim().toLowerCase()) {
     bProductionMode = true;
 }
 
@@ -121,75 +124,7 @@ module.exports = {
         'app': path.resolve(paths.app, 'app.js')
     },
     module: {
-        rules: [
-            {
-                test: require.resolve('jquery'),
-                use: [
-                    {
-                        loader: 'expose-loader',
-                        options: 'jQuery'
-                    }, {
-                        loader: 'expose-loader',
-                        options: '$'
-                    }
-                ]
-            },
-            {
-                test: require.resolve('rxjs/bundles/rxjs.umd'),
-                use: [
-                    {
-                        loader: 'expose-loader',
-                        options: 'Rx'
-                    }
-                ]
-            },
-            {
-                test: require.resolve('bluebird'),
-                use: [
-                    {
-                        loader: 'expose-loader',
-                        options: 'Promise'
-                    }
-                ]
-            },
-            {
-                test: require.resolve('pusher-js'),
-                use:[
-                    {
-                        loader: 'expose-loader',
-                        options: 'Pusher'
-                    }
-                ]
-            },
-            {
-                test: require.resolve('@aspnet/signalr/dist/cjs'),
-                use:[
-                    {
-                        loader: 'expose-loader',
-                        options: 'signalR'
-                    }
-                ]
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
-            },
-            {
-                test: /\.(png|jpg|gif|woff|woff2|eot|ttf|svg)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-                        options: {
-                            limit: 8192
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.html$/, // Only .html files
-                loader: 'html-loader' // Run html loader
-            }
-        ]
+        rules: rules.get()
     },
     plugins: plugins,
     // resolve:{
