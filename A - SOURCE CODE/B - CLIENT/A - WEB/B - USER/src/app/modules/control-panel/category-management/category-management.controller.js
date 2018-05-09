@@ -61,6 +61,9 @@ module.exports = function (ngModule) {
                     // Clear buffer.
                     $scope.buffer.categories = {};
 
+                    // Block app ui.
+                    commonService.blockAppUI();
+
                     // Get a list of categories.
                     categoryService.getCategories(getCategoriesCondition)
                         .then(function (getCategoriesResponse) { // Get list of categories.
@@ -135,6 +138,10 @@ module.exports = function (ngModule) {
                         })
                         .catch(function (getUsersError) {
                             fnCallback(items);
+                        })
+                        .finally(function(){
+                            // Unblock UI.
+                            commonService.unblockAppUI();
                         });
                 })
         };
