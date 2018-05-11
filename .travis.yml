@@ -10,11 +10,11 @@ env:
 # Caching phrase.
 cache:
     directories:
-        - "A - SOURCE CODE/B - CLIENT/A - WEB/B - USER/node_modules"
+        - node_modules
         
 # Installation preparation phrase.
 before_install:
-- cd "A - SOURCE CODE/B - CLIENT/A - WEB/B - USER"
+- cd $CLIENT_DIRECTORY
 
 # Dependency installation phrase.
 install:
