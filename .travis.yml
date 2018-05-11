@@ -1,21 +1,40 @@
-language: node_js
-node_js:
-- 9.8.0
+matrix:
+    include:
+        - language: node_js
+        node_js:
+        - 9.8.0
 
-# Caching phrase.
-cache:
-    directories:
-        - node_modules
+        # Caching phrase.
+        cache:
+            directories:
+                - "A - SOURCE CODE/B - CLIENT/A - WEB/B - USER/node_modules"
+                
+        # Installation preparation phrase.
+        before_install:
+        - cd "A - SOURCE CODE/B - CLIENT/A - WEB/B - USER"
+
+        # Dependency installation phrase.
+        install:
+        - npm install
+
+        # Build phrase
+        script:
+        - npm run build
         
-# Installation preparation phrase.
-before_install:
-- cd "A - SOURCE CODE/B - CLIENT/A - WEB/B - USER"
-
-# Dependency installation phrase.
-install:
-- npm install
-
-# Build phrase
-script:
-- npm run build
+        - language: csharp
+        solution: iConfess.sln
+        mono: none
+        dotnet: 2.1.300
+        
+        # Before installation.
+        before_install: 
+        - cd "A - SOURCE CODE/A - SERVICE"
+        
+        # Dependency installation phrase.
+        install:
+        - dotnet restore iConfess.sln
+        
+        # Build phrase.
+        script:
+        - dotnet build iConfess.sln
 
