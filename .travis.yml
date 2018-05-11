@@ -1,41 +1,22 @@
 sudo: required
-matrix:
-  inlcude:
-
-    # ----------------------- CLIENT BUILD -----------------------
-    - language: node_js
-    node_js:
-      - 9.8.0
+language: node_js
+node_js:
+    - 9.8.0
     # Caching phrase.
     cache:
-      directories:
-        - node_modules
+        directories:
+            - node_modules
 
     # Before installation phrase.
     before_install:
-      - cd 'A - SOURCE CODE\\B - CLIENT\\A - WEB\\B - USER'
+        - cd 'A - SOURCE CODE\\B - CLIENT\\A - WEB\\B - USER'
 
     # Dependency installation phrase.
     install:
-      - npm install
+        - npm install
 
     # Build phrase
     script:
-      - npm run build
+        - npm run build
 
-    # ----------------------- SERVICE BUILD -----------------------
-    - language: csharp
-    soution: iConfess.sln
-
-    # Before installation phrase.
-    before_install:
-      - cd 'A - SOURCE CODE\\A - SERVICE'
-
-    # Installation phrase
-    install:
-      - dotnet restore
-
-    # Build phrase
-    script:
-      - dotnet build
       
