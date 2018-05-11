@@ -2,14 +2,19 @@ language: node_js
 node_js:
 - 9.8.0
 
+# Variable declaration.
+env:
+    global:
+        - CLIENT_DIRECTORY="A - SOURCE CODE/B - CLIENT/A - WEB/B - USER"
+
 # Caching phrase.
 cache:
     directories:
-        - node_modules
+        - $CLIENT_DIRECTORY/node_modules
         
 # Installation preparation phrase.
 before_install:
-- cd "A - SOURCE CODE/B - CLIENT/A - WEB/B - USER"
+- cd $CLIENT_DIRECTORY
 
 # Dependency installation phrase.
 install:
