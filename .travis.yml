@@ -37,3 +37,4 @@ matrix:
     # Build phrase
     script:
       - dotnet build
+      
