@@ -9,7 +9,7 @@ cache:
         
 # Installation preparation phrase.
 before_install:
-- cd A - SOURCE CODE/B - CLIENT/A - WEB/B - USER
+- cd /A - SOURCE CODE/B - CLIENT/A - WEB/B - USER
 
 # Dependency installation phrase.
 install:
