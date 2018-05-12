@@ -39,7 +39,7 @@ module.exports = function (ngModule) {
             // Initialize hub connection.
             let hubConnection = new signalR.HubConnection(hubEndPoint);
             this._hubs[hubName] = hubConnection;
-            
+
             return hubConnection;
         };
 
