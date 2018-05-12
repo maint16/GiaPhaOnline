@@ -28,7 +28,8 @@ matrix:
 
       # Before installation.
       before_install:
-        - cd "A - SOURCE CODE/A - SERVICE"
+       - curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+       - cd "A - SOURCE CODE/A - SERVICE"
 
       # Dependency installation phrase.
       install:
