@@ -34,11 +34,11 @@ require('@aspnet/signalr/dist/cjs');
 require('pusher-js');
 
 require('rxjs/bundles/rxjs.umd');
-var firebase = require('firebase/app');
+const firebase = require('firebase');
 require('firebase/messaging');
 
 // Angular plugins declaration.
-var angular = require('angular');
+const angular = require('angular');
 require('@uirouter/angularjs');
 require('angular-block-ui');
 require('angular-toastr');
@@ -55,7 +55,7 @@ require('ui-cropper');
 require('angular-messages');
 
 // Module declaration.
-var ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
+let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
     'ui.bootstrap', 'ngMultiSelector', 'ngMessages',
     'pascalprecht.translate',
     'datatables', 'datatables.bootstrap', 'angularMoment', 'ngSanitize',
@@ -130,30 +130,30 @@ ngModule.controller('appController', function ($transitions, $timeout,
             // Reload window size.
             uiService.reloadWindowSize();
 
-            if (!$scope.bIsFcmInitialized){
+            if (!$scope.bIsFcmInitialized) {
                 // Initialize firebase.
                 firebase.initializeApp({
                     'messagingSenderId': '420319602777'
                 });
 
                 // Request for push notification service.
-                var messaging = firebase.messaging();
+                let messaging = firebase.messaging();
                 messaging.usePublicVapidKey("BKa5DHBtGv4JchD7XuP571kHQKM-7T-5Bdj5KM3flRjVFDVtTDtX6CEe_WEeHuwmoV0O1DaQ7KClP6kqG618--A");
                 messaging.requestPermission()
                     .then(function () {
                         return messaging.getToken()
-                            .then(function (fcmToken) {
+                            .then((fcmToken) => {
                                 return fcmToken;
                             })
-                            .catch(function (error) {
-                                console.log('An error occurred while retrieving token. ', err);
+                            .catch((authenticationError) => {
+                                console.log('An error occurred while retrieving token. ', authenticationError);
                                 throw 'An error occurred while retrieving token.';
                             });
                     })
-                    .then(function(fcmToken){
+                    .then((fcmToken) => {
 
                         // Initialize add device condition.
-                        var addDeviceCondition = {
+                        let addDeviceCondition = {
                             deviceId: fcmToken
                         };
 
@@ -163,7 +163,7 @@ ngModule.controller('appController', function ($transitions, $timeout,
                         // Call api service to add device.
                         return pushNotificationService.addDevice(addDeviceCondition);
                     })
-                    .catch(function (error) {
+                    .catch(() => {
                         console.log('Unable to get permission to notify.');
                     });
             }
@@ -172,14 +172,14 @@ ngModule.controller('appController', function ($transitions, $timeout,
         }, 250);
 
         // Find destination of transaction.
-        var destination = $transition.$to();
+        let destination = $transition.$to();
 
         if (destination.includes[urlStates.authorizedLayout.name]) {
             $scope.model.layoutClass = 'hold-transition skin-green-light layout-top-nav';
             return;
         }
 
-        var urlStateUser = urlStates.user;
+        let urlStateUser = urlStates.user;
         if (destination.includes[urlStateUser.login.name] || destination.includes[urlStateUser.googleLogin.name]) {
             $scope.model.layoutClass = 'hold-transition login-page';
             return;
