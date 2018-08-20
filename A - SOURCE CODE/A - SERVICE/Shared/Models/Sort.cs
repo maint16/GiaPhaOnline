@@ -1,6 +1,4 @@
-﻿using SystemConstant.Enumerations.Order;
-
-namespace Shared.Models
+﻿namespace Shared.Models
 {
     public class Sort<T>
     {

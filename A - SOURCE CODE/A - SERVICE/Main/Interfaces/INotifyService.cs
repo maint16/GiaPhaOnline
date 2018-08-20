@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SystemConstant.Enumerations;
-using SystemDatabase.Models.Entities;
+using AppModel.Enumerations;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Main.Interfaces

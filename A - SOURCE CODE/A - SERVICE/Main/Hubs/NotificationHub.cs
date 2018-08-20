@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SystemDatabase.Interfaces;
-using SystemDatabase.Models.Entities;
+using AppDb.Interfaces;
+using AppDb.Models.Entities;
 using Main.Authentications.Requirements;
 using Main.Constants;
 using Main.Interfaces.Services;
@@ -60,7 +60,7 @@ namespace Main.Hubs
         public override async Task OnConnectedAsync()
         {
             // Find http context.
-            var httpContext = Context.Connection.GetHttpContext();
+            var httpContext = Context.GetHttpContext();
             if (httpContext == null)
                 return;
             

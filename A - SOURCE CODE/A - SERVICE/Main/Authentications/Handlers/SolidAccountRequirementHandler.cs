@@ -1,23 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using SystemConstant.Enumerations;
-using SystemConstant.Models;
-using SystemDatabase.Interfaces;
-using SystemDatabase.Models.Entities;
+using AppDb.Interfaces;
+using AppDb.Models.Entities;
+using AppModel.Enumerations;
 using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Main.Constants;
 using Main.Interfaces.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Data.OData;
 using Microsoft.EntityFrameworkCore;
-using Shared.ViewModels.Accounts;
 
 namespace Main.Authentications.Handlers
 {
@@ -57,13 +51,13 @@ namespace Main.Authentications.Handlers
             SolidAccountRequirement requirement)
         {
             // Convert authorization filter context into authorization filter context.
-            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
+            var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
 
             //var httpContext = authorizationFilterContext.HttpContext;
             var httpContext = _httpContextAccessor.HttpContext;
 
             // Find claim identity attached to principal.
-            var claimIdentity = (ClaimsIdentity)httpContext.User.Identity;
+            var claimIdentity = (ClaimsIdentity) httpContext.User.Identity;
 
             // Find id from claims list.
             var id = claimIdentity.Claims.Where(x => x.Type.Equals("Id"))
@@ -72,7 +66,7 @@ namespace Main.Authentications.Handlers
 
 
             // Id is invalid
-            if (string.IsNullOrEmpty(id) || !int.TryParse(id, out int iId))
+            if (string.IsNullOrEmpty(id) || !int.TryParse(id, out var iId))
             {
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
@@ -118,7 +112,7 @@ namespace Main.Authentications.Handlers
                 context.Fail();
                 return;
             }
-            
+
             // Add the newly found account to cache for faster querying.
             _profileCacheService.Add(iId, account, LifeTimeConstant.ProfileCacheLifeTime);
             _identityService.SetProfile(httpContext, account);
@@ -145,7 +139,7 @@ namespace Main.Authentications.Handlers
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
-        /// Service which is for caching user information.
+        ///     Service which is for caching user information.
         /// </summary>
         private readonly IValueCacheService<int, Account> _profileCacheService;
 

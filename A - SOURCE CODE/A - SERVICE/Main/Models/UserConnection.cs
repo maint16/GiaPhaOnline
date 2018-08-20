@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SystemDatabase.Models.Entities;
 
 namespace Main.Models
 {

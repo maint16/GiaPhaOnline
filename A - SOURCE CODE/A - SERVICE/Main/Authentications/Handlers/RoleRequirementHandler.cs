@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using SystemDatabase.Models.Entities;
+using AppDb.Models.Entities;
 using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Microsoft.AspNetCore.Authorization;

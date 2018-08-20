@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
-using SystemConstant.Enumerations;
-using SystemDatabase.Models.Contexts;
+using AppDb.Models.Contexts;
 
 namespace Main.Migrations
 {

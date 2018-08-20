@@ -1,4 +1,4 @@
-﻿using SystemDatabase.Models.Entities;
+﻿using AppDb.Models.Entities;
 using Main.Interfaces.Services;
 
 namespace Main.Services

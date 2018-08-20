@@ -1,36 +1,47 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using SystemConstant.Enumerations;
-using SystemDatabase.Interfaces;
-using SystemDatabase.Interfaces.Repositories;
-using SystemDatabase.Models.Entities;
+﻿using AppDb.Interfaces;
+using AppDb.Interfaces.Repositories;
 using AutoMapper;
-using Main.Constants;
 using Main.Hubs;
 using Main.Interfaces.Services;
-using Main.ViewModels.RealtimeConnection;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using PusherServer;
 using Shared.Interfaces.Services;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.SignalrConnections;
 
 namespace Main.Controllers
 {
     [Route("api/realtime-connection")]
     public class RealtimeConnectionController : ApiBaseController
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initialize controller with injectors.
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="mapper"></param>
+        /// <param name="timeService"></param>
+        /// <param name="relationalDbService"></param>
+        /// <param name="identityService"></param>
+        /// <param name="pusherService"></param>
+        /// <param name="realTimeNotificationService"></param>
+        /// <param name="notificationHubContext"></param>
+        public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+            IRelationalDbService relationalDbService, IIdentityService identityService,
+            IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService,
+            IHubContext<NotificationHub> notificationHubContext) : base(unitOfWork, mapper, timeService,
+            relationalDbService, identityService)
+        {
+            _pusherService = pusherService;
+            _realTimeNotificationService = realTimeNotificationService;
+            _notificationHubContext = notificationHubContext;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
-        /// Pusher service to send realtime data.
+        ///     Pusher service to send realtime data.
         /// </summary>
         private readonly IPusherService _pusherService;
 
@@ -40,159 +51,134 @@ namespace Main.Controllers
 
         #endregion
 
-        #region Constructors
+//        #region Methods
 
-        /// <summary>
-        /// Initialize controller with injectors.
-        /// </summary>
-        /// <param name="unitOfWork"></param>
-        /// <param name="mapper"></param>
-        /// <param name="timeService"></param>
-        /// <param name="dbSharedService"></param>
-        /// <param name="identityService"></param>
-        /// <param name="pusherService"></param>
-        /// <param name="realTimeNotificationService"></param>
-        /// <param name="notificationHubContext"></param>
-        public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
-            IDbSharedService dbSharedService, IIdentityService identityService,
-            IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService,
-            IHubContext<NotificationHub> notificationHubContext) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
-        {
-            _pusherService = pusherService;
-            _realTimeNotificationService = realTimeNotificationService;
-            _notificationHubContext = notificationHubContext;
-        }
+//        /// <summary>
+//        /// Authorize SignalR connection.
+//        /// </summary>
+//        /// <param name="info"></param>
+//        /// <returns></returns>
+//        [HttpPost("signalr/authorize")]
+//        public async Task<IActionResult> AuthorizeSignalR([FromBody] AuthorizeSignalrViewModel info)
+//        {
+//            #region Parameters validation
 
-        #endregion
+//            if (info == null)
+//            {
+//                info = new AuthorizeSignalrViewModel();
+//                TryValidateModel(info);
+//            }
 
-        #region Methods
-        
-        /// <summary>
-        /// Authorize SignalR connection.
-        /// </summary>
-        /// <param name="info"></param>
-        /// <returns></returns>
-        [HttpPost("signalr/authorize")]
-        public async Task<IActionResult> AuthorizeSignalR([FromBody] AuthorizeSignalrViewModel info)
-        {
-            #region Parameters validation
+//            if (!ModelState.IsValid)
+//                return BadRequest(ModelState);
 
-            if (info == null)
-            {
-                info = new AuthorizeSignalrViewModel();
-                TryValidateModel(info);
-            }
+//            #endregion
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+//            // Get requester identity.
+//            var profile = IdentityService.GetProfile(HttpContext);
 
-            #endregion
+//            #region Connection existence check
 
-            // Get requester identity.
-            var profile = IdentityService.GetProfile(HttpContext);
+//            // Find real-time connections.
+//            var realTimeConnections = UnitOfWork.SignalrConnections.Search();
+//            realTimeConnections = realTimeConnections.Where(x => x.Id.Equals(info.Id));
 
-            #region Connection existence check
+//            // Find the first connection.
+//            var realTimeConnection = await realTimeConnections.FirstOrDefaultAsync();
+//            if (realTimeConnection != null)
+//            {
+//                // Owner is different.
+//                if (realTimeConnection.OwnerId != profile.Id)
+//                {
+//                    realTimeConnection.OwnerId = profile.Id;
+//                    await UnitOfWork.CommitAsync();
+//                }
 
-            // Find real-time connections.
-            var realTimeConnections = UnitOfWork.SignalrConnections.Search();
-            realTimeConnections = realTimeConnections.Where(x => x.Id.Equals(info.Id));
+//                return Ok(realTimeConnection);
+//            }
 
-            // Find the first connection.
-            var realTimeConnection = await realTimeConnections.FirstOrDefaultAsync();
-            if (realTimeConnection != null)
-            {
-                // Owner is different.
-                if (realTimeConnection.OwnerId != profile.Id)
-                {
-                    realTimeConnection.OwnerId = profile.Id;
-                    await UnitOfWork.CommitAsync();
-                }
+//            #endregion
 
-                return Ok(realTimeConnection);
-            }
+//            #region Connection initialization
 
-            #endregion
+//            // Initialize real-time connection.
+//            realTimeConnection = new SignalrConnection();
+//            realTimeConnection.Id = info.Id;
+//            realTimeConnection.OwnerId = profile.Id;
+//            realTimeConnection.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-            #region Connection initialization
+//            // Save connection information into system.
+//            UnitOfWork.SignalrConnections.Insert(realTimeConnection);
 
-            // Initialize real-time connection.
-            realTimeConnection = new SignalrConnection();
-            realTimeConnection.Id = info.Id;
-            realTimeConnection.OwnerId = profile.Id;
-            realTimeConnection.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+//            // Save changes.
+//            await UnitOfWork.CommitAsync();
 
-            // Save connection information into system.
-            UnitOfWork.SignalrConnections.Insert(realTimeConnection);
+//            #endregion
 
-            // Save changes.
-            await UnitOfWork.CommitAsync();
+//            return Ok(realTimeConnection);
+//        }
 
-            #endregion
+//#if DEBUG
 
-            return Ok(realTimeConnection);
-        }
+//        /// <summary>
+//        /// Send pusher notification
+//        /// </summary>
+//        /// <returns></returns>
+//        [HttpPost("pusher/send")]
+//        [AllowAnonymous]
+//        public async Task<IActionResult> SendPusher([FromBody] SendPusherMessageViewModel information)
+//        {
+//            #region Parameters validation
 
-#if DEBUG
+//            if (information == null)
+//            {
+//                information = new SendPusherMessageViewModel();
+//                TryValidateModel(information);
+//            }
 
-        /// <summary>
-        /// Send pusher notification
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("pusher/send")]
-        [AllowAnonymous]
-        public async Task<IActionResult> SendPusher([FromBody] SendPusherMessageViewModel information)
-        {
-            #region Parameters validation
+//            if (!ModelState.IsValid)
+//                return BadRequest(ModelState);
 
-            if (information == null)
-            {
-                information = new SendPusherMessageViewModel();
-                TryValidateModel(information);
-            }
+//            #endregion
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+//            var triggerResult = await _pusherService.SendAsync(information.SocketId, information.ChannelName, information.EventName,
+//                 information.Information);
 
-            #endregion
+//            return Ok();
+//        }
 
-            var triggerResult = await _pusherService.SendAsync(information.SocketId, information.ChannelName, information.EventName,
-                 information.Information);
+//        /// <summary>
+//        /// Broadcast signalr notification to all clients.
+//        /// </summary>
+//        /// <returns></returns>
+//        [AllowAnonymous]
+//        [HttpPost("signalr/send")]
+//        public async Task<IActionResult> BroadcastSignalrNotification([FromBody] BroadcastSignalrNotificationViewModel info)
+//        {
+//            if (info == null)
+//            {
+//                info = new BroadcastSignalrNotificationViewModel();
+//                TryValidateModel(info);
+//            }
 
-            return Ok();
-        }
-        
-        /// <summary>
-        /// Broadcast signalr notification to all clients.
-        /// </summary>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpPost("signalr/send")]
-        public async Task<IActionResult> BroadcastSignalrNotification([FromBody] BroadcastSignalrNotificationViewModel info)
-        {
-            if (info == null)
-            {
-                info = new BroadcastSignalrNotificationViewModel();
-                TryValidateModel(info);
-            }
+//            if (!ModelState.IsValid)
+//                return BadRequest(ModelState);
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+//            // Find client.
+//            IClientProxy clientProxy;
+//            if (info.Clients != null && info.Clients.Count > 0)
+//            {
+//                var clientIds = info.Clients.ToList();
+//                clientProxy = _notificationHubContext.Clients.Clients(clientIds);
+//            }
+//            else
+//                clientProxy = _notificationHubContext.Clients.All;
 
-            // Find client.
-            IClientProxy clientProxy;
-            if (info.Clients != null && info.Clients.Count > 0)
-            {
-                var clientIds = info.Clients.ToList();
-                clientProxy = _notificationHubContext.Clients.Clients(clientIds);
-            }
-            else
-                clientProxy = _notificationHubContext.Clients.All;
+//            await _realTimeNotificationService.BroadcastAsync(clientProxy, info.MethodName, info.Data);
+//            return Ok();
+//        }
 
-            await _realTimeNotificationService.BroadcastAsync(clientProxy, info.MethodName, info.Data);
-            return Ok();
-        }
-
-#endif
-        #endregion
+//#endif
+//        #endregion
     }
 }

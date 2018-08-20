@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SystemConstant.Enumerations;
-using SystemDatabase.Interfaces;
-using SystemDatabase.Models.Entities;
+using AppDb.Interfaces;
+using AppDb.Models.Entities;
+using AppModel.Enumerations;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,7 +67,7 @@ namespace Main.Hubs
         public override async Task OnConnectedAsync()
         {
             // Find http context.
-            var httpContext = Context.Connection.GetHttpContext();
+            var httpContext = Context.GetHttpContext();
             if (httpContext == null)
                 return;
 
@@ -124,11 +124,11 @@ namespace Main.Hubs
             {
                 case AccountRole.Admin:
                     // Add user to group task.
-                    var pAddUserToAdminGroupTask = Groups.AddAsync(Context.ConnectionId, RealTimeGroupConstant.Admin);
+                    var pAddUserToAdminGroupTask = Groups.AddToGroupAsync(Context.ConnectionId, RealTimeGroupConstant.Admin);
                     tasks.Add(pAddUserToAdminGroupTask);
 
                     // Add user to ordinary user.
-                    var pAddUserToUserGroupTask = Groups.AddAsync(Context.ConnectionId, RealTimeGroupConstant.User);
+                    var pAddUserToUserGroupTask = Groups.AddToGroupAsync(Context.ConnectionId, RealTimeGroupConstant.User);
                     tasks.Add(pAddUserToUserGroupTask);
                     break;
             }

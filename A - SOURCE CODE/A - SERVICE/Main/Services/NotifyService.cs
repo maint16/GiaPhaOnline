@@ -2,15 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SystemConstant.Enumerations;
-using SystemDatabase.Interfaces;
-using SystemDatabase.Models.Entities;
 using Main.Interfaces;
 using Main.Interfaces.Services;
 using Main.Models;
 using Main.Models.PushNotification.Notification;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections;
+using AppDb.Interfaces;
+using AppModel.Enumerations;
 using Main.Models.PushNotification;
 
 namespace Main.Services

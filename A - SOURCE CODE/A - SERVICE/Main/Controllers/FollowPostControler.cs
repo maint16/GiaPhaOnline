@@ -1,23 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SystemConstant.Enumerations;
-using SystemConstant.Enumerations.Order;
-using SystemDatabase.Interfaces;
-using SystemDatabase.Interfaces.Repositories;
-using SystemDatabase.Models.Entities;
+﻿using AppDb.Interfaces;
+using AppDb.Interfaces.Repositories;
 using AutoMapper;
-using Main.Authentications.ActionFilters;
 using Main.Interfaces.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels;
-using Shared.ViewModels.FollowPosts;
 
 namespace Main.Controllers
 {
@@ -27,17 +13,19 @@ namespace Main.Controllers
         #region Constructors
 
         /// <summary>
-        /// Initialize controller with injectors.
+        ///     Initialize controller with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
         /// <param name="timeService"></param>
-        /// <param name="dbSharedService"></param>
+        /// <param name="relationalDbService"></param>
         /// <param name="identityService"></param>
-        public FollowPostController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService, IDbSharedService dbSharedService, IIdentityService identityService) : base(unitOfWork, mapper, timeService, dbSharedService, identityService)
+        public FollowPostController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+            IRelationalDbService relationalDbService, IIdentityService identityService) : base(unitOfWork, mapper, timeService,
+            relationalDbService, identityService)
         {
             _unitOfWork = unitOfWork;
-            _databaseFunction = dbSharedService;
+            _databaseFunction = relationalDbService;
         }
 
         #endregion
@@ -50,257 +38,255 @@ namespace Main.Controllers
         private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
-        /// Provide access to generic database functions.
+        ///     Provide access to generic database functions.
         /// </summary>
-        private readonly IDbSharedService _databaseFunction;
+        private readonly IRelationalDbService _databaseFunction;
 
         #endregion
 
-        #region Methods
+        //#region Methods
 
-        /// <summary>
-        ///     Add a category into database.
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("")]
-        public async Task<IActionResult> StartFollowingPost([FromBody] FollowPostViewModel info)
-        {
-            #region Find post
+        ///// <summary>
+        /////     Add a category into database.
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpPost("")]
+        //public async Task<IActionResult> StartFollowingPost([FromBody] FollowPostViewModel info)
+        //{
+        //    #region Find post
 
-            // Get posts by using id.
-            var posts = UnitOfWork.Posts.Search();
-            posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
-            var post = await posts.FirstOrDefaultAsync();
+        //    // Get posts by using id.
+        //    var posts = UnitOfWork.Posts.Search();
+        //    posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
+        //    var post = await posts.FirstOrDefaultAsync();
 
-            // Post is not found.
-            if (post == null)
-                return NotFound(new ApiResponse(HttpMessages.PostNotFound));
+        //    // Post is not found.
+        //    if (post == null)
+        //        return NotFound(new ApiResponse(HttpMessages.PostNotFound));
 
-            #endregion
+        //    #endregion
 
-            #region Check following duplicate
+        //    #region Check following duplicate
 
-            // Get identity from request.
-            var identity = IdentityService.GetProfile(HttpContext);
+        //    // Get identity from request.
+        //    var identity = IdentityService.GetProfile(HttpContext);
 
-            // Get follow posts.
-            var followPosts = UnitOfWork.FollowPosts.Search();
-            followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == post.Id);
-            var followPost = await followPosts.FirstOrDefaultAsync();
+        //    // Get follow posts.
+        //    var followPosts = UnitOfWork.FollowPosts.Search();
+        //    followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == post.Id);
+        //    var followPost = await followPosts.FirstOrDefaultAsync();
 
-            if (followPost != null)
-            {
-                followPost.Status = ItemStatus.Available;
-            }
-            else
-            {
-                followPost = new FollowPost();
-                followPost.FollowerId = identity.Id;
-                followPost.PostId = info.PostId;
-                followPost.Status = ItemStatus.Available;
-                followPost.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+        //    if (followPost != null)
+        //    {
+        //        followPost.Status = ItemStatus.Available;
+        //    }
+        //    else
+        //    {
+        //        followPost = new FollowPost();
+        //        followPost.FollowerId = identity.Id;
+        //        followPost.PostId = info.PostId;
+        //        followPost.Status = ItemStatus.Available;
+        //        followPost.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-                // Insert record into system.
-                UnitOfWork.FollowPosts.Insert(followPost);
-            }
+        //        // Insert record into system.
+        //        UnitOfWork.FollowPosts.Insert(followPost);
+        //    }
 
-            // Commit changes to system.
-            await UnitOfWork.CommitAsync();
+        //    // Commit changes to system.
+        //    await UnitOfWork.CommitAsync();
 
-            #endregion
+        //    #endregion
 
-            return Ok(followPost);
-        }
+        //    return Ok(followPost);
+        //}
 
-        /// <summary>
-        ///     Stop following a specific post.
-        /// </summary>
-        /// <param name="postId"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public async Task<IActionResult> StopFollowingPost([FromQuery] int postId)
-        {
-            #region Check following duplicate
+        ///// <summary>
+        /////     Stop following a specific post.
+        ///// </summary>
+        ///// <param name="postId"></param>
+        ///// <returns></returns>
+        //[HttpDelete]
+        //public async Task<IActionResult> StopFollowingPost([FromQuery] int postId)
+        //{
+        //    #region Check following duplicate
 
-            // Get identity from request.
-            var identity = IdentityService.GetProfile(HttpContext);
+        //    // Get identity from request.
+        //    var identity = IdentityService.GetProfile(HttpContext);
 
-            // Get follow posts.
-            var followPosts = UnitOfWork.FollowPosts.Search();
-            followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == postId);
-            var followPost = await followPosts.FirstOrDefaultAsync();
+        //    // Get follow posts.
+        //    var followPosts = UnitOfWork.FollowPosts.Search();
+        //    followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == postId);
+        //    var followPost = await followPosts.FirstOrDefaultAsync();
 
-            if (followPost == null)
-                return NotFound(new ApiResponse(HttpMessages.PostHasntBeenFollowedYet));
+        //    if (followPost == null)
+        //        return NotFound(new ApiResponse(HttpMessages.PostHasntBeenFollowedYet));
 
-            // Update follow post.
-            followPost.Status = ItemStatus.NotAvailable;
+        //    // Update follow post.
+        //    followPost.Status = ItemStatus.NotAvailable;
 
-            // Commit changes to system.
-            await UnitOfWork.CommitAsync();
+        //    // Commit changes to system.
+        //    await UnitOfWork.CommitAsync();
 
-            #endregion
+        //    #endregion
 
-            return Ok(followPost);
-        }
+        //    return Ok(followPost);
+        //}
 
-        /// <summary>
-        ///     Search for a list of categories.
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        [HttpPost("search")]
-        [ByPassAuthorization]
-        public async Task<IActionResult> SearchFollowingPosts([FromBody] SearchFollowPostViewModel condition)
-        {
-            #region Parameters validation
+        ///// <summary>
+        /////     Search for a list of categories.
+        ///// </summary>
+        ///// <param name="condition"></param>
+        ///// <returns></returns>
+        //[HttpPost("search")]
+        //[ByPassAuthorization]
+        //public async Task<IActionResult> SearchFollowingPosts([FromBody] SearchFollowPostViewModel condition)
+        //{
+        //    #region Parameters validation
 
-            if (condition == null)
-            {
-                condition = new SearchFollowPostViewModel();
-                TryValidateModel(condition);
-            }
+        //    if (condition == null)
+        //    {
+        //        condition = new SearchFollowPostViewModel();
+        //        TryValidateModel(condition);
+        //    }
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-            #endregion
+        //    #endregion
 
-            #region Search for information
+        //    #region Search for information
 
-            // Find request identity.
-            var identity = IdentityService.GetProfile(HttpContext);
+        //    // Find request identity.
+        //    var identity = IdentityService.GetProfile(HttpContext);
 
-            // Get all categories.
-            var followPosts = UnitOfWork.FollowPosts.Search();
+        //    // Get all categories.
+        //    var followPosts = UnitOfWork.FollowPosts.Search();
 
-            // Post id is defined.
-            if (condition.PostId != null)
-                followPosts = followPosts.Where(x => x.PostId == condition.PostId.Value);
+        //    // Post id is defined.
+        //    if (condition.PostId != null)
+        //        followPosts = followPosts.Where(x => x.PostId == condition.PostId.Value);
 
-            // Statuses are defined.
-            if (condition.Statuses != null && condition.Statuses.Count > 0)
-            {
-                condition.Statuses = condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x))
-                    .ToHashSet();
+        //    // Statuses are defined.
+        //    if (condition.Statuses != null && condition.Statuses.Count > 0)
+        //    {
+        //        condition.Statuses = condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x))
+        //            .ToHashSet();
 
-                if (condition.Statuses.Count > 0)
-                    followPosts = followPosts.Where(x => condition.Statuses.Contains(x.Status));
-            }
+        //        if (condition.Statuses.Count > 0)
+        //            followPosts = followPosts.Where(x => condition.Statuses.Contains(x.Status));
+        //    }
 
-            // Only see the posts that user is following.
-            followPosts = followPosts.Where(x => x.FollowerId == identity.Id);
-            
-            // Created time is defined.
-            var createdTime = condition.CreatedTime;
-            if (createdTime != null)
-            {
-                var from = createdTime.From;
-                var to = createdTime.To;
+        //    // Only see the posts that user is following.
+        //    followPosts = followPosts.Where(x => x.FollowerId == identity.Id);
 
-                if (from != null)
-                    followPosts = DbSharedService.SearchNumericProperty(followPosts,
-                        x => x.CreatedTime, from.Value, NumericComparision.GreaterEqual);
+        //    // Created time is defined.
+        //    var createdTime = condition.CreatedTime;
+        //    if (createdTime != null)
+        //    {
+        //        var from = createdTime.From;
+        //        var to = createdTime.To;
 
-                if (to != null)
-                    followPosts = DbSharedService.SearchNumericProperty(followPosts,
-                        x => x.CreatedTime, to.Value, NumericComparision.LowerEqual);
-            }
+        //        if (from != null)
+        //            followPosts = RelationalDbService.SearchNumericProperty(followPosts,
+        //                x => x.CreatedTime, from.Value, NumericComparision.GreaterEqual);
 
-            // Sort by properties.
-            if (condition.Sort != null)
-                followPosts =
-                    DbSharedService.Sort(followPosts, condition.Sort.Direction,
-                        condition.Sort.Property);
-            else
-                followPosts = DbSharedService.Sort(followPosts, SortDirection.Decending,
-                    FollowPostSort.CreatedTime);
+        //        if (to != null)
+        //            followPosts = RelationalDbService.SearchNumericProperty(followPosts,
+        //                x => x.CreatedTime, to.Value, NumericComparision.LowerEqual);
+        //    }
 
-            #endregion
+        //    // Sort by properties.
+        //    if (condition.Sort != null)
+        //        followPosts =
+        //            RelationalDbService.Sort(followPosts, condition.Sort.Direction,
+        //                condition.Sort.Property);
+        //    else
+        //        followPosts = RelationalDbService.Sort(followPosts, SortDirection.Decending,
+        //            FollowPostSort.CreatedTime);
 
-            #region Result gathering
+        //    #endregion
 
-            // Result initialization.
-            var result = new SearchResult<IList<FollowPost>>();
-            result.Total = await followPosts.CountAsync();
-            result.Records = await DbSharedService.Paginate(followPosts, condition.Pagination).ToListAsync();
+        //    #region Result gathering
 
-            #endregion
+        //    // Result initialization.
+        //    var result = new SearchResult<IList<FollowPost>>();
+        //    result.Total = await followPosts.CountAsync();
+        //    result.Records = await RelationalDbService.Paginate(followPosts, condition.Pagination).ToListAsync();
 
-            return Ok(result);
-        }
+        //    #endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        [HttpPost("load")]
-        public async Task<IActionResult> LoadFollowingPosts([FromBody]LoadFollowPostViewModel condition)
-        {
-            #region Parameters validation
+        //    return Ok(result);
+        //}
 
-            if (condition == null)
-            {
-                condition = new LoadFollowPostViewModel();
-                TryValidateModel(condition);
-            }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="condition"></param>
+        ///// <returns></returns>
+        //[HttpPost("load")]
+        //public async Task<IActionResult> LoadFollowingPosts([FromBody]LoadFollowPostViewModel condition)
+        //{
+        //    #region Parameters validation
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+        //    if (condition == null)
+        //    {
+        //        condition = new LoadFollowPostViewModel();
+        //        TryValidateModel(condition);
+        //    }
 
-            #endregion
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-            #region Search for information
+        //    #endregion
 
-            // Get all follow posts
-            var followPosts = _unitOfWork.FollowPosts.Search();
-            followPosts = LoadFollowingPosts(followPosts, condition);
+        //    #region Search for information
 
-            // Sort by properties.
-            if (condition.Sort != null)
-                followPosts =
-                    _databaseFunction.Sort(followPosts, condition.Sort.Direction,
-                        condition.Sort.Property);
-            else
-                followPosts = _databaseFunction.Sort(followPosts, SortDirection.Decending,
-                    FollowPostSort.CreatedTime);
+        //    // Get all follow posts
+        //    var followPosts = _unitOfWork.FollowPosts.Search();
+        //    followPosts = LoadFollowingPosts(followPosts, condition);
 
-            // Result initialization.
-            var result = new SearchResult<IList<FollowPost>>();
-            result.Total = await followPosts.CountAsync();
-            result.Records = await _databaseFunction.Paginate(followPosts, condition.Pagination).ToListAsync();
+        //    // Sort by properties.
+        //    if (condition.Sort != null)
+        //        followPosts =
+        //            _databaseFunction.Sort(followPosts, condition.Sort.Direction,
+        //                condition.Sort.Property);
+        //    else
+        //        followPosts = _databaseFunction.Sort(followPosts, SortDirection.Decending,
+        //            FollowPostSort.CreatedTime);
 
-            #endregion
+        //    // Result initialization.
+        //    var result = new SearchResult<IList<FollowPost>>();
+        //    result.Total = await followPosts.CountAsync();
+        //    result.Records = await _databaseFunction.Paginate(followPosts, condition.Pagination).ToListAsync();
 
-            return Ok(result);
-        }
+        //    #endregion
 
-        /// <summary>
-        ///     Load follow post by using specific conditions.
-        /// </summary>
-        /// <param name="followPosts"></param>
-        /// <param name="conditions"></param>
-        /// <returns></returns>
-        public IQueryable<FollowPost> LoadFollowingPosts(IQueryable<FollowPost> followPosts,
-            LoadFollowPostViewModel conditions)
-        {
-            if (conditions == null)
-                return followPosts;
+        //    return Ok(result);
+        //}
 
-            // PostId has been defined.
-            if (conditions.PostIds != null && conditions.PostIds.Count > 0)
-            {
-                conditions.PostIds = conditions.PostIds.Where(x => x > 0).ToList();
-                if (conditions.PostIds.Count > 0)
-                    followPosts = followPosts.Where(x => conditions.PostIds.Contains(x.PostId));
-            }
+        ///// <summary>
+        /////     Load follow post by using specific conditions.
+        ///// </summary>
+        ///// <param name="followPosts"></param>
+        ///// <param name="conditions"></param>
+        ///// <returns></returns>
+        //public IQueryable<FollowPost> LoadFollowingPosts(IQueryable<FollowPost> followPosts,
+        //    LoadFollowPostViewModel conditions)
+        //{
+        //    if (conditions == null)
+        //        return followPosts;
 
-            return followPosts;
-        }
+        //    // PostId has been defined.
+        //    if (conditions.PostIds != null && conditions.PostIds.Count > 0)
+        //    {
+        //        conditions.PostIds = conditions.PostIds.Where(x => x > 0).ToList();
+        //        if (conditions.PostIds.Count > 0)
+        //            followPosts = followPosts.Where(x => conditions.PostIds.Contains(x.PostId));
+        //    }
 
-        #endregion
+        //    return followPosts;
+        //}
 
-
+        //#endregion
     }
 }

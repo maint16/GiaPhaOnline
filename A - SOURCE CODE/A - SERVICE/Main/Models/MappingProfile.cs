@@ -1,7 +1,5 @@
-﻿using SystemDatabase.Models.Entities;
+﻿using AppDb.Models.Entities;
 using AutoMapper;
-using Shared.ViewModels.Categories;
-using Shared.ViewModels.Posts;
 
 namespace Main.Models
 {
@@ -10,12 +8,12 @@ namespace Main.Models
         #region Constructor
 
         /// <summary>
-        /// Initialize automapper mapping profile.
+        ///     Initialize automapper mapping profile.
         /// </summary>
         public MappingProfile()
         {
             // Post mapping.
-            CreateMap<AddPostViewModel, Post>();
+            //CreateMap<AddPostViewModel, Post>();
         }
 
         #endregion
