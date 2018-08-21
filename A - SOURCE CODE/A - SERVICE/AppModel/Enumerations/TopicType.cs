@@ -1,6 +1,6 @@
 ﻿namespace AppModel.Enumerations
 {
-    public enum PostType
+    public enum TopicType
     {
         Private,
         Public

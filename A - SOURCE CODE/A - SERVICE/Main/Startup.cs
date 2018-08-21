@@ -17,7 +17,6 @@ using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
 using Main.Constants;
-using Main.Hubs;
 using Main.Interfaces;
 using Main.Interfaces.Services;
 using Main.Models;
@@ -123,7 +122,7 @@ namespace Main
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();
             services.AddScoped<IPushService, FcmService>();
-            services.AddScoped<INotifyService, NotifyService>();
+//            services.AddScoped<INotifyService, NotifyService>();
             services.AddScoped<ISendMailService, SendGridService>();
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
@@ -325,7 +324,7 @@ namespace Main
             app.UseMvc();
 
             // Use signalr connection.
-            app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
+            //app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
         }
         
         #endregion

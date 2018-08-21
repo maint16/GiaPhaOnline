@@ -22,11 +22,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Hubs\AuthorizedBaseHub.cs" />
+    <Compile Remove="Hubs\NotificationHub.cs" />
     <Compile Remove="Interfaces\Services\ITemporaryValueCacheService.cs" />
+    <Compile Remove="Services\NotifyService.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Hubs\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

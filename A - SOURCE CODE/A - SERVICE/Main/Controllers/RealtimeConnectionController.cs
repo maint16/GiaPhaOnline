@@ -1,7 +1,5 @@
 ﻿using AppDb.Interfaces;
-using AppDb.Interfaces.Repositories;
 using AutoMapper;
-using Main.Hubs;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -24,16 +22,14 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         /// <param name="pusherService"></param>
         /// <param name="realTimeNotificationService"></param>
-        /// <param name="notificationHubContext"></param>
         public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
             IRelationalDbService relationalDbService, IIdentityService identityService,
-            IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService,
-            IHubContext<NotificationHub> notificationHubContext) : base(unitOfWork, mapper, timeService,
+            IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService
+            ) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _pusherService = pusherService;
             _realTimeNotificationService = realTimeNotificationService;
-            _notificationHubContext = notificationHubContext;
         }
 
         #endregion
@@ -46,8 +42,7 @@ namespace Main.Controllers
         private readonly IPusherService _pusherService;
 
         private readonly IRealTimeNotificationService _realTimeNotificationService;
-
-        private readonly IHubContext<NotificationHub> _notificationHubContext;
+        
 
         #endregion
 

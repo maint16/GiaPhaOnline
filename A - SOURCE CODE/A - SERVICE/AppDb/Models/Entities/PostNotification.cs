@@ -55,7 +55,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; }
+        public Topic Post { get; set; }
 
         /// <summary>
         ///     Who broadcasted the notification.

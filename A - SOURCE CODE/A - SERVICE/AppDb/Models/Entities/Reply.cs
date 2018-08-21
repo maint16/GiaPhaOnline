@@ -1,32 +1,38 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AppModel.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
 {
-    public class Comment
+    public class Reply
     {
         #region Properties
 
         /// <summary>
         ///     Id of comment (Auto incremented)
         /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
         ///     Who wrote the comment.
         /// </summary>
+        [Required]
         public int OwnerId { get; set; }
 
         /// <summary>
         ///     Which post this comment belongs to.
         /// </summary>
-        public int PostId { get; set; }
+        [Required]
+        public int TopicId { get; set; }
 
         /// <summary>
         ///     Comment content.
         /// </summary>
+        [Required]
         public string Content { get; set; }
 
         /// <summary>
@@ -37,6 +43,7 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When was the comment created.
         /// </summary>
+        [Required]
         public double CreatedTime { get; set; }
 
         /// <summary>
@@ -56,23 +63,11 @@ namespace AppDb.Models.Entities
         public Account Owner { get; set; }
 
         /// <summary>
-        ///     One comment can only belong to one post.
+        ///     One reply can only belong to one topic.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; }
-
-        /// <summary>
-        ///     List of notifications belong to this comment.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<CommentNotification> CommentNotifications { get; set; }
-
-        /// <summary>
-        ///     List of reports belong to this current comment.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<CommentReport> CommentReports { get; set; }
+        [ForeignKey(nameof(TopicId))]
+        public Topic Topic { get; set; }
 
         #endregion
     }

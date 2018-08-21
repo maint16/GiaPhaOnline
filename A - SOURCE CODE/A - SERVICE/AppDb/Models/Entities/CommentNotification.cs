@@ -72,14 +72,14 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(CommentId))]
-        public Comment Comment { get; set; }
+        public Reply Comment { get; set; }
 
         /// <summary>
         ///     Which post comment belongs to.
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; }
+        public Topic Post { get; set; }
 
         #endregion
     }

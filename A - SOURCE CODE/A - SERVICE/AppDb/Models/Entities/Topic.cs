@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
 {
-    public class Post
+    public class Topic
     {
         #region Properties
 
         /// <summary>
-        ///     Id of post.
+        ///     Id of topcic.
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,35 +20,45 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Who owns the post.
         /// </summary>
+        [Required]
         public int OwnerId { get; set; }
 
         /// <summary>
-        ///     Title of post.
+        ///     Category that topic belongs to.
         /// </summary>
+        [Required]
+        public int CategoryId { get; set; }
+
+        /// <summary>
+        ///     Title of topic.
+        /// </summary>
+        [Required]
         public string Title { get; set; }
 
         /// <summary>
-        ///     Post body.
+        ///     Topic body.
         /// </summary>
+        [Required]
         public string Body { get; set; }
 
         /// <summary>
-        ///     Type of post.
+        ///     Type of topic.
         /// </summary>
-        public PostType Type { get; set; }
+        public TopicType Type { get; set; }
 
         /// <summary>
-        ///     Status of post.
+        ///     Status of topic.
         /// </summary>
-        public PostStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
-        ///     When the post was created.
+        ///     When the topic was created.
         /// </summary>
+        [Required]
         public double CreatedTime { get; set; }
 
         /// <summary>
-        ///     When the post was lastly modified.
+        ///     When the topic was lastly modified.
         /// </summary>
         public double? LastModifiedTime { get; set; }
 
@@ -64,46 +74,29 @@ namespace AppDb.Models.Entities
         public Account Owner { get; set; }
 
         /// <summary>
-        ///     Category which post belongs to.
+        ///     Category which topic belongs to.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Categorization> Categorizations { get; set; }
+        [ForeignKey(nameof(CategoryId))]
+        public Category Category { get; set; }
 
         /// <summary>
-        ///     List of comment belongs to the post.
+        ///     List of reply belongs to the post.
         /// </summary>
         [JsonIgnore]
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Reply> Replies { get; set; }
 
         /// <summary>
-        ///     One post can be monitored by follow post.
+        ///     One topic can be monitored by follow topic.
         /// </summary>
         [JsonIgnore]
-        public ICollection<FollowPost> FollowPosts { get; set; }
+        public ICollection<FollowTopic> FollowTopics { get; set; }
 
         /// <summary>
-        ///     Which notification comment post belongs to.
+        ///     One topic can have many reports about it.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<CommentNotification> CommentNotifications { get; set; }
-
-        /// <summary>
-        ///     Which notification post the post belongs to.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<PostNotification> PostNotifications { get; set; }
-
-        /// <summary>
-        ///     One post can have many reports about its comments.
-        /// </summary>
-        [JsonIgnore]
-        public ICollection<CommentReport> ReportedComments { get; set; }
-
-        /// <summary>
-        ///     One post can have many reports about it.
-        /// </summary>
-        [JsonIgnore]
-        public ICollection<PostReport> PostReports { get; set; }
+        public ICollection<ReportTopic> ReportTopics { get; set; }
 
         #endregion
     }

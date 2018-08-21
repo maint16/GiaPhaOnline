@@ -1,22 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AppModel.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
 {
-    public class FollowPost
+    public class FollowTopic
     {
         #region Properties
 
         /// <summary>
         ///     Who is the follower of post.
         /// </summary>
+        [Key]
         public int FollowerId { get; set; }
 
         /// <summary>
-        ///     Which post is being followed by the follower.
+        ///     Which topci is being followed by the follower.
         /// </summary>
-        public int PostId { get; set; }
+        [Key]
+        public int TopicId { get; set; }
 
         /// <summary>
         /// Status of follow post.
@@ -26,6 +29,7 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When the following action was created.
         /// </summary>
+        [Required]
         public double CreatedTime { get; set; }
 
         #endregion
@@ -40,11 +44,11 @@ namespace AppDb.Models.Entities
         public Account Follower { get; set; }
 
         /// <summary>
-        ///     Post which is being monitored by this relationship.
+        ///     Topic which is being monitored by this relationship.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; }
+        [ForeignKey(nameof(TopicId))]
+        public Topic Topic { get; set; }
 
         #endregion
     }

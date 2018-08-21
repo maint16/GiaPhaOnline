@@ -14,6 +14,11 @@ namespace AppDb.Interfaces
         IRepository<Account> Accounts { get; }
 
         /// <summary>
+        ///     Provides functions to access category group database.
+        /// </summary>
+        IRepository<CategoryGroup> CategoryGroups { get; }
+
+        /// <summary>
         ///     Provides functions to access category database.
         /// </summary>
         IRepository<Category> Categories { get; }
@@ -24,64 +29,73 @@ namespace AppDb.Interfaces
         IRepository<FollowCategory> FollowCategories { get; }
 
         /// <summary>
-        ///     Provides function to access categorization database.
+        ///     Provides functions to access reply database.
         /// </summary>
-        IRepository<Categorization> PostCategorizations { get; }
+        IRepository<Reply> Replies { get; }
 
         /// <summary>
-        ///     Provides functions to access comment database.
+        ///     Provides functions to access topic database.
         /// </summary>
-        IRepository<Comment> Comments { get; }
+        IRepository<Topic> Topics { get; }
 
         /// <summary>
-        ///     Provides functions to access comment reports database.
+        ///     Provides functions to access FollowTopic table.
         /// </summary>
-        IRepository<CommentReport> CommentReports { get; }
+        IRepository<FollowTopic> FollowTopics { get; }
 
         /// <summary>
-        /// Provides functions to access CommentNotification table.
+        ///     Provides functions to access topic reports database.
         /// </summary>
-        IRepository<CommentNotification> CommentNotifications { get; }
-
-        /// <summary>
-        ///     Provides functions to access post reports database.
-        /// </summary>
-        IRepository<Post> Posts { get; }
-
-        /// <summary>
-        ///     Provides functions to access FollowPost table.
-        /// </summary>
-        IRepository<FollowPost> FollowPosts { get; }
-
-        /// <summary>
-        ///     Provides functions to access post reports database.
-        /// </summary>
-        IRepository<PostReport> PostReports { get; }
-
-        /// <summary>
-        /// Provide functions to access PostNotification table.
-        /// </summary>
-        IRepository<PostNotification> PostNotifications { get; }
-
-        /// <summary>
-        ///     Provides functions to access signalr connections database.
-        /// </summary>
-        IRepository<SignalrConnection> SignalrConnections { get; }
+        IRepository<ReportTopic> ReportTopics { get; }
 
         /// <summary>
         ///     Provides functions to access token database.
         /// </summary>
-        IRepository<Token> Tokens { get; }
+        IRepository<AccessToken> AccessTokens { get; }
 
         /// <summary>
-        /// Provides function to access Device datablase.
+        ///     Provides functions to notification message database.
         /// </summary>
-        IRepository<Device> Devices { get; }
+        IRepository<NotificationMessage> NotificationMessages { get; }
 
-        /// <summary>
-        /// List of groups in FCM service.
-        /// </summary>
-        IRepository<FcmGroup> FcmGroups { get; }
+        //        /// <summary>
+        //        ///     Provides function to access categorization database.
+        //        /// </summary>
+        //        IRepository<Categorization> PostCategorizations { get; }
+
+
+
+        //        /// <summary>
+        //        ///     Provides functions to access comment reports database.
+        //        /// </summary>
+        //        IRepository<CommentReport> CommentReports { get; }
+
+        //        /// <summary>
+        //        /// Provides functions to access CommentNotification table.
+        //        /// </summary>
+        //        IRepository<CommentNotification> CommentNotifications { get; }
+
+        //        /// <summary>
+        //        /// Provide functions to access PostNotification table.
+        //        /// </summary>
+        //        IRepository<PostNotification> PostNotifications { get; }
+
+        //        /// <summary>
+        //        ///     Provides functions to access signalr connections database.
+        //        /// </summary>
+        //        IRepository<SignalrConnection> SignalrConnections { get; }
+
+
+
+        //        /// <summary>
+        //        /// Provides function to access Device datablase.
+        //        /// </summary>
+        //        IRepository<Device> Devices { get; }
+
+        //        /// <summary>
+        //        /// List of groups in FCM service.
+        //        /// </summary>
+        //        IRepository<FcmGroup> FcmGroups { get; }
 
         #endregion
 

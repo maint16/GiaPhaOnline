@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AppModel.Enumerations;
 using Newtonsoft.Json;
 
@@ -11,11 +12,13 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Owner of following relationship.
         /// </summary>
+        [Key]
         public int FollowerId { get; set; }
 
         /// <summary>
         ///     Category index.
         /// </summary>
+        [Key]
         public int CategoryId { get; set; }
 
         /// <summary>
@@ -26,6 +29,7 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When the relationship was lastly created.
         /// </summary>
+        [Required]
         public double CreatedTime { get; set; }
         
         #endregion

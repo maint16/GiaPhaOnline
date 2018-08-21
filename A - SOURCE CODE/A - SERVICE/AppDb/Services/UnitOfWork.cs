@@ -46,6 +46,11 @@ namespace AppDb.Services
         private IRepository<Account> _accounts;
 
         /// <summary>
+        ///     Provide access to category groups database.
+        /// </summary>
+        private IRepository<CategoryGroup> _categoryGroups;
+
+        /// <summary>
         ///     Provide access to categories database.
         /// </summary>
         private IRepository<Category> _categories;
@@ -56,64 +61,69 @@ namespace AppDb.Services
         private IRepository<FollowCategory> _followCategories;
 
         /// <summary>
-        /// Provide access to categorization database.
+        ///     Provide access to replys database.
         /// </summary>
-        private IRepository<Categorization> _postCategorizations;
+        private IRepository<Reply> _replies;
 
         /// <summary>
-        ///     Provide access to comments database.
+        ///     Provide access to topic report database.
         /// </summary>
-        private IRepository<Comment> _comments;
+        private IRepository<ReportTopic> _reportTopics;
 
         /// <summary>
-        ///     Provide functions to access comment reports database.
+        ///     Provides access to topic database.
         /// </summary>
-        private IRepository<CommentReport> _commentReports;
+        private IRepository<Topic> _topics;
 
         /// <summary>
-        /// Provides functions to access comment notification table.
+        /// Provides access to FollowTopic table.
         /// </summary>
-        private IRepository<CommentNotification> _commentNotifications;
-
-        /// <summary>
-        ///     Provide access to post report database.
-        /// </summary>
-        private IRepository<PostReport> _postReports;
-
-        /// <summary>
-        ///     Provides access to post database.
-        /// </summary>
-        private IRepository<Post> _posts;
-
-        /// <summary>
-        /// Provides access to PostNotification database.
-        /// </summary>
-        private IRepository<PostNotification> _postNotifications;
-
-        /// <summary>
-        /// Provides access to FollowPost table.
-        /// </summary>
-        private IRepository<FollowPost> _followPosts;
+        private IRepository<FollowTopic> _followTopics;
 
         /// <summary>
         ///     Provide access to token database.
         /// </summary>
-        private IRepository<Token> _tokens;
+        private IRepository<AccessToken> _accessTokens;
 
         /// <summary>
-        ///     Provide access to signalr connection database.
+        ///     Provide access to notification message database.
         /// </summary>
-        private IRepository<SignalrConnection> _signalrConnections;
+        private IRepository<NotificationMessage> _notificationMessages;
 
-        /// <summary>
-        /// Provide access to device database.
-        /// </summary>
-        private IRepository<Device> _devices;
+        //        /// <summary>
+        //        /// Provide access to categorization database.
+        //        /// </summary>
+        //        private IRepository<Categorization> _postCategorizations;
 
-        /// <summary>
-        /// List of groups in FCM services.
-        /// </summary>
-        private IRepository<FcmGroup> _fcmGroups;
+        //        /// <summary>
+        //        ///     Provide functions to access comment reports database.
+        //        /// </summary>
+        //        private IRepository<CommentReport> _commentReports;
+
+        //        /// <summary>
+        //        /// Provides functions to access comment notification table.
+        //        /// </summary>
+        //        private IRepository<CommentNotification> _commentNotifications;
+
+        //        /// <summary>
+        //        /// Provides access to PostNotification database.
+        //        /// </summary>
+        //        private IRepository<PostNotification> _postNotifications;
+
+        //        /// <summary>
+        //        ///     Provide access to signalr connection database.
+        //        /// </summary>
+        //        private IRepository<SignalrConnection> _signalrConnections;
+
+        //        /// <summary>
+        //        /// Provide access to device database.
+        //        /// </summary>
+        //        private IRepository<Device> _devices;
+
+        //        /// <summary>
+        //        /// List of groups in FCM services.
+        //        /// </summary>
+        //        private IRepository<FcmGroup> _fcmGroups;
 
         #endregion
 
@@ -123,6 +133,11 @@ namespace AppDb.Services
         ///     Provides functions to access account database.
         /// </summary>
         public IRepository<Account> Accounts => _accounts ?? (_accounts = new Repository<Account>(_dbContext));
+
+        /// <summary>
+        ///     Provides functions to access category group database.
+        /// </summary>
+        public IRepository<CategoryGroup> CategoryGroups => _categoryGroups ?? (_categoryGroups = new Repository<CategoryGroup>(_dbContext));
 
         /// <summary>
         ///     Provides functions to access categories database.
@@ -136,72 +151,77 @@ namespace AppDb.Services
             _followCategories ?? (_followCategories = new Repository<FollowCategory>(_dbContext));
 
         /// <summary>
-        /// Provides functions to access categorizations database.
+        ///     Provides functions to access reply database.
         /// </summary>
-        public IRepository<Categorization> PostCategorizations =>
-            _postCategorizations ?? (_postCategorizations = new Repository<Categorization>(_dbContext));
+        public IRepository<Reply> Replies => _replies ?? (_replies = new Repository<Reply>(_dbContext));
 
         /// <summary>
-        ///     Provides functions to access comments database.
+        ///     Provides functions to access to topic reports database.
         /// </summary>
-        public IRepository<Comment> Comments => _comments ?? (_comments = new Repository<Comment>(_dbContext));
+        public IRepository<ReportTopic> ReportTopics
+            => _reportTopics ?? (_reportTopics = new Repository<ReportTopic>(_dbContext));
 
         /// <summary>
-        ///     Provides functions to access CommentNotification database.
+        ///     Provides functions to access topic database.
         /// </summary>
-        public IRepository<CommentNotification> CommentNotifications => _commentNotifications ?? (_commentNotifications = new Repository<CommentNotification>(_dbContext));
+        public IRepository<Topic> Topics => _topics ?? (_topics = new Repository<Topic>(_dbContext));
 
         /// <summary>
-        ///     Provides functions to access comment reports database.
+        /// Provides function to access FollowTopic table.
         /// </summary>
-        public IRepository<CommentReport> CommentReports => _commentReports ??
-                                                                      (_commentReports =
-                                                                          new Repository<CommentReport>(_dbContext));
+        public IRepository<FollowTopic> FollowTopics =>
+            _followTopics ?? (_followTopics = new Repository<FollowTopic>(_dbContext));
 
-        /// <summary>
-        ///     Provides functions to access to post reports database.
-        /// </summary>
-        public IRepository<PostReport> PostReports
-            => _postReports ?? (_postReports = new Repository<PostReport>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access post database.
-        /// </summary>
-        public IRepository<Post> Posts => _posts ?? (_posts = new Repository<Post>(_dbContext));
-
-        /// <summary>
-        /// Provide access to PostNotification table.
-        /// </summary>
-        public IRepository<PostNotification> PostNotifications =>
-            _postNotifications ?? (_postNotifications = new Repository<PostNotification>(_dbContext));
-
-        /// <summary>
-        /// Provides function to access FollowPost table.
-        /// </summary>
-        public IRepository<FollowPost> FollowPosts =>
-            _followPosts ?? (_followPosts = new Repository<FollowPost>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access realtime connection database.
-        /// </summary>
-        public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
-                                                                            (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
-        
         /// <summary>
         ///     Provides function to access token database.
         /// </summary>
-        public IRepository<Token> Tokens => _tokens ?? (_tokens = new Repository<Token>(_dbContext));
+        public IRepository<AccessToken> AccessTokens => _accessTokens ?? (_accessTokens = new Repository<AccessToken>(_dbContext));
 
         /// <summary>
-        ///     Provides functions to access device database.
+        ///     Provides function to access notification message database.
         /// </summary>
-        public IRepository<Device> Devices => _devices ?? (_devices = new Repository<Device>(_dbContext));
+        public IRepository<NotificationMessage> NotificationMessages => _notificationMessages ?? (_notificationMessages = new Repository<NotificationMessage>(_dbContext));
 
-        /// <summary>
-        ///     List of groups on FCM service.
-        /// </summary>
-        public IRepository<FcmGroup> FcmGroups => _fcmGroups ?? (_fcmGroups = new Repository<FcmGroup>(_dbContext));
-        
+        //        /// <summary>
+        //        /// Provides functions to access categorizations database.
+        //        /// </summary>
+        //        public IRepository<Categorization> PostCategorizations =>
+        //            _postCategorizations ?? (_postCategorizations = new Repository<Categorization>(_dbContext));
+
+        //        /// <summary>
+        //        ///     Provides functions to access CommentNotification database.
+        //        /// </summary>
+        //        public IRepository<CommentNotification> CommentNotifications => _commentNotifications ?? (_commentNotifications = new Repository<CommentNotification>(_dbContext));
+
+        //        /// <summary>
+        //        ///     Provides functions to access comment reports database.
+        //        /// </summary>
+        //        public IRepository<CommentReport> CommentReports => _commentReports ??
+        //                                                                      (_commentReports =
+        //                                                                          new Repository<CommentReport>(_dbContext));
+
+        //        /// <summary>
+        //        /// Provide access to PostNotification table.
+        //        /// </summary>
+        //        public IRepository<PostNotification> PostNotifications =>
+        //            _postNotifications ?? (_postNotifications = new Repository<PostNotification>(_dbContext));
+
+        //        /// <summary>
+        //        ///     Provides functions to access realtime connection database.
+        //        /// </summary>
+        //        public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
+        //                                                                            (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
+
+        //        /// <summary>
+        //        ///     Provides functions to access device database.
+        //        /// </summary>
+        //        public IRepository<Device> Devices => _devices ?? (_devices = new Repository<Device>(_dbContext));
+
+        //        /// <summary>
+        //        ///     List of groups on FCM service.
+        //        /// </summary>
+        //        public IRepository<FcmGroup> FcmGroups => _fcmGroups ?? (_fcmGroups = new Repository<FcmGroup>(_dbContext));
+
         #endregion
 
         #endregion

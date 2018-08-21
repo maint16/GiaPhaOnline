@@ -1,46 +1,47 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AppModel.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
 {
-    public class PostReport
+    public class ReportTopic
     {
         #region Properties
 
         /// <summary>
-        ///     Which post is reported.
+        ///     Which topic is reported.
         /// </summary>
-        public int PostId { get; set; }
+        [Key]
+        public int TopicId { get; set; }
 
         /// <summary>
-        ///     Who owns the post.
+        ///     Who report the topic.
         /// </summary>
-        public int OwnerId { get; set; }
-
-        /// <summary>
-        ///     Who report the post.
-        /// </summary>
+        [Key]
         public int ReporterId { get; set; }
 
         /// <summary>
-        ///     Original content of post.
+        ///     Who owns the topic.
         /// </summary>
-        public string Body { get; set; }
+        [Required]
+        public int OwnerId { get; set; }
 
         /// <summary>
-        ///     Reason the post was reported.
+        ///     Reason the topic was reported.
         /// </summary>
+        [Required]
         public string Reason { get; set; }
 
         /// <summary>
-        /// Status of post report.
+        /// Status of topic report.
         /// </summary>
-        public PostReportStatus Status { get; set; }
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     When the report was created.
         /// </summary>
+        [Required]
         public double CreatedTime { get; set; }
 
         /// <summary>
@@ -53,25 +54,25 @@ namespace AppDb.Models.Entities
         #region Relationships
 
         /// <summary>
-        ///     One report is about one post, just one.
+        ///     One report is about one topic, just one.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; }
+        [ForeignKey(nameof(TopicId))]
+        public Topic Topic { get; set; }
 
         /// <summary>
         ///     Report can only be about one account.
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(OwnerId))]
-        public Account PostOwner { get; set; }
+        public Account TopicOwner { get; set; }
 
         /// <summary>
         ///     Report can only belong to one account.
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(ReporterId))]
-        public Account PostReporter { get; set; }
+        public Account TopicReporter { get; set; }
 
         #endregion
     }

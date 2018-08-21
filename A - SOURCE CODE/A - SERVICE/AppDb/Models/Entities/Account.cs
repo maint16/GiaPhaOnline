@@ -30,6 +30,11 @@ namespace AppDb.Models.Entities
         public string Password { get; set; }
 
         /// <summary>
+        ///     Type of account
+        /// </summary>
+        public AccountType Type { get; set; }
+
+        /// <summary>
         ///     Account status in the system.
         /// </summary>
         public AccountStatus Status { get; set; }
@@ -40,22 +45,10 @@ namespace AppDb.Models.Entities
         public AccountRole Role { get; set; }
 
         /// <summary>
-        /// Type of account.
-        /// </summary>
-        public AccountType Type { get; set; }
-
-        /// <summary>
         ///     Relative url (http url) of user photo.
         /// </summary>
         [JsonProperty("Photo")]
-        public string PhotoRelativeUrl { get; set; }
-
-        /// <summary>
-        ///     Physical path of photo on the server.
-        ///     This parameter should be ignored when data is sent back to client.
-        /// </summary>
-        [JsonIgnore]
-        public string PhotoAbsoluteUrl { get; set; }
+        public string Photo { get; set; }
 
         /// <summary>
         ///     When was the account created.
@@ -75,13 +68,19 @@ namespace AppDb.Models.Entities
         ///     Token which belongs to user.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Token> Tokens { get; set; }
+        public virtual ICollection<AccessToken> AccessTokens { get; set; }
+
+        /// <summary>
+        ///     List of group categories created by this account.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<CategoryGroup> CategoryGroups { get; set; }
 
         /// <summary>
         ///     List of categories created by this account.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Category> InitializedCategories { get; set; }
+        public virtual ICollection<Category> Categories { get; set; }
 
         /// <summary>
         ///     List of categories user is following.
@@ -90,81 +89,40 @@ namespace AppDb.Models.Entities
         public virtual ICollection<FollowCategory> FollowCategories { get; set; }
 
         /// <summary>
-        ///     List of posts user has created.
+        ///     List of topics user has created.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Topic> Topics { get; set; }
 
         /// <summary>
         ///     List of followed posts.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<FollowPost> FollowPosts { get; set; }
+        public virtual ICollection<FollowTopic> FollowTopics { get; set; }
 
         /// <summary>
-        ///     List of post report this account has.
+        ///     List of topic report this account has.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<PostReport> OwnedPostReports { get; set; }
+        public virtual ICollection<ReportTopic> OwnedTopicReports { get; set; }
 
         /// <summary>
-        ///     List of post reports user has created.
+        ///     List of topic reports user has created.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<PostReport> ReportedPosts { get; set; }
+        public virtual ICollection<ReportTopic> ReportedPosts { get; set; }
 
         /// <summary>
-        ///     List of comments user has created.
+        ///     List of replies user has created.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<Reply> Replies { get; set; }
 
         /// <summary>
-        ///     List of comment reports this account has reported.
+        ///     List of notifications user has created.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<CommentReport> ReportedComments { get; set; }
-
-        /// <summary>
-        ///     List of comment reports this account owns.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<CommentReport> OwnedCommentReports { get; set; }
-
-        /// <summary>
-        ///     Comment notifications which should be received by this account.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<CommentNotification> ReceivedCommentNotifications { get; set; }
-
-        /// <summary>
-        ///     List of comment notification which have been broadcasted by the current user.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<CommentNotification> BroadcastedCommentNotifications { get; set; }
-
-        /// <summary>
-        ///     List of notifications which should be received by this account.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<PostNotification> ReceivedPostNotifications { get; set; }
-
-        /// <summary>
-        ///     List of post notifications broadcasted by this account.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<PostNotification> BroadcastedPostNotifications { get; set; }
-
-        /// <summary>
-        ///     List of signalr connections which have been established by this account.
-        /// </summary>
-        [JsonIgnore]
-        public virtual ICollection<SignalrConnection> SignalrConnections { get; set; }
-
-        /// <summary>
-        /// One owner can have multiple devices.
-        /// </summary>
-        public virtual ICollection<Device> Devices { get; set; }
+        public virtual ICollection<NotificationMessage> NotificationMessages { get; set; }
 
         #endregion
     }

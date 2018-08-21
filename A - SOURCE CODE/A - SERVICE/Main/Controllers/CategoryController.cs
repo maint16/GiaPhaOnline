@@ -2,7 +2,6 @@
 using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
 using AutoMapper;
-using Main.Hubs;
 using Main.Interfaces;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +30,6 @@ namespace Main.Controllers
         /// <param name="logger"></param>
         /// <param name="categoryCacheService"></param>
         /// <param name="realTimeNotificationService"></param>
-        /// <param name="notificationHubContext"></param>
         /// <param name="notifyService"></param>
         public CategoryController(IIdentityService identityService, ITimeService timeService, IUnitOfWork unitOfWork,
             IRelationalDbService databaseFunction,
@@ -39,7 +37,6 @@ namespace Main.Controllers
             IMapper mapper, IVgyService vgyService, ILogger<UserController> logger,
             IValueCacheService<int, Category> categoryCacheService,
             IRealTimeNotificationService realTimeNotificationService,
-            IHubContext<NotificationHub> notificationHubContext,
             INotifyService notifyService)
         {
             _identityService = identityService;
@@ -52,7 +49,6 @@ namespace Main.Controllers
             _logger = logger;
             _categoryCacheService = categoryCacheService;
             _realTimeNotificationService = realTimeNotificationService;
-            _notificationHubContext = notificationHubContext;
             _notifyService = notifyService;
         }
 
@@ -110,9 +106,9 @@ namespace Main.Controllers
         /// </summary>
         private readonly IRealTimeNotificationService _realTimeNotificationService;
 
-        /// <summary>
-        /// </summary>
-        private readonly IHubContext<NotificationHub> _notificationHubContext;
+//        /// <summary>
+//        /// </summary>
+//        private readonly IHubContext<NotificationHub> _notificationHubContext;
 
         /// <summary>
         /// </summary>

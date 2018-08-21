@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AppModel.Enumerations;
 using Newtonsoft.Json;
@@ -7,6 +8,56 @@ namespace AppDb.Models.Entities
 {
     public class Category
     {
+        #region Properties
+
+        /// <summary>
+        ///     Id of category.
+        /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        /// <summary>
+        ///     Who created the current category.
+        /// </summary>
+        [Required]
+        public int CreatorId { get; set; }
+
+        /// <summary>
+        ///     Category group that category belongs to.
+        /// </summary>
+        [Required]
+        public int CategoryGroupId { get; set; }
+
+        /// <summary>
+        ///     Photo of category
+        /// </summary>
+        public string Photo { get; set; }
+
+        /// <summary>
+        ///     Status of category.
+        /// </summary>
+        public ItemStatus Status { get; set; }
+
+        /// <summary>
+        ///     Name of category.
+        /// </summary>
+        [Required]
+        public string Name { get; set; }
+
+        /// <summary>
+        ///     When the category was created.
+        /// </summary>
+        [Required]
+        public double CreatedTime { get; set; }
+
+        /// <summary>
+        ///     When the category was lastly modified.
+        /// </summary>
+        public double? LastModifiedTime { get; set; }
+
+        #endregion
+
         #region Relationships
 
         /// <summary>
@@ -17,68 +68,24 @@ namespace AppDb.Models.Entities
         public Account Creator { get; set; }
 
         /// <summary>
-        ///     List of categorization which are related to the current category.
+        ///     Category group which category belongs to.
         /// </summary>
         [JsonIgnore]
-        public virtual ICollection<Categorization> Categorizations { get; set; }
-
+        [ForeignKey(nameof(CategoryGroupId))]
+        public CategoryGroup CategoryGroup { get; set; }
+        
         /// <summary>
         ///     Category follow.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<FollowCategory> FollowCategories { get; set; }
 
-        #endregion
-
-        #region Properties
-
         /// <summary>
-        ///     Id of category.
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        ///     Who created the current category.
-        /// </summary>
-        public int CreatorId { get; set; }
-
-        /// <summary>
-        /// Photo relative url.
-        /// </summary>
-        [JsonProperty("Photo")]
-        public string PhotoRelativeUrl { get; set; }
-
-        /// <summary>
-        /// Absolute url shouldn't be passed to client.
+        ///     List of topic which are related to the current category.
         /// </summary>
         [JsonIgnore]
-        public string PhotoAbsoluteUrl { get; set; }
+        public virtual ICollection<Topic> Topics { get; set; }
 
-        /// <summary>
-        ///     Status of category.
-        /// </summary>
-        public ItemStatus Status { get; set; }
-
-        /// <summary>
-        ///     Name of category.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Category description.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        ///     When the category was created.
-        /// </summary>
-        public double CreatedTime { get; set; }
-
-        /// <summary>
-        ///     When the category was lastly modified.
-        /// </summary>
-        public double? LastModifiedTime { get; set; }
-        
         #endregion
     }
 }

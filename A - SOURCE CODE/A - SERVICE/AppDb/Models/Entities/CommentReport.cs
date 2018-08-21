@@ -62,14 +62,14 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(CommentId))]
-        public Comment Comment { get; set; }
+        public Reply Comment { get; set; }
 
         /// <summary>
         ///     One report can only belongs to one post.
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(PostId))]
-        public Post Post { get; set; }
+        public Topic Post { get; set; }
 
         /// <summary>
         ///     Account which owns the comment

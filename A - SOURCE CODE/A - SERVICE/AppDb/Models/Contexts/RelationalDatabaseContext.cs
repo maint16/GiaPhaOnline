@@ -28,24 +28,19 @@ namespace AppDb.Models.Contexts
         public virtual DbSet<Account> Accounts { get; set; }
 
         /// <summary>
+        ///     List of category groups in database.
+        /// </summary>
+        public virtual DbSet<CategoryGroup> CategoryGroups { get; set; }
+
+        /// <summary>
         ///     List of categories in database.
         /// </summary>
         public virtual DbSet<Category> Categories { get; set; }
 
         /// <summary>
-        /// List of categorizations.
-        /// </summary>
-        public virtual DbSet<Categorization> Categorizations { get; set; }
-
-        /// <summary>
         ///     List of comments in database.
         /// </summary>
-        public virtual DbSet<Comment> Comments { get; set; }
-
-        /// <summary>
-        ///     List of comment reports in database.
-        /// </summary>
-        public virtual DbSet<CommentReport> CommentReports { get; set; }
+        public virtual DbSet<Reply> Comments { get; set; }
 
         /// <summary>
         ///     List of relationships between followers and categories. (many - many)
@@ -55,42 +50,27 @@ namespace AppDb.Models.Contexts
         /// <summary>
         ///     List of relationships between followers and posts (many - many).
         /// </summary>
-        public virtual DbSet<FollowPost> FollowPosts { get; set; }
-
-        /// <summary>
-        ///     List of comment notifications.
-        /// </summary>
-        public virtual DbSet<CommentNotification> CommentNotifications { get; set; }
-
-        /// <summary>
-        ///     List of post notifications.
-        /// </summary>
-        public virtual DbSet<PostNotification> PostNotifications { get; set; }
-
+        public virtual DbSet<FollowTopic> FollowPosts { get; set; }
+        
         /// <summary>
         ///     List of posts.
         /// </summary>
-        public virtual DbSet<Post> Posts { get; set; }
+        public virtual DbSet<Topic> Posts { get; set; }
 
         /// <summary>
         ///     List of post reports.
         /// </summary>
-        public virtual DbSet<PostReport> PostReports { get; set; }
+        public virtual DbSet<ReportTopic> PostReports { get; set; }
 
         /// <summary>
         ///     List of tokens in database.
         /// </summary>
-        public virtual DbSet<Token> Tokens { get; set; }
+        public virtual DbSet<AccessToken> Tokens { get; set; }
 
         /// <summary>
-        /// Devices list to send push notification
+        ///     List of notification messages in database.
         /// </summary>
-        public virtual DbSet<Device> Devices { get; set; }
-
-        /// <summary>
-        /// Groups of FCM services.
-        /// </summary>
-        public virtual DbSet<FcmGroup> FcmGroups { get; set; }
+        public virtual DbSet<NotificationMessage> NotificationMessages { get; set; }
 
         #endregion
 
@@ -122,20 +102,15 @@ namespace AppDb.Models.Contexts
         {
             // Tables initialization.
             InitializeAccount(modelBuilder);
+            InitializeCategoryGroup(modelBuilder);
             InitializeCategory(modelBuilder);
-            InitializeCategorization(modelBuilder);
             InitializeComment(modelBuilder);
-            InitializeCommentNotification(modelBuilder);
-            InitializeCommentReport(modelBuilder);
             InitializeFollowCategory(modelBuilder);
             InitializeFollowPost(modelBuilder);
             InitializePost(modelBuilder);
-            InitializePostNotification(modelBuilder);
             InitializePostReport(modelBuilder);
-            InitializeSignalrConnection(modelBuilder);
             InitializeToken(modelBuilder);
-            InitializeDevice(modelBuilder);
-            InitializeFcmGroup(modelBuilder);
+            InitializeNotificationMessage(modelBuilder);
 
             // Use model builder to specify composite primary keys.
             // Composite primary keys configuration
@@ -169,6 +144,22 @@ namespace AppDb.Models.Contexts
         /// Initialize category table.
         /// </summary>
         /// <param name="modelBuilder"></param>
+        private void InitializeCategoryGroup(ModelBuilder modelBuilder)
+        {
+            var categoryGroup = modelBuilder.Entity<CategoryGroup>();
+
+            // Set primary key.
+            categoryGroup.HasKey(x => x.Id);
+            categoryGroup.Property(x => x.Id).UseSqlServerIdentityColumn();
+
+            // Relationship between category group & account.
+            categoryGroup.HasOne(x => x.Creator).WithMany(x => x.CategoryGroups);
+        }
+
+        /// <summary>
+        /// Initialize category table.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         private void InitializeCategory(ModelBuilder modelBuilder)
         {
             var category = modelBuilder.Entity<Category>();
@@ -178,94 +169,76 @@ namespace AppDb.Models.Contexts
             category.Property(x => x.Id).UseSqlServerIdentityColumn();
 
             // Relationship between category & account.
-            category.HasOne(x => x.Creator).WithMany(x => x.InitializedCategories);
+            category.HasOne(x => x.Creator).WithMany(x => x.Categories);
+
+            // Relationship between category & category group.
+            category.HasOne(x => x.CategoryGroup).WithMany(x => x.Categories);
         }
 
         /// <summary>
-        /// Initialize categorization table.
-        /// </summary>
-        /// <param name="modelBuilder"></param>
-        private void InitializeCategorization(ModelBuilder modelBuilder)
-        {
-            var categorization = modelBuilder.Entity<Categorization>();
-
-            // Primary key setup.
-            categorization.HasKey(x => new {x.PostId, x.CategoryId});
-
-            // Relationship between categorization & category.
-            categorization.HasOne(x => x.Category).WithMany(x => x.Categorizations);
-            
-            // Relationship between cagorization & post.
-            categorization.HasOne(x => x.Post).WithMany(x => x.Categorizations);
-        }
-
-        /// <summary>
-        /// Initialize comment table.
+        /// Initialize reply table.
         /// </summary>
         /// <param name="modelBuilder"></param>
         private void InitializeComment(ModelBuilder modelBuilder)
         {
-            var comment = modelBuilder.Entity<Comment>();
+            var reply = modelBuilder.Entity<Reply>();
 
             // Primary key setting.
-            comment.HasKey(x => x.Id);
-            comment.Property(x => x.Id).UseSqlServerIdentityColumn();
+            reply.HasKey(x => x.Id);
+            reply.Property(x => x.Id).UseSqlServerIdentityColumn();
 
-            // Relationship between comment and account.
-            comment.HasOne(x => x.Owner).WithMany(x => x.Comments);
+            // Relationship between reply and account.
+            reply.HasOne(x => x.Owner).WithMany(x => x.Replies);
 
-            // Relationship between comment and post,
-            comment.HasOne(x => x.Post).WithMany(x => x.Comments);
-
-            // Relationship between comment and comment notifications.
-            comment.HasMany(x => x.CommentNotifications).WithOne(x => x.Comment);
+            // Relationship between reply and topic.
+            reply.HasOne(x => x.Topic).WithMany(x => x.Replies);
         }
 
-        /// <summary>
-        /// Initialize comment notification table.
-        /// </summary>
-        /// <param name="modelBuilder"></param>
-        private void InitializeCommentNotification(ModelBuilder modelBuilder)
-        {
-            var commentNotification = modelBuilder.Entity<CommentNotification>();
+//        /// <summary>
+//        /// Initialize comment notification table.
+//        /// </summary>
+//        /// <param name="modelBuilder"></param>
+//        private void InitializeCommentNotification(ModelBuilder modelBuilder)
+//        {
+//            var commentNotification = modelBuilder.Entity<CommentNotification>();
+//
+//            // Primary key setting.
+//            commentNotification.HasKey(x => x.Id);
+//            commentNotification.Property(x => x.Id).ValueGeneratedOnAdd();
+//
+//            // Relationship between comment notification & comment.
+//            commentNotification.HasOne(x => x.Comment).WithMany(x => x.CommentNotifications);
+//
+//            // Relationship between comment notification & post.
+//            commentNotification.HasOne(x => x.Post).WithMany(x => x.CommentNotifications);
+//
+//            // Relationship between comment notification & account.
+//            commentNotification.HasOne(x => x.Recipient).WithMany(x => x.ReceivedCommentNotifications);
+//            commentNotification.HasOne(x => x.Broadcaster).WithMany(x => x.BroadcastedCommentNotifications);
+//        }
 
-            // Primary key setting.
-            commentNotification.HasKey(x => x.Id);
-            commentNotification.Property(x => x.Id).ValueGeneratedOnAdd();
-
-            // Relationship between comment notification & comment.
-            commentNotification.HasOne(x => x.Comment).WithMany(x => x.CommentNotifications);
-
-            // Relationship between comment notification & post.
-            commentNotification.HasOne(x => x.Post).WithMany(x => x.CommentNotifications);
-
-            // Relationship between comment notification & account.
-            commentNotification.HasOne(x => x.Recipient).WithMany(x => x.ReceivedCommentNotifications);
-            commentNotification.HasOne(x => x.Broadcaster).WithMany(x => x.BroadcastedCommentNotifications);
-        }
-
-        /// <summary>
-        /// Initialize comment report table.
-        /// </summary>
-        /// <param name="modelBuilder"></param>
-        private void InitializeCommentReport(ModelBuilder modelBuilder)
-        {
-            // Find comment report instance.
-            var commentReport = modelBuilder.Entity<CommentReport>();
-
-            // Primary key setting.
-            commentReport.HasKey(x => new {x.CommentId, x.OwnerId});
-
-            // Relationship between comment report & comment.
-            commentReport.HasOne(x => x.Comment).WithMany(x => x.CommentReports);
-
-            // Relationship between comment report & owner.
-            commentReport.HasOne(x => x.CommentReporter).WithMany(x => x.ReportedComments);
-            commentReport.HasOne(x => x.CommentOwner).WithMany(x => x.OwnedCommentReports);
-
-            // Relationship between comment report & post.
-            commentReport.HasOne(x => x.Post).WithMany(x => x.ReportedComments);
-        }
+//        /// <summary>
+//        /// Initialize comment report table.
+//        /// </summary>
+//        /// <param name="modelBuilder"></param>
+//        private void InitializeCommentReport(ModelBuilder modelBuilder)
+//        {
+//            // Find comment report instance.
+//            var commentReport = modelBuilder.Entity<CommentReport>();
+//
+//            // Primary key setting.
+//            commentReport.HasKey(x => new {x.CommentId, x.OwnerId});
+//
+//            // Relationship between comment report & comment.
+//            commentReport.HasOne(x => x.Comment).WithMany(x => x.CommentReports);
+//
+//            // Relationship between comment report & owner.
+//            commentReport.HasOne(x => x.CommentReporter).WithMany(x => x.ReportedComments);
+//            commentReport.HasOne(x => x.CommentOwner).WithMany(x => x.OwnedCommentReports);
+//
+//            // Relationship between comment report & post.
+//            commentReport.HasOne(x => x.Post).WithMany(x => x.ReportedComments);
+//        }
 
         /// <summary>
         /// Initialize follow category table.
@@ -292,17 +265,17 @@ namespace AppDb.Models.Contexts
         /// <param name="modelBuilder"></param>
         private void InitializeFollowPost(ModelBuilder modelBuilder)
         {
-            // Find follow post instance.
-            var followPost = modelBuilder.Entity<FollowPost>();
+            // Find follow topic instance.
+            var followTopic = modelBuilder.Entity<FollowTopic>();
 
             // Primary key initialization.
-            followPost.HasKey(x => new {x.FollowerId, x.PostId});
+            followTopic.HasKey(x => new {x.FollowerId, x.TopicId});
 
             // Relationship between follow post and post.
-            followPost.HasOne(x => x.Post).WithMany(x => x.FollowPosts);
+            followTopic.HasOne(x => x.Topic).WithMany(x => x.FollowTopics);
 
             // Relationship between follow post and account.
-            followPost.HasOne(x => x.Follower).WithMany(x => x.FollowPosts);
+            followTopic.HasOne(x => x.Follower).WithMany(x => x.FollowTopics);
         }
 
         /// <summary>
@@ -311,37 +284,40 @@ namespace AppDb.Models.Contexts
         /// <param name="modelBuilder"></param>
         private void InitializePost(ModelBuilder modelBuilder)
         {
-            // Find post instance.
-            var post = modelBuilder.Entity<Post>();
+            // Find topic instance.
+            var topic = modelBuilder.Entity<Topic>();
 
             // Primary key initialization.
-            post.HasKey(x => x.Id);
-            post.Property(x => x.Id).UseSqlServerIdentityColumn();
+            topic.HasKey(x => x.Id);
+            topic.Property(x => x.Id).UseSqlServerIdentityColumn();
 
-            // Relationship between post and account.
-            post.HasOne(x => x.Owner).WithMany(x => x.Posts);
+            // Relationship between topic and account.
+            topic.HasOne(x => x.Owner).WithMany(x => x.Topics);
+
+            // Relationship between topic and category.
+            topic.HasOne(x => x.Category).WithMany(x => x.Topics);
         }
 
-        /// <summary>
-        /// Initialize post notification table.
-        /// </summary>
-        /// <param name="modelBuilder"></param>
-        private void InitializePostNotification(ModelBuilder modelBuilder)
-        {
-            // Find post notification.
-            var postNotification = modelBuilder.Entity<PostNotification>();
-
-            // Primary key initialization.
-            postNotification.HasKey(x => x.Id);
-            postNotification.Property(x => x.Id).ValueGeneratedOnAdd();
-
-            // Relationship between post notification and post.
-            postNotification.HasOne(x => x.Post).WithMany(x => x.PostNotifications);
-
-            // Relationship between post notification and account.
-            postNotification.HasOne(x => x.Recipient).WithMany(x => x.ReceivedPostNotifications);
-            postNotification.HasOne(x => x.Broadcaster).WithMany(x => x.BroadcastedPostNotifications);
-        }
+//        /// <summary>
+//        /// Initialize post notification table.
+//        /// </summary>
+//        /// <param name="modelBuilder"></param>
+//        private void InitializePostNotification(ModelBuilder modelBuilder)
+//        {
+//            // Find post notification.
+//            var postNotification = modelBuilder.Entity<PostNotification>();
+//
+//            // Primary key initialization.
+//            postNotification.HasKey(x => x.Id);
+//            postNotification.Property(x => x.Id).ValueGeneratedOnAdd();
+//
+//            // Relationship between post notification and post.
+//            postNotification.HasOne(x => x.Post).WithMany(x => x.PostNotifications);
+//
+//            // Relationship between post notification and account.
+//            postNotification.HasOne(x => x.Recipient).WithMany(x => x.ReceivedPostNotifications);
+//            postNotification.HasOne(x => x.Broadcaster).WithMany(x => x.BroadcastedPostNotifications);
+//        }
 
         /// <summary>
         /// Initialize post report table.
@@ -350,33 +326,36 @@ namespace AppDb.Models.Contexts
         private void InitializePostReport(ModelBuilder modelBuilder)
         {
             // Find post report instance.
-            var postReport = modelBuilder.Entity<PostReport>();
-            
-            // Primary key initialization.
-            postReport.HasKey(x => new {x.PostId, x.ReporterId});
+            var topicReport = modelBuilder.Entity<ReportTopic>();
 
-            // Relationship between post report and account.
-            postReport.HasOne(x => x.PostOwner).WithMany(x => x.OwnedPostReports);
-            postReport.HasOne(x => x.PostReporter).WithMany(x => x.ReportedPosts);
+            // Primary key initialization.
+            topicReport.HasKey(x => new {x.TopicId, x.ReporterId});
+
+            // Relationship between topic report and topic.
+            topicReport.HasOne(x => x.Topic).WithMany(x => x.ReportTopics);
+
+            // Relationship between topic report and account.
+            topicReport.HasOne(x => x.TopicOwner).WithMany(x => x.OwnedTopicReports);
+            topicReport.HasOne(x => x.TopicReporter).WithMany(x => x.ReportedPosts);
 
         }
 
-        /// <summary>
-        /// Initialize signalr connection table.
-        /// </summary>
-        /// <param name="modelBuilder"></param>
-        private void InitializeSignalrConnection(ModelBuilder modelBuilder)
-        {
-            // Find signalr connection.
-            var signalrConnection = modelBuilder.Entity<SignalrConnection>();
-
-            // Primary key initialization.
-            signalrConnection.HasKey(x => x.Id);
-            signalrConnection.Property(x => x.Id).IsRequired();
-
-            // Relationship between signalr connection and account.
-            signalrConnection.HasOne(x => x.Owner).WithMany(x => x.SignalrConnections);
-        }
+//        /// <summary>
+//        /// Initialize signalr connection table.
+//        /// </summary>
+//        /// <param name="modelBuilder"></param>
+//        private void InitializeSignalrConnection(ModelBuilder modelBuilder)
+//        {
+//            // Find signalr connection.
+//            var signalrConnection = modelBuilder.Entity<SignalrConnection>();
+//
+//            // Primary key initialization.
+//            signalrConnection.HasKey(x => x.Id);
+//            signalrConnection.Property(x => x.Id).IsRequired();
+//
+//            // Relationship between signalr connection and account.
+//            signalrConnection.HasOne(x => x.Owner).WithMany(x => x.SignalrConnections);
+//        }
 
         /// <summary>
         /// Initialize token table.
@@ -385,47 +364,64 @@ namespace AppDb.Models.Contexts
         private void InitializeToken(ModelBuilder modelBuilder)
         {
             // Find token.
-            var token = modelBuilder.Entity<Token>();
+            var token = modelBuilder.Entity<AccessToken>();
 
             // Primary key initialization.
             token.HasKey(x => x.Id);
             token.Property(x => x.Id).UseSqlServerIdentityColumn();
 
             // Relationship between token and account.
-            token.HasOne(x => x.Owner).WithMany(x => x.Tokens);
+            token.HasOne(x => x.Owner).WithMany(x => x.AccessTokens);
         }
 
         /// <summary>
-        /// Initialize device table.
+        /// Initialize notification message table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void InitializeDevice(ModelBuilder modelBuilder)
+        private void InitializeNotificationMessage(ModelBuilder modelBuilder)
         {
-            // Find device instance.
-            var device = modelBuilder.Entity<Device>();
+            // Find notification message.
+            var notificationMessage = modelBuilder.Entity<NotificationMessage>();
 
             // Primary key initialization.
-            device.HasKey(x => x.Id);
+            notificationMessage.HasKey(x => x.Id);
+            notificationMessage.Property(x => x.Id).UseSqlServerIdentityColumn();
 
-            // Relationship between account & device.
-            device.HasOne(x => x.Owner).WithMany(x => x.Devices);
+            // Relationship between notification message and account.
+            notificationMessage.HasOne(x => x.Owner).WithMany(x => x.NotificationMessages);
         }
 
-        /// <summary>
-        /// Initialize device table.
-        /// </summary>
-        /// <param name="modelBuilder"></param>
-        private void InitializeFcmGroup(ModelBuilder modelBuilder)
-        {
-            // Find device instance.
-            var device = modelBuilder.Entity<FcmGroup>();
+        //        /// <summary>
+        //        /// Initialize device table.
+        //        /// </summary>
+        //        /// <param name="modelBuilder"></param>
+        //        private void InitializeDevice(ModelBuilder modelBuilder)
+        //        {
+        //            // Find device instance.
+        //            var device = modelBuilder.Entity<Device>();
+        //
+        //            // Primary key initialization.
+        //            device.HasKey(x => x.Id);
+        //
+        //            // Relationship between account & device.
+        //            device.HasOne(x => x.Owner).WithMany(x => x.Devices);
+        //        }
 
-            // Primary key initialization.
-            device.HasKey(x => x.Name);
-            device.Property(x => x.Name).IsRequired();
-
-            device.Property(x => x.MessagingKey).IsRequired();
-        }
+        //        /// <summary>
+        //        /// Initialize device table.
+        //        /// </summary>
+        //        /// <param name="modelBuilder"></param>
+        //        private void InitializeFcmGroup(ModelBuilder modelBuilder)
+        //        {
+        //            // Find device instance.
+        //            var device = modelBuilder.Entity<FcmGroup>();
+        //
+        //            // Primary key initialization.
+        //            device.HasKey(x => x.Name);
+        //            device.Property(x => x.Name).IsRequired();
+        //
+        //            device.Property(x => x.MessagingKey).IsRequired();
+        //        }
 
         #endregion
 
