@@ -1,6 +1,6 @@
 module.exports = (ngModule) => {
     // Directive declaration.
-    ngModule.directive('navigationBar', () => {
+    ngModule.directive('navigationBar', ($q, $compile) => {
         return {
             compile: () => {
                 let pGetTemplatePromise = $q((resolve) => {

@@ -27,25 +27,26 @@ module.exports = (ngModule) => {
                     if (!accessToken || accessToken.length < 1)
                         return null;
 
-                    // Promises to be resolved.
-                    let promises = [];
-
-                    //#region Get profile
-
-                    // Get user profile promise.
-                    promises[0] = userService.getProfile(0)
-                        .then((getProfileResponse) => {
-                            return getProfileResponse.data;
-                        });
-
-                    //#endregion
-
-                    return Promise.all(promises)
-                        .then(function (promiseResponses) {
-
-                            // Get profile.
-                            return promiseResponses[0];
-                        });
+                    // // Promises to be resolved.
+                    // let promises = [];
+                    //
+                    // //#region Get profile
+                    //
+                    // // Get user profile promise.
+                    // promises[0] = userService.getProfile(0)
+                    //     .then((getProfileResponse) => {
+                    //         return getProfileResponse.data;
+                    //     });
+                    //
+                    // //#endregion
+                    //
+                    // return Promise.all(promises)
+                    //     .then(function (promiseResponses) {
+                    //
+                    //         // Get profile.
+                    //         return promiseResponses[0];
+                    //     });
+                    return null;
                 },
 
                 /*

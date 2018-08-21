@@ -6,7 +6,7 @@ module.exports = (ngModule) => {
                                                     $timeout, $state,
                                                     appSettingConstant, urlStates,
                                                     profile,
-                                                    categoryService, postCategorizationService, followCategoryService, commonService) => {
+                                                    categoryService, followCategoryService, commonService) => {
 
         //#region Properties
 

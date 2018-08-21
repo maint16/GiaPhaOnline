@@ -3,8 +3,7 @@ module.exports = (ngModule) => {
         function (oAuthSettings, appSettingConstant, notificationCategoryConstant, notificationActionConstant,
                   $scope, $state, $transitions, uiService, oAuthService,
                   profile, $uibModal, $timeout, $window, $translate, toastr,
-                  notificationStatusConstant, userRoleConstant, realTimeChannelConstant, realTimeEventConstant, pusherOptionConstant, hubConstant,
-                  pusherService, realTimeService,
+                  notificationStatusConstant, userRoleConstant, pusherOptionConstant,
                   authenticationService, userService, postNotificationService, postService) {
 
             //#region Properties
@@ -54,9 +53,6 @@ module.exports = (ngModule) => {
 
                 // Subscribe to real-time channels.
                 // $scope.fnSubscribeRealTimeChannels();
-
-                // Subscribe real-time hub.
-                $scope.fnSubscribeSignalrConnection();
             };
 
             /*
@@ -467,30 +463,6 @@ module.exports = (ngModule) => {
             //     // Save the socket connection.
             //     pusherService.setInstance(socket);
             // };
-
-            /*
-            * Subscribe to signalr connection.
-            * */
-            $scope.fnSubscribeSignalrConnection = function () {
-
-                // Get hub name constants.
-                var hubNameConstant = hubConstant.hubName;
-
-                // Find authentication attached in local storage.
-                var accessToken = authenticationService.getAuthenticationToken();
-                var parameters = {
-                    accessToken: accessToken
-                };
-
-                // Add signalr hubs declaration.
-                if (accessToken) {
-                    var notificationHubConnection = realTimeService.addHub(hubNameConstant.notificationHub, parameters);
-                    notificationHubConnection.on(hubConstant.hubEvent.receiveNotification, $scope.fnOnReceiveNotification);
-                    notificationHubConnection.start().then(function () {
-                        console.log('Notification hub connection has been initialized');
-                    });
-                }
-            };
 
             /*
             * Callback function which is raised when user connects to a private channel.
