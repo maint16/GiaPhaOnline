@@ -1,23 +1,41 @@
-module.exports = function (ngModule) {
+module.exports = (ngModule) => {
 
     //#region Module configs.
-
-    // Load module html template.
-    var ngModuleHtmlTemplate = require('./login.html');
 
     /*
     * Module configuration.
     * */
-    ngModule.config(function ($stateProvider, urlStates) {
-
+    ngModule.config(($stateProvider) => {
         // Get state parameter.
-        var urlLoginState = urlStates.user.login;
+        const UrlStateConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
 
-        $stateProvider.state(urlLoginState.name, {
-            url: urlLoginState.url,
+        $stateProvider.state(UrlStateConstant.loginModuleName, {
+            url: UrlStateConstant.loginModuleUrl,
+            templateProvider: ['$q', ($q) => {
+                // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
+                return $q((resolve) => {
+                    // lazy load the view
+                    require.ensure([], () => resolve(require('./login.html')));
+                });
+            }],
+            resolve: {
+                /*
+                * Load login controller.
+                * */
+                loadLoginController: ($q, $ocLazyLoad) => {
+                    return $q((resolve) => {
+                        require.ensure([], () => {
+                            // load only controller module
+                            let module = angular.module('account.login', []);
+                            require('./login.controller')(module);
+                            $ocLazyLoad.load({name: module.name});
+                            resolve(module.controller);
+                        })
+                    });
+                }
+            },
             controller: 'loginController',
-            template: ngModuleHtmlTemplate,
-            parent: urlStates.unauthorizedLayout.name
+            parent: UrlStateConstant.unauthorizedLayoutModuleName
         })
     });
 

@@ -1,4 +1,4 @@
-module.exports = function (ngModule) {
+module.exports = (ngModule) => {
     ngModule.controller('authorizedLayoutController',
         function (oAuthSettings, appSettingConstant, notificationCategoryConstant, notificationActionConstant,
                   $scope, $state, $transitions, uiService, oAuthService,
@@ -62,7 +62,7 @@ module.exports = function (ngModule) {
             /*
             * Callback which is fired when basic login button is clicked.
             * */
-            $scope.fnClickLogin = function () {
+            $scope.fnClickLogin = () => {
                 // Display basic login modal.
                 $scope.modals.login = $uibModal.open({
                     templateUrl: 'basic-login.html',

@@ -1,4 +1,4 @@
-﻿module.exports = function (ngModule) {
+﻿module.exports = (ngModule) => {
     ngModule.service('authenticationService',
         function ($window, appSettingConstant) {
 

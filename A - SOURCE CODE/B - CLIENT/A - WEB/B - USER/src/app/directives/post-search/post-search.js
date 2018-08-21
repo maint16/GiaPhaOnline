@@ -1,17 +1,25 @@
-module.exports = function (ngModule) {
-
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./post-search.html');
-
+module.exports = (ngModule) => {
     // Directive declaration.
     ngModule.directive('postSearch', function () {
         return {
-            template: ngModuleHtmlTemplate,
+            compile: () => {
+                let pGetTemplatePromise = $q((resolve) => {
+                    require.ensure([], () => resolve(require('./post-search.html')));
+                });
+
+                return (scope, element) => {
+                    pGetTemplatePromise
+                        .then((htmlTemplate) => {
+                            element.html(htmlTemplate);
+                            $compile(element.contents())(scope)
+                        });
+                };
+            },
             restrict: 'E',
             scope: {
                 ngClickCancel: '&',
             },
-            controller: function($scope, urlStates){
+            controller: ($scope, urlStates) => {
 
                 //#region Properties
 
@@ -29,7 +37,7 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when cancel button is clicked.
                 * */
-                $scope.cancel = function(){
+                $scope.cancel = function () {
                     $scope.ngClickCancel();
                 };
 

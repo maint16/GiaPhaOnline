@@ -1,4 +1,4 @@
-module.exports = function (ngModule) {
+module.exports = (ngModule) => {
     ngModule.constant('notificationActionConstant', {
         add: 0,
         update: 1,

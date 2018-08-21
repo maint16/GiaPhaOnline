@@ -1,12 +1,13 @@
-module.exports = function(ngModule){
+module.exports = (ngModule) => {
     /*
-    * AngularJS paginator default configuration.
+    * AngularJS pager default configuration.
     * */
-    ngModule.config(function (uibPaginationConfig) {
-        uibPaginationConfig.lastText = '>>';
-        uibPaginationConfig.nextText = '>';
-        uibPaginationConfig.previousText = '<';
-        uibPaginationConfig.firstText = '<<';
-        uibPaginationConfig.maxSize = 5;
-    });
+    ngModule
+        .config((uibPaginationConfig) => {
+            uibPaginationConfig.lastText = '>>';
+            uibPaginationConfig.nextText = '>';
+            uibPaginationConfig.previousText = '<';
+            uibPaginationConfig.firstText = '<<';
+            uibPaginationConfig.maxSize = 5;
+        });
 };

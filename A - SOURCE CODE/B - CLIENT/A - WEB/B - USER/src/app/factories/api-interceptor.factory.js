@@ -1,20 +1,20 @@
-﻿module.exports = function (ngModule) {
+﻿module.exports = (ngModule) => {
     ngModule.factory('apiInterceptor',
-        function ($injector,
-            $q,
-            authenticationService,
-                  appSettingConstant) {
+        ($injector,
+         $q,
+         authenticationService,
+         appSettingConstant) => {
 
             return {
                 /*
                 * Callback which is fired when request is made.
                 * */
-                request: function (x) {
+                request: (x) => {
                     // Turn on loading screen.
                     //blockUI.start();
 
                     // Find authentication token from local storage.
-                    var authenticationToken = authenticationService.getAuthenticationToken();
+                    const authenticationToken = authenticationService.getAuthenticationToken();
 
                     // As authentication token is found. Attach it into the request.
                     if (authenticationToken)
@@ -26,14 +26,14 @@
                 /*
                 * Callback which is fired when request is made failingly.
                 * */
-                requestError: function (config) {
+                requestError: (config) => {
                     return config;
                 },
 
                 /*
                 * Callback which is fired when response is sent back from back-end.
                 * */
-                response: function (x) {
+                response: (x) => {
                     // Stop blockUI.
                     //blockUI.stop();
 
@@ -43,36 +43,35 @@
                 /*
                 * Callback which is fired when response is failed.
                 * */
-                responseError: function (x) {
+                responseError: (x) => {
                     // Response is invalid.
                     if (!x)
                         return $q.reject(x);
-                    
-                    var url = x.config.url;
+
+                    const url = x.config.url;
                     if (!url || url.indexOf('/api/') === -1)
                         return $q.reject(x);
 
                     // Find state.
-                    var state = $injector.get('$state');
-                    var urlStates = $injector.get('urlStates');
+                    const state = $injector.get('$state');
+                    const urlStates = $injector.get('urlStates');
 
                     // Find toastr notification from injector.
-                    var toastr = $injector.get('toastr');
+                    const toastr = $injector.get('toastr');
 
                     // Find translate service using injector.
-                    var translate = $injector.get('$translate');
+                    const translate = $injector.get('$translate');
 
                     // Find authentication service.
-                    var authenticationService = $injector.get('authenticationService');
+                    const authenticationService = $injector.get('authenticationService');
 
-                    var szMessage = '';
+                    let szMessage = '';
                     switch (x.status) {
                         case 401:
-                            var a = x;
-                            var szAuthenticateError = x.headers('WWW-Authenticate');
+                            const szAuthenticateError = x.headers('WWW-Authenticate');
 
                             // Token is invalid.
-                            if (szAuthenticateError.indexOf('invalid_token')){
+                            if (szAuthenticateError.indexOf('invalid_token')) {
                                 // Clear token from local storage.
                                 authenticationService.clearAuthenticationToken();
 

@@ -12,7 +12,7 @@ exports = module.exports = {
         // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
         rules.push({
             test: /\.tsx?$/,
-            loader: "babel-loader!ts-loader"
+            loader: 'ts-loader'
         });
 
         //#endregion
@@ -93,21 +93,6 @@ exports = module.exports = {
                 loader: 'expose-loader',
                 options: '$'
             }]
-        });
-
-        //#endregion
-
-        //#region Signalr
-
-        // SignalR.
-        rules.push({
-            test: require.resolve('@aspnet/signalr/dist/cjs'),
-            use:[
-                {
-                    loader: 'expose-loader',
-                    options: 'signalR'
-                }
-            ]
         });
 
         //#endregion

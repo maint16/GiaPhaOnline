@@ -9,28 +9,20 @@ require('../../node_modules/admin-lte/dist/css/skins/skin-green-light.css');
 
 require('../../node_modules/angular-toastr/dist/angular-toastr.css');
 
-// Import angularjs data-table.
-require('../../node_modules/datatables.net-responsive-dt/css/responsive.dataTables.css');
-
 // Font awesome.
 require('../../node_modules/font-awesome/css/font-awesome.css');
 require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
-require('../../node_modules/datatables.net-bs/css/dataTables.bootstrap.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
 require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
 require('../../node_modules/ng-multi-selector/ng-multi-selector.css');
-require('../app/loader.css');
-require('../app/app.css');
+require('./app.scss');
 
 // Import jquery lib.
 require('jquery');
 require('bluebird');
 require('bootstrap');
 require('admin-lte');
-require('datatables.net/js/jquery.dataTables');
-require('datatables.net-responsive');
 require('moment');
-require('@aspnet/signalr/dist/cjs');
 require('pusher-js');
 
 require('rxjs/bundles/rxjs.umd');
@@ -40,11 +32,11 @@ require('firebase/messaging');
 // Angular plugins declaration.
 const angular = require('angular');
 require('@uirouter/angularjs');
+require('oclazyload');
 require('angular-block-ui');
 require('angular-toastr');
 require('angular-translate');
 require('angular-translate-loader-static-files');
-require('angular-datatables');
 require('angular-moment');
 require('angular-ui-bootstrap');
 require('angular-sanitize');
@@ -54,155 +46,72 @@ require('angular-file-upload');
 require('ui-cropper');
 require('angular-messages');
 
-// Module declaration.
-let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
-    'ui.bootstrap', 'ngMultiSelector', 'ngMessages',
-    'pascalprecht.translate',
-    'datatables', 'datatables.bootstrap', 'angularMoment', 'ngSanitize',
-    'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
+$.ajax({
+    url: '/assets/app-settings.json',
+    contentType: 'application/json',
+    method: 'GET',
+    cache: false,
+    crossDomain: false,
+    success: (loadAppSettings) => {
 
-ngModule.config(function ($urlRouterProvider, $translateProvider, $httpProvider,
-                          blockUIConfig,
-                          urlStates) {
+        // Bind the app setting to window object.
+        window.app = loadAppSettings;
 
+        // Module declaration.
+        let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
+            'ui.bootstrap', 'ngMultiSelector', 'ngMessages', 'oc.lazyLoad',
+            'pascalprecht.translate', 'angularMoment', 'ngSanitize',
+            'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
 
-    // API interceptor
-    $httpProvider.interceptors.push('apiInterceptor');
+        // Import url state constant
+        const UrlStateConstant = require('./constants/url-state.constant.ts').UrlStateConstant;
 
-    // Url router config.
-    $urlRouterProvider.otherwise(urlStates.dashboard.url);
+        ngModule
+            .config(($urlRouterProvider, $translateProvider, $httpProvider,
+                     blockUIConfig) => {
 
-    // Translation config.
-    $translateProvider.useStaticFilesLoader({
-        prefix: './assets/dictionary/',
-        suffix: '.json'
-    });
+                // API interceptor
+                $httpProvider.interceptors.push('apiInterceptor');
 
-    // Use sanitize.
-    $translateProvider.useSanitizeValueStrategy('sanitize');
+                // Url router config.
+                $urlRouterProvider.otherwise(UrlStateConstant.dashboardModuleUrl);
 
-    // en-US is default selection.
-    $translateProvider.use('en-US');
-});
-
-// Import blockUI.
-require('./configs/blockUI.config')(ngModule);
-
-// Import angular-dataTable configs.
-require('./configs/angular-dataTable.config')(ngModule);
-
-// Import pager controller configs.
-require('./configs/angular-paginator.config')(ngModule);
-
-/*
-* Application controller.
-* */
-ngModule.controller('appController', function ($transitions, $timeout,
-                                               urlStates,
-                                               uiService, pushNotificationService,
-                                               $scope) {
-
-    //#region Properties
-
-    // For two-way model binding.
-    $scope.model = {
-        layoutClass: ''
-    };
-
-    // Check whether fcm service has been initialized before.
-    $scope.bIsFcmInitialized = false;
-
-    //#endregion
-
-    //#region Methods
-
-    //#endregion
-
-    //#region Watchers & events
-
-    /*
-    * Called when transition from state to state is successful.
-    * */
-    $transitions.onSuccess({}, function ($transition) {
-
-        $timeout(function () {
-
-            // Reload window size.
-            uiService.reloadWindowSize();
-
-            if (!$scope.bIsFcmInitialized) {
-                // Initialize firebase.
-                firebase.initializeApp({
-                    'messagingSenderId': '420319602777'
+                // Translation config.
+                $translateProvider.useStaticFilesLoader({
+                    prefix: './assets/dictionary/',
+                    suffix: '.json'
                 });
 
-                // Request for push notification service.
-                let messaging = firebase.messaging();
-                messaging.usePublicVapidKey("BKa5DHBtGv4JchD7XuP571kHQKM-7T-5Bdj5KM3flRjVFDVtTDtX6CEe_WEeHuwmoV0O1DaQ7KClP6kqG618--A");
-                messaging.requestPermission()
-                    .then(function () {
-                        return messaging.getToken()
-                            .then((fcmToken) => {
-                                return fcmToken;
-                            })
-                            .catch((authenticationError) => {
-                                console.log('An error occurred while retrieving token. ', authenticationError);
-                                throw 'An error occurred while retrieving token.';
-                            });
-                    })
-                    .then((fcmToken) => {
+                // Use sanitize.
+                $translateProvider.useSanitizeValueStrategy('sanitize');
 
-                        // Initialize add device condition.
-                        let addDeviceCondition = {
-                            deviceId: fcmToken
-                        };
+                // en-US is default selection.
+                $translateProvider.use('en-US');
+            });
 
-                        // Mark fcm service as has been initialized.
-                        $scope.bIsFcmInitialized = true;
+        require('./app.controller')(ngModule);
+        require('./configs')(ngModule);
 
-                        // Call api service to add device.
-                        return pushNotificationService.addDevice(addDeviceCondition);
-                    })
-                    .catch(() => {
-                        console.log('Unable to get permission to notify.');
-                    });
-            }
+        // Constants import.
+        require('./constants/index')(ngModule);
 
+        // Factories import.
+        require('./factories/index')(ngModule);
 
-        }, 250);
+        // Services import.
+        require('./services/index')(ngModule);
 
-        // Find destination of transaction.
-        let destination = $transition.$to();
+        // Directive requirements.
+        require('./directives/index')(ngModule);
 
-        if (destination.includes[urlStates.authorizedLayout.name]) {
-            $scope.model.layoutClass = 'hold-transition skin-green-light layout-top-nav';
-            return;
-        }
+        // Module requirements.
+        require('./modules/index')(ngModule);
 
-        let urlStateUser = urlStates.user;
-        if (destination.includes[urlStateUser.login.name] || destination.includes[urlStateUser.googleLogin.name]) {
-            $scope.model.layoutClass = 'hold-transition login-page';
-            return;
-        }
-
-        $scope.model.layoutClass = 'hold-transition';
-    });
-
-    //#endregion
+        // Manually bootstrap the application.
+        angular.bootstrap(document, ['ngApp']);
+    }
 });
 
-// Constants import.
-require('./constants/index')(ngModule);
 
-// Factories import.
-require('./factories/index')(ngModule);
 
-// Services import.
-require('./services/index')(ngModule);
-
-// Directive requirements.
-require('./directives/index')(ngModule);
-
-// Module requirements.
-require('./modules/index')(ngModule);
 

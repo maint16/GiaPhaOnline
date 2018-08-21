@@ -1,15 +1,24 @@
-module.exports = function (ngModule) {
-
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./post-box.html');
+module.exports = (ngModule) => {
 
     // Directive declaration.
     ngModule
-        .directive('postBox', function () {
+        .directive('postBox', () => {
             return {
-                template: ngModuleHtmlTemplate,
+                compile: () => {
+                    let pGetTemplatePromise = $q((resolve) => {
+                        require.ensure([], () => resolve(require('./post-box.html')));
+                    });
+
+                    return (scope, element) => {
+                        pGetTemplatePromise
+                            .then((htmlTemplate) => {
+                                element.html(htmlTemplate);
+                                $compile(element.contents())(scope)
+                            });
+                    };
+                },
                 restrict: 'AE',
-                transclude:{
+                transclude: {
                     postContent: '?postContent',
                     postBoxFooter: '?postBoxFooter'
                 },
@@ -26,9 +35,9 @@ module.exports = function (ngModule) {
                     ngClickFollowPost: '&'
 
                 },
-                controller: function ($scope, urlStates, appSettingConstant, itemStatusConstant,
-                                      postTypeConstant, taskStatusConstant, taskResultConstant,
-                                      userService, commentService, followPostService) {
+                controller: ($scope, urlStates, appSettingConstant, itemStatusConstant,
+                             postTypeConstant, taskStatusConstant, taskResultConstant,
+                             userService, commentService, followPostService) => {
 
                     //#region Properties
 
@@ -128,7 +137,7 @@ module.exports = function (ngModule) {
 
                                         // Get users list.
                                         var users = getUsersResult.records;
-                                        if (!users || users.length < 1){
+                                        if (!users || users.length < 1) {
                                             $scope.result.getComments = getCommentsResult;
                                             return;
                                         }
@@ -167,7 +176,7 @@ module.exports = function (ngModule) {
                         };
 
                         // Raise comment submission event.
-                        if ($scope.ngSubmitComment({comment: comment})){
+                        if ($scope.ngSubmitComment({comment: comment})) {
                             // Clear input box.
                             $scope.model.content = null;
 
@@ -196,8 +205,8 @@ module.exports = function (ngModule) {
                     /*
                     * Get name base on status.
                     * */
-                    $scope.fnGetPostTypeName = function(type){
-                        switch (type){
+                    $scope.fnGetPostTypeName = function (type) {
+                        switch (type) {
                             case postTypeConstant.private:
                                 return 'Private';
                             default:
@@ -208,9 +217,9 @@ module.exports = function (ngModule) {
                     /*
                     * Toggle post follow.
                     * */
-                    $scope.fnTogglePostFollow = function(){
+                    $scope.fnTogglePostFollow = function () {
                         // Post is being followed. Unfollow it.
-                        if ($scope.ngIsFollowingPost){
+                        if ($scope.ngIsFollowingPost) {
                             // Raise click follow post event.
                             $scope.ngClickFollowPost({post: $scope.ngPost, action: itemStatusConstant.deleted});
                             return;
@@ -222,7 +231,7 @@ module.exports = function (ngModule) {
                     /*
                     * Check whether user is able to see comments or not.
                     * */
-                    $scope.bIsAbleToSeeComment = function(){
+                    $scope.bIsAbleToSeeComment = function () {
 
                         // Comment is not available.
                         if (!$scope.ngIsCommentAvailable)
@@ -239,7 +248,7 @@ module.exports = function (ngModule) {
                     /*
                     * Check whether follow button is available on post or not.
                     * */
-                    $scope.bIsAbleToFollowPost = function(){
+                    $scope.bIsAbleToFollowPost = function () {
 
                         // No profile is attached.
                         if (!$scope.ngAudienceProfile)

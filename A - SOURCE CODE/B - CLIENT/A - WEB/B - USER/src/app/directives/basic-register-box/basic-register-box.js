@@ -1,18 +1,27 @@
-module.exports = function (ngModule) {
-
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./basic-register-box.html');
+module.exports = (ngModule) => {
 
     // Directive declaration.
-    ngModule.directive('basicRegisterBox', function () {
+    ngModule.directive('basicRegisterBox', () => {
         return {
-            template: ngModuleHtmlTemplate,
+            compile: () => {
+                let pGetTemplatePromise = $q((resolve) => {
+                    require.ensure([], () => resolve(require('./basic-register-box.html')));
+                });
+
+                return (scope, element) => {
+                    pGetTemplatePromise
+                        .then((htmlTemplate) => {
+                            element.html(htmlTemplate);
+                            $compile(element.contents())(scope)
+                        });
+                };
+            },
             restrict: 'E',
             scope: {
                 ngClickRegister: '&',
                 ngClickCancel: '&'
             },
-            controller: function ($scope, urlStates, userService) {
+            controller: ($scope, urlStates, userService) => {
 
                 //#region Properties
 

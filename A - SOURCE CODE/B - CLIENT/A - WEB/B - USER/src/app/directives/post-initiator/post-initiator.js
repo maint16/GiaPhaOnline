@@ -1,20 +1,29 @@
-module.exports = function (ngModule) {
-
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./post-initiator.html');
+module.exports = (ngModule) => {
 
     // Directive declaration.
-    ngModule.directive('postInitiator', function () {
+    ngModule.directive('postInitiator', () => {
         return {
-            template: ngModuleHtmlTemplate,
+            compile: () => {
+                let pGetTemplatePromise = $q((resolve) => {
+                    require.ensure([], () => resolve(require('./post-initiator.html')));
+                });
+
+                return (scope, element) => {
+                    pGetTemplatePromise
+                        .then((htmlTemplate) => {
+                            element.html(htmlTemplate);
+                            $compile(element.contents())(scope)
+                        });
+                };
+            },
             restrict: 'E',
             scope: {
                 ngClickCreatePost: '&',
                 ngClickCancel: '&'
             },
-            controller: function ($scope, urlStates, postTypeConstant,
-                                  appSettingConstant,
-                                  categoryService) {
+            controller: ($scope, urlStates, postTypeConstant,
+                         appSettingConstant,
+                         categoryService) => {
 
                 //#region Properties
 

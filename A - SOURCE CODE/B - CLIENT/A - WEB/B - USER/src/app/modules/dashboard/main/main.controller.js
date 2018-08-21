@@ -1,12 +1,12 @@
 /*
 * Module exports.
 * */
-module.exports = function (ngModule) {
-    ngModule.controller('mainDashboardController', function ($scope, toastr, $ngConfirm, $translate,
-                                                             $timeout, $state,
-                                                             appSettingConstant, urlStates,
-                                                             profile,
-                                                             categoryService, postCategorizationService, followCategoryService, commonService) {
+module.exports = (ngModule) => {
+    ngModule.controller('mainDashboardController', ($scope, toastr, $ngConfirm, $translate,
+                                                    $timeout, $state,
+                                                    appSettingConstant, urlStates,
+                                                    profile,
+                                                    categoryService, postCategorizationService, followCategoryService, commonService) => {
 
         //#region Properties
 
@@ -59,7 +59,7 @@ module.exports = function (ngModule) {
         /*
         * Function for searching categories (start searching from the beginning)
         * */
-        $scope.fnSearchCategories = function($event){
+        $scope.fnSearchCategories = function ($event) {
             // Event is valid. Prevent its default behaviour.
             if ($event)
                 $event.preventDefault();
@@ -87,7 +87,7 @@ module.exports = function (ngModule) {
 
             var getCategoriesCondition = {};
             angular.copy($scope.condition.getCategories, getCategoriesCondition);
-            if (getCategoriesCondition.name){
+            if (getCategoriesCondition.name) {
                 getCategoriesCondition['names'] = [getCategoriesCondition.name];
                 delete getCategoriesCondition.name;
             }
@@ -173,10 +173,10 @@ module.exports = function (ngModule) {
                             return getCategoriesResult;
                         });
                 })
-                .then(function(getCategoriesResult){
+                .then(function (getCategoriesResult) {
                     $scope.result.getCategories = getCategoriesResult;
                 })
-                .finally(function(){
+                .finally(function () {
                     commonService.unblockAppUI();
                 });
         };
@@ -184,7 +184,7 @@ module.exports = function (ngModule) {
         /*
         * Unfollow the specific category.
         * */
-        $scope.fnUnfollowCategory = function(categoryId){
+        $scope.fnUnfollowCategory = function (categoryId) {
             // Category is not being followed yet.
             if (!$scope.buffer.followingCategory[categoryId])
                 return;
@@ -198,10 +198,10 @@ module.exports = function (ngModule) {
                     ok: {
                         text: $translate.instant('OK'),
                         btnClass: 'btn btn-flat btn-danger',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                             // Unfollow category.
                             followCategoryService.unfollowCategory(categoryId)
-                                .then(function(){
+                                .then(function () {
                                     var szMessage = $translate.instant('Stopped following category successfully');
                                     toastr.success(szMessage);
 
@@ -213,7 +213,7 @@ module.exports = function (ngModule) {
                     cancel: {
                         text: $translate.instant('Cancel'),
                         btnClass: 'btn btn-flat btn-default',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                         }
                     }
                 }
@@ -223,7 +223,7 @@ module.exports = function (ngModule) {
         /*
         * Follow the specific category.
         * */
-        $scope.fnFollowCategory = function(categoryId){
+        $scope.fnFollowCategory = function (categoryId) {
             // Category has been followed.
             if ($scope.buffer.followingCategory[categoryId])
                 return;
@@ -237,10 +237,10 @@ module.exports = function (ngModule) {
                     ok: {
                         text: $translate.instant('OK'),
                         btnClass: 'btn btn-flat btn-primary',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                             // Unfollow category.
                             followCategoryService.followCategory(categoryId)
-                                .then(function(){
+                                .then(function () {
                                     var szMessage = $translate.instant('Followed category successfully');
                                     toastr.success(szMessage);
 
@@ -252,7 +252,7 @@ module.exports = function (ngModule) {
                     cancel: {
                         text: $translate.instant('Cancel'),
                         btnClass: 'btn btn-flat btn-default',
-                        action: function(scope, button){
+                        action: function (scope, button) {
                         }
                     }
                 }

@@ -28,12 +28,11 @@ module.exports = (env, argv) => {
         context: webpackOption.paths.getSource(__dirname),
         entry: {
             'JQueryVendors': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/rxjs.umd',
-                'pusher-js', '@aspnet/signalr/dist/cjs',  // Signalr & pusher
-                'firebase/app', 'firebase/messaging', // Firebase
-                'datatables.net/js/jquery.dataTables'],
+                'pusher-js',
+                'firebase/app', 'firebase/messaging'],
             'angularVendors': [
                 'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
-                'angular-translate', 'angular-translate-loader-static-files', 'datatables.net-responsive', 'angular-datatables',
+                'angular-translate', 'angular-translate-loader-static-files',
                 'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector', 'angular-messages',
                 'angular-file-upload', 'ui-cropper'],
             'app': path.resolve(paths.app, 'app.js')

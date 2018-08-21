@@ -1,12 +1,20 @@
-module.exports = function (ngModule) {
-
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./navigation-bar.html');
-
+module.exports = (ngModule) => {
     // Directive declaration.
-    ngModule.directive('navigationBar', function () {
+    ngModule.directive('navigationBar', () => {
         return {
-            template: ngModuleHtmlTemplate,
+            compile: () => {
+                let pGetTemplatePromise = $q((resolve) => {
+                    require.ensure([], () => resolve(require('./navigation-bar.html')));
+                });
+
+                return (scope, element) => {
+                    pGetTemplatePromise
+                        .then((htmlTemplate) => {
+                            element.html(htmlTemplate);
+                            $compile(element.contents())(scope)
+                        });
+                };
+            },
             restrict: 'E',
             transclude: {
                 userMenu: '?userMenu'
@@ -22,7 +30,7 @@ module.exports = function (ngModule) {
                 ngClickLogin: '&',
                 ngClickSignOut: '&'
             },
-            controller: function($scope, urlStates, userRoleConstant){
+            controller: ($scope, urlStates, userRoleConstant) => {
 
                 //#region Properties
 
@@ -37,7 +45,7 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when basic login is clicked.
                 * */
-                $scope.fnLogin = function(){
+                $scope.fnLogin = () => {
                     if ($scope.profile)
                         return;
 
@@ -47,10 +55,9 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when sign out button is clicked.
                 * */
-                $scope.fnSignOut = function(){
+                $scope.fnSignOut = () => {
                     $scope.ngClickSignOut();
                 };
-
 
 
                 //#endregion

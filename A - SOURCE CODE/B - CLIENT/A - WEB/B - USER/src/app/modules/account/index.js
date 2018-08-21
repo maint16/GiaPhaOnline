@@ -1,10 +1,4 @@
-module.exports = function(ngModule){
-
-    // Load controllers.
-    require('./login/login.controller')(ngModule);
-    require('./profile/profile.controller')(ngModule);
-
+module.exports = (ngModule) => {
     // Load routes.
     require('./login/login.route')(ngModule);
-    require('./profile/profile.route')(ngModule);
 };

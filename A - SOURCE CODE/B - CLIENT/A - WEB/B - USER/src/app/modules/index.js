@@ -1,7 +1,5 @@
-module.exports = function(ngModule){
+module.exports = (ngModule) => {
     require('./shared')(ngModule);
     require('./dashboard')(ngModule);
     require('./account')(ngModule);
-    require('./category')(ngModule);
-    require('./control-panel')(ngModule);
 };

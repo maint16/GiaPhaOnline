@@ -1,12 +1,21 @@
-module.exports = function (ngModule) {
-
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./basic-login-box.html');
+module.exports = (ngModule) => {
 
     // Directive declaration.
-    ngModule.directive('basicLoginBox', function () {
+    ngModule.directive('basicLoginBox', () => {
         return {
-            template: ngModuleHtmlTemplate,
+            compile: () => {
+                let pGetTemplatePromise = $q((resolve) => {
+                    require.ensure([], () => resolve(require('./basic-login-box.html')));
+                });
+
+                return (scope, element) => {
+                    pGetTemplatePromise
+                        .then((htmlTemplate) => {
+                            element.html(htmlTemplate);
+                            $compile(element.contents())(scope)
+                        });
+                };
+            },
             restrict: 'E',
             scope: {
                 ngSupportGoogleLogin: '=',
@@ -17,7 +26,7 @@ module.exports = function (ngModule) {
                 ngClickFacebookLogin: '&',
                 ngClickBasicRegister: '&'
             },
-            controller: function ($scope, urlStates, userService) {
+            controller: ($scope, urlStates, userService) => {
 
                 //#region Properties
 
@@ -61,7 +70,7 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when Facebook login is clicked.
                 * */
-                $scope.fnClickFacebookLogin = function(){
+                $scope.fnClickFacebookLogin = function () {
                     $scope.ngClickFacebookLogin();
                 };
 
@@ -75,7 +84,7 @@ module.exports = function (ngModule) {
                 /*
                 * Event which is fired when basic registration button is clicked.
                 * */
-                $scope.fnClickBasicRegister = function(){
+                $scope.fnClickBasicRegister = function () {
                     $scope.ngClickBasicRegister();
                 };
 

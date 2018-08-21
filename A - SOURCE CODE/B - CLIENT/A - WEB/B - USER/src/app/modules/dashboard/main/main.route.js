@@ -1,22 +1,35 @@
-module.exports = function (ngModule) {
+module.exports = (ngModule) => {
+    ngModule.config(($stateProvider) => {
 
-    // Module html template import.
-    var ngModuleHtmlTemplate = require('./main.html');
+        // Import constants.
+        const UrlStaticConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
 
-    // Import style.
-    require('./main.css');
-
-    ngModule.config(function ($stateProvider, urlStates) {
-
-        var urlStateDashboard = urlStates.dashboard;
-        var urlStateAuthorizedLayout = urlStates.authorizedLayout;
-
-        $stateProvider.state(urlStateDashboard.name, {
-            url: urlStateDashboard.url,
+        $stateProvider.state(UrlStaticConstant.dashboardModuleName, {
+            url: UrlStaticConstant.dashboardModuleUrl,
             controller: 'mainDashboardController',
-            parent: urlStateAuthorizedLayout.name,
-            template: ngModuleHtmlTemplate,
+            parent: UrlStaticConstant.authorizedLayoutModuleName,
+            templateProvider: ['$q', ($q) => {
+                // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
+                return $q((resolve) => {
+                    // lazy load the view
+                    require.ensure([], () => resolve(require('./main.html')));
+                });
+            }],
             resolve: {
+                /*
+                * Load login controller.
+                * */
+                loadDashboardController: ($q, $ocLazyLoad) => {
+                    return $q((resolve) => {
+                        require.ensure([], () => {
+                            // load only controller module
+                            let module = angular.module('main.dash-board', []);
+                            require('./main.controller')(module);
+                            $ocLazyLoad.load({name: module.name});
+                            resolve(module.controller);
+                        })
+                    });
+                }
             }
         });
     });

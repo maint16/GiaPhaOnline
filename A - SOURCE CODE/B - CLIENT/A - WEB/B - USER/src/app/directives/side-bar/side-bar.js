@@ -1,17 +1,25 @@
-module.exports = function(ngModule){
-    // Module template import.
-    var ngModuleHtmlTemplate = require('./side-bar.html');
+module.exports = (ngModule) => {
 
     // Directive declaration.
-    ngModule.directive('sideBar', function () {
+    ngModule.directive('sideBar', () => {
         return {
-            template: ngModuleHtmlTemplate,
+            compile: () => {
+                let pGetTemplatePromise = $q((resolve) => {
+                    require.ensure([], () => resolve(require('./side-bar.html')));
+                });
+
+                return (scope, element) => {
+                    pGetTemplatePromise
+                        .then((htmlTemplate) => {
+                            element.html(htmlTemplate);
+                            $compile(element.contents())(scope)
+                        });
+                };
+            },
             restrict: 'E',
             scope: null,
-            controller: function($scope, urlStates){
-
+            controller: ($scope, urlStates) => {
                 //#region Properties
-
                 // Constants reflection.
                 $scope.urlStates = urlStates;
                 //#endregion

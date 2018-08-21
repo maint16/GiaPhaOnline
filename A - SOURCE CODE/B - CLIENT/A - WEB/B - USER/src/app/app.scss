@@ -1,0 +1,55 @@
+.note-cant-resize .note-resizebar {
+  display: none !important;
+}
+
+/* Truncate content of div tag */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Slim scrollbar. */
+.slim-scrollbar::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+.slim-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  background-color: #F5F5F5;
+}
+
+.slim-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #555;
+}
+
+/* Override bootstrap controls */
+.nav-tabs > li > a,
+.dropdown-menu {
+  border-radius: 0 !important;
+}
+
+textarea.no-resize {
+  resize: none;
+}
+
+/* Post box */
+post-box .box-body {
+  height: 150px !important;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.validation-summary li {
+  color: red;
+  font-weight: bold;
+}
+
+/* ng confirm */
+.ng-confirm-buttons button.btn-flat {
+  border-radius: 0 !important;
+}

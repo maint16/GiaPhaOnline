@@ -1,38 +1,40 @@
-module.exports = function (ngModule) {
-
-    // Html template import.
-    var ngModuleHtmlTemplate = require('./authorized-layout.html');
-
+module.exports = (ngModule) => {
     // Route config.
-    ngModule.config(function ($stateProvider, urlStates) {
+    ngModule.config(($stateProvider) => {
 
-        // Constants reflection.
-        var urlAuthorizedLayoutState = urlStates.authorizedLayout;
+        // Import constants.
+        const UrlStateConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
 
         // State configuration
-        $stateProvider.state(urlAuthorizedLayoutState.name, {
+        $stateProvider.state(UrlStateConstant.authorizedLayoutModuleName, {
             controller: 'authorizedLayoutController',
             abstract: true,
-            template: ngModuleHtmlTemplate,
+            templateProvider: ['$q', ($q) => {
+                // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
+                return $q((resolve) => {
+                    // lazy load the view
+                    require.ensure([], () => resolve(require('./authorized-layout.html')));
+                });
+            }],
             resolve: {
-                profile: function (notificationStatusConstant, appSettingConstant,
-                                   userService, authenticationService) {
+                profile: (notificationStatusConstant, appSettingConstant,
+                          userService, authenticationService) => {
 
                     // Get access token from storage.
-                    var accessToken = authenticationService.getAuthenticationToken();
+                    const accessToken = authenticationService.getAuthenticationToken();
 
                     // No access token has been defined.
                     if (!accessToken || accessToken.length < 1)
                         return null;
 
                     // Promises to be resolved.
-                    var promises = [];
+                    let promises = [];
 
                     //#region Get profile
 
                     // Get user profile promise.
                     promises[0] = userService.getProfile(0)
-                        .then(function (getProfileResponse) {
+                        .then((getProfileResponse) => {
                             return getProfileResponse.data;
                         });
 
@@ -42,9 +44,23 @@ module.exports = function (ngModule) {
                         .then(function (promiseResponses) {
 
                             // Get profile.
-                            var profile = promiseResponses[0];
-                            return profile;
+                            return promiseResponses[0];
                         });
+                },
+
+                /*
+                * Load authorized-layout controller.
+                * */
+                loadAuthorizedLayoutController: ($q, $ocLazyLoad) => {
+                    return $q((resolve) => {
+                        require.ensure([], () => {
+                            // load only controller module
+                            let module = angular.module('shared.authorized-layout', []);
+                            require('./authorized-layout.controller')(module);
+                            $ocLazyLoad.load({name: module.name});
+                            resolve(module.controller);
+                        })
+                    });
                 }
             }
         });
