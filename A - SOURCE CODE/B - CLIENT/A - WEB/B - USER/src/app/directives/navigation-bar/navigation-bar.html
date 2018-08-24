@@ -1,123 +1,32 @@
-<header class="main-header">
-    <nav class="navbar navbar-static-top">
+<nav class="navbar navbar-inverse no-bottom-margin">
+    <div class="container-fluid">
         <div class="navbar-header">
-            <a href="javascript:void(0);"
-               class="navbar-brand" ui-sref="{{urlStates.dashboard.name}}">
-                <b>{{ngApplicationTitle}}</b>
-            </a>
-            <button type="button"
-                    class="navbar-toggle collapsed"
-                    data-toggle="collapse"
-                    data-target="#navbar-collapse">
-                <i class="fa fa-bars"></i>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
             </button>
+            <a class="navbar-brand" href="#">iConfess</a>
         </div>
-
-        <!-- Navbar Right Menu -->
-        <div class="navbar-custom-menu">
-            <ul class="nav navbar-nav">
-                <!--Post notifications-->
-                <li class="dropdown messages-menu"
-                    ng-if="profile && ngPostNotifications && ngPostNotifications.length > 0">
-                    <a href="javascript:void(0);"
-                       class="dropdown-toggle"
-                       data-toggle="dropdown">
-                        <i class="glyphicon glyphicon-book"></i>
-                        <span class="label label-success">{{totalPostNotifications}}</span>
+        <div class="collapse navbar-collapse" id="main-navbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="javascript:void(0);">
+                        <span class="fa fa-bell-o"></span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="fa fa-user"></span>
+                        <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li>
-                            <ul class="menu slim-scrollbar">
-                                <li ng-repeat="postNotification in ngPostNotifications"
-                                    ng-init="postOwner = ngUsers[postNotification.ownerId]; post = ngPosts[postNotification.postId]">
-                                    <a href="javascript:void(0);">
-                                        <div class="pull-left">
-                                            <img ng-src="{{postOwner.photo}}" class="img-circle" alt="User Image">
-                                        </div>
-                                        <h4>
-                                            {{postOwner.nickname}}
-                                            <small><i class="fa fa-clock-o"></i> 5 mins</small>
-                                        </h4>
-                                        <p class="truncate">{{post.body}}</p>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </li>
-                        <!--<li class="footer"><a href="#">See All Messages</a></li>-->
-                    </ul>
-                </li>
-
-                <!--Management control panel-->
-                <li class="messages-menu"
-                    ng-if="profile && profile.role == userRoleConstant.admin"
-                    ui-sref="{{urlStates.controlPanel.masterLayout.name}}">
-                    <a href="javascript:void(0);"
-                       class="dropdown-toggle"
-                       data-toggle="dropdown">
-                        <i class="fa fa-gears"></i>
-                    </a>
-                </li>
-
-                <!-- User Account Menu -->
-                <li class="dropdown user user-menu">
-                    <a href="javascript:void(0);"
-                       class="dropdown-toggle"
-                       data-toggle="dropdown"
-                       ng-click="fnLogin()">
-
-                        <span ng-if="profile">
-                            <img ng-src="{{profile.photo ? profile.photo : '/assets/images/avatar.png'}}"
-                                 class="user-image"
-                                 alt="User Image">
-                            <span class="hidden-xs">{{profile.nickname}}
-                            </span>
-                        </span>
-
-
-                        <span ng-if="!profile">
-                            <span class="fa fa-user-secret"> </span>
-                            <span class="hidden-xs">
-                                {{'Sign in' | translate}}
-                            </span>
-                        </span>
-
-                    </a>
-
-                    <ul class="dropdown-menu"
-                        ng-if="profile"
-                        ng-transclude="userMenu">
-                        <!-- The user image in the menu -->
-                        <li class="user-header">
-                            <img ng-src="{{profile.photo ? profile.photo : '/assets/images/avatar.png'}}"
-                                 class="img-circle"
-                                 alt="User Image">
-                            <p>
-                                {{profile.nickname}}
-                                <small>{{'Member since' | translate}} {{profile.joinedTime| amFromUnix | amDateFormat:'LLL'}}
-                                </small>
-                            </p>
-                        </li>
-
-                        <!-- Menu Footer (Authorized)-->
-                        <li class="user-footer"
-                            ng-if="profile">
-                            <div class="pull-left">
-                                <a href="javascript:void(0);"
-                                   class="btn btn-default btn-flat" ui-sref="{{urlStates.user.profile.name}}({'profileId': profile.id})">
-                                    {{'Profile' | translate}}
-                                </a>
-                            </div>
-                            <div class="pull-right">
-                                <button class="btn btn-danger btn-flat"
-                                        ng-click="fnSignOut()">
-                                    {{'Sign out' | translate}}
-                                </button>
-                            </div>
-                        </li>
+                        <li><a href>Sign up</a></li>
+                        <li><a href>Login</a></li>
+                        <li><a href>Profile</a></li>
                     </ul>
                 </li>
             </ul>
         </div>
-    </nav>
-</header>
+    </div>
+</nav>

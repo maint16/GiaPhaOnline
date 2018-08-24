@@ -19,12 +19,9 @@ module.exports = (ngModule) => {
             scope: {
                 ngClickCancel: '&',
             },
-            controller: ($scope, urlStates) => {
+            controller: ($scope) => {
 
                 //#region Properties
-
-                // Constants reflection.
-                $scope.urlStates = urlStates;
 
                 // Model which is for information binding.
                 $scope.model = {

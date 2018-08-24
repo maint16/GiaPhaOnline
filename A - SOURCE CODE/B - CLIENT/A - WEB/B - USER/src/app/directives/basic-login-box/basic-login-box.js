@@ -26,12 +26,9 @@ module.exports = (ngModule) => {
                 ngClickFacebookLogin: '&',
                 ngClickBasicRegister: '&'
             },
-            controller: ($scope, urlStates, userService) => {
+            controller: ($scope, userService) => {
 
                 //#region Properties
-
-                // Constants reflection.
-                $scope.urlStates = urlStates;
 
                 // Model for 2-way data binding.
                 $scope.model = {

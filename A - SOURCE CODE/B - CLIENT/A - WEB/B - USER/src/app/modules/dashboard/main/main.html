@@ -1,137 +1,74 @@
-<section class="content-header">
-    <h1>
-        {{'Categories' | translate}}
-        <small>{{'List' | translate}}</small>
-    </h1>
-    <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> {{'Home' | translate}}</a></li>
-        <li class="active">{{'Dashboard' | translate}}</li>
-    </ol>
-</section>
+<div ng-init="ngOnInit()">
 
-<section class="content"
-         ng-init="fnInit()">
+    <!--Categories group-->
+    <div class="col-lg-12">
 
-    <!--Basic search box-->
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="form-group">
-                <form class="input-group"
-                      novalidate
-                      ng-submit="fnSearchCategories($event)">
-                    <input class="form-control"
-                           ng-model="condition.getCategories.name"
-                           placeholder="{{'Search for categories' | translate}} ...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-info btn-flat">
-                            <span class="fa fa-search"></span>
-                        </button>
-                    </span>
-                </form>
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Library</a></li>
+                    <li class="active">Data</li>
+                </ol>
             </div>
         </div>
-    </div>
 
-    <!--Pagination-->
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="form-group text-center">
-                <ul uib-pagination
-                    boundary-links="true"
-                    total-items="result.getCategories.total"
-                    ng-model="condition.getCategories.pagination.page"
-                    ng-change="fnGetCategories()"></ul>
-            </div>
-        </div>
-    </div>
-
-    <!--Categories list-->
-    <div class="row">
-        <div class="col-sm-12">
-
-            <div class="row">
-                <div class="col-md-4 col-sm-6 col-xs-12"
-                     ng-repeat="category in result.getCategories.records">
-                    <div class="box box-info category-detail-box">
-                        <div class="box-header">
-                            <h3 class="box-title">{{category.name}}</h3>
+        <div ng-repeat="group in _categoriesGroups">
+            <div class="panel panel-default panel-category-group">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-8 col-xs-12">
+                            <span class="category-name">{{group.name}}</span>
                         </div>
-                        <div class="box-body">
-                            <div class="col-sm-12">
-                                <div class="form-group text-center">
-                                    <img class="img img-responsive img-thumbnail category-image"
-                                         ng-src="{{category.photo}}">
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="topic"
+                         ng-repeat="topic in group.topics">
+                        <div class="row">
+                            <div class="col-sm-8 col-xs-12">
+                                <div class="form-group">
+                                    <div class="topic-group-main-info">
+                                        <img class="img img-topic-group" ng-src="https://via.placeholder.com/64x64"/>
+                                        <div class="master-info">
+                                            <a href class="topic-name">{{topic.name}}</a><br>
+                                            <div class="topic-description">{{topic.description}}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-12">
-                                <div class="truncate category-description slim-scrollbar">
-                                    orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
-                                    Ipsum has been the industry's standard dummy text ever since the 1500s, when an
-                                    unknown printer took a galley of type and scrambled it to make a type specimen book.
-                                    It has survived not only five centuries, but also the leap into electronic
-                                    typesetting, remaining essentially unchanged. It was popularised in the 1960s with
-                                    the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                                    with desktop publishing software like Aldus PageMaker including versions of Lorem
-                                    Ipsum
+                            <div class="col-md-1 col-sm-2 col-xs-12 topic-posts">
+                                <div class="form-group">
+                                    <b class="fa fa-folder-open-o"></b> <span>&raquo;</span> {{topic.totalPost}}
                                 </div>
                             </div>
-                        </div>
-                        <div class="box-body">
-                            <table class="table table-responsive table-condensed">
-                                <tbody>
-                                <tr>
-                                    <th>{{'Posts' | translate}}</th>
-                                    <td>
-                                        <span ng-if="buffer.categoryPostsCounter[category.id]">{{buffer.categoryPostsCounter[category.id]}}</span>
-                                        <span ng-if="!buffer.categoryPostsCounter[category.id]">0</span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="box-footer">
-                            <div class="text-center">
-                                <!--View detail buttons-->
-                                <button class="btn btn-flat btn-sm btn-info"
-                                        ng-click="clickCategory(category)">
-                                    <span class="fa fa-eye"></span>
-                                </button>
-
-                                <span ng-if="profile">
-                                    <!--Category is being followed-->
-                                    <button class="btn btn-flat btn-sm bg-red"
-                                            ng-if="buffer.followingCategory[category.id]"
-                                            ng-click="fnUnfollowCategory(category.id)">
-                                        <span class="fa fa-heart"></span>
-                                    </button>
-                                    <!--Category IS NOT being followed-->
-                                    <button class="btn btn-flat btn-sm"
-                                            ng-if="!buffer.followingCategory[category.id]"
-                                            ng-click="fnFollowCategory(category.id)">
-                                        <span class="fa fa-heart"></span>
-                                    </button>
-                                </span>
-
+                            <div class="col-md-3 col-sm-2 col-xs-12 topic-user-description">
+                                <div>
+                                    <div class="text-ellipsis">
+                                        <b class="fa fa-edit"></b>&nbsp;
+                                        <i>Last post by</i> <a href="javascript:void(0);" data-toggle="tooltip" title="{{topic.latestPost.username}}">{{topic.latestPost.username}}</a>
+                                    </div>
+                                    <div class="text-ellipsis">
+                                        <b class="fa fa-clock-o"></b>&nbsp;
+                                        <i>Created at</i> {{topic.latestPost.time}}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-            </div>
-
-        </div>
-    </div>
-
-    <!--Pagination-->
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="form-group text-center">
-                <ul uib-pagination
-                    boundary-links="true"
-                    total-items="result.getCategories.total"
-                    ng-model="condition.getCategories.pagination.page"
-                    ng-change="fnGetCategories()"></ul>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Library</a></li>
+                    <li class="active">Data</li>
+                </ol>
+            </div>
+        </div>
+
     </div>
-</section>
+</div>

@@ -21,14 +21,11 @@ module.exports = (ngModule) => {
                 ngClickCreatePost: '&',
                 ngClickCancel: '&'
             },
-            controller: ($scope, urlStates, postTypeConstant,
+            controller: ($scope, postTypeConstant,
                          appSettingConstant,
                          categoryService) => {
 
                 //#region Properties
-
-                // Constants reflection.
-                $scope.urlStates = urlStates;
 
                 // Model which is for information binding.
                 $scope.model = {

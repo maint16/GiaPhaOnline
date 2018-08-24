@@ -1,6 +1,5 @@
 module.exports = (ngModule) => {
-    ngModule.controller('loginController', ($scope) => {
-
+    ngModule.controller('forgotPasswordController', ($scope) => {
         //#region Properties
 
         //#endregion

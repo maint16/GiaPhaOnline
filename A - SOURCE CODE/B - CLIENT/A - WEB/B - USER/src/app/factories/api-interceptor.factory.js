@@ -54,7 +54,7 @@
 
                     // Find state.
                     const state = $injector.get('$state');
-                    const urlStates = $injector.get('urlStates');
+                    const urlStates = {};
 
                     // Find toastr notification from injector.
                     const toastr = $injector.get('toastr');
@@ -76,7 +76,7 @@
                                 authenticationService.clearAuthenticationToken();
 
                                 // Redirect user to dashboard page.
-                                state.go(urlStates.dashboard.name);
+                                // state.go(urlStates.dashboard.name);
                             }
                             szMessage = 'Your credential is invalid.';
                             break;

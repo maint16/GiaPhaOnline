@@ -74,22 +74,6 @@ module.exports = (ngModule) => {
 
 
             }, 250);
-
-            // Find destination of transaction.
-            let destination = $transition.$to();
-
-            if (destination.includes[UrlStateConstant.authorizedLayoutModuleName]) {
-                $scope.model.layoutClass = 'hold-transition skin-green-light layout-top-nav';
-                return;
-            }
-
-            let urlStateUser = urlStates.user;
-            if (destination.includes[UrlStateConstant.loginModuleName] || destination.includes[UrlStateConstant.googleLoginModuleName]) {
-                $scope.model.layoutClass = 'hold-transition login-page';
-                return;
-            }
-
-            $scope.model.layoutClass = 'hold-transition';
         });
 
         //#endregion

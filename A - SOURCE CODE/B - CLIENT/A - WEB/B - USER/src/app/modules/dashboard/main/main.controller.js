@@ -4,7 +4,7 @@
 module.exports = (ngModule) => {
     ngModule.controller('mainDashboardController', ($scope, toastr, $ngConfirm, $translate,
                                                     $timeout, $state,
-                                                    appSettingConstant, urlStates,
+                                                    appSettingConstant,
                                                     profile,
                                                     categoryService, followCategoryService, commonService) => {
 
@@ -53,7 +53,7 @@ module.exports = (ngModule) => {
         * Called when a category is selected.
         * */
         $scope.clickCategory = function (category) {
-            $state.go(urlStates.category.postListing.name, {categoryId: category.id});
+            // $state.go(urlStates.category.postListing.name, {categoryId: category.id});
         };
 
         /*

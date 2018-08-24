@@ -1,7 +1,7 @@
 module.exports = function (ngModule) {
 
     ngModule.service('userService', function ($http, $interpolate,
-                                              appSettingConstant, apiUrls, urlStates) {
+                                              appSettingConstant, apiUrls) {
 
         /*
         * Get user information.
@@ -35,8 +35,9 @@ module.exports = function (ngModule) {
         * Get profile state name.
         * */
         this.getProfilePage = function (id) {
-            var url = $interpolate('{{sref}}({profileId: {{id}}})')({sref: urlStates.user.profile.name, id: id});
-            return url;
+            // var url = $interpolate('{{sref}}({profileId: {{id}}})')({sref: urlStates.user.profile.name, id: id});
+            // return url;
+            return null;
         };
 
         /*

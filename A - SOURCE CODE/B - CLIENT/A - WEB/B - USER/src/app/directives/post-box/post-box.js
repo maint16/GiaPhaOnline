@@ -35,14 +35,13 @@ module.exports = (ngModule) => {
                     ngClickFollowPost: '&'
 
                 },
-                controller: ($scope, urlStates, appSettingConstant, itemStatusConstant,
+                controller: ($scope, appSettingConstant, itemStatusConstant,
                              postTypeConstant, taskStatusConstant, taskResultConstant,
                              userService, commentService, followPostService) => {
 
                     //#region Properties
 
                     // Constants reflection.
-                    $scope.urlStates = urlStates;
                     $scope.appSettingConstant = appSettingConstant;
                     $scope.itemStatusConstant = itemStatusConstant;
 

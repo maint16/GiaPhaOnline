@@ -1,11 +1,10 @@
 module.exports = (ngModule) => {
-
     // Directive declaration.
-    ngModule.directive('sideBar', () => {
+    ngModule.directive('appFooter', ($q, $compile) => {
         return {
             compile: () => {
                 let pGetTemplatePromise = $q((resolve) => {
-                    require.ensure([], () => resolve(require('./side-bar.html')));
+                    require.ensure([], () => resolve(require('./footer.html')));
                 });
 
                 return (scope, element) => {
@@ -17,10 +16,10 @@ module.exports = (ngModule) => {
                 };
             },
             restrict: 'E',
-            scope: null,
+            scope: {
+            },
             controller: ($scope) => {
-                //#region Properties
-                //#endregion
+
             }
         }
     });

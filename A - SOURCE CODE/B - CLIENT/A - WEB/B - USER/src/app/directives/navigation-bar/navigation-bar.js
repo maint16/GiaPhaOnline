@@ -30,12 +30,11 @@ module.exports = (ngModule) => {
                 ngClickLogin: '&',
                 ngClickSignOut: '&'
             },
-            controller: ($scope, urlStates, userRoleConstant) => {
+            controller: ($scope, userRoleConstant) => {
 
                 //#region Properties
 
                 // Constants reflection.
-                $scope.urlStates = urlStates;
                 $scope.userRoleConstant = userRoleConstant;
 
                 //#endregion

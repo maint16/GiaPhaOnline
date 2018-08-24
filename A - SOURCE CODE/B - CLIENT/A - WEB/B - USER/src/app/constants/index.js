@@ -1,9 +1,8 @@
-module.exports = function (ngModule) {
+module.exports = (ngModule) => {
     /*
     * Constants declaration.
     * */
     require('./app-settings.constant')(ngModule);
-    require('./url-states.constant')(ngModule);
     require('./api-urls.constant')(ngModule);
     require('./post-status.constant')(ngModule);
     require('./comment-status.constant')(ngModule);

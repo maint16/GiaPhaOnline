@@ -21,7 +21,7 @@ module.exports = (ngModule) => {
                 ngClickRegister: '&',
                 ngClickCancel: '&'
             },
-            controller: ($scope, urlStates, userService) => {
+            controller: ($scope, userService) => {
 
                 //#region Properties
 

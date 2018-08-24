@@ -1,43 +1,7 @@
-<div class="wrapper" ng-init="init()">
-    <!--Side bar rendering-->
-    <!--<side-bar></side-bar>-->
+<!--Navigation bar-->
+<navigation-bar></navigation-bar>
 
-    <!--Navigation bar rendering-->
-    <navigation-bar profile="profile"
-                    ng-users="buffer.users"
-                    ng-posts="buffer.posts"
-                    ng-post-notifications="result.postNotifications.records"
-                    total-post-notifications="result.postNotifications.total"
-                    ng-application-title="iConfess"
-                    ng-click-login="fnClickLogin()"
-                    ng-click-sign-out="fnSignOut()">
-    </navigation-bar>
+<!--Main content-->
+<ui-view></ui-view>
 
-    <div class="col-lg-10 col-lg-offset-1">
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper" ui-view>
-
-        </div>
-    </div>
-</div>
-
-<!--Modal dialog: Basic login box-->
-<script type="text/ng-template"
-        id="basic-login.html">
-    <basic-login-box ng-support-google-login="bIsGoogleLoginLoaded"
-                     ng-support-facebook-login="bIsFacebookLoginLoaded"
-                     ng-cancel="fnCancelLogin()"
-                     ng-click-basic-login="fnBasicLogin(model)"
-                     ng-click-google-login="fnGoogleLogin()"
-                     ng-click-facebook-login="fnFacebookLogin()"
-                     ng-click-basic-register="fnOpenBasicRegister()">
-    </basic-login-box>
-</script>
-
-<!--Modal dialog: Basic register box-->
-<script type="text/ng-template"
-        id="basic-register.html">
-    <basic-register-box ng-click-cancel="fnCancelBasicRegister()"
-                        ng-click-register="fnBasicRegister(user)">
-    </basic-register-box>
-</script>
+<app-footer></app-footer>
