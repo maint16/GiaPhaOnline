@@ -15,7 +15,10 @@ module.exports = (ngModule) => {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                 return $q((resolve) => {
                     // lazy load the view
-                    require.ensure([], () => resolve(require('./login.html')));
+                    require.ensure([], () => {
+                        require('../shared.scss');
+                        resolve(require('./login.html'));
+                    });
                 });
             }],
             resolve: {

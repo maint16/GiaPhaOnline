@@ -1,5 +1,11 @@
+@import "flat-bootstrap";
+
 .note-cant-resize .note-resizebar {
   display: none !important;
+}
+
+.no-bottom-margin {
+  margin-bottom: 0;
 }
 
 /* Truncate content of div tag */
@@ -35,13 +41,6 @@
 
 textarea.no-resize {
   resize: none;
-}
-
-/* Post box */
-post-box .box-body {
-  height: 150px !important;
-  overflow-x: hidden;
-  overflow-y: hidden;
 }
 
 .validation-summary li {

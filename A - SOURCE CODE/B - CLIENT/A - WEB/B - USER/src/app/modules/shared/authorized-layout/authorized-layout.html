@@ -1,7 +1,24 @@
-<!--Navigation bar-->
-<navigation-bar></navigation-bar>
+<div class="container-fluid">
+    <!--Navigation bar-->
+    <navigation-bar></navigation-bar>
 
-<!--Main content-->
-<ui-view></ui-view>
+    <div class="form-group">
+        <div class="layout-header"
+             data-type="background"
+             data-speed="3">
+            <div class="container full-height">
+                <div class="title-panel">
+                    <h2 class="site-name">PixelGoose.com</h2>
+                    <p class="site-description">Premium styles for phpBB3</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<app-footer></app-footer>
+    <!--Main content-->
+    <ui-view></ui-view>
+
+    <div class="row">
+        <app-footer></app-footer>
+    </div>
+</div>

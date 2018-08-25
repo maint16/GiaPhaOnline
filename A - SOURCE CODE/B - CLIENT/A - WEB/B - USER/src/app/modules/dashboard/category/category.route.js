@@ -12,7 +12,10 @@ module.exports = (ngModule) => {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                 return $q((resolve) => {
                     // lazy load the view
-                    require.ensure([], () => resolve(require('./category-topics.html')));
+                    require.ensure([], () => {
+                        require('./category.scss');
+                        resolve(require('./category.html'));
+                    });
                 });
             }],
             resolve: {
@@ -24,7 +27,7 @@ module.exports = (ngModule) => {
                         require.ensure([], () => {
                             // load only controller module
                             let module = angular.module('main.category-topics', []);
-                            require('./category-topics.controller')(module);
+                            require('./category.controller')(module);
                             $ocLazyLoad.load({name: module.name});
                             resolve(module.controller);
                         })

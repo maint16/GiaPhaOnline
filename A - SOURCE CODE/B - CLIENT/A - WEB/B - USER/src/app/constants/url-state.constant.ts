@@ -21,10 +21,10 @@ export class UrlStateConstant {
     public static profileModuleUrl: string = '/profile';
 
     // Category topic module name.
-    public static categoryTopicModuleName: string = 'category-name';
+    public static categoryTopicModuleName: string = 'category';
 
     // Category topic module url.
-    public static categoryTopicModuleUrl: string = '/category-topics';
+    public static categoryTopicModuleUrl: string = '/category';
 
     // Topic module.
     public static topicModuleUrl: string = '/topic';

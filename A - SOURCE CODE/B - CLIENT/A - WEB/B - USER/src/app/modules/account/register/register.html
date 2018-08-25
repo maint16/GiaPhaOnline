@@ -1,11 +1,11 @@
-<div class="register-account-box-container full-height">
-    <div class="register-account-box">
-        <div class="col-sm-4 col-sm-push-4">
+<div class="register-account-box">
+        <div class="col-sm-4">
             <div class="box box-default">
                 <div class="box-body">
 
                     <div class="form-group">
-                        <img class="img img-responsive" src="/images/login-logo.png"/>
+                        <img class="img img-responsive"
+                             ng-src="{{'https://vgy.me/vpj0on.png'}}"/>
 
                         <div class="text-center">
                             <h1 class="text-center">
@@ -19,7 +19,7 @@
                     <!--Email-->
                     <div class="form-group">
                         <div class="col-sm-3">
-                            <label>Email</label>
+                            <label>{{'TITLE_EMAIL' | translate}}</label>
                         </div>
                         <div class="col-sm-9">
                             <div class="form-group">
@@ -36,7 +36,7 @@
                     <!--Password-->
                     <div class="form-group">
                         <div class="col-sm-3">
-                            <label>Password</label>
+                            <label>{{'TITLE_PASSWORD' | translate}}</label>
                         </div>
                         <div class="col-sm-9">
                             <div class="input-group">
@@ -57,19 +57,26 @@
 
                     <!--Forgot password-->
                     <div class="col-sm-9 col-sm-push-3">
+                        <!--Login-->
                         <div class="form-group">
-                            <a href>Forgot password ?</a>
+                            <a ui-sref="{{urlStateConstant.loginModuleName}}">
+                                <span class="fa fa-sign-in"></span> {{'TITLE_LOGIN' | translate}}
+                            </a>
+                        </div>
+
+                        <!--Forgot password-->
+                        <div class="form-group">
+                            <a ui-sref="{{urlStateConstant.accountForgotPasswordModuleName}}">{{'TITLE_FORGOT_PASSWORD' | translate}}</a>
                         </div>
                     </div>
                 </div>
                 <div class="box-footer">
                     <div class="text-center">
-                        <a class="btn btn-primary" href>
-                            <span class="fa fa-sign-in"></span> Login
-                        </a>
+                        <button class="btn btn-primary" ng-click="ngOnUserRegister()">
+                            <span class="fa fa-sign-in"></span> {{'TITLE_REGISTER' | translate}}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>

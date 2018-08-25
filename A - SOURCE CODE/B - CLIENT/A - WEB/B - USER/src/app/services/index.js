@@ -12,4 +12,10 @@ module.exports = (ngModule) => {
     require('./comment-report.service')(ngModule);
     require('./post-report.service')(ngModule);
     require('./push-notification.service')(ngModule);
+
+
+    // Mocking api.
+    require('./mock/category-group.service')(ngModule);
+    require('./mock/category.service')(ngModule);
+    require('./mock/topic.service')(ngModule);
 };

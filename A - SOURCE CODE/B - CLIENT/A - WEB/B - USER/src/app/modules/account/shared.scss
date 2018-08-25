@@ -1,0 +1,16 @@
+.sign-in-box,
+.forgot-password-box,
+.register-account-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+
+  .box {
+    .box-body {
+      text-align: left;
+    }
+  }
+}

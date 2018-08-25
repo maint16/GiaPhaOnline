@@ -1,4 +1,5 @@
-<div ng-init="ngOnInit()">
+<div class="row"
+     ng-init="_ngOnInit()">
 
     <!--Categories group-->
     <div class="col-lg-12">
@@ -12,8 +13,7 @@
                 </ol>
             </div>
         </div>
-
-        <div ng-repeat="group in _categoriesGroups">
+        <div ng-repeat="group in _loadCategoryGroupsResult.records">
             <div class="panel panel-default panel-category-group">
                 <div class="panel-heading">
                     <div class="row">
@@ -31,7 +31,7 @@
                                     <div class="topic-group-main-info">
                                         <img class="img img-topic-group" ng-src="https://via.placeholder.com/64x64"/>
                                         <div class="master-info">
-                                            <a href class="topic-name">{{topic.name}}</a><br>
+                                            <a class="topic-name" ui-sref="{{urlStateConstants.categoryTopicModuleName}}">{{topic.name}}</a><br>
                                             <div class="topic-description">{{topic.description}}</div>
                                         </div>
                                     </div>
@@ -69,6 +69,5 @@
                 </ol>
             </div>
         </div>
-
     </div>
 </div>

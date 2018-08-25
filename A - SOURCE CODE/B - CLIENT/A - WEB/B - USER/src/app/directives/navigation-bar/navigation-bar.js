@@ -1,4 +1,8 @@
 module.exports = (ngModule) => {
+
+    // Import constant.
+    const UrlStateConstants = require('../../constants/url-state.constant').UrlStateConstant;
+
     // Directive declaration.
     ngModule.directive('navigationBar', ($q, $compile) => {
         return {
@@ -36,6 +40,8 @@ module.exports = (ngModule) => {
 
                 // Constants reflection.
                 $scope.userRoleConstant = userRoleConstant;
+                $scope.urlStateConstants = UrlStateConstants;
+
 
                 //#endregion
 

@@ -4,9 +4,11 @@ module.exports = (ngModule) => {
         return {
             compile: () => {
                 let pGetTemplatePromise = $q((resolve) => {
-                    require.ensure([], () => resolve(require('./footer.html')));
+                    require.ensure([], () => {
+                        require('./bottom-footer.scss');
+                        resolve(require('./bottom-footer.html'))
+                    });
                 });
-
                 return (scope, element) => {
                     pGetTemplatePromise
                         .then((htmlTemplate) => {

@@ -15,7 +15,7 @@ require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
 require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
 require('../../node_modules/ng-multi-selector/ng-multi-selector.css');
-require('./app.scss');
+require('./styles/app.scss');
 
 // Import jquery lib.
 require('jquery');
@@ -93,19 +93,19 @@ $.ajax({
         require('./configs')(ngModule);
 
         // Constants import.
-        require('./constants/index')(ngModule);
+        require('./constants')(ngModule);
 
         // Factories import.
-        require('./factories/index')(ngModule);
+        require('./factories')(ngModule);
 
         // Services import.
-        require('./services/index')(ngModule);
+        require('./services')(ngModule);
 
         // Directive requirements.
-        require('./directives/index')(ngModule);
+        require('./directives')(ngModule);
 
         // Module requirements.
-        require('./modules/index')(ngModule);
+        require('./modules')(ngModule);
 
         // Manually bootstrap the application.
         angular.bootstrap(document, ['ngApp']);

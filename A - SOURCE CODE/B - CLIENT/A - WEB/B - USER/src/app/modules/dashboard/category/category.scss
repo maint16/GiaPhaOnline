@@ -1,0 +1,91 @@
+.btn.btn-add-topic {
+  margin: 20px 0;
+}
+
+.topic-container {
+  background-color: #ffffff;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: #EAEDF1 solid 1px
+}
+
+.topic-container .topic-main-info {
+  display: flex;
+}
+
+.topic-container .topic-image {
+  width: 64px;
+  height: 64px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.topic-image img {
+}
+
+.topic-container {
+
+  .topic-title {
+    display: inline-block;
+    margin-left: 10px;
+    min-width: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+    .main-title {
+      font-weight: bold;
+    }
+
+    .topic-creator {
+      small {
+        font-style: italic;
+      }
+    }
+  }
+
+  .topic-views {
+    text-align: center;
+
+    .views-number {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  }
+
+}
+
+/*==========  Non-Mobile First Method  ==========*/
+/* Large Devices, Wide Screens */
+@media only screen and (min-width: 1200px) {
+}
+
+@media only screen and (max-width: 1200px) {
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width: 991px) {
+
+  .topic-container {
+    .topic-title {
+      display: inline-block;
+      white-space: normal;
+    }
+  }
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width: 767px) {
+
+  .topic-info {
+    margin-left: 64px;
+  }
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width: 480px) {
+}
+
+/* Custom, iPhone Retina */
+@media only screen and (max-width: 320px) {
+}
