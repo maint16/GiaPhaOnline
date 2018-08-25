@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AppModel.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
@@ -33,6 +34,11 @@ namespace AppDb.Models.Entities
         /// </summary>
         [Required]
         public string Description { get; set; }
+
+        /// <summary>
+        ///     Status of category group.
+        /// </summary>
+        public ItemStatus Status { get; set; }
 
         /// <summary>
         ///     When the category group was created

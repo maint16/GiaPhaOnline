@@ -2,7 +2,7 @@
 {
     public enum ItemStatus
     {
-        NotAvailable,
-        Available
+        Disabled,
+        Active
     }
 }

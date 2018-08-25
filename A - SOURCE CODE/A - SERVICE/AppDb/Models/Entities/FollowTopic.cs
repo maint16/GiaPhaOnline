@@ -24,7 +24,7 @@ namespace AppDb.Models.Entities
         /// <summary>
         /// Status of follow post.
         /// </summary>
-        public ItemStatus Status { get; set; }
+        public FollowStatus Status { get; set; }
 
         /// <summary>
         ///     When the following action was created.
