@@ -15,6 +15,8 @@ require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
 require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
 require('../../node_modules/ng-multi-selector/ng-multi-selector.css');
+require('../../node_modules/tinymce/skins/lightgray/skin.min.css');
+
 require('./styles/app.scss');
 
 // Import jquery lib.
@@ -24,6 +26,8 @@ require('bootstrap');
 require('admin-lte');
 require('moment');
 require('pusher-js');
+require('tinymce');
+require('tinymce/themes/modern');
 
 require('rxjs/bundles/rxjs.umd');
 const firebase = require('firebase');
@@ -45,6 +49,7 @@ require('ng-multi-selector');
 require('angular-file-upload');
 require('ui-cropper');
 require('angular-messages');
+require('angular-ui-tinymce');
 
 $.ajax({
     url: '/assets/app-settings.json',
@@ -60,7 +65,7 @@ $.ajax({
         // Module declaration.
         let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
             'ui.bootstrap', 'ngMultiSelector', 'ngMessages', 'oc.lazyLoad',
-            'pascalprecht.translate', 'angularMoment', 'ngSanitize',
+            'pascalprecht.translate', 'angularMoment', 'ngSanitize', 'ui.tinymce',
             'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
 
         // Import url state constant
