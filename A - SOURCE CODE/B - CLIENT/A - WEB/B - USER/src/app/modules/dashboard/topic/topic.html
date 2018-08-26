@@ -228,8 +228,9 @@
                     </div>
                 </div>
                 <div id="id-post-reply-container"
-                     class="box-body collapse">
-                    <textarea id="id-post-reply" class="tiny-mce" rows="10"></textarea>
+                     class="box-body">
+                    <textarea ui-tinymce="_editorConfiguration"
+                              ng-model="_oModel.content"></textarea>
                 </div>
             </div>
         </div>

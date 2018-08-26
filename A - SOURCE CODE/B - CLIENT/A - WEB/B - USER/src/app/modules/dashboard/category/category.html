@@ -19,10 +19,11 @@
     <!--Add topic & pagination-->
     <div class="row">
         <div class="col-xs-4">
-            <a class="btn btn-primary btn-add-topic" href>
+            <button class="btn btn-primary btn-add-topic"
+                    ng-click="_ngOnAddTopicClicked()">
                 <span class="fa fa-plus"></span>
                 <span>New topic</span>
-            </a>
+            </button>
         </div>
         <div class="col-xs-8">
             <div class="text-right">
@@ -41,10 +42,11 @@
         </div>
     </div>
 
-    <div>
-        <div class="form-group">
+    <!--Topics list-->
+    <div class="row">
+        <div class="col-lg-12">
 
-            <div class="col-lg-12">
+            <div class="form-group">
                 <div ng-repeat="topic in _loadTopicsResult.records">
                     <div class="row topic-container">
                         <div class="col-md-10 col-sm-8 topic-main-info">

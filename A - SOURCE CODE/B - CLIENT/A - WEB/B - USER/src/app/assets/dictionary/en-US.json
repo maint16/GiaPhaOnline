@@ -8,5 +8,12 @@
   "TITLE_FORGOT_PASSWORD": "Forgot password",
   "TITLE_PROFILE": "Profile",
   "TITLE_QUICK_REPLY": "Quick reply",
-  "TITLE_REPLY": "Reply"
+  "TITLE_REPLY": "Reply",
+  "TITLE_CONTENT": "Content",
+  "TITLE_PREVIEW": "Preview",
+  "TITLE_TOPIC_TITLE": "Title",
+  "TITLE_ADD_TOPIC": "Add topic",
+  "TITLE_EDIT_TOPIC": "Edit topic",
+  "TITLE_OK": "OK",
+  "TITLE_CANCEL": "Cancel"
 }

@@ -5,8 +5,8 @@ module.exports = (ngModule) => {
 
     ngModule
         .controller('categoryTopicsController', (
-            $topic,
             $state,
+            $topic,
             $scope) => {
 
             //#region Properties
@@ -34,6 +34,13 @@ module.exports = (ngModule) => {
                         $scope._loadTopicsResult = loadTopicsResult;
                     });
             };
+
+            /*
+            * Call when add topic button is clicked.
+            * */
+            $scope._ngOnAddTopicClicked = () => {
+                $state.go(UrlStateConstant.addTopicModuleName);
+            }
 
             //#endregion
         });

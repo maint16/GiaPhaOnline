@@ -12,6 +12,25 @@ module.exports = (ngModule) => {
         // Topic information.
         $scope._topic = {};
 
+        // Editor model.
+        $scope._oModel = {
+            content: null
+        };
+
+        // Whether editor has been initialized or not.
+        $scope.bHasEditorInitialized = false;
+
+        // Editor configuration.
+        $scope._editorConfiguration = {
+            resize: false,
+            height: 300,
+            setup: (editor) => {
+                editor.on("init", () => {
+                    $scope.bHasEditorInitialized = true;
+                });
+            }
+        };
+
         //#endregion
 
         //#region Events

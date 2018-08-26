@@ -1,49 +1,66 @@
-<div class="col-lg-12">
-    <div class="box box-default">
-        <div class="box-header">
-            <h3 class="box-title">Add/edit topic</h3>
-        </div>
-        <div class="box-body">
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label>Topic title</label>
-                        <input class="form-control" placeholder="Topic title (required)" />
-                    </div>
-
-                </div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="box box-default">
+            <div class="box-header">
+                <h3 class="box-title">
+                    <span ng-if="_topic.id">{{'TITLE_EDIT_TOPIC' | translate}}</span>
+                    <span ng-if="!_topic.id">{{'TITLE_ADD_TOPIC' | translate}}</span>
+                </h3>
             </div>
+            <div class="box-body">
 
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <label>Topic content</label>
-                        <textarea ui-tinymce="_editorConfiguration"
-                                  ng-model="oModel.content" rows="15"></textarea>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>{{'TITLE_TOPIC_TITLE' | translate}}</label>
+                            <input class="form-control"
+                                   ng-model="_topic.title"
+                                   placeholder="Topic title (required)"/>
+                        </div>
+
                     </div>
                 </div>
 
-                <!--Preview area-->
-                <div class="col-sm-6">
-                    <label>Preview</label>
-                    <ng-bind-html ng-bind-html="oModel.content"></ng-bind-html>
-                </div>
-            </div>
+                <div class="row">
+                    <div ng-class="{'col-sm-12': !bIsInPreviewMode, 'col-sm-6': bIsInPreviewMode}">
+                        <div class="form-group">
+                            <label>{{'TITLE_CONTENT' | translate}}</label>
+                            <div class="form-group">
+                            <textarea ui-tinymce="_editorConfiguration"
+                                      ng-model="oModel.content" rows="15" ng-show="bIsEditorInitialized"></textarea>
+                            </div>
+                        </div>
+                    </div>
 
-        </div>
-        <div class="box-footer">
-            <div class="text-right">
-                <button class="btn btn-info">
-                    <span class="fa fa-eye"></span> Preview
-                </button>
-                <button class="btn btn-primary">
-                    <span class="fa fa-edit"></span> Add/edit post
-                </button>
-                <span>&nbsp;</span>
-                <button class="btn btn-default">
-                    <span class="fa fa-trash"></span> <span>Cancel</span>
-                </button>
+                    <!--Preview area-->
+                    <div class="col-sm-6" ng-if="bIsInPreviewMode">
+                        <label>Preview</label>
+                        <div class="form-group">
+                            <ng-bind-html ng-bind-html="oModel.content"></ng-bind-html>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="box-footer">
+                <div class="text-right">
+                    <button class="btn"
+                            ng-class="{'btn-info': !bIsInPreviewMode, 'btn-warning': bIsInPreviewMode}"
+                            ng-click="_ngOnPreviewToggleClick()">
+                    <span class="fa "
+                          ng-class="{'fa-eye': !bIsInPreviewMode, 'fa-eye-slash': bIsInPreviewMode }"></span>
+                        {{'TITLE_PREVIEW' | translate}}
+                    </button>
+                    <button class="btn btn-primary"
+                            ng-click="_ngOnOkClicked()">
+                        <span class="fa fa-edit"></span> {{'TITLE_OK' | translate}}
+                    </button>
+                    <span>&nbsp;</span>
+                    <button class="btn btn-default"
+                            ng-click="_ngOnCancelEditorClicked()">
+                        <span class="fa fa-trash"></span> <span>{{'TITLE_CANCEL' | translate}}</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
