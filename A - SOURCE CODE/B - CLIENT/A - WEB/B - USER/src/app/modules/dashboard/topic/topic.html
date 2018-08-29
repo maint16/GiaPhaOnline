@@ -1,47 +1,26 @@
-<div ng-init="_ngOnInit()">
+<div ng-init="ngOnInit()">
     <div class="row">
         <div class="col-lg-12">
 
-            <!--Topic title-->
+            <!--Breadcrumb-->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="form-group">
-                        <b class="topic-name">
-                            <a href="javascript:void(0);">Topic title</a>
-                        </b>
-                    </div>
+                    <ol class="breadcrumb">
+                        <li><a href>{{'TITLE_HOME' | translate}}</a></li>
+                        <li class="active"><a href>Category 01</a></li>
+                    </ol>
                 </div>
             </div>
 
             <!--Topic pagination-->
             <div class="row">
-                <div class="col-sm-6 col-xs-4">
-                    <button class="btn btn-primary btn-reply"
-                            ng-click="_ngOnAddTopicClicked()">
-                        <span class="fa fa-reply"></span>
-                        <span>&nbsp;</span>
-                        <b>{{'TITLE_REPLY' | translate}}</b>
-                    </button>
-                </div>
-                <div class="col-sm-6 col-xs-8">
+                <div class="col-lg-12">
                     <nav aria-label="Page navigation" class="text-right">
-                        <ul class="pagination pagination-sm">
-                            <li>
-                                <a href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li>
-                                <a href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
+                        <ul uib-pagination
+                            boundary-links="true"
+                            total-items="loadTopicRepliesResult.total"
+                            ng-model="loadTopicRepliesCondition.pagination.page"
+                            ng-change="ngOnRepliesPageChanged()"></ul>
                     </nav>
                 </div>
             </div>
@@ -91,7 +70,7 @@
                                                     <span class="fa fa-file"></span>
                                                 </th>
                                                 <td>
-                                                    <b><a href="javascript:void(0)">{{_topic.title}}</a></b>
+                                                    <b><a href="javascript:void(0)">{{topic.title}}</a></b>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -106,12 +85,7 @@
                                         </table>
                                     </div>
                                     <div class="post-content">
-                                        <ng-bind-html ng-bind-html="_topic.content"></ng-bind-html>
-                                    </div>
-                                    <div>
-                                        <div class="pull-right">
-                                            <button class="="></button>
-                                        </div>
+                                        <ng-bind-html ng-bind-html="topic.body"></ng-bind-html>
                                     </div>
                                     <div class="post-signature">
                                         <ng-bind-html ng-bind-html="_topic.creator.signature"></ng-bind-html>
@@ -124,7 +98,7 @@
             </div>
 
             <!--Replies-->
-            <div ng-repeat="reply in _topic.replies">
+            <div ng-repeat="reply in loadTopicRepliesResult.records">
                 <div class="form-group">
                     <div class="box box-widget post">
                         <div class="box-body">
@@ -166,7 +140,7 @@
                                                 <span class="fa fa-reply"></span>
                                             </th>
                                             <td>
-                                                <b><a href="javascript:void(0)">Re: {{_topic.post.title}}</a></b>
+                                                <b><a href="javascript:void(0)">Re: {{topic.title}}</a></b>
                                             </td>
                                         </tr>
                                         <tr>
@@ -192,27 +166,25 @@
                 </div>
             </div>
 
+            <!--Breadcrumb-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <ol class="breadcrumb">
+                        <li><a href>{{'TITLE_HOME' | translate}}</a></li>
+                        <li class="active"><a href>Category 01</a></li>
+                    </ol>
+                </div>
+            </div>
+
             <!--Bottom pagination-->
             <div class="row">
                 <div class="col-lg-12">
                     <nav aria-label="Page navigation" class="text-right">
-                        <ul class="pagination pagination-sm">
-                            <li>
-                                <a href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li>
-                                <a href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
+                        <ul uib-pagination
+                            boundary-links="true"
+                            total-items="loadTopicRepliesResult.total"
+                            ng-model="loadTopicRepliesCondition.pagination.page"
+                            ng-change="ngOnRepliesPageChanged()"></ul>
                     </nav>
                 </div>
             </div>
@@ -222,15 +194,41 @@
                 <div class="box-header">
                     <h3 class="box-title">{{'TITLE_QUICK_REPLY' | translate}}</h3>
                     <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
+                        <button type="button"
+                                class="btn btn-box-tool"
+                                ng-click="ngOnEditorToggleClicked()">
+                            <i class="fa"
+                               ng-class="{'fa-minus': !bIsEditorCollapsed, 'fa-plus': bIsEditorCollapsed}"></i>
                         </button>
                     </div>
                 </div>
-                <div id="id-post-reply-container"
-                     class="box-body">
-                    <textarea ui-tinymce="_editorConfiguration"
-                              ng-model="_oModel.content"></textarea>
+                <div class="box-body"
+                     ng-hide="bIsEditorCollapsed">
+                    <div ng-hide="bIsEditorInPreviewMode">
+                        <textarea ui-tinymce
+                                  ng-model="addQuickReply"></textarea>
+                    </div>
+
+                    <div ng-if="bIsEditorInPreviewMode"
+                         ng-bind-html="addQuickReply">
+                    </div>
+                </div>
+                <div class="box-footer"
+                     ng-hide="bIsEditorCollapsed">
+                    <div class="text-center">
+                        <!--Preview toggle button-->
+                        <button class="btn"
+                                ng-class="{'btn-info': !bIsEditorInPreviewMode, 'btn-warning': bIsEditorInPreviewMode}"
+                                ng-click="ngOnToggleEditorPreviewMode()">
+                            <span class="fa fa-eye"></span> {{'TITLE_PREVIEW' | translate}}
+                        </button>
+
+                        <!--Reply button-->
+                        <button class="btn btn-primary"
+                                ng-click="ngOnAddReplyClicked()">
+                            {{'TITLE_REPLY' | translate}}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

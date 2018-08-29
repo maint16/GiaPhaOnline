@@ -5,6 +5,8 @@ module.exports = (ngModule) => {
     const {TopicsModule} = require('./topics');
     ngModule.config(($stateProvider) => new TopicsModule($stateProvider));
 
-    require('./topic/topic.route')(ngModule);
+    const {TopicModule} = require('./topic');
+    ngModule.config(($stateProvider) => new TopicModule($stateProvider));
+
     require('./add-edit-topic/add-edit-topic.route')(ngModule);
 };

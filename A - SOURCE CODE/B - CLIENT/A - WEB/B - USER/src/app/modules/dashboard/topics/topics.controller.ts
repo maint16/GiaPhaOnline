@@ -10,6 +10,7 @@ import {LoadTopicViewModel} from "../../../view-models/load-topic.view-model";
 import {cloneDeep} from 'lodash';
 import {ITopicsScope} from "./topics.scope";
 
+/* @ngInject */
 export class TopicsController implements IController {
 
     //#region Constructor
@@ -66,7 +67,7 @@ export class TopicsController implements IController {
     * Called when topic title is clicked.
     * */
     private _ngOnTopicTitleClicked = (id: number): void => {
-        this.$state.go(UrlStateConstant.topicModuleName, {id: id});
+        this.$state.go(UrlStateConstant.topicModuleName, {topicId: id});
     }
 
     //#endregion
