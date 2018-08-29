@@ -25,7 +25,8 @@ exports = module.exports = {
             use: {
                 loader: 'babel-loader',
                 options: {
-                    presets: [['env', {"modules": false}]]
+                    presets: [['env', {"modules": false}]],
+                    plugins: ['angularjs-annotate']
                 }
             }
         });

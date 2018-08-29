@@ -16,8 +16,8 @@ module.exports = function (ngModule) {
         },
 
         category: {
-            getCategories: 'api/category/search',
-            addCategory: 'api/category'
+            getCategories: 'api/topics/search',
+            addCategory: 'api/topics'
         },
 
         post: {
@@ -56,9 +56,9 @@ module.exports = function (ngModule) {
         },
 
         followingCategory:{
-            getFollowingCategory: 'api/follow-category/search',
-            followCategory: 'api/follow-category',
-            unfollowCategory: 'api/follow-category'
+            getFollowingCategory: 'api/follow-topics/search',
+            followCategory: 'api/follow-topics',
+            unfollowCategory: 'api/follow-topics'
         },
 
         postNotification:{

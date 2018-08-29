@@ -3,27 +3,21 @@
 }
 
 .topic-container {
-  background-color: #ffffff;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-bottom: #EAEDF1 solid 1px
-}
 
-.topic-container .topic-main-info {
-  display: flex;
-}
+  .topic-main-info {
+    display: flex;
+  }
 
-.topic-container .topic-image {
-  width: 64px;
-  height: 64px;
-  margin-top: auto;
-  margin-bottom: auto;
-}
+  .box {
+    margin-bottom: 0 !important;
+  }
 
-.topic-image img {
-}
-
-.topic-container {
+  .topic-image {
+    width: 64px;
+    height: 64px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 
   .topic-title {
     display: inline-block;
@@ -52,7 +46,6 @@
       font-weight: bold;
     }
   }
-
 }
 
 /*==========  Non-Mobile First Method  ==========*/
@@ -76,6 +69,10 @@
 
 /* Small Devices, Tablets */
 @media only screen and (max-width: 767px) {
+
+  .topic-main-info {
+    margin-bottom: 15px;
+  }
 
   .topic-info {
     margin-left: 64px;

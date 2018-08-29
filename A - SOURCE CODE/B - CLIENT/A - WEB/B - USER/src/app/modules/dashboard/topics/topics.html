@@ -1,4 +1,4 @@
-<div ng-init="_ngOnInit()">
+<div ng-init="ngOnInit()">
     <div>
         <ol class="breadcrumb">
             <li><a href>Home</a></li>
@@ -20,7 +20,7 @@
     <div class="row">
         <div class="col-xs-4">
             <button class="btn btn-primary btn-add-topic"
-                    ng-click="_ngOnAddTopicClicked()">
+                    ng-click="ngOnAddTopic()">
                 <span class="fa fa-plus"></span>
                 <span>New topic</span>
             </button>
@@ -45,16 +45,31 @@
     <!--Topics list-->
     <div class="row">
         <div class="col-lg-12">
-
-            <div class="form-group">
-                <div ng-repeat="topic in _loadTopicsResult.records">
-                    <div class="row topic-container">
+            <div ng-repeat="topic in loadTopicsResult.records"
+                 class="topic-container">
+                <div class="box box-default">
+                    <div class="box-header">
+                        <div class="box-tools pull-right">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="fa fa-wrench"></i></button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href>Another action</a>
+                                    </li>
+                                    <li><a href="#">Something else here</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body">
                         <div class="col-md-10 col-sm-8 topic-main-info">
                             <div class="topic-image">
                                 <img src="https://via.placeholder.com/64x64"/>
                             </div>
                             <div class="topic-title"
-                                 ui-sref="{{urlStateConstant.topicModuleName}}">
+                                 ng-click="ngOnTopicTitleClicked(topic.id)">
                                 <a href class="main-title">{{topic.title}}</a>
                                 <div class="topic-creator">
                                     &raquo; <a href>
@@ -69,21 +84,19 @@
                             </div>
                         </div>
 
-                        <div class="topic-info">
-                            <div class="col-md-1 col-sm-2 col-xs-6 topic-views">
+                        <div class="col-md-1 col-sm-2 col-xs-6 topic-views">
+                            <div>
+                                <span class="views-number"> 1216 </span>
                                 <div>
-                                    <span class="views-number"> 1216 </span>
-                                    <div>
-                                        <small>Replies</small>
-                                    </div>
+                                    <small>Replies</small>
                                 </div>
                             </div>
-                            <div class="col-md-1 col-sm-2 col-xs-6 topic-views">
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-6 topic-views">
+                            <div>
+                                <span class="views-number"> 368 </span>
                                 <div>
-                                    <span class="views-number"> 368 </span>
-                                    <div>
-                                        <small>Followers</small>
-                                    </div>
+                                    <small>Followers</small>
                                 </div>
                             </div>
                         </div>
@@ -91,12 +104,15 @@
                 </div>
             </div>
         </div>
+
+
     </div>
 
     <!--Add topic & pagination-->
     <div class="row">
         <div class="col-xs-4">
-            <button class="btn btn-primary btn-add-topic">
+            <button class="btn btn-primary btn-add-topic"
+                    ng-click="ngOnAddTopic()">
                 <span class="fa fa-plus"></span>
                 <span>New topic</span>
             </button>

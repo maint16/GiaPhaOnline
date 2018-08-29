@@ -503,21 +503,21 @@ module.exports = (ngModule) => {
 
                 switch (notificationAction) {
                     case notificationActionConstant.add:
-                        szMessage = $translate.instant('User created a category', {
+                        szMessage = $translate.instant('User created a topics', {
                             username: data.creator,
                             category: data.category
                         });
                         break;
 
                     case notificationAction.update:
-                        szMessage = $translate.instant('User updated a category', {
+                        szMessage = $translate.instant('User updated a topics', {
                             username: data.creator,
                             category: data.category
                         });
                         break;
 
                     case notificationAction.delete:
-                        szMessage = $translate.instant('User deleted a category', {
+                        szMessage = $translate.instant('User deleted a topics', {
                             username: data.creator,
                             category: data.category
                         });

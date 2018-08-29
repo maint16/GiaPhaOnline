@@ -4,7 +4,7 @@ export class LoadCategoryViewModel {
 
     //#region Properties
 
-    // List of category group indexes.
+    // List of topics group indexes.
     public categoryGroupIds: Array<number> | null;
 
     // Pagination.

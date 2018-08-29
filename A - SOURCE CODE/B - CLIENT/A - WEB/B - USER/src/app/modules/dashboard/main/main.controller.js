@@ -12,10 +12,10 @@ module.exports = (ngModule) => {
                                                     $scope) => {
         //#region Methods
 
-        // Load category groups result.
+        // Load topics groups result.
         $scope._loadCategoryGroupsResult = {};
 
-        // Mapping between category group - categories.
+        // Mapping between topics group - categories.
         $scope._mCategoryGroupToCategoriesMap = {};
 
         // Constants reflection.
@@ -30,7 +30,7 @@ module.exports = (ngModule) => {
         * */
         $scope._ngOnInit = () => {
 
-            // Build category group search condition.
+            // Build topics group search condition.
             let loadCategoryGroupCondition = {};
 
             let loadCategoryGroupPromise = $categoryGroup
@@ -97,7 +97,7 @@ module.exports = (ngModule) => {
         };
 
         /*
-        * Get the list of loaded category groups which are stored in cache.
+        * Get the list of loaded topics groups which are stored in cache.
         * */
         $scope.loadCategoryGroupsInCache = () => {
 
