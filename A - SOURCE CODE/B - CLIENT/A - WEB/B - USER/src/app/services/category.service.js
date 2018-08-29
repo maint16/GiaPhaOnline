@@ -1,28 +1,41 @@
-module.exports = function (ngModule) {
+module.exports = (ngModule) => {
 
     /*
     * Initialize service with injectors.
     * */
-    ngModule.service('categoryService', function ($http, appSettingConstant, apiUrls) {
+    ngModule.service('$category', (
+        appSettingConstant,
+        $http) => {
 
-        //#region Methods
+        return {
 
-        /*
-        * Get categories by using specif
-        * */
-        this.getCategories = function(conditions){
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.category.getCategories;
-            return $http.post(url, conditions);
-        };
+            //#region Methods
 
-        /*
-        * Add a category into system.
-        * */
-        this.addCategory = function(info){
-            var url = appSettingConstant.endPoint.apiService + '/' + apiUrls.category.addCategory;
-            return $http.post(url, info);
-        };
+            /*
+            * Load categories by using specific conditions.
+            * */
+            loadCategories: (condition) => {
+                // Build url.
+                let fullUrl = `${appSettingConstant.apiEndPoint}/api/category/search`;
 
-        //#endregion
+                // Load categories list.
+                return $http
+                    .post(fullUrl, condition)
+                    .then((loadCategoriesResponse) => {
+                        if (!loadCategoriesResponse)
+                            throw 'No category has been found';
+
+                        let loadCategoriesResult = loadCategoriesResponse.data;
+                        if (!loadCategoriesResult || !loadCategoriesResult.records)
+                            throw 'No category has been found';
+
+                        return loadCategoriesResult;
+                    });
+
+            }
+
+            //#endregion
+        }
+
     });
 };

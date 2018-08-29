@@ -57,10 +57,10 @@ $.ajax({
     method: 'GET',
     cache: false,
     crossDomain: false,
-    success: (loadAppSettings) => {
+    success: (loadAppOptionResponse) => {
 
         // Bind the app setting to window object.
-        window.app = loadAppSettings;
+        window['_ngAppOptions'] = loadAppOptionResponse;
 
         // Module declaration.
         let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
@@ -94,7 +94,7 @@ $.ajax({
                 $translateProvider.use('en-US');
             });
 
-        require('./app.controller')(ngModule);
+        // Import configurations.
         require('./configs')(ngModule);
 
         // Constants import.
@@ -111,6 +111,8 @@ $.ajax({
 
         // Module requirements.
         require('./modules')(ngModule);
+
+        require('./app.controller')(ngModule);
 
         // Manually bootstrap the application.
         angular.bootstrap(document, ['ngApp']);

@@ -1,10 +1,10 @@
 module.exports = (ngModule) => {
     ngModule.controller('authorizedLayoutController',
         function (oAuthSettings, appSettingConstant, notificationCategoryConstant, notificationActionConstant,
-                  $scope, $state, $transitions, uiService, oAuthService,
+                  $scope, $state, $transitions, $ui, oAuthService,
                   profile, $uibModal, $timeout, $window, $translate, toastr,
                   notificationStatusConstant, userRoleConstant, pusherOptionConstant,
-                  authenticationService, userService, postNotificationService, postService) {
+                  authenticationService) {
 
             //#region Properties
 
@@ -72,28 +72,28 @@ module.exports = (ngModule) => {
             * */
             $scope.fnBasicLogin = function (model) {
 
-                userService.basicLogin(model)
-                    .then(
-                        function success(basicLoginResponse) {
-
-                            // Login result.
-                            var basicLoginResult = basicLoginResponse.data;
-
-                            // Save access token into storage.
-                            authenticationService.initAuthenticationToken(basicLoginResult.code);
-
-                            // Dismiss the modal.
-                            if ($scope.modals.login) {
-                                $scope.modals.login.dismiss();
-                                $scope.modals.login = null;
-                            }
-
-                            // Reload the state.
-                            $state.reload();
-                        },
-                        function error(basicLoginResponse) {
-                            // $scope.ngLoginFailingly();
-                        });
+                // userService.basicLogin(model)
+                //     .then(
+                //         function success(basicLoginResponse) {
+                //
+                //             // Login result.
+                //             var basicLoginResult = basicLoginResponse.data;
+                //
+                //             // Save access token into storage.
+                //             authenticationService.initAuthenticationToken(basicLoginResult.code);
+                //
+                //             // Dismiss the modal.
+                //             if ($scope.modals.login) {
+                //                 $scope.modals.login.dismiss();
+                //                 $scope.modals.login = null;
+                //             }
+                //
+                //             // Reload the state.
+                //             $state.reload();
+                //         },
+                //         function error(basicLoginResponse) {
+                //             // $scope.ngLoginFailingly();
+                //         });
 
             };
 
@@ -102,38 +102,38 @@ module.exports = (ngModule) => {
             * */
             $scope.fnGoogleLogin = function () {
 
-                // Close modal dialog.
-                if ($scope.modals.login) {
-                    $scope.modals.login.dismiss();
-                    $scope.modals.login = null;
-                }
-
-                var pGoogleAuthenticationClient = gapi.auth2.getAuthInstance();
-                pGoogleAuthenticationClient
-                    .grantOfflineAccess({
-                        scope: 'profile email'
-                    })
-                    .then(function (getGoogleCredentialResponse) {
-                        var szCode = getGoogleCredentialResponse.code;
-                        userService.fnUseGoogleLogin({code: szCode})
-                            .then(
-                                function (loginResponse) {
-
-                                    var loginResult = loginResponse.data;
-                                    if (!loginResult)
-                                        return;
-
-                                    var szAccessToken = loginResult.accessToken;
-                                    if (!szAccessToken || szAccessToken.length < 1)
-                                        return;
-
-                                    // Save access token to local storage.
-                                    authenticationService.initAuthenticationToken(szAccessToken);
-
-                                    // Reload the current state.
-                                    $state.reload();
-                                });
-                    });
+                // // Close modal dialog.
+                // if ($scope.modals.login) {
+                //     $scope.modals.login.dismiss();
+                //     $scope.modals.login = null;
+                // }
+                //
+                // var pGoogleAuthenticationClient = gapi.auth2.getAuthInstance();
+                // pGoogleAuthenticationClient
+                //     .grantOfflineAccess({
+                //         scope: 'profile email'
+                //     })
+                //     .then(function (getGoogleCredentialResponse) {
+                //         var szCode = getGoogleCredentialResponse.code;
+                //         userService.fnUseGoogleLogin({code: szCode})
+                //             .then(
+                //                 function (loginResponse) {
+                //
+                //                     var loginResult = loginResponse.data;
+                //                     if (!loginResult)
+                //                         return;
+                //
+                //                     var szAccessToken = loginResult.accessToken;
+                //                     if (!szAccessToken || szAccessToken.length < 1)
+                //                         return;
+                //
+                //                     // Save access token to local storage.
+                //                     authenticationService.initAuthenticationToken(szAccessToken);
+                //
+                //                     // Reload the current state.
+                //                     $state.reload();
+                //                 });
+                //     });
             };
 
             /*
@@ -141,48 +141,48 @@ module.exports = (ngModule) => {
             * */
             $scope.fnFacebookLogin = function () {
 
-                // Close modal dialog.
-                if ($scope.modals.login) {
-                    $scope.modals.login.dismiss();
-                    $scope.modals.login = null;
-                }
-
-                // Sign user into system.
-                FB.login(function (response) {
-                    console.log(response);
-
-                    // Not connected to facebook api.
-                    var szStatus = response.status;
-                    if (szStatus !== 'connected')
-                        return;
-
-                    var authResponse = response.authResponse;
-                    if (!authResponse)
-                        return;
-
-                    var szAccessToken = authResponse.accessToken;
-                    if (!szAccessToken)
-                        return;
-
-
-                    userService.fnUseFacebookLogin({code: szAccessToken})
-                        .then(function (loginResponse) {
-                            var loginResult = loginResponse.data;
-                            if (!loginResult)
-                                return;
-
-                            var szAccessToken = loginResult.accessToken;
-                            if (!szAccessToken || szAccessToken.length < 1)
-                                return;
-
-                            // Save access token to local storage.
-                            authenticationService.initAuthenticationToken(szAccessToken);
-
-                            // Reload the current state.
-                            $state.reload();
-                        });
-
-                }, {scope: 'public_profile,email'});
+                // // Close modal dialog.
+                // if ($scope.modals.login) {
+                //     $scope.modals.login.dismiss();
+                //     $scope.modals.login = null;
+                // }
+                //
+                // // Sign user into system.
+                // FB.login(function (response) {
+                //     console.log(response);
+                //
+                //     // Not connected to facebook api.
+                //     var szStatus = response.status;
+                //     if (szStatus !== 'connected')
+                //         return;
+                //
+                //     var authResponse = response.authResponse;
+                //     if (!authResponse)
+                //         return;
+                //
+                //     var szAccessToken = authResponse.accessToken;
+                //     if (!szAccessToken)
+                //         return;
+                //
+                //
+                //     userService.fnUseFacebookLogin({code: szAccessToken})
+                //         .then(function (loginResponse) {
+                //             var loginResult = loginResponse.data;
+                //             if (!loginResult)
+                //                 return;
+                //
+                //             var szAccessToken = loginResult.accessToken;
+                //             if (!szAccessToken || szAccessToken.length < 1)
+                //                 return;
+                //
+                //             // Save access token to local storage.
+                //             authenticationService.initAuthenticationToken(szAccessToken);
+                //
+                //             // Reload the current state.
+                //             $state.reload();
+                //         });
+                //
+                // }, {scope: 'public_profile,email'});
             };
 
             /*
@@ -242,13 +242,13 @@ module.exports = (ngModule) => {
             * Submit a request with specific information to register a basic account.
             * */
             $scope.fnBasicRegister = function (user) {
-                userService.basicRegister(user)
-                    .then(function (basicUserRegistrationResponse) {
-                        // User registration is successful.
-                        // Modal dialog is valid. Dismiss it first.
-                        if ($scope.modals.basicUserRegistration)
-                            $scope.modals.basicUserRegistration.dismiss();
-                    });
+                // userService.basicRegister(user)
+                //     .then(function (basicUserRegistrationResponse) {
+                //         // User registration is successful.
+                //         // Modal dialog is valid. Dismiss it first.
+                //         if ($scope.modals.basicUserRegistration)
+                //             $scope.modals.basicUserRegistration.dismiss();
+                //     });
             };
 
             /*
@@ -293,141 +293,141 @@ module.exports = (ngModule) => {
             * */
             $scope.fnLoadPostNotifications = function () {
 
-                // User is not authorized.
-                if (!$scope.profile)
-                    return;
-
-                // Build the load condition.
-                var getPostNotificationCondition = {
-                    statuses: [notificationStatusConstant.unseen],
-                    pagination: {
-                        page: 1,
-                        records: appSettingConstant.pagination.postNotifications
-                    }
-                };
-
-                // Search post notification by using specific conditions.
-                postNotificationService.search(getPostNotificationCondition)
-                    .then(function (getPostNotificationResponse) {
-                        // Get post notification result.
-                        var getPostNotificationResult = getPostNotificationResponse.data;
-
-                        if (!getPostNotificationResult)
-                            throw 'Cannot get post notifications';
-
-                        var notifications = getPostNotificationResult.records;
-                        if (!notifications || notifications.length < 1) {
-                            $scope.result.postNotifications = getPostNotificationResult;
-                            throw 'No post notification for the current user.';
-                        }
-
-                        return getPostNotificationResult;
-                    })
-                    .then(function (getPostNotificationResult) {
-
-                        // Get list of notifications.
-                        var notifications = getPostNotificationResult.records;
-
-                        // Promises list to be complete.
-                        var promises = [];
-
-                        //#region Get users promises
-
-                        // Build a list of users that don't exist in buffer.
-                        var userIds = [];
-
-                        // Build a list of posts that don't exist in buffer.
-                        var postIds = [];
-
-                        // Find a list of users that are not in buffer.
-                        angular.forEach(notifications, function (notification, iterator) {
-
-                            // Owner is not in buffer.
-                            if (!$scope.buffer.users[notification.ownerId]) {
-                                userIds.push(notification.ownerId);
-                            }
-
-                            // Build a list of posts that are not in buffer.
-                            if (!$scope.buffer.posts[notification.postId]) {
-                                postIds.push(notification.postId);
-                            }
-
-                        });
-
-                        //#region Load user
-
-                        // Build promises to load users.
-                        var getUsersCondition = {
-                            ids: userIds
-                        };
-
-                        // Build promise.
-                        var getUsersPromise = userService.loadUsers(getUsersCondition)
-                            .then(function (getUsersResponse) {
-                                // Get response result.
-                                var getUsersResult = getUsersResponse.data;
-
-                                if (!getUsersResult)
-                                    return;
-
-                                // Get users list.
-                                var users = getUsersResult.records;
-
-                                // List is empty.
-                                if (!users || users.length < 1)
-                                    return;
-
-                                // Add user to buffer.
-                                angular.forEach(users, function (user, iterator) {
-                                    $scope.buffer.users[user.id] = user;
-                                });
-                            });
-
-                        // Add promise to list.
-                        promises.push(getUsersPromise);
-
-                        //#endregion
-
-                        //#region Load posts
-
-                        // Build post loading condition.
-                        var getPostsCondition = {
-                            ids: postIds
-                        };
-
-                        // Build get posts promise.
-                        var getPostsPromise = postService.loadPosts(getPostsCondition)
-                            .then(function (getPostsResponse) {
-
-                                // Get response result.
-                                var getPostsResult = getPostsResponse.data;
-                                if (!getPostsResult)
-                                    return;
-
-                                // Get posts list.
-                                var posts = getPostsResult.records;
-                                if (!posts || posts.length < 1)
-                                    return;
-
-                                // Add post to buffer.
-                                angular.forEach(posts, function (post, iterator) {
-                                    $scope.buffer.posts[post.id] = post;
-                                });
-                            });
-
-                        // Add promise to array.
-                        promises.push(getPostsPromise);
-
-                        //#endregion
-
-                        // Wait for all promises to be resolved.
-                        return Promise.all(promises).then(function () {
-                            return getPostNotificationResult;
-                        });
-                    })
-                    .then(function (getPostNotificationResult) {
-                        $scope.result.postNotifications = getPostNotificationResult;
-                    });
+                // // User is not authorized.
+                // if (!$scope.profile)
+                //     return;
+                //
+                // // Build the load condition.
+                // var getPostNotificationCondition = {
+                //     statuses: [notificationStatusConstant.unseen],
+                //     pagination: {
+                //         page: 1,
+                //         records: appSettingConstant.pagination.postNotifications
+                //     }
+                // };
+                //
+                // // Search post notification by using specific conditions.
+                // postNotificationService.search(getPostNotificationCondition)
+                //     .then(function (getPostNotificationResponse) {
+                //         // Get post notification result.
+                //         var getPostNotificationResult = getPostNotificationResponse.data;
+                //
+                //         if (!getPostNotificationResult)
+                //             throw 'Cannot get post notifications';
+                //
+                //         var notifications = getPostNotificationResult.records;
+                //         if (!notifications || notifications.length < 1) {
+                //             $scope.result.postNotifications = getPostNotificationResult;
+                //             throw 'No post notification for the current user.';
+                //         }
+                //
+                //         return getPostNotificationResult;
+                //     })
+                //     .then(function (getPostNotificationResult) {
+                //
+                //         // Get list of notifications.
+                //         var notifications = getPostNotificationResult.records;
+                //
+                //         // Promises list to be complete.
+                //         var promises = [];
+                //
+                //         //#region Get users promises
+                //
+                //         // Build a list of users that don't exist in buffer.
+                //         var userIds = [];
+                //
+                //         // Build a list of posts that don't exist in buffer.
+                //         var postIds = [];
+                //
+                //         // Find a list of users that are not in buffer.
+                //         angular.forEach(notifications, function (notification, iterator) {
+                //
+                //             // Owner is not in buffer.
+                //             if (!$scope.buffer.users[notification.ownerId]) {
+                //                 userIds.push(notification.ownerId);
+                //             }
+                //
+                //             // Build a list of posts that are not in buffer.
+                //             if (!$scope.buffer.posts[notification.postId]) {
+                //                 postIds.push(notification.postId);
+                //             }
+                //
+                //         });
+                //
+                //         //#region Load user
+                //
+                //         // Build promises to load users.
+                //         var getUsersCondition = {
+                //             ids: userIds
+                //         };
+                //
+                //         // Build promise.
+                //         var getUsersPromise = userService.loadUsers(getUsersCondition)
+                //             .then(function (getUsersResponse) {
+                //                 // Get response result.
+                //                 var getUsersResult = getUsersResponse.data;
+                //
+                //                 if (!getUsersResult)
+                //                     return;
+                //
+                //                 // Get users list.
+                //                 var users = getUsersResult.records;
+                //
+                //                 // List is empty.
+                //                 if (!users || users.length < 1)
+                //                     return;
+                //
+                //                 // Add user to buffer.
+                //                 angular.forEach(users, function (user, iterator) {
+                //                     $scope.buffer.users[user.id] = user;
+                //                 });
+                //             });
+                //
+                //         // Add promise to list.
+                //         promises.push(getUsersPromise);
+                //
+                //         //#endregion
+                //
+                //         //#region Load posts
+                //
+                //         // Build post loading condition.
+                //         var getPostsCondition = {
+                //             ids: postIds
+                //         };
+                //
+                //         // Build get posts promise.
+                //         var getPostsPromise = postService.loadPosts(getPostsCondition)
+                //             .then(function (getPostsResponse) {
+                //
+                //                 // Get response result.
+                //                 var getPostsResult = getPostsResponse.data;
+                //                 if (!getPostsResult)
+                //                     return;
+                //
+                //                 // Get posts list.
+                //                 var posts = getPostsResult.records;
+                //                 if (!posts || posts.length < 1)
+                //                     return;
+                //
+                //                 // Add post to buffer.
+                //                 angular.forEach(posts, function (post, iterator) {
+                //                     $scope.buffer.posts[post.id] = post;
+                //                 });
+                //             });
+                //
+                //         // Add promise to array.
+                //         promises.push(getPostsPromise);
+                //
+                //         //#endregion
+                //
+                //         // Wait for all promises to be resolved.
+                //         return Promise.all(promises).then(function () {
+                //             return getPostNotificationResult;
+                //         });
+                //     })
+                //     .then(function (getPostNotificationResult) {
+                //         $scope.result.postNotifications = getPostNotificationResult;
+                //     });
 
             };
 

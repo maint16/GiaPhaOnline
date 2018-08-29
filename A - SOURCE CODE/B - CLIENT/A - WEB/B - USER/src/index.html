@@ -20,16 +20,18 @@
     <base href="/">
 </head>
 <body class="bg-gray">
-<div block-ui="appBlockUI">
-    <ui-view></ui-view>
-</div>
 
-<script type="text/ng-template"
-        id="main-block-ui.html">
-    <div class="loader-overlay">
-        <div class="loader"></div>
+    <div block-ui="appBlockUI">
+        <ui-view></ui-view>
     </div>
-</script>
 
+    <script type="text/ng-template"
+            id="main-block-ui.html">
+        <div class="loader-overlay">
+            <div class="loader"></div>
+        </div>
+    </script>
 </body>
+
+
 </html>

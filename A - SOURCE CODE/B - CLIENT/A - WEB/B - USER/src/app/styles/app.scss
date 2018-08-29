@@ -1,11 +1,31 @@
 @import "flat-bootstrap";
+@import 'loader';
 
-.note-cant-resize .note-resizebar {
-  display: none !important;
+html,
+body {
+  height: 100% !important;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  .page-content{
+    flex: 1 0 auto;
+  }
+
+  .page-footer {
+    flex-shrink: 0;
+  }
 }
 
 .no-bottom-margin {
   margin-bottom: 0;
+}
+
+.block-ui {
+  min-height: 100% !important;
 }
 
 /* Truncate content of div tag */

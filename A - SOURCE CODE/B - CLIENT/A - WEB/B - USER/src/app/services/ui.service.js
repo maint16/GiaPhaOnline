@@ -1,23 +1,30 @@
-module.exports = function(ngModule){
+module.exports = (ngModule) => {
 
-    ngModule.service('uiService', function(){
+    ngModule.service('$ui', (blockUI) => {
 
-        //#region Methods
+        return {
 
-        /*
-        * Trigger windows resize function.
-        * */
-        this.reloadWindowSize = function(){
-            $(window).resize();
-        };
+            //#region Methods
 
-        /*
-        * Find element in dom.
-        * */
-        this.getElement = function(elementQuery){
-            return $(elementQuery);
-        };
+            // Block application UI.
+            blockAppUI: () => {
+                const appBlockUI = blockUI.instances.get('appBlockUI');
+                if (!appBlockUI)
+                    return;
 
-        //#endregion
+                appBlockUI.start();
+            },
+
+            // Unblock application UI.
+            unblockAppUI: () => {
+                const appBlockUI = blockUI.instances.get('appBlockUI');
+                if (!appBlockUI)
+                    return;
+
+                appBlockUI.stop();
+            }
+
+            //#endregion
+        }
     });
 };

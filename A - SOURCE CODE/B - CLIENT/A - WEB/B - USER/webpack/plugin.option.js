@@ -23,7 +23,7 @@ exports = module.exports = {
         const pCleanOption = {
             // Absolute path to your webpack root folder (paths appended to this)
             // Default: root of your package
-            root: null,
+            root: paths.root,
 
             // Write logs to console.
             verbose: true,

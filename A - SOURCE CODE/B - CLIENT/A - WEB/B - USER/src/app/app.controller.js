@@ -1,9 +1,6 @@
 module.exports = (ngModule) => {
-
-    const UrlStateConstant = require('./constants/url-state.constant.ts').UrlStateConstant;
-
     ngModule.controller('appController', ($transitions, $timeout,
-                                          uiService, pushNotificationService,
+                                          $ui,
                                           $scope) => {
 
         //#region Properties
@@ -31,8 +28,6 @@ module.exports = (ngModule) => {
 
             $timeout(() => {
 
-                // Reload window size.
-                uiService.reloadWindowSize();
 
                 // if (!$scope.bIsFcmInitialized) {
                 //     // Initialize firebase.

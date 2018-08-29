@@ -13,25 +13,25 @@
                 </ol>
             </div>
         </div>
-        <div ng-repeat="group in _loadCategoryGroupsResult.records">
+        <div ng-repeat="categoryGroup in loadCategoryGroupsInCache()">
             <div class="panel panel-default panel-category-group">
                 <div class="panel-heading">
                     <div class="row">
                         <div class="col-sm-8 col-xs-12">
-                            <span class="category-name">{{group.name}}</span>
+                            <span class="category-name">{{categoryGroup.name}}</span>
                         </div>
                     </div>
                 </div>
                 <div class="panel-body">
                     <div class="topic"
-                         ng-repeat="topic in group.topics">
+                         ng-repeat="category in loadCategoriesInCategoryGroup(categoryGroup.id)">
                         <div class="row">
                             <div class="col-sm-8 col-xs-12">
                                 <div class="form-group">
                                     <div class="topic-group-main-info">
-                                        <img class="img img-topic-group" ng-src="https://via.placeholder.com/64x64"/>
+                                        <img class="img img-topic-group" ng-src="{{category.photo}}"/>
                                         <div class="master-info">
-                                            <a class="topic-name" ui-sref="{{urlStateConstants.categoryTopicModuleName}}">{{topic.name}}</a><br>
+                                            <a class="topic-name" ui-sref="{{urlStateConstants.categoryTopicModuleName}}">{{category.name}}</a><br>
                                             <div class="topic-description">{{topic.description}}</div>
                                         </div>
                                     </div>

@@ -20,8 +20,7 @@ module.exports = (ngModule) => {
                 });
             }],
             resolve: {
-                profile: (notificationStatusConstant, appSettingConstant,
-                          userService, authenticationService) => {
+                profile: (notificationStatusConstant, appSettingConstant,  authenticationService) => {
 
                     // Get access token from storage.
                     const accessToken = authenticationService.getAuthenticationToken();
