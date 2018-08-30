@@ -1,3 +1,8 @@
+- Login:
+	- Basic login (email - password)
+	- Google login
+	- Facebook login
+	
 - Tương tác với Category group:
   - Thêm
   - Sửa 
@@ -11,20 +16,49 @@
     - Sắp xếp số lượng bài viết của các category group.
   
 - Tương tác với Category:
-  - Thêm
-  - Sửa
-  - Disable/enable
-  - Tìm kiếm
-  - Thống kê số bài viết của category theo:
-    - 7 ngày gần nhất
-    - 30 ngày gần nhất
-    - 60 ngày gần nhất
-    - 90 ngày gần nhất (biểu đồ chart/pie)
-    - Sắp xếp số lượng bài viết của các category.
+	- Thêm
+	- Sửa
+	- Disable/enable	
+	- Tìm kiếm
+	
+	- Thống kê số bài viết của category theo:
+		- 7 ngày gần nhất
+		- 30 ngày gần nhất
+		- 60 ngày gần nhất
+		- 90 ngày gần nhất (biểu đồ chart/pie)
+		- Sắp xếp số lượng bài viết của các category.
+		
+	- Tìm kiếm category theo:
+		- Creator email (typeahead)
+		- Category group name (typeahead)
+		- Status
+		- Name
+		- Created time
+		- Last modified time.
+		
+	- Sắp xếp category theo:
+		- Name
+		- Created time
+		- Last modified time.
+
   
 - Tương tác với user:
-  - Sửa thông tin public của user.
-  - Disable/enable user account (kèm reason)
+	- Sửa thông tin public của user.
+	- Disable/enable user account (kèm reason)
+	- Tìm kiếm user theo:
+		- email
+		- nickname
+		- status
+		- role
+		- joined time
+		- last modified time
+	
+	- Sắp xếp user theo:
+		- email (default)
+		- nickname
+		- status
+		- role
+		
   - Xem thông tin của user:
     - Các topic được tạo bởi user.
     - Các reply được tạo bởi user.
