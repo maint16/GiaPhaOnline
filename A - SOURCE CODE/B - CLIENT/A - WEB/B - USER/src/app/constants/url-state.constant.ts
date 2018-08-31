@@ -39,7 +39,7 @@ export class UrlStateConstant {
     public static addTopicModuleName: string = 'add-topic';
 
     // Edit topic module url.
-    public static editTopicModuleUrl: string = '/edit-topic';
+    public static editTopicModuleUrl: string = '/edit-topic/:topicId';
 
     // Edit topic module name.
     public static editTopicModuleName: string = 'edit-topic';

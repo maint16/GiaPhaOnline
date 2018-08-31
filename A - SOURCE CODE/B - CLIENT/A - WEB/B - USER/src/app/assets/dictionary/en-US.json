@@ -23,6 +23,7 @@
   "TITLE_JOINED_TIME": "Joined time",
   "TITLE_LAST_MODIFIED_TIME": "Last modified time",
   "TITLE_SIGN_OUT": "Sign out",
+  "TITLE_CATEGORY": "Category",
 
   "MSG_FIELD_REQUIRED": "This field is required",
   "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",

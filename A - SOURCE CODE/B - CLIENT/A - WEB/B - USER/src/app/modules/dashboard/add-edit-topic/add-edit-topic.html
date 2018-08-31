@@ -1,10 +1,14 @@
-<div class="row">
+<form class="row"
+      novalidate
+      name="addEditForm"
+      ng-submit="ngOnTopicSubmitted($event)"
+      ng-init="ngOnInit()">
     <div class="col-lg-12">
         <div class="box box-default">
             <div class="box-header">
                 <h3 class="box-title">
-                    <span ng-if="_topic.id">{{'TITLE_EDIT_TOPIC' | translate}}</span>
-                    <span ng-if="!_topic.id">{{'TITLE_ADD_TOPIC' | translate}}</span>
+                    <span ng-if="topic.id">{{'TITLE_EDIT_TOPIC' | translate}}</span>
+                    <span ng-if="!topic.id">{{'TITLE_ADD_TOPIC' | translate}}</span>
                 </h3>
             </div>
             <div class="box-body">
@@ -12,12 +16,38 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label>{{'TITLE_TOPIC_TITLE' | translate}}</label>
-                            <input class="form-control"
-                                   ng-model="_topic.title"
-                                   placeholder="Topic title (required)"/>
-                        </div>
+                            <label>{{'TITLE_CATEGORY' | translate}}</label>
+                            <select name="category"
+                                    class="form-control"
+                                    ng-options="category.id as category.name for category in categories"
+                                    ng-model="topic.categoryId">
+                            </select>
 
+                            <ul class="validation-summary"
+                                ng-if="addEditForm.category.$invalid  && (addEditForm.$submitted || addEditForm.category.$dirty)"
+                                ng-messages="addEditForm.category.$error">
+                                <li ng-message="required">{{'MSG_FIELD_REQUIRED' | translate}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>{{'TITLE_TOPIC_TITLE' | translate}}</label>
+                            <input name="title"
+                                   class="form-control"
+                                   ng-model="topic.title"
+                                   placeholder="{{'TITLE_TOPIC_TITLE' | translate}} (required)"
+                                   ng-required="true"/>
+
+                            <ul class="validation-summary"
+                                ng-if="addEditForm.title.$invalid  && (addEditForm.$submitted || addEditForm.title.$dirty)"
+                                ng-messages="addEditForm.title.$error">
+                                <li ng-message="required">{{'MSG_FIELD_REQUIRED' | translate}}</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
@@ -26,17 +56,25 @@
                         <div class="form-group">
                             <label>{{'TITLE_CONTENT' | translate}}</label>
                             <div class="form-group">
-                            <textarea ui-tinymce="_editorConfiguration"
-                                      ng-model="oModel.content" rows="15" ng-show="bIsEditorInitialized"></textarea>
+                                <textarea ui-tinymce="_editorConfiguration"
+                                          ng-model="topic.body"
+                                          rows="15"></textarea>
+
+                                <input name="content" class="hidden" ng-model="topic.body" ng-required="true">
                             </div>
+                            <ul class="validation-summary"
+                                ng-if="addEditForm.content.$invalid  && addEditForm.$submitted"
+                                ng-messages="addEditForm.content.$error">
+                                <li ng-message="required">{{'MSG_FIELD_REQUIRED' | translate}}</li>
+                            </ul>
                         </div>
                     </div>
 
                     <!--Preview area-->
                     <div class="col-sm-6" ng-if="bIsInPreviewMode">
-                        <label>Preview</label>
+                        <label>{{'TITLE_PREVIEW' | translate}}</label>
                         <div class="form-group">
-                            <ng-bind-html ng-bind-html="oModel.content"></ng-bind-html>
+                            <ng-bind-html ng-bind-html="topic.content"></ng-bind-html>
                         </div>
                     </div>
                 </div>
@@ -44,24 +82,27 @@
             </div>
             <div class="box-footer">
                 <div class="text-right">
-                    <button class="btn"
+                    <button type="button"
+                            class="btn"
                             ng-class="{'btn-info': !bIsInPreviewMode, 'btn-warning': bIsInPreviewMode}"
-                            ng-click="_ngOnPreviewToggleClick()">
+                            ng-click="ngOnPreviewToggled()">
                     <span class="fa "
                           ng-class="{'fa-eye': !bIsInPreviewMode, 'fa-eye-slash': bIsInPreviewMode }"></span>
                         {{'TITLE_PREVIEW' | translate}}
                     </button>
-                    <button class="btn btn-primary"
-                            ng-click="_ngOnOkClicked()">
+                    <button type="submit"
+                            ng-disabled="addEditForm.$invalid"
+                            class="btn btn-primary">
                         <span class="fa fa-edit"></span> {{'TITLE_OK' | translate}}
                     </button>
                     <span>&nbsp;</span>
-                    <button class="btn btn-default"
-                            ng-click="_ngOnCancelEditorClicked()">
+                    <button type="button"
+                            class="btn btn-default"
+                            ng-click="ngOnCancelClicked()">
                         <span class="fa fa-trash"></span> <span>{{'TITLE_CANCEL' | translate}}</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</form>

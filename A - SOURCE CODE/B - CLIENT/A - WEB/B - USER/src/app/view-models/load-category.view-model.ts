@@ -4,6 +4,9 @@ export class LoadCategoryViewModel {
 
     //#region Properties
 
+    // List of category ids.
+    public ids: Array<number> | null;
+
     // List of topics group indexes.
     public categoryGroupIds: Array<number> | null;
 

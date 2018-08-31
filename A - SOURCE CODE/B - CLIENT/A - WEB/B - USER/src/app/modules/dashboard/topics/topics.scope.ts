@@ -2,6 +2,7 @@ import {IScope} from "angular";
 import {SearchResult} from "../../../models/search-result";
 import {Topic} from "../../../models/entities/topic";
 import {LoadTopicViewModel} from "../../../view-models/load-topic.view-model";
+import {User} from "../../../models/entities/user";
 
 export interface ITopicsScope extends IScope{
 
@@ -17,6 +18,11 @@ export interface ITopicsScope extends IScope{
     * */
     loadTopicsCondition: LoadTopicViewModel;
 
+    /*
+    * Mapping between id and user.
+    * */
+    mIdToUser: {[id: number]: User};
+
     //#endregion
 
     //#region Methods
@@ -29,12 +35,20 @@ export interface ITopicsScope extends IScope{
     /*
     * Called when add topic button is clicked.
     * */
-    ngOnAddTopic: () => void;
+    ngOnAddTopicClicked: () => void;
 
     /*
     * Called when topic title is clicked.
     * */
     ngOnTopicTitleClicked: (id: number) => void;
+
+    /*
+    * Called when topics pagination changed.
+    * */
+    ngOnTopicsPageChanged: () => void;
+
+    // Called when edit topic is clicked.
+    ngOnEditTopicClicked: (topicId: number) => void;
 
     //#endregion
 

@@ -1,6 +1,14 @@
 import {StateProvider} from "@uirouter/angularjs";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
-import {module} from 'angular';
+import {IPromise, module} from 'angular';
+import {IUserService} from "../../../interfaces/services/user-service.interface";
+import {User} from "../../../models/entities/user";
+import {StateParams} from '@uirouter/angularjs'
+import {ITopicService} from "../../../interfaces/services/topic-service.interface";
+import {LoadTopicViewModel} from "../../../view-models/load-topic.view-model";
+import {Pagination} from "../../../models/pagination";
+import {SearchResult} from "../../../models/search-result";
+import {Topic} from "../../../models/entities/topic";
 
 export class AddEditTopicModule {
 
@@ -33,12 +41,17 @@ export class AddEditTopicModule {
                         return $q((resolve) => {
                             require.ensure([], () => {
                                 // load only controller module
-                                let ngModule = module('main.add-edit-topic', []);
-                                require('./add-edit-topic.controller')(ngModule);
+                                let ngModule = module('main.add-topic', []);
+                                const {AddEditTopicController} = require('./add-edit-topic.controller.ts');
+                                ngModule.controller('addEditTopicController', AddEditTopicController);
                                 $ocLazyLoad.load({name: ngModule.name});
                                 resolve(ngModule.controller);
                             })
                         });
+                    },
+
+                    topic: (): null => {
+                        return null;
                     }
                 }
             });
@@ -67,12 +80,41 @@ export class AddEditTopicModule {
                         return $q((resolve) => {
                             require.ensure([], () => {
                                 // load only controller module
-                                let ngModule = module('main.add-edit-topic', []);
-                                require('./add-edit-topic.controller')(ngModule);
+                                let ngModule = module('main.edit-topic', []);
+                                const {AddEditTopicController} = require('./add-edit-topic.controller.ts');
+                                ngModule.controller('addEditTopicController', AddEditTopicController);
                                 $ocLazyLoad.load({name: ngModule.name});
                                 resolve(ngModule.controller);
                             })
                         });
+                    },
+
+                    /*
+                    * Topic information.
+                    * */
+                    topic: ($stateParams: StateParams,
+                            $user: IUserService,
+                            $topic: ITopicService): Topic | IPromise<Topic> => {
+
+                        let topicId = parseInt($stateParams.topicId);
+
+                        // Build load topic condition.
+                        let loadTopicsCondition = new LoadTopicViewModel();
+                        let pagination = new Pagination();
+                        pagination.page = 1;
+                        pagination.records = 1;
+                        loadTopicsCondition.ids = [topicId];
+                        loadTopicsCondition.pagination = pagination;
+
+                        return $topic
+                            .loadTopics(loadTopicsCondition)
+                            .then((loadTopicsResult: SearchResult<Topic>) => {
+                                let topics = loadTopicsResult.records;
+                                if (!topics)
+                                    throw 'No topic has been found';
+
+                                return topics[0];
+                            });
                     }
                 }
             });

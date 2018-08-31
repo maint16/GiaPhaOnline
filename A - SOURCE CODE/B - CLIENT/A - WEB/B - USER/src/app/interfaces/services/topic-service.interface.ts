@@ -7,9 +7,13 @@ export interface ITopicService {
 
     //#region Methods
 
-    /*
-    * Load topics using specific conditions.
-    * */
+    // Add topic to service end-point.
+    addTopic(topic: Topic): IPromise<Topic>;
+
+    // Edit topic using specific information.
+    editTopic(topic: Topic): IPromise<Topic>;
+
+    // Load topics using specific conditions.
     loadTopics(loadTopicsCondition: LoadTopicViewModel): IPromise<SearchResult<Topic>>;
 
     //#endregion

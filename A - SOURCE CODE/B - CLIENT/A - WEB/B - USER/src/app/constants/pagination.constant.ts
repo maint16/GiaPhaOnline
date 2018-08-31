@@ -9,6 +9,8 @@ export class PaginationConstant {
 
     public static categoryReplies: 30;
 
+    public static topics: 30;
+
     //#endregion
 
 }
