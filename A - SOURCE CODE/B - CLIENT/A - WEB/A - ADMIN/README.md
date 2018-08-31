@@ -1,28 +1,75 @@
-# Administration
+# ngx-structure
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.3.2.
+Description:
 
-## Development server
+ * This is a simple structure of an `Angular 5` application. This project is integrated with Webpack for files bundling & live reload.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+ * Language supported : 
+    * Typescript.
 
-## Code scaffolding
+* Angular CLI:
+    * 1.7.4
+    
+Online demo can be found [here](http://localhost:4200/#!/):
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+#### Project structure.
+```
+.
++-- src
+|   +-- assets
+|   +-- constants
+|   +-- environments
+|   +-- factories
+|   +-- guards
+|   +-- interceptors
+|   +-- interfaces
+|   +-- models
+|   +-- modules
+|       +-- <module a>
+|           +-- <module a>.component.html
+|           +-- <module a>.component.ts
+|       +-- <module b>
+|           +-- <module b>.component.html
+|           +-- <module b>.component.ts
+|       <parent module>.module.ts
+|       <parent module>.module.ts
++-- index.html (Index file)
+```
 
-## Build
+#### Structure description.
+- ```assets``` : Static files (such as: ```*.css```, ```*.json```, ...) should be stored in this folder.
+- ```constants```: Appliation constant files should be stored in this folder (such as: ```app-settings.constant.ts```, ```urlStates.constant.ts```, ...). Naming convention: ```*.constants.ts```.
+- ```environments```: Contains classes or variables that depend on build environment.
+- ```factories```: Contains application factory functions.
+- ```interceptors```: Contains application interceptor.
+- ```modules```: Application main modules should be stored in this folder
+- ```<module a>```: Folder contains module a definition. Such as : ```account```, ```category```, ...
+- ```<module a>.component.html```: Template file for ```module a```.
+- ```<module a>.component.ts```: Logic definition file of ```module a```.
+- ```<parent module>.module.ts```: Importing/exporting children modules. For example: ```user-management```, ```category-management```.
+- ```<parent module>.route.ts```: Child modules' routes definition.
+- ```interfaces```: Contains application interfaces which is for classes to implement.
+- ```models```: Contains application model files, mostly about database entities.
+- ```modules```: Contains application modules files.
+- ```services```: Contains application services to inject to components.
+- ```view-models```: Contains view-model files that are bridge between api end-point and application.
+- ```index.html```: Application entry html file.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+### Project commnands.
+- `ng serve`: Bundle and publish project files. Files which are generated will be placed inside `dist` folder.
+- `npm build --prod`: Bundle and start watching project. This is for development stage. Browser will be reloaded automatically when changes are detected.
 
-## Running unit tests
+### Added plugins:
+- `ngx-translate`: For i18n translation in app. Please refer [its document](https://github.com/ngx-translate/core).
+- `ngx-moment`: Provides time calculation pipeline. Please refer [its document](https://github.com/urish/ngx-moment)
+- `font-awesome`: [Fonts system](https://fontawesome.com/?from=io).
+- `jquery-slimscroll`: [Slimscroll for website](https://github.com/rochal/jQuery-slimScroll).
+- `ngx-bootstrap`: [Bootstrap components for angular x](https://github.com/valor-software/ngx-bootstrap)
+- `admin-lte`: Free admin website template. Source: [adminlte.io](https://adminlte.io/themes/AdminLTE/index2.html)
+- `bootstrap 3`: [Responsive web design framework](http://getbootstrap.com/docs/3.3/).
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+### Bugs report.
+- While using this plugin, if you find any errors, please create issues at [project page](https://github.com/redplane/ngx-structure)
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

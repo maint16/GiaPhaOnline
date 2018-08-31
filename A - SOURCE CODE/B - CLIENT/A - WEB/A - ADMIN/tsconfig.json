@@ -1,5 +1,8 @@
 {
   "compileOnSave": false,
+  "angularCompilerOptions": {
+    "enableIvy": true
+  },
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
     "sourceMap": false,
@@ -15,9 +18,5 @@
       "es2017",
       "dom"
     ]
-  },
-  "include": [
-    "node_modules/ngx-multi-selector/*.ts",
-    "src/*.ts"
-  ]
+  }
 }

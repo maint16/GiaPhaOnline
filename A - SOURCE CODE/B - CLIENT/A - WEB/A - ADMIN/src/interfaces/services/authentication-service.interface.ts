@@ -2,30 +2,40 @@
  * Created by Linh Nguyen on 6/7/2017.
  */
 import {AuthorizationToken} from "../../models/authorization-token";
-import {ApplicationSetting} from "../../constants/application-setting";
 
 export interface IAuthenticationService {
-
-  //#region Properties
-
-  //#endregion
 
   //#region Methods
 
   /*
-   * Store identity into local storage.
+   * Save identity into local storage.
    * */
-  attachAuthorizationToken(authorizationToken: AuthorizationToken);
+  setAuthorization(identity: AuthorizationToken): void;
 
   /*
-  * Get authorization token from local storage.
-  * */
-  getAuthorizationToken(): AuthorizationToken;
+   * Get identity in local storage.
+   * */
+  getAuthorization(): AuthorizationToken;
+
+  /*
+   * Remove identity from cache.
+   * */
+  clearIdentity(): void;
+
+  /*
+   * Get authorization token from local storage.
+   * */
+  getAuthorization(): AuthorizationToken;
+
+  /*
+   * Check whether authorization token is valid or not.
+   * */
+  isAuthorizationValid(authorizationToken: AuthorizationToken): boolean;
 
   /*
   * Redirect to login page.
   * */
   redirectToLogin(): void;
 
-  //#endregion
+//#endregion
 }

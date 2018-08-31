@@ -5,7 +5,7 @@ import {Injectable} from "@angular/core";
 import {AuthorizationToken} from "../models/authorization-token";
 import {Router} from "@angular/router";
 import {IAuthenticationService} from "../interfaces/services/authentication-service.interface";
-import {ApplicationSetting} from "../constants/application-setting";
+import {AppSettings} from "../constants/app-settings.constant";
 
 @Injectable()
 export class AuthenticationService implements IAuthenticationService {
@@ -15,7 +15,7 @@ export class AuthenticationService implements IAuthenticationService {
   /*
   * Initiate component with injectors.
   * */
-  public constructor(private router: Router){
+  public constructor(private router: Router, private appSettings: AppSettings){
 
   }
 
@@ -26,35 +26,36 @@ export class AuthenticationService implements IAuthenticationService {
   /*
    * Store identity into local storage.
    * */
-  public attachAuthorizationToken(authorizationToken: AuthorizationToken): void {
-    localStorage.setItem(ApplicationSetting.identityStorage, JSON.stringify(authorizationToken));
+  public setAuthorization(identity: AuthorizationToken): void {
+    localStorage.setItem(this.appSettings.identityStorage, JSON.stringify(identity));
+  }
+
+  /*
+   * Remove identity from cache.
+   * */
+  public clearIdentity(): void {
+    localStorage.removeItem(this.appSettings.identityStorage);
   }
 
   /*
   * Get authorization token from local storage.
   * */
-  public getAuthorizationToken(): AuthorizationToken{
+  public getAuthorization(): AuthorizationToken{
 
     // Get authorization token from local storage.
-    let szAuthorizationToken = localStorage.getItem(ApplicationSetting.identityStorage);
+    let authorizationToken = localStorage.getItem(this.appSettings.identityStorage);
 
     // Authorization is invalid.
-    if (szAuthorizationToken == null || szAuthorizationToken.length < 1)
+    if (authorizationToken == null || authorizationToken.length < 1)
       return null;
 
-    // Parse authorization token.
-    let authorizationToken = <AuthorizationToken> JSON.parse(szAuthorizationToken);
-
-    if (!this.bIsAuthorizationValid(authorizationToken))
-      return null;
-
-    return authorizationToken;
+    return <AuthorizationToken> JSON.parse(authorizationToken);
   };
 
   /*
   * Check whether authorization token is valid or not.
   * */
-  private bIsAuthorizationValid(authorizationToken: AuthorizationToken): boolean{
+  public isAuthorizationValid(authorizationToken: AuthorizationToken): boolean{
 
     // Token is not valid.
     if (authorizationToken == null)
@@ -77,6 +78,5 @@ export class AuthenticationService implements IAuthenticationService {
   public redirectToLogin(): void{
     this.router.navigate(['/login']);
   }
-
   //#endregion
 }
