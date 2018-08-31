@@ -27,16 +27,12 @@ module.exports = (env, argv) => {
     return {
         context: webpackOption.paths.getSource(__dirname),
         entry: {
-            'JQueryVendors': ['jquery', 'bootstrap', 'admin-lte', 'bluebird', 'rxjs/bundles/rxjs.umd',
+            'JQueryVendors': ['jquery', 'bootstrap', 'bluebird',
                 'pusher-js',
                 'firebase/app', 'firebase/messaging'],
-            'angularVendors': [
-                'angular', '@uirouter/angularjs', 'angular-block-ui', 'angular-toastr',
-                'angular-translate', 'angular-translate-loader-static-files',
-                'angular-ui-bootstrap', 'angular-sanitize', 'angular-confirm1', 'ng-multi-selector', 'angular-messages',
-                'angular-file-upload', 'ui-cropper'],
             'app': path.resolve(paths.app, 'app.js')
         },
+        devtool: "source-map",
         optimization: {
             runtimeChunk: 'single',
             splitChunks: {

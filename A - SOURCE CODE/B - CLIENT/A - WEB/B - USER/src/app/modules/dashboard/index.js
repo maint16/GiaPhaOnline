@@ -1,6 +1,7 @@
 module.exports = (ngModule) => {
     // Import routes.
-    require('./main/main.route')(ngModule);
+    const {MainModule} = require('./main');
+    ngModule.config(($stateProvider) => new MainModule($stateProvider));
 
     const {TopicsModule} = require('./topics');
     ngModule.config(($stateProvider) => new TopicsModule($stateProvider));
@@ -8,5 +9,6 @@ module.exports = (ngModule) => {
     const {TopicModule} = require('./topic');
     ngModule.config(($stateProvider) => new TopicModule($stateProvider));
 
-    require('./add-edit-topic/add-edit-topic.route')(ngModule);
+    const {AddEditTopicModule} = require('./add-edit-topic');
+    ngModule.config(($stateProvider) => new AddEditTopicModule($stateProvider));
 };

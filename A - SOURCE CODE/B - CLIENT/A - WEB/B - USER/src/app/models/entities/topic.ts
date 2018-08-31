@@ -1,4 +1,4 @@
-import {TopicType} from "../../enums/topic-type";
+import {TopicTypeEnum} from "../../enums/topic-type.enum";
 
 export class Topic {
 
@@ -14,7 +14,7 @@ export class Topic {
 
     public body: string = '';
 
-    public type: TopicType = TopicType.private;
+    public type: TopicTypeEnum = TopicTypeEnum.private;
 
     public createdTime: number = 0;
 

@@ -1,4 +1,4 @@
-import {TopicType} from "../enums/topic-type";
+import {TopicTypeEnum} from "../enums/topic-type.enum";
 import {ItemStatus} from "../enums/item-status.enum";
 import {Pagination} from "../models/pagination";
 
@@ -10,7 +10,7 @@ export class LoadTopicViewModel {
 
     public categoryIds: Array<number> | null = null;
 
-    public types: Array<TopicType> | null = null;
+    public types: Array<TopicTypeEnum> | null = null;
 
     public statuses: Array<ItemStatus> | null = null;
 

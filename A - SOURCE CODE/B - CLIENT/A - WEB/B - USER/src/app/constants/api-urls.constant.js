@@ -8,7 +8,7 @@ module.exports = function (ngModule) {
             getPersonalProfile: 'api/user/personal-profile/{id}',
             changePassword: 'api/user/change-password/{id}',
             basicLogin: 'api/user/basic-login',
-            basisRegister: 'api/user/basic-register',
+            basisRegister: 'api/user/basic-basic-register',
             googleLogin: 'api/user/google-login',
             facebookLogin: 'api/user/facebook-login',
             uploadProfileImage: 'api/user/upload-avatar',

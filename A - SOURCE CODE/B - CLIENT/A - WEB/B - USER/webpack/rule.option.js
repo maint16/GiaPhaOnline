@@ -98,18 +98,6 @@ exports = module.exports = {
 
         //#endregion
 
-        //#region RxJS
-
-        rules.push({
-            test: require.resolve('rxjs/bundles/rxjs.umd'),
-            use: [
-                {
-                    loader: 'expose-loader',
-                    options: 'Rx'
-                }
-            ]
-        });
-
         //#endregion
 
         //#region Bluebird

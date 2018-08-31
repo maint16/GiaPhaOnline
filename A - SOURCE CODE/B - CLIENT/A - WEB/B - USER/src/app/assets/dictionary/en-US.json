@@ -4,7 +4,9 @@
   "TITLE_SEND_EMAIL": "Send email",
   "TITLE_REGISTER": "Register",
   "TITLE_EMAIL": "Email",
+  "TITLE_NICKNAME": "Nickname",
   "TITLE_PASSWORD": "Password",
+  "TITLE_CONFIRM_PASSWORD": "Confirm password",
   "TITLE_FORGOT_PASSWORD": "Forgot password",
   "TITLE_PROFILE": "Profile",
   "TITLE_QUICK_REPLY": "Quick reply",
@@ -15,5 +17,14 @@
   "TITLE_ADD_TOPIC": "Add topic",
   "TITLE_EDIT_TOPIC": "Edit topic",
   "TITLE_OK": "OK",
-  "TITLE_CANCEL": "Cancel"
+  "TITLE_CANCEL": "Cancel",
+  "TITLE_HOME": "Home",
+  "TITLE_STATUS": "Status",
+  "TITLE_JOINED_TIME": "Joined time",
+  "TITLE_LAST_MODIFIED_TIME": "Last modified time",
+  "TITLE_SIGN_OUT": "Sign out",
+
+  "MSG_FIELD_REQUIRED": "This field is required",
+  "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",
+  "MSG_BASIC_REGISTER_SUCCESSFULLY": "An activation email has been sent to you. Please check your inbox."
 }

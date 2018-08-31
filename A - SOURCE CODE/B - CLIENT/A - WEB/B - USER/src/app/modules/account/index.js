@@ -1,7 +1,14 @@
 module.exports = (ngModule) => {
     // Load routes.
-    require('./login/login.route')(ngModule);
-    require('./profile/profile.route')(ngModule);
-    require('./register/register.route')(ngModule);
-    require('./forgot-password/forgot-password.route')(ngModule);
+    const {LoginModule} = require('./login');
+    ngModule.config(($stateProvider) => new LoginModule($stateProvider));
+
+    const {ProfileModule} = require('./profile');
+    ngModule.config(($stateProvider) => new ProfileModule($stateProvider));
+
+    const {BasicRegisterModule} = require('./basic-register');
+    ngModule.config(($stateProvider) => new BasicRegisterModule($stateProvider));
+
+    const {ForgotPasswordModule} = require('./forgot-password');
+    ngModule.config(($stateProvider) => new ForgotPasswordModule($stateProvider));
 };

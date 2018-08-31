@@ -1,23 +1,21 @@
-module.exports = (ngModule) => {
+import {module} from 'angular'
+import {UrlStateConstant} from "../../../constants/url-state.constant";
+import {StateProvider} from "@uirouter/angularjs";
 
-    //#region Module configs.
+export class LoginModule {
 
-    /*
-    * Module configuration.
-    * */
-    ngModule.config(($stateProvider) => {
-        // Get state parameter.
-        const UrlStateConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
+    //#region Constructor
 
-        $stateProvider.state(UrlStateConstant.accountForgotPasswordModuleName, {
-            url: UrlStateConstant.accountForgotPasswordModuleUrl,
+    public constructor($stateProvider: StateProvider) {
+        $stateProvider.state(UrlStateConstant.loginModuleName, {
+            url: UrlStateConstant.loginModuleUrl,
             templateProvider: ['$q', ($q) => {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                 return $q((resolve) => {
                     // lazy load the view
                     require.ensure([], () => {
                         require('../shared.scss');
-                        resolve(require('./forgot-password.html'));
+                        resolve(require('./login.html'));
                     });
                 });
             }],
@@ -29,18 +27,19 @@ module.exports = (ngModule) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
                             // load only controller module
-                            let module = angular.module('account.forgot-password', []);
-                            require('./forgot-password.controller')(module);
-                            $ocLazyLoad.load({name: module.name});
-                            resolve(module.controller);
+                            const {LoginController} = require('./login.controller.ts');
+                            let ngModule = module('account.login', []);
+                            ngModule.controller('loginController', LoginController);
+                            $ocLazyLoad.load({name: ngModule.name});
+                            resolve(ngModule.controller);
                         })
                     });
                 }
             },
-            controller: 'forgotPasswordController',
+            controller: 'loginController',
             parent: UrlStateConstant.unauthorizedLayoutModuleName
         })
-    });
+    }
 
     //#endregion
-};
+}

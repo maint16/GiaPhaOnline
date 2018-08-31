@@ -1,14 +1,12 @@
-module.exports = (ngModule) => {
+import {StateProvider} from "@uirouter/angularjs";
+import {UrlStateConstant} from "../../../constants/url-state.constant";
+import {module} from 'angular';
 
-    //#region Module configs.
+export class BasicRegisterModule {
 
-    /*
-    * Module configuration.
-    * */
-    ngModule.config(($stateProvider) => {
-        // Get state parameter.
-        const UrlStateConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
+    //#region Constructor
 
+    public constructor($stateProvider: StateProvider) {
         $stateProvider.state(UrlStateConstant.accountRegisterModuleName, {
             url: UrlStateConstant.accountRegisterModuleUrl,
             templateProvider: ['$q', ($q) => {
@@ -29,18 +27,20 @@ module.exports = (ngModule) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
                             // load only controller module
-                            let module = angular.module('account.register', []);
-                            require('./register.controller')(module);
-                            $ocLazyLoad.load({name: module.name});
-                            resolve(module.controller);
+                            let ngModule = module('account.register', []);
+                            const {BasicRegisterController} = require('./basic-register.controller.ts');
+                            ngModule.controller('basicRegisterController', BasicRegisterController);
+                            $ocLazyLoad.load({name: ngModule.name});
+                            resolve(ngModule.controller);
                         })
                     });
                 }
             },
-            controller: 'accountRegistrationController',
+            controller: 'basicRegisterController',
             parent: UrlStateConstant.unauthorizedLayoutModuleName
         })
-    });
+    }
 
     //#endregion
-};
+
+}

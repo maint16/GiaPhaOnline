@@ -1,70 +1,112 @@
-<div class="sign-in-box">
+<form name="loginForm"
+      novalidate
+      class="sign-in-box">
     <div class="col-lg-6 col-md-8">
         <div class="box box-default">
             <div class="box-body">
-                <div class="form-group">
-                    <img class="img img-responsive"
-                         ng-src="{{'https://vgy.me/vpj0on.png'}}"/>
 
-                    <div class="text-center">
-                        <h1 class="text-center">
-                            <span class="fa fa-envelope"></span> iConfess
-                        </h1>
-                        <a href="javascript:void(0);">Say everything you want.</a>
+                <!--Box header-->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <img class="img img-responsive"
+                                 ng-src="{{'https://vgy.me/vpj0on.png'}}"/>
+
+                            <div class="text-center">
+                                <h1 class="text-center">
+                                    <span class="fa fa-envelope"></span> iConfess
+                                </h1>
+                                <a href="javascript:void(0);">Say everything you want.</a>
+                            </div>
+
+                        </div>
                     </div>
-
                 </div>
 
+
                 <!--Email-->
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label>Email</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="form-group">
-                            <div class="input-group">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="form-group">
+                                <div class="input-group">
                                 <span class="input-group-addon">
                                     <span class="fa fa-envelope"></span>
                                 </span>
-                                <input class="form-control"/>
+                                    <input name="email"
+                                           class="form-control"
+                                           ng-model="loginModel.email"
+                                           ng-required="true"/>
+                                </div>
+
+                                <ul class="validation-summary"
+                                    ng-if="loginForm.email.$invalid && (loginForm.email.$dirty || loginForm.$submitted)"
+                                    ng-messages="loginForm.email.$error">
+                                    <li ng-message="required">{{'MSG_FIELD_REQUIRED' | translate}}</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!--Password-->
-                <div class="form-group">
-                    <div class="col-sm-3">
-                        <label>Password</label>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="input-group">
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            <label>Password</label>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="form-group">
+                                <div class="input-group">
                             <span class="input-group-addon">
                                 <span class="fa fa-key"></span>
                             </span>
-                            <input class="form-control"/>
+                                    <input name="password"
+                                           class="form-control"
+                                           type="password"
+                                           ng-model="loginModel.password"
+                                           ng-required="true"/>
+                                </div>
+
+                                <ul class="validation-summary"
+                                    ng-if="loginForm.password.$invalid && (loginForm.password.$dirty || loginForm.$submitted)"
+                                    ng-messages="loginForm.password.$error">
+                                    <li ng-message="required">{{'MSG_FIELD_REQUIRED' | translate}}</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!--Captcha code-->
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        Captcha here
+                <div class="row">
+                    <div class="col-sm-9 col-sm-push-3">
+                        <div class="form-group">
+                            <div vc-recaptcha ng-model="loginModel.captchaCode"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-sm-9 col-sm-push-3">
-                    <!--Forgot password-->
-                    <div class="form-group">
-                        <a ui-sref="{{urlStateConstant.accountForgotPasswordModuleName}}"><span class="fa fa-free-code-camp"></span> Forgot password ?</a>
-                    </div>
+                <!--Forgot password & basic-register-->
+                <div class="row">
+                    <div class="col-sm-9 col-sm-push-3">
+                        <!--Forgot password-->
+                        <div class="form-group">
+                            <a href
+                               ng-click="ngOnForgotPasswordClicked()"><span class="fa fa-free-code-camp"></span>
+                                {{'TITLE_FORGOT_PASSWORD' | translate}}</a>
+                        </div>
 
-                    <!--Register-->
-                    <div class="form-group">
-                        <a ui-sref="{{urlStateConstant.accountRegisterModuleName}}">
-                            <span class="fa fa-id-card-o"></span> Register
-                        </a>
+                        <!--Register-->
+                        <div class="form-group">
+                            <a href
+                               ng-click="ngOnRegisterClicked()">
+                                <span class="fa fa-id-card-o"></span> {{'TITLE_REGISTER' | translate}}
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -72,11 +114,12 @@
             <div class="box-footer">
                 <div class="text-center">
                     <button class="btn btn-primary"
-                            ng-click="clickLogin()">
+                            ng-disabled="!loginForm.$valid"
+                            ng-click="ngOnLoginClicked()">
                         <span class="fa fa-sign-in"></span> {{'TITLE_LOGIN' | translate}}
                     </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</form>

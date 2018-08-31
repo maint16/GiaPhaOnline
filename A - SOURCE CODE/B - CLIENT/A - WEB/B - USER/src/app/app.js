@@ -23,7 +23,6 @@ require('./styles/app.scss');
 require('jquery');
 require('bluebird');
 require('bootstrap');
-require('admin-lte');
 require('moment');
 require('pusher-js');
 require('tinymce');
@@ -33,23 +32,6 @@ require('rxjs/bundles/rxjs.umd');
 const firebase = require('firebase');
 require('firebase/messaging');
 
-// Angular plugins declaration.
-const angular = require('angular');
-require('@uirouter/angularjs');
-require('oclazyload');
-require('angular-block-ui');
-require('angular-toastr');
-require('angular-translate');
-require('angular-translate-loader-static-files');
-require('angular-moment');
-require('angular-ui-bootstrap');
-require('angular-sanitize');
-require('angular-confirm1');
-require('ng-multi-selector');
-require('angular-file-upload');
-require('ui-cropper');
-require('angular-messages');
-require('angular-ui-tinymce');
 
 $.ajax({
     url: '/assets/app-settings.json',
@@ -59,14 +41,34 @@ $.ajax({
     crossDomain: false,
     success: (loadAppOptionResponse) => {
 
+        // Angular plugins declaration.
+        const angular = require('angular');
+        require('@uirouter/angularjs');
+        require('oclazyload');
+        require('angular-block-ui');
+        require('angular-toastr');
+        require('angular-translate');
+        require('angular-translate-loader-static-files');
+        require('angular-moment');
+        require('angular-ui-bootstrap');
+        require('angular-sanitize');
+        require('angular-confirm1');
+        require('ng-multi-selector');
+        require('angular-file-upload');
+        require('angular-messages');
+        require('angular-ui-tinymce');
+        require('angular-local-storage');
+        require('angular-recaptcha');
+        require('ui-cropper');
+
         // Bind the app setting to window object.
         window['_ngAppOptions'] = loadAppOptionResponse;
 
         // Module declaration.
         let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
-            'ui.bootstrap', 'ngMultiSelector', 'ngMessages', 'oc.lazyLoad',
+            'ui.bootstrap', 'ngMultiSelector', 'ngMessages', 'oc.lazyLoad', 'vcRecaptcha',
             'pascalprecht.translate', 'angularMoment', 'ngSanitize', 'ui.tinymce',
-            'cp.ngConfirm', 'angularFileUpload', 'uiCropper']);
+            'cp.ngConfirm', 'angularFileUpload', 'uiCropper', 'LocalStorageModule']);
 
         // Import url state constant
         const UrlStateConstant = require('./constants/url-state.constant.ts').UrlStateConstant;

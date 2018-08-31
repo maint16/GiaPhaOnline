@@ -1,5 +1,8 @@
 module.exports = (ngModule) => {
     // Import routes.
-    require('./authorized-layout/authorized-layout.route')(ngModule);
+
+    const {AuthorizedLayoutModule} = require('./authorized-layout');
+    ngModule.config(($stateProvider) => new AuthorizedLayoutModule($stateProvider));
+
     require('./unauthorized-layout/unauthorized-layout.route')(ngModule);
 };

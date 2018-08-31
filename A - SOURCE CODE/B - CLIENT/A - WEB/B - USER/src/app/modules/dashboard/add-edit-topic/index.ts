@@ -1,16 +1,23 @@
-module.exports = (ngModule) => {
-    ngModule.config(($stateProvider) => {
+import {StateProvider} from "@uirouter/angularjs";
+import {UrlStateConstant} from "../../../constants/url-state.constant";
+import {module} from 'angular';
 
-        // Import constants.
-        const UrlStaticConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
+export class AddEditTopicModule {
+
+    //#region Constructor
+
+    /*
+    * Initialize module with injectors.
+    * */
+    public constructor($stateProvider: StateProvider) {
 
         //#region Add topic
 
         $stateProvider
-            .state(UrlStaticConstant.addTopicModuleName, {
-                url: UrlStaticConstant.addTopicModuleUrl,
+            .state(UrlStateConstant.addTopicModuleName, {
+                url: UrlStateConstant.addTopicModuleUrl,
                 controller: 'addEditTopicController',
-                parent: UrlStaticConstant.authorizedLayoutModuleName,
+                parent: UrlStateConstant.authorizedLayoutModuleName,
                 templateProvider: ['$q', ($q) => {
                     // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                     return $q((resolve) => {
@@ -22,14 +29,14 @@ module.exports = (ngModule) => {
                     /*
                     * Load login controller.
                     * */
-                    loadDashboardController: ($q, $ocLazyLoad) => {
+                    loadController: ($q, $ocLazyLoad) => {
                         return $q((resolve) => {
                             require.ensure([], () => {
                                 // load only controller module
-                                let module = angular.module('main.add-edit-topic', []);
-                                require('./add-edit-topic.controller')(module);
-                                $ocLazyLoad.load({name: module.name});
-                                resolve(module.controller);
+                                let ngModule = module('main.add-edit-topic', []);
+                                require('./add-edit-topic.controller')(ngModule);
+                                $ocLazyLoad.load({name: ngModule.name});
+                                resolve(ngModule.controller);
                             })
                         });
                     }
@@ -41,10 +48,10 @@ module.exports = (ngModule) => {
         //#region Edit topic
 
         $stateProvider
-            .state(UrlStaticConstant.editTopicModuleName, {
-                url: UrlStaticConstant.editTopicModuleUrl,
+            .state(UrlStateConstant.editTopicModuleName, {
+                url: UrlStateConstant.editTopicModuleUrl,
                 controller: 'addEditTopicController',
-                parent: UrlStaticConstant.authorizedLayoutModuleName,
+                parent: UrlStateConstant.authorizedLayoutModuleName,
                 templateProvider: ['$q', ($q) => {
                     // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                     return $q((resolve) => {
@@ -56,14 +63,14 @@ module.exports = (ngModule) => {
                     /*
                     * Load login controller.
                     * */
-                    loadDashboardController: ($q, $ocLazyLoad) => {
+                    loadController: ($q, $ocLazyLoad) => {
                         return $q((resolve) => {
                             require.ensure([], () => {
                                 // load only controller module
-                                let module = angular.module('main.add-edit-topic', []);
-                                require('./add-edit-topic.controller')(module);
-                                $ocLazyLoad.load({name: module.name});
-                                resolve(module.controller);
+                                let ngModule = module('main.add-edit-topic', []);
+                                require('./add-edit-topic.controller')(ngModule);
+                                $ocLazyLoad.load({name: ngModule.name});
+                                resolve(ngModule.controller);
                             })
                         });
                     }
@@ -71,5 +78,9 @@ module.exports = (ngModule) => {
             });
 
         //#endregion
-    });
-};
+
+    }
+
+    //#endregion
+
+}

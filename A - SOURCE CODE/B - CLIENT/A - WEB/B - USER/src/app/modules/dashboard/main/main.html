@@ -1,5 +1,5 @@
 <div class="row"
-     ng-init="_ngOnInit()">
+     ng-init="ngOnInit()">
 
     <!--Categories group-->
     <div class="col-lg-12">
@@ -7,13 +7,14 @@
         <div class="row">
             <div class="col-lg-12">
                 <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Library</a></li>
-                    <li class="active">Data</li>
+                    <li class="active">
+                        <span class="fa fa-home"></span> <a href>Home</a>
+                    </li>
                 </ol>
             </div>
         </div>
-        <div ng-repeat="categoryGroup in loadCategoryGroupsInCache()">
+
+        <div ng-repeat="categoryGroup in loadCategoryGroupsResult.records">
             <div class="panel panel-default panel-category-group">
                 <div class="panel-heading">
                     <div class="row">
@@ -24,15 +25,17 @@
                 </div>
                 <div class="panel-body">
                     <div class="topic"
-                         ng-repeat="category in loadCategoriesInCategoryGroup(categoryGroup.id)">
+                         ng-repeat="category in mCategoryGroupIdToCategoriesMap[categoryGroup.id]">
                         <div class="row">
                             <div class="col-sm-8 col-xs-12">
                                 <div class="form-group">
                                     <div class="topic-group-main-info">
                                         <img class="img img-topic-group" ng-src="{{category.photo}}"/>
-                                        <div class="master-info">
-                                            <a class="topic-name" ui-sref="{{urlStateConstants.categoryTopicModuleName}}">{{category.name}}</a><br>
-                                            <div class="topic-description">{{topic.description}}</div>
+                                        <div class="master-info"
+                                             ng-click="ngOnCategoryClicked(category.id)">
+                                            <a class="topic-name"
+                                               href>{{category.name}}</a><br>
+                                            <div class="topic-description">{{category.description}}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -46,7 +49,8 @@
                                 <div>
                                     <div class="text-ellipsis">
                                         <b class="fa fa-edit"></b>&nbsp;
-                                        <i>Last post by</i> <a href="javascript:void(0);" data-toggle="tooltip" title="{{topic.latestPost.username}}">{{topic.latestPost.username}}</a>
+                                        <i>Last post by</i> <a href="javascript:void(0);" data-toggle="tooltip"
+                                                               title="{{topic.latestPost.username}}">{{topic.latestPost.username}}</a>
                                     </div>
                                     <div class="text-ellipsis">
                                         <b class="fa fa-clock-o"></b>&nbsp;
@@ -63,9 +67,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <ol class="breadcrumb">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Library</a></li>
-                    <li class="active">Data</li>
+                    <li class="active">
+                        <span class="fa fa-home"></span> <a href>Home</a>
+                    </li>
                 </ol>
             </div>
         </div>

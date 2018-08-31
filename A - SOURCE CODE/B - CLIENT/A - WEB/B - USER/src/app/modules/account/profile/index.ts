@@ -1,14 +1,16 @@
-module.exports = (ngModule) => {
+import {StateProvider} from "@uirouter/angularjs";
+import {UrlStateConstant} from "../../../constants/url-state.constant";
+import {module} from 'angular';
+import {ProfileController} from "./profile.controller";
 
-    //#region Module configs.
+export class ProfileModule {
+
+    //#region Constructor
 
     /*
-    * Module configuration.
+    * Initialize module with injectors.
     * */
-    ngModule.config(($stateProvider) => {
-        // Get state parameter.
-        const UrlStateConstant = require('../../../constants/url-state.constant.ts').UrlStateConstant;
-
+    public constructor($stateProvider: StateProvider){
         $stateProvider.state(UrlStateConstant.profileModuleName, {
             url: UrlStateConstant.profileModuleUrl,
             templateProvider: ['$q', ($q) => {
@@ -26,18 +28,21 @@ module.exports = (ngModule) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
                             // load only controller module
-                            let module = angular.module('account.profile', []);
-                            require('./profile.controller')(module);
-                            $ocLazyLoad.load({name: module.name});
-                            resolve(module.controller);
+                            let ngModule = module('account.profile', []);
+
+                            const {ProfileController} = require('./profile.controller.ts');
+                            ngModule.controller('profileController', ProfileController);
+                            $ocLazyLoad.load({name: ngModule.name});
+                            resolve(ngModule.controller);
                         })
                     });
                 }
             },
             controller: 'profileController',
             parent: UrlStateConstant.authorizedLayoutModuleName
-        })
-    });
+        });
+    }
 
     //#endregion
-};
+
+}

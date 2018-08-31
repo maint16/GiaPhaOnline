@@ -25,7 +25,12 @@ body {
 }
 
 .block-ui {
-  min-height: 100% !important;
+  &.block-ui-visible{
+    min-height: 100% !important;
+    width: 100%;
+    z-index: 100;
+    position: fixed;
+  }
 }
 
 /* Truncate content of div tag */

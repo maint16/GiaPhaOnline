@@ -2,7 +2,12 @@
 
     <div class="page-content">
         <!--Navigation bar-->
-        <navigation-bar></navigation-bar>
+        <navigation-bar ng-click-login="ngOnLoginClicked()"
+                        ng-click-register="ngOnRegisterClicked()"
+                        ng-click-sign-out="ngOnSignOutClicked()"
+                        ng-click-profile="ngOnProfileClicked()"
+                        profile="profile">
+        </navigation-bar>
 
         <div class="form-group">
             <div class="layout-header"

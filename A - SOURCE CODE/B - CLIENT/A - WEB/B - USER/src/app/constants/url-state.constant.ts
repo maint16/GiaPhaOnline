@@ -27,7 +27,7 @@ export class UrlStateConstant {
     public static categoryTopicModuleUrl: string = '/topics';
 
     // Topic module.
-    public static topicModuleUrl: string = '/topic';
+    public static topicModuleUrl: string = '/topic/:topicId';
 
     // Topic module name.
     public static topicModuleName: string = 'topic';
@@ -45,10 +45,10 @@ export class UrlStateConstant {
     public static editTopicModuleName: string = 'edit-topic';
 
     // Account registration module name.
-    public static accountRegisterModuleName: string = 'account-register';
+    public static accountRegisterModuleName: string = 'account-basic-register';
 
     // Account registration module url.
-    public static accountRegisterModuleUrl: string = '/register';
+    public static accountRegisterModuleUrl: string = '/basic-register';
 
     // Account forgot password.
     public static accountForgotPasswordModuleName: string = 'account-forgot-password';
