@@ -1,7 +1,8 @@
+
+<navigation-bar [profile]="profile"></navigation-bar>
+
 <div class="wrapper">
 
-  <!--Render horizontal navigation bar-->
-  <navigation-bar [profile]="profile"></navigation-bar>
 
   <!-- Left side column. contains the logo and sidebar -->
   <side-bar></side-bar>
@@ -9,6 +10,10 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <router-outlet></router-outlet>
+
+      <i class="fas fa-bars"></i>
   </div>
 
 </div>
+
+

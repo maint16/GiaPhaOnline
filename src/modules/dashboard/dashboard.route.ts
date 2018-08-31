@@ -16,9 +16,6 @@ const routes: Routes = [
     resolve: {
       profile: ProfileResolve
     },
-    data: {
-      appCssClasses: ['skin-blue-light', 'fixed', 'sidebar-mini', 'sidebar-mini-expand-feature']
-    },
     children: [
       {
         path: '',
