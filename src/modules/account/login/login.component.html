@@ -1,85 +1,84 @@
-<body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-    <a href="javascript:void(0);"><b>Login</b></a>
-  </div>
-
-  <!-- /.login-logo -->
-  <div class="login-box-body">
-    <p class="login-box-msg">Sign in to start your session</p>
-
-    <form #loginPanel="ngForm"
-          novalidate
-          (submit)="clickLogin($event)">
-
-      <!-- Email -->
-      <div class="form-group has-feedback">
-        <input #email="ngModel"
-               name="email"
-               type="email"
-               class="form-control"
-               placeholder="Email"
-               autofocus="true"
-               [(ngModel)]="model.email"
-               [readonly]="isBusy"
-
-               required="required"
-               maxlength="128"
-               pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$">
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-
-        <!-- Email validation messages -->
-        <div class="validation-summary"
-             *ngIf="!email.valid && email.dirty">
-          <ul>
-            <li *ngIf="email.hasError('required')">Email is required.</li>
-            <li *ngIf="email.hasError('pattern')">Email format is invalid.</li>
-          </ul>
+<body class="bg-dark">
+<div class="container">
+  <div class="card card-login mx-auto mt-5">
+    <div class="card-header">Login</div>
+    <div class="card-body">
+      <form #loginPanel="ngForm"
+            novalidate
+            (submit)="clickLogin($event)">
+        <div class="form-group">
+          <div class="form-label-group">
+            <input
+              id="inputEmail"
+              #email="ngModel"
+                   name="email"
+                   class="form-control"
+                   placeholder="Email address"
+                   autofocus="true"
+                   [(ngModel)]="model.email"
+                   [readonly]="isBusy"
+                   required="required"
+                   maxlength="128">
+            <label for="inputEmail">Email address</label>
+          </div>
+            <!-- Email validation messages -->
+            <div class="validation-summary"
+                 *ngIf="!email.valid && email.dirty">
+              <ul>
+                <li *ngIf="email.hasError('required')">Email is required.</li>
+                <li *ngIf="email.hasError('pattern')">Email format is invalid.</li>
+              </ul>
+            </div>
         </div>
-      </div>
+        <div class="form-group">
+          <div class="form-label-group">
+            <input #password="ngModel"
+                   id="password"
+                   name="password"
+                   type="password"
+                   class="form-control"
+                   placeholder="Password"
+                   [readonly]="isBusy"
+                   [(ngModel)]="model.password"
 
-      <!-- Password -->
-      <div class="form-group has-feedback">
-        <input #password="ngModel"
-               name="password"
-               type="password"
-               class="form-control"
-               placeholder="Password"
-               [readonly]="isBusy"
-               [(ngModel)]="model.password"
-
-               required="required"
-               minlength="6"
-               maxlength="16"
-               pattern="^[A-Za-z0-9!@#$%^&*]*$">
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-
-        <div class="validation-summary"
-             *ngIf="!password.valid && password.dirty">
-          <ul>
-            <li *ngIf="password.hasError('required')">Password is required.</li>
-            <li *ngIf="password.hasError('pattern')">Password format is invalid.</li>
-          </ul>
+                   required="required"
+                   minlength="6"
+                   maxlength="16"
+                   pattern="^[A-Za-z0-9!@#$%^&*]*$">
+            <label for="password">Password</label>
+          </div>
+            <div class="validation-summary"
+                 *ngIf="!password.valid && password.dirty">
+              <ul>
+                <li *ngIf="password.hasError('required')">Password is required.</li>
+                <li *ngIf="password.hasError('pattern')">Password format is invalid.</li>
+              </ul>
+            </div>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-xs-12">
-          <input type="submit"
-                 class="btn btn-primary btn-block btn-flat"
-                 [disabled]="!loginPanel.valid || bIsBusy"
-                 value="Sign In">
+        <div class="form-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" value="remember-me">
+              Remember Password
+            </label>
+          </div>
         </div>
+        <input type="submit"
+               class="btn btn-primary btn-block btn-flat"
+               [disabled]="!loginPanel.valid || bIsBusy"
+               value="Log In">
+      </form>
+      <a class="btn btn-block btn-social btn-google" (click)="socialSignIn('google')">
+        <i class="fab fa-google-plus" style="color: #e8590c"></i> Log in with Google
+      </a>
+      <a class="btn btn-block btn-social btn-facebook" (click)="socialSignIn('facebook')">
+        <i class="fab fa-facebook" style="color: #4267b2"></i> Log in with Facebook
+      </a>
+      <div class="text-center">
+        <a class="d-block small mt-3" href="register.html">Register an Account</a>
+        <a class="d-block small" href="forgot-password.html">Forgot Password?</a>
       </div>
-    </form>
-
-
-    <a href="javascript:void(0);"
-       routerLink="/forgot-password">
-      <span>I forgot my password</span>
-    </a>
-    <br>
-
+    </div>
   </div>
 </div>
 

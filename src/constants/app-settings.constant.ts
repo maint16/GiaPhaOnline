@@ -7,5 +7,4 @@ export class AppSettings{
   * */
   public identityStorage: string = 'iAuthorizationToken';
 
-  //#endregion
 }
