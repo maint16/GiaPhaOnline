@@ -35,8 +35,7 @@ export class LoginComponent {
   //#region Constructor
 
   public constructor(@Inject('IAuthenticationService') public authenticationService: IAuthenticationService,
-                     public router: Router, private socialAuthService: AuthService,
-                     public configLoginConstant : ConfigLoginConstant) {
+                     public router: Router, private socialAuthService: AuthService) {
     this.model = new LoginViewModel();
 
   }
@@ -66,11 +65,11 @@ export class LoginComponent {
   public socialSignIn(socialPlatform : string) {
     debugger;
     let socialPlatformProvider;
-    if(socialPlatform == this.configLoginConstant.facebook)
+    if(socialPlatform == ConfigLoginConstant.facebook)
     {
       socialPlatformProvider = FacebookLoginProvider.PROVIDER_ID;
     }
-    else if(socialPlatform == this.configLoginConstant.google)
+    else if(socialPlatform == ConfigLoginConstant.google)
     {
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
     }
