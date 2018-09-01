@@ -1,7 +1,13 @@
 import {StateProvider} from "@uirouter/angularjs";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
-import {module} from 'angular';
+import {IPromise, module} from 'angular';
 import {ProfileController} from "./profile.controller";
+import {User} from "../../../models/entities/user";
+import {StateParams, StateService} from '@uirouter/angularjs';
+import {LoadUserViewModel} from "../../../view-models/users/load-user.view-model";
+import {Pagination} from "../../../models/pagination";
+import {IUserService} from "../../../interfaces/services/user-service.interface";
+import {SearchResult} from "../../../models/search-result";
 
 export class ProfileModule {
 
@@ -24,7 +30,7 @@ export class ProfileModule {
                 /*
                 * Load login controller.
                 * */
-                loadLoginController: ($q, $ocLazyLoad) => {
+                loadController: ($q, $ocLazyLoad) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
                             // load only controller module
@@ -36,6 +42,49 @@ export class ProfileModule {
                             resolve(ngModule.controller);
                         })
                     });
+                },
+
+                /*
+                * Load profile by using id.
+                * */
+                profile: ($stateParams: StateParams, $state: StateService, $user: IUserService) : User | IPromise<User> => {
+
+                    // Get profile id.
+                    let profileId = parseInt($stateParams.profileId);
+                    if (profileId == null)
+                    // Profile is not valid.
+                    if (!profileId){
+
+                        // Get current user profile.
+                        $user.loadUserProfile(profileId)
+                            .then((user: User) => {
+                                return user;
+                            })
+                            .catch(() => {
+                                $state.go(UrlStateConstant.dashboardModuleName);
+                            });
+                        return null;
+                    }
+
+                    // Build load user conditions.
+                    let loadUsersCondition = new LoadUserViewModel();
+                    let pagination = new Pagination();
+                    pagination.page = 1;
+                    pagination.records = 1;
+
+                    loadUsersCondition.ids = [profileId];
+                    return $user.loadUsers(loadUsersCondition)
+                        .then((loadUsersResult: SearchResult<User>) => {
+                            let users = loadUsersResult.records;
+                            if (!users)
+                                throw 'No user has been found';
+
+                            return users[0];
+                        })
+                        .catch(() => {
+                            $state.go(UrlStateConstant.dashboardModuleName);
+                            return null;
+                        })
                 }
             },
             controller: 'profileController',

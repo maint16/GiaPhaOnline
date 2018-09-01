@@ -51,7 +51,7 @@ export class AuthorizedLayoutController implements IController {
     // Called when profile is clicked.
     private _ngOnProfileClicked = (): void => {
         // Redirect user to profile page.
-        this.$state.go(UrlStateConstant.profileModuleName);
+        this.$state.go(UrlStateConstant.profileModuleName, {profileId: 0});
     };
 
     //#endregion

@@ -18,7 +18,7 @@ export class UrlStateConstant {
     public static profileModuleName: string = 'profile';
 
     // Profile module url.
-    public static profileModuleUrl: string = '/profile';
+    public static profileModuleUrl: string = '/profile/:profileId';
 
     // Category topic module name.
     public static categoryTopicModuleName: string = 'topics';

@@ -14,6 +14,8 @@ export class User {
 
     public role: UserRole = UserRole.ordinary;
 
+    public signature: string = '';
+
     public joinedTime: number = 0;
 
     public lastModifiedTime: number | null = null;

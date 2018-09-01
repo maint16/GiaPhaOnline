@@ -50,6 +50,9 @@ export interface ITopicsScope extends IScope{
     // Called when edit topic is clicked.
     ngOnEditTopicClicked: (topicId: number) => void;
 
+    // Called when profile is clicked.
+    ngOnProfileClicked: (profileId: number) => void;
+
     //#endregion
 
 }

@@ -8,6 +8,8 @@ import {TokenViewModel} from "../view-models/users/token.view-model";
 import {IUserService} from "../interfaces/services/user-service.interface";
 import {ForgotPasswordViewModel} from "../view-models/users/forgot-password.view-model";
 import {BasicRegisterViewModel} from "../view-models/users/basic-register.view-model";
+import {UserRole} from "../enums/user-role.enum";
+import {UserStatus} from "../enums/user-status.enum";
 
 /* @ngInject */
 export class UserService implements IUserService {
@@ -114,6 +116,11 @@ export class UserService implements IUserService {
 
                 return loadUserProfileResponse.data;
             });
+    };
+
+    // Load available statuses for user.
+    public loadUserAvailableStatuses(): Array<UserStatus> {
+        return [UserStatus.disabled, UserStatus.pending, UserStatus.active];
     }
 
 

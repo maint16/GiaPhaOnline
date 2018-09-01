@@ -14,6 +14,11 @@ import {IReplyService} from "../../../interfaces/services/reply-service.interfac
 import {cloneDeep} from 'lodash';
 import {Topic} from "../../../models/entities/topic";
 import {AddReplyViewModel} from "../../../view-models/add-reply.view-model";
+import {User} from "../../../models/entities/user";
+import {LoadUserViewModel} from "../../../view-models/users/load-user.view-model";
+import {IUserService} from "../../../interfaces/services/user-service.interface";
+import {UserRole} from "../../../enums/user-role.enum";
+import {UrlStateConstant} from "../../../constants/url-state.constant";
 
 /* @ngInject */
 export class TopicController implements IController {
@@ -25,7 +30,7 @@ export class TopicController implements IController {
 
     //#region Constructor
 
-    public constructor(public $topic: ITopicService, public $reply: IReplyService,
+    public constructor(public $topic: ITopicService, public $reply: IReplyService, public $user: IUserService,
                        public $ui: IUiService,
                        loadTopicResolver: TopicResolver,
                        public $state: StateService,
@@ -33,11 +38,11 @@ export class TopicController implements IController {
 
         // Property binding.
         let topic = loadTopicResolver.topic;
-        this.$scope.topic = topic;
-        this.$scope.addQuickReply = '';
-        this.$scope.bIsEditorInPreviewMode = false;
-        this.$scope.bIsEditorCollapsed = false;
-        this.$scope.loadTopicRepliesResult = new SearchResult<Reply>();
+        $scope.topic = topic;
+        $scope.addQuickReply = '';
+        $scope.bIsEditorInPreviewMode = false;
+        $scope.bIsEditorCollapsed = false;
+        $scope.loadTopicRepliesResult = new SearchResult<Reply>();
 
         // Initialize search condition.
         let loadTopicRepliesCondition = new LoadReplyViewModel();
@@ -45,15 +50,16 @@ export class TopicController implements IController {
         loadTopicRepliesCondition.pagination = new Pagination();
         loadTopicRepliesCondition.pagination.page = 1;
         loadTopicRepliesCondition.pagination.records = PaginationConstant.topicReplies;
-        this.$scope.loadTopicRepliesCondition = loadTopicRepliesCondition;
+        $scope.loadTopicRepliesCondition = loadTopicRepliesCondition;
 
         // Method binding.
-        this.$scope.ngOnAddReplyClicked = this._ngOnAddReplyClicked;
-        this.$scope.ngOnInit = this._ngOnInit;
-        this.$scope.ngOnToggleEditorPreviewMode = this._ngOnToggleEditorPreviewMode;
-        this.$scope.ngOnRepliesPageChanged = this._ngOnRepliesPageChanged;
-        this.$scope.ngOnEditorToggleClicked = this._ngOnEditorToggleClicked;
-        this.$scope.ngOnAddReplyClicked = this._ngOnAddTopicReplyClicked;
+        $scope.ngOnAddReplyClicked = this._ngOnAddReplyClicked;
+        $scope.ngOnInit = this._ngOnInit;
+        $scope.ngOnToggleEditorPreviewMode = this._ngOnToggleEditorPreviewMode;
+        $scope.ngOnRepliesPageChanged = this._ngOnRepliesPageChanged;
+        $scope.ngOnEditorToggleClicked = this._ngOnEditorToggleClicked;
+        $scope.ngOnAddReplyClicked = this._ngOnAddTopicReplyClicked;
+        $scope.ngOnProfileClicked = this._ngOnProfileClicked;
     }
 
     //#endregion
@@ -89,11 +95,35 @@ export class TopicController implements IController {
         // Add loading screen.
         this.$ui.blockAppUI();
 
+        // Caching result
+        let loadReplyResult = new SearchResult<Reply>();
+        let mIdToUserMap: { [id: number]: User } = {};
+
         this._loadTopicReplies()
             .then((loadTopicRepliesResult: SearchResult<Reply>) => {
-                this.$scope.loadTopicRepliesResult = loadTopicRepliesResult;
+                loadReplyResult = loadTopicRepliesResult;
+                return loadTopicRepliesResult.records;
+            })
+            .catch(() => {
+                return new Array<Reply>();
+            })
+            .then((replies: Reply[]) => {
+                let loadUserConditions = new LoadUserViewModel();
+                let ownerIds = replies.map((reply: Reply) => reply.ownerId);
+                loadUserConditions.ids = [this.$scope.topic.ownerId].concat(ownerIds);
+
+                this.$user
+                    .loadUsers(loadUserConditions)
+                    .then((loadUsersResult: SearchResult<User>) => {
+                        // Get users list.
+                        let users = loadUsersResult.records;
+                        for (let user of users)
+                            mIdToUserMap[user.id] = user;
+                    });
             })
             .finally(() => {
+                this.$scope.mIdToUserMap = mIdToUserMap;
+                this.$scope.loadTopicRepliesResult = loadReplyResult;
                 this.$ui.unblockAppUI();
             })
     };
@@ -127,6 +157,11 @@ export class TopicController implements IController {
             .finally(() => {
                 this.$ui.unblockAppUI();
             });
+    };
+
+    // Called when profile is clicked.
+    private _ngOnProfileClicked = (profileId: number): void => {
+        this.$state.go(UrlStateConstant.profileModuleName, {profileId: profileId});
     };
 
     /*

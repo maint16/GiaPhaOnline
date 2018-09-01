@@ -24,8 +24,16 @@
   "TITLE_LAST_MODIFIED_TIME": "Last modified time",
   "TITLE_SIGN_OUT": "Sign out",
   "TITLE_CATEGORY": "Category",
+  "TITLE_USER": "User",
+  "TITLE_ADMIN": "Admin",
+  "TITLE_ACTIVE": "Active",
+  "TITLE_PENDING": "Pending",
+  "TITLE_DISABLED": "Disabled",
 
   "MSG_FIELD_REQUIRED": "This field is required",
   "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",
-  "MSG_BASIC_REGISTER_SUCCESSFULLY": "An activation email has been sent to you. Please check your inbox."
+  "MSG_BASIC_REGISTER_SUCCESSFULLY": "An activation email has been sent to you. Please check your inbox.",
+  "MSG_CREDENTIAL_INVALID": "Your credential is invalid.",
+  "MSG_INTERNAL_SERVER_ERROR": "Internal server error",
+  "MSG_UNKNOWN_ERROR": "Unknown error"
 }
