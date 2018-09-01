@@ -31,11 +31,11 @@ export function getAuthServiceConfigs() {
             [
                {
                  id: FacebookLoginProvider.PROVIDER_ID,
-                 provider: new FacebookLoginProvider(this.configLogin.facebookAppId)
+                 provider: new FacebookLoginProvider('262038564425058')
                },
               {
                 id: GoogleLoginProvider.PROVIDER_ID,
-                provider: new GoogleLoginProvider(this.configLogin.googleAppId)
+                provider: new GoogleLoginProvider('806371952743-rno7ho38thn702uk77ghq8abj88hc9dp.apps.googleusercontent.com')
       },
     ]
 );
@@ -79,7 +79,8 @@ export function getAuthServiceConfigs() {
     {
       provide: AuthServiceConfig,
       useFactory: getAuthServiceConfigs
-    }
+    },
+    ConfigLoginConstant
   ],
   bootstrap: [AppComponent]
 })
