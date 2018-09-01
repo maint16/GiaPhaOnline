@@ -1,7 +1,7 @@
 import {LoadUserViewModel} from "../view-models/users/load-user.view-model";
 import {SearchResult} from "../models/search-result";
 import {User} from "../models/entities/user";
-import {IHttpResponse, IHttpService, IPromise} from "angular";
+import {IHttpResponse, IHttpService, IPromise, IRequestShortcutConfig} from "angular";
 import {AppSetting} from "../models/app-setting";
 import {LoginViewModel} from "../view-models/users/login.view-model";
 import {TokenViewModel} from "../view-models/users/token.view-model";
@@ -121,6 +121,30 @@ export class UserService implements IUserService {
     // Load available statuses for user.
     public loadUserAvailableStatuses(): Array<UserStatus> {
         return [UserStatus.disabled, UserStatus.pending, UserStatus.active];
+    }
+
+    // Upload user profile image.
+    public uploadProfileImage(blob: any): IPromise<string> {
+        let url = `${this.appSettingConstant.apiEndPoint}/api/user/upload-avatar`;
+        let options: IRequestShortcutConfig = {};
+        options.headers = {};
+        options.headers['Content-Type'] = undefined;
+
+        let fd = new FormData();
+        fd.set('image', blob);
+
+        return this.$http
+            .post(url, fd, options)
+            .then((uploadAvatarResult: IHttpResponse<any>) => {
+                if (!uploadAvatarResult)
+                    throw 'Failed to upload avatar';
+
+                let data = uploadAvatarResult.data;
+                if (!data.photo)
+                    throw 'Failed to upload avatar';
+
+                return <string> data.photo;
+            });
     }
 
 

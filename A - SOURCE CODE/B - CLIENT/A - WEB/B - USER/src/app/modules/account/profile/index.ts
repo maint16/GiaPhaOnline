@@ -23,7 +23,12 @@ export class ProfileModule {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                 return $q((resolve) => {
                     // lazy load the view
-                    require.ensure([], () => resolve(require('./profile.html')));
+                    require.ensure([], () => {
+
+                        require('./profile.scss');
+                        require('ui-cropper/compile/unminified/ui-cropper.css');
+                        resolve(require('./profile.html'));
+                    });
                 });
             }],
             resolve: {
@@ -33,8 +38,13 @@ export class ProfileModule {
                 loadController: ($q, $ocLazyLoad) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
+
+                            // Import module.
+                            require('angular-file-upload');
+                            require('ui-cropper');
+
                             // load only controller module
-                            let ngModule = module('account.profile', []);
+                            let ngModule = module('account.profile', ['angularFileUpload', 'uiCropper']);
 
                             const {ProfileController} = require('./profile.controller.ts');
                             ngModule.controller('profileController', ProfileController);

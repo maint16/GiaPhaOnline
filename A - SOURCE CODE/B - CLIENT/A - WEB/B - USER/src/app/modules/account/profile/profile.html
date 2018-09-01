@@ -3,8 +3,19 @@
         <div class="box box-default">
             <div class="box-body">
                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                    <div class="form-group text-center">
-                        <img class="img img-responsive img-thumbnail" src="http://via.placeholder.com/512x512" />
+                    <div class="box box-default">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <img id="profile-image" class="img"
+                                     ng-src="{{user.photo}}"/>
+                            </div>
+                        </div>
+                        <div class="box-footer text-center">
+                            <button class="btn btn-info"
+                                    ng-click="ngOnUploadProfileModalClicked()">
+                                <span class="fa fa-camera"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
@@ -48,10 +59,16 @@
                         </div>
                         <div class="col-md-9">
                             <div class="input-group form-group">
-                            <span class="input-group-addon">
-                                <span class="fa fa-key"></span>
-                            </span>
-                                <input class="form-control" type="password" ng-value="'This is password field'" ng-disabled="true" />
+                                <span class="input-group-addon">
+                                    <span class="fa fa-key"></span>
+                                </span>
+                                <input class="form-control" type="password" ng-value="'This is password field'"
+                                       ng-disabled="true"/>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary">
+                                        <span class="fa fa-edit"></span>
+                                    </button>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -129,3 +146,61 @@
         </div>
     </div>
 </div>
+
+<!--Profile upload image-->
+<script id="upload-profile-image.html"
+        type="text/ng-template">
+    <form name="profileImageUploadForm"
+          class="box box-info"
+          ng-submit="ngOnProfileImageCropped($event, encodedProfileImage, blobProfileImage)"
+          novalidate>
+        <div class="box-header">
+            <h3 class="box-title">{{'TITLE_UPLOAD_PROFILE_IMAGE' | translate}}</h3>
+        </div>
+        <div class="box-body">
+            <div class="form-group">
+                <div id="profile-image-editor">
+                    <ui-cropper image="originalProfileImage"
+                                result-image="encodedProfileImage"
+                                result-blob="blobProfileImage"
+                                aspect-ratio="1.0"
+                                init-max-area="true"
+                                result-image-size="{w: 512, h: 512}"
+                                canvas-scalemode="full-width"
+                                area-type="square"></ui-cropper>
+                    <!--Hidden input for image require validation-->
+                    <input id="originalProfileImage" name="originalProfileImage" class="hidden" ng-model="encodedProfileImage" ng-required="true">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-group">
+                    <input id="profileImageSelector" type="file" nv-file-select=""
+                           uploader="profileImageUploader"
+                           class="form-control" ng-disabled="originalProfileImage"/>
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger"
+                                type="button"
+                                ng-disabled="!ngIsAbleToResetCroppedImage(originalProfileImage)"
+                                ng-click="ngOnResetOriginalImageClicked()">
+                            <span class="fa fa-trash"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="text-center">
+                <button class="btn btn-primary"
+                        ng-disabled="profileImageUploadForm.$invalid">
+                    <span>{{'TITLE_OK' | translate}}</span>
+                </button>
+                <button class="btn btn-default"
+                        type="button"
+                        ng-click="ngOnProfileModalCancelClicked()">
+                    <span>{{'TITLE_CANCEL' | translate}}</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</script>

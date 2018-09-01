@@ -41,6 +41,10 @@ export interface IUserService {
     // Load available statuses for user.
     loadUserAvailableStatuses(): Array<UserStatus>;
 
+    // Upload user profile image.
+    // Returns photo url when upload is successful.
+    uploadProfileImage(blob: any): IPromise<string>;
+
     //#endregion
 
 }

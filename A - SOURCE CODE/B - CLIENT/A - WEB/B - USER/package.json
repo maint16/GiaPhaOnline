@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@types/angular": "^1.6.50",
+    "@types/angular-file-upload": "^2.5.1",
     "@types/angular-local-storage": "^0.6.1",
     "@types/angular-toastr": "^1.6.33",
     "@types/angular-translate": "^2.16.0",
