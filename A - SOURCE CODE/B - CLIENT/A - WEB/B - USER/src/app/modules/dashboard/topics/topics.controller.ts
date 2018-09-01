@@ -45,6 +45,7 @@ export class TopicsController implements IController {
         $scope.ngOnTopicTitleClicked = this._ngOnTopicTitleClicked;
         $scope.ngOnTopicsPageChanged = this._ngOnTopicsPageChanged;
         $scope.ngOnEditTopicClicked = this._ngOnEditTopicClicked;
+        $scope.ngOnProfileClicked = this._ngOnProfileIsClicked;
     }
 
     //#endregion
@@ -101,6 +102,12 @@ export class TopicsController implements IController {
         this.$state.go(UrlStateConstant.editTopicModuleName, {topicId: topicId});
     };
 
+    // Called when a profile is clicked.
+    private _ngOnProfileIsClicked = (profileId: number) => {
+        // Go to profile page.
+        this.$state.go(UrlStateConstant.profileModuleName, {profileId: profileId});
+    };
+
     /*
     * Load topics by using pre-defined conditions.
     * */
@@ -154,6 +161,7 @@ export class TopicsController implements IController {
                 return loadUsersResult.records;
             });
     };
+
 
     //#endregion
 }

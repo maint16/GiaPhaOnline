@@ -33,32 +33,26 @@
                             <div class="box-body">
                                 <div class="col-md-2 col-sm-3 col-xs-12">
                                     <div class="form-group text-center">
-                                        <img class="img img-responsive" ng-src="{{_topic.creator.photo}}"/>
+                                        <img class="img img-responsive"
+                                             ng-src="{{mIdToUserMap[topic.ownerId].photo}}"/>
                                     </div>
 
                                     <div>
-                                        <a href>
-                                            <b>{{_topic.creator.username}}</b>
+                                        <a href ng-click="ngOnProfileClicked(topic.ownerId)">
+                                            <b>{{mIdToUserMap[topic.ownerId].nickname}}</b>
                                         </a>
                                     </div>
 
                                     <!--User role in the system-->
                                     <div class="user-role">
-                                        <b>{{_topic.creator.role}}</b>
-                                    </div>
-
-                                    <!--User post count-->
-                                    <div class="user-post-count">
-                                        <b>Posts :</b>
-                                        <span>&nbsp;</span>
-                                        <span class="badge">{{_topic.creator.posts}}</span>
+                                        <b>{{mIdToUserMap[topic.ownerId].role | toUserRoleTitle | translate}}</b>
                                     </div>
 
                                     <!--Joined time-->
                                     <div class="user-joined-date">
-                                        <b>Joined :</b>
+                                        <b>{{'TITLE_JOINED_TIME' | translate}} :</b>
                                         <span>&nbsp;</span>
-                                        <span>{{_topic.creator.joinedTime}}</span>
+                                        <span>{{mIdToUserMap[topic.ownerId].joinedTime}}</span>
                                     </div>
                                 </div>
                                 <div class="col-md-10 col-sm-9 col-xs-12">
@@ -78,7 +72,7 @@
                                                     <span class="fa fa-clock-o"></span>
                                                 </th>
                                                 <td>
-                                                    <span class="time">{{_topic.createdTime}}</span>
+                                                    <span class="time">{{topic.createdTime}}</span>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -88,7 +82,7 @@
                                         <ng-bind-html ng-bind-html="topic.body"></ng-bind-html>
                                     </div>
                                     <div class="post-signature">
-                                        <ng-bind-html ng-bind-html="_topic.creator.signature"></ng-bind-html>
+                                        <ng-bind-html ng-bind-html="mIdToUserMap[topic.ownerId].signature"></ng-bind-html>
                                     </div>
                                 </div>
                             </div>
@@ -104,31 +98,25 @@
                         <div class="box-body">
                             <div class="col-md-2 col-sm-3 col-xs-12">
                                 <div class="form-group text-center">
-                                    <img class="img img-thumbnail img-responsive" ng-src="{{reply.creator.photo}}"/>
+                                    <img class="img img-thumbnail img-responsive"
+                                         ng-src="{{mIdToUserMap[reply.ownerId].photo}}"/>
                                 </div>
                                 <div>
-                                    <a href>
-                                        <b>{{reply.creator.username}}</b>
+                                    <a href ng-click="ngOnProfileClicked(reply.ownerId)">
+                                        <b>{{mIdToUserMap[reply.ownerId].nickname}}</b>
                                     </a>
                                 </div>
 
                                 <!--User role in the system-->
                                 <div class="user-role">
-                                    {{reply.creator.role}}
-                                </div>
-
-                                <!--User post count-->
-                                <div class="user-post-count">
-                                    <b>Posts:</b>
-                                    <span>&nbsp;</span>
-                                    <span class="badge">{{reply.creator.posts}}</span>
+                                    {{mIdToUserMap[reply.ownerId].role | toUserRoleTitle | translate}}
                                 </div>
 
                                 <!--Joined time-->
                                 <div class="user-joined-date">
-                                    <b>Joined:</b>
+                                    <b>{{'TITLE_JOINED_TIME' | translate}}:</b>
                                     <span>&nbsp;</span>
-                                    <span>{{reply.creator.joinedTime}}</span>
+                                    <span>{{mIdToUserMap[topic.ownerId].joinedTime}}</span>
                                 </div>
                             </div>
                             <div class="col-md-10 col-sm-9 col-xs-12">
@@ -158,7 +146,7 @@
                                     <ng-bind-html ng-bind-html="reply.content"></ng-bind-html>
                                 </div>
                                 <div class="post-signature">
-                                    <ng-bind-html ng-bind-html="reply.creator.signature"></ng-bind-html>
+                                    <ng-bind-html ng-bind-html="mIdToUserMap[topic.ownerId].signature"></ng-bind-html>
                                 </div>
                             </div>
                         </div>

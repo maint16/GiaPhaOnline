@@ -6,6 +6,7 @@ import {LoginViewModel} from "../../view-models/users/login.view-model";
 import {TokenViewModel} from "../../view-models/users/token.view-model";
 import {ForgotPasswordViewModel} from "../../view-models/users/forgot-password.view-model";
 import {BasicRegisterViewModel} from "../../view-models/users/basic-register.view-model";
+import {UserStatus} from "../../enums/user-status.enum";
 
 export interface IUserService {
 
@@ -36,6 +37,9 @@ export interface IUserService {
     * If id is not specified, requester profile is fetched.
     * */
     loadUserProfile(id? : number): IPromise<User>;
+
+    // Load available statuses for user.
+    loadUserAvailableStatuses(): Array<UserStatus>;
 
     //#endregion
 

@@ -54,12 +54,10 @@ $.ajax({
         require('angular-sanitize');
         require('angular-confirm1');
         require('ng-multi-selector');
-        require('angular-file-upload');
         require('angular-messages');
         require('angular-ui-tinymce');
         require('angular-local-storage');
         require('angular-recaptcha');
-        require('ui-cropper');
 
         // Bind the app setting to window object.
         window['_ngAppOptions'] = loadAppOptionResponse;
@@ -68,7 +66,7 @@ $.ajax({
         let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
             'ui.bootstrap', 'ngMultiSelector', 'ngMessages', 'oc.lazyLoad', 'vcRecaptcha',
             'pascalprecht.translate', 'angularMoment', 'ngSanitize', 'ui.tinymce',
-            'cp.ngConfirm', 'angularFileUpload', 'uiCropper', 'LocalStorageModule']);
+            'cp.ngConfirm', 'LocalStorageModule']);
 
         // Import url state constant
         const UrlStateConstant = require('./constants/url-state.constant.ts').UrlStateConstant;
@@ -105,6 +103,9 @@ $.ajax({
         // Factories import.
         require('./factories')(ngModule);
 
+        // Filters import.
+        require('./filters')(ngModule);
+
         // Services import.
         require('./services')(ngModule);
 
@@ -113,8 +114,6 @@ $.ajax({
 
         // Module requirements.
         require('./modules')(ngModule);
-
-        require('./app.controller')(ngModule);
 
         // Manually bootstrap the application.
         angular.bootstrap(document, ['ngApp']);

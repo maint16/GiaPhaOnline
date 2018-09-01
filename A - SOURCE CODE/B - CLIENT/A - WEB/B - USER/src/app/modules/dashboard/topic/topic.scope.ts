@@ -3,6 +3,8 @@ import {Topic} from "../../../models/entities/topic";
 import {SearchResult} from "../../../models/search-result";
 import {Reply} from "../../../models/entities/reply";
 import {LoadReplyViewModel} from "../../../view-models/load-reply.view-model";
+import {User} from "../../../models/entities/user";
+import {UserRole} from "../../../enums/user-role.enum";
 
 export interface ITopicScope extends IScope {
 
@@ -17,6 +19,9 @@ export interface ITopicScope extends IScope {
     * Quick reply content.
     * */
     addQuickReply: string;
+
+    // Id - user mapping.
+    mIdToUserMap: {[id: number]: User};
 
     /*
     * Whether editor is in preview mode or not.
@@ -71,6 +76,9 @@ export interface ITopicScope extends IScope {
     * Called when add topic button is clicked.
     * */
     ngOnAddTopicReplyClicked: () => void;
+
+    // Called when profile is clicked.
+    ngOnProfileClicked: (profileId: number) => void;
 
     //#endregion
 }

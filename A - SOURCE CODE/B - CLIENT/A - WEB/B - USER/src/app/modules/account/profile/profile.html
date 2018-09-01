@@ -19,7 +19,9 @@
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-envelope"></span>
                             </span>
-                                <input class="form-control" />
+                                <input class="form-control"
+                                       ng-model="user.email"
+                                       ng-disabled="true"/>
                             </div>
                         </div>
                     </div>
@@ -34,7 +36,7 @@
                             <span class="input-group-addon">
                                 <span class="fa fa-credit-card"></span>
                             </span>
-                                <input class="form-control" />
+                                <input class="form-control" ng-model="user.nickname" ng-disabled="true"/>
                             </div>
                         </div>
                     </div>
@@ -49,7 +51,7 @@
                             <span class="input-group-addon">
                                 <span class="fa fa-key"></span>
                             </span>
-                                <input class="form-control" type="password" readonly="readonly" />
+                                <input class="form-control" type="password" ng-value="'This is password field'" ng-disabled="true" />
                             </div>
                         </div>
                     </div>
@@ -64,7 +66,11 @@
                             <span class="input-group-addon">
                                 <span class="fa fa-sun-o"></span>
                             </span>
-                                <select class="form-control"></select>
+                                <select class="form-control"
+                                        ng-model="user.status"
+                                        ng-options="item as item | toUserStatus | translate for item in availableUserStatuses">
+
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -79,7 +85,9 @@
                             <span class="input-group-addon">
                                 <span class="fa fa-clock-o"></span>
                             </span>
-                                <input class="form-control" readonly="readonly"/>
+                                <input class="form-control"
+                                       ng-disabled="true"
+                                       value="{{user.joinedTime | amUtc | amDateFormat:'MM.DD.YYYY HH:mm:ss'}}">
                             </div>
                         </div>
                     </div>
@@ -94,7 +102,9 @@
                             <span class="input-group-addon">
                                 <span class="fa fa-clock-o"></span>
                             </span>
-                                <input class="form-control" readonly="readonly" />
+                                <input class="form-control"
+                                       ng-disabled="true"
+                                       value="{{user.lastModifiedTime | amUtc | amDateFormat:'MM.DD.YYYY HH:mm:ss'}}">
                             </div>
                         </div>
                     </div>
