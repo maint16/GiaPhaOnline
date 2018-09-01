@@ -3,10 +3,17 @@ import {LoginViewModel} from "../../../view-models/login.view-model";
 import {IAuthenticationService} from "../../../interfaces/services/authentication-service.interface";
 import {AuthorizationToken} from "../../../models/authorization-token";
 import {Router} from "@angular/router";
-
+import {
+  AuthService,
+  FacebookLoginProvider,
+  GoogleLoginProvider
+} from 'angular5-social-login';
+import {AppSettings} from '../../../constants/app-settings.constant';
+import {ConfigLoginConstant} from '../../../constants/config-login.constant';
 @Component({
   selector: 'account-login',
-  templateUrl: 'login.component.html'
+  templateUrl: 'login.component.html',
+  styleUrls: ['login.component.css'],
 })
 
 export class LoginComponent {
@@ -28,7 +35,7 @@ export class LoginComponent {
   //#region Constructor
 
   public constructor(@Inject('IAuthenticationService') public authenticationService: IAuthenticationService,
-                     public router: Router) {
+                     public router: Router, private socialAuthService: AuthService) {
     this.model = new LoginViewModel();
 
   }
@@ -55,6 +62,21 @@ export class LoginComponent {
     // Redirect to dashboard.
     this.router.navigate(['/dashboard']);
   }
-
+  public socialSignIn(socialPlatform : string) {
+    debugger;
+    let socialPlatformProvider;
+    if(socialPlatform == ConfigLoginConstant.facebook)
+    {
+      socialPlatformProvider = FacebookLoginProvider.PROVIDER_ID;
+    }
+    else if(socialPlatform == ConfigLoginConstant.google)
+    {
+      socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
+    }
+    this.socialAuthService.signIn(socialPlatformProvider).then(
+      (userData) => {
+        console.log(socialPlatform+" sign in data : " , userData);
+      });
+  }
   //#endregion
 }
