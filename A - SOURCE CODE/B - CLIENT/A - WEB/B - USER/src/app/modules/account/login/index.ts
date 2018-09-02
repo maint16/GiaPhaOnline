@@ -2,6 +2,7 @@ import {module} from 'angular'
 import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {StateProvider} from "@uirouter/angularjs";
 
+/* @ngInject */
 export class LoginModule {
 
     //#region Constructor

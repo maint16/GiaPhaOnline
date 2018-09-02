@@ -2,6 +2,7 @@ import {StateProvider} from "@uirouter/angularjs";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {module} from 'angular';
 
+/* @ngInject */
 export class BasicRegisterModule {
 
     //#region Constructor

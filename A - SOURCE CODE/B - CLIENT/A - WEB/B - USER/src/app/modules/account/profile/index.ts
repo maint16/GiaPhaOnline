@@ -1,7 +1,6 @@
 import {StateProvider} from "@uirouter/angularjs";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {IPromise, module} from 'angular';
-import {ProfileController} from "./profile.controller";
 import {User} from "../../../models/entities/user";
 import {StateParams, StateService} from '@uirouter/angularjs';
 import {LoadUserViewModel} from "../../../view-models/users/load-user.view-model";
@@ -9,6 +8,7 @@ import {Pagination} from "../../../models/pagination";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
 import {SearchResult} from "../../../models/search-result";
 
+/* @ngInject */
 export class ProfileModule {
 
     //#region Constructor
@@ -23,7 +23,12 @@ export class ProfileModule {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
                 return $q((resolve) => {
                     // lazy load the view
-                    require.ensure([], () => resolve(require('./profile.html')));
+                    require.ensure([], () => {
+
+                        require('./profile.scss');
+                        require('ui-cropper/compile/unminified/ui-cropper.css');
+                        resolve(require('./profile.html'));
+                    });
                 });
             }],
             resolve: {
@@ -33,11 +38,19 @@ export class ProfileModule {
                 loadController: ($q, $ocLazyLoad) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
+
+                            // Import module.
+                            require('angular-file-upload');
+                            require('ui-cropper');
+
                             // load only controller module
-                            let ngModule = module('account.profile', []);
+                            let ngModule = module('account.profile', ['angularFileUpload', 'uiCropper']);
 
                             const {ProfileController} = require('./profile.controller.ts');
                             ngModule.controller('profileController', ProfileController);
+
+                            const {ChangePasswordController} = require('./change-password/change-password.controller.ts');
+                            ngModule.controller('changePasswordController', ChangePasswordController);
                             $ocLazyLoad.load({name: ngModule.name});
                             resolve(ngModule.controller);
                         })

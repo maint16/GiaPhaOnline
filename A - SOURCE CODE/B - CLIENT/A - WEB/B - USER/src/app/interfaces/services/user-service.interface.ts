@@ -7,6 +7,7 @@ import {TokenViewModel} from "../../view-models/users/token.view-model";
 import {ForgotPasswordViewModel} from "../../view-models/users/forgot-password.view-model";
 import {BasicRegisterViewModel} from "../../view-models/users/basic-register.view-model";
 import {UserStatus} from "../../enums/user-status.enum";
+import {ChangePasswordViewModel} from "../../view-models/users/change-password.view-model";
 
 export interface IUserService {
 
@@ -40,6 +41,13 @@ export interface IUserService {
 
     // Load available statuses for user.
     loadUserAvailableStatuses(): Array<UserStatus>;
+
+    // Upload user profile image.
+    // Returns photo url when upload is successful.
+    uploadProfileImage(blob: any): IPromise<string>;
+
+    // Allow user to change his/her account password.
+    changePassword(changePasswordModel: ChangePasswordViewModel): IPromise<TokenViewModel>;
 
     //#endregion
 

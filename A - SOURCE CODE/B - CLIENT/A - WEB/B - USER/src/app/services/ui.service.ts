@@ -32,5 +32,10 @@ export class UiService implements IUiService {
         appBlockUI.stop();
     }
 
+    // Find element.
+    public getElement(query: string): any {
+        return $(query);
+    }
+
     //#endregion
 }

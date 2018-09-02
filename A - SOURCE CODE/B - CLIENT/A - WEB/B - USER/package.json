@@ -42,10 +42,13 @@
   },
   "dependencies": {
     "@types/angular": "^1.6.50",
+    "@types/angular-file-upload": "^2.5.1",
     "@types/angular-local-storage": "^0.6.1",
     "@types/angular-toastr": "^1.6.33",
     "@types/angular-translate": "^2.16.0",
     "@types/angular-ui-bootstrap": "^0.13.47",
+    "@types/gapi": "0.0.36",
+    "@types/gapi.auth2": "0.0.47",
     "@types/lodash": "^4.14.116",
     "@types/tinymce": "^4.5.16",
     "@uirouter/angularjs": "^1.0.16",

@@ -9,8 +9,6 @@ module.exports = (ngModule) => {
     const {CategoryService} = require('./category.service');
     ngModule.service('$category', CategoryService);
 
-    require('./oauth.service')(ngModule);
-
     const {TopicService} = require('./topic.service');
     ngModule.service('$topic', TopicService);
 
@@ -19,4 +17,10 @@ module.exports = (ngModule) => {
 
     const {UserService} = require('./user.service');
     ngModule.service('$user', UserService);
+
+    const {FileService} = require('./file.service');
+    ngModule.service('$file', FileService);
+
+    const {AuthService} = require('./auth.service');
+    ngModule.service('$auth', AuthService);
 };

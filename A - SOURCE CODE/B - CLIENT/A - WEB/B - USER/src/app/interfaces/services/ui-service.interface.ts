@@ -12,5 +12,8 @@ export interface IUiService {
     * */
     unblockAppUI(): void;
 
+    // Find element.
+    getElement(query: string): any;
+
     //#endregion
 }

@@ -10,6 +10,7 @@ import {SearchResult} from "../../../models/search-result";
 import {Topic} from "../../../models/entities/topic";
 import {TopicResolver} from "./topic.resolver";
 
+/* @ngInject */
 export class TopicModule {
 
     //#region Constructor

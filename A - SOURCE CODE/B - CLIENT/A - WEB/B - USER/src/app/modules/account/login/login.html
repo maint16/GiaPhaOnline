@@ -90,6 +90,29 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-sm-9 col-sm-push-3">
+                        <div class="form-group">
+                            <button class="btn btn-block btn-facebook">
+                                <span class="fa fa-facebook"></span> {{'TITLE_CONTINUE_WITH_FACEBOOK' | translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-9 col-sm-push-3">
+                        <div class="form-group">
+                            <button class="btn btn-block btn-google"
+                                    type="button"
+                                    ng-disabled="!ngIsAbleToLoginGoogle()"
+                                    ng-click="ngOnGoogleLoginClicked()">
+                                <span class="fa fa-google"></span> {{'TITLE_CONTINUE_WITH_GOOGLE' | translate}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!--Forgot password & basic-register-->
                 <div class="row">
                     <div class="col-sm-9 col-sm-push-3">
