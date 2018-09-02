@@ -1,7 +1,7 @@
 export class ConfigLoginConstant {
-  public googleAppId: string = '806371952743-rno7ho38thn702uk77ghq8abj88hc9dp.apps.googleusercontent.com';
-  public facebookAppId : string = '262038564425058';
-  public facebook : string = 'facebook';
-  public google : string = 'google';
+  public static googleAppId: string = '806371952743-sh30hhtof9k7n93m6smsj33k8eh0ghtv.apps.googleusercontent.com';
+  public static facebookAppId : string = '262038564425058';
+  public static facebook : string = 'facebook';
+  public static google : string = 'google';
   //#endregion
 }

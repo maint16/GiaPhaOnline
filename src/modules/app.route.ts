@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {RouterModule, Routes} from "@angular/router";
+import {IsAuthorizedGuard} from '../guards/is-authorized-guard';
 
 //#region Properties
 
@@ -12,11 +13,12 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: '/dashboard'
+        redirectTo: '/login'
       },
       {
         path: 'dashboard',
         loadChildren: 'modules/dashboard/dashboard.module#DashboardModule',
+        canActivate : [IsAuthorizedGuard]
       },
       {
         path: 'login',

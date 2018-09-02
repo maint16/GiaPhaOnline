@@ -10,6 +10,8 @@ import {
 } from 'angular5-social-login';
 import {AppSettings} from '../../../constants/app-settings.constant';
 import {ConfigLoginConstant} from '../../../constants/config-login.constant';
+import {AccountService} from '../../../services/account.service';
+import {AuthenticationService} from '../../../services/authentication.service';
 @Component({
   selector: 'account-login',
   templateUrl: 'login.component.html',
@@ -35,8 +37,7 @@ export class LoginComponent {
   //#region Constructor
 
   public constructor(@Inject('IAuthenticationService') public authenticationService: IAuthenticationService,
-                     public router: Router, private socialAuthService: AuthService,
-                     public configLoginConstant : ConfigLoginConstant) {
+                     public router: Router, private socialAuthService: AuthService, private userService : AccountService) {
     this.model = new LoginViewModel();
 
   }
@@ -51,26 +52,27 @@ export class LoginComponent {
   public clickLogin($event): void {
 
     // Prevent default behaviour.
-    $event.preventDefault();
-
-    // Generate a forgery token and set to local storage.
-    let authorizationToken = new AuthorizationToken();
-    authorizationToken.code = '12345';
-    authorizationToken.expire = new Date().getTime() + 3600000;
-    authorizationToken.lifeTime = 3600;
-    this.authenticationService.setAuthorization(authorizationToken);
-
-    // Redirect to dashboard.
-    this.router.navigate(['/dashboard']);
+    // $event.preventDefault();
+    //
+    // // Generate a forgery token and set to local storage.
+    // let authorizationToken = new AuthorizationToken();
+    // authorizationToken.code = '12345';
+    // authorizationToken.expire = new Date().getTime() + 3600000;
+    // authorizationToken.lifeTime = 3600;
+    // this.authenticationService.setAuthorization(authorizationToken);
+    this.userService.basicLogin(this.model).subscribe((data: any)=>{
+      this.authenticationService.setAuthorization(data);
+      // Redirect to dashboard.
+      this.router.navigate(['/dashboard']);
+    });
   }
   public socialSignIn(socialPlatform : string) {
-    debugger;
     let socialPlatformProvider;
-    if(socialPlatform == this.configLoginConstant.facebook)
+    if(socialPlatform == ConfigLoginConstant.facebook)
     {
       socialPlatformProvider = FacebookLoginProvider.PROVIDER_ID;
     }
-    else if(socialPlatform == this.configLoginConstant.google)
+    else if(socialPlatform == ConfigLoginConstant.google)
     {
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
     }

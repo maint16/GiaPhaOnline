@@ -3,7 +3,7 @@ export class AuthorizationToken{
   //#region Properties
 
   // Code which is used for accessing to system.
-  public code: string;
+  public accessToken: string;
 
   // Life type of token.
   public lifeTime: number;

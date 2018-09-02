@@ -16,6 +16,7 @@ import {GuardModule} from '../guards/guard.module';
 import {AppConfigService} from '../services/app-config.service';
 import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, SocialLoginModule} from 'angular5-social-login';
 import {ConfigLoginConstant} from '../constants/config-login.constant';
+import {AccountService} from '../services/account.service';
 
 //#region Factory functions
 
@@ -31,11 +32,11 @@ export function getAuthServiceConfigs() {
             [
                {
                  id: FacebookLoginProvider.PROVIDER_ID,
-                 provider: new FacebookLoginProvider('262038564425058')
+                 provider: new FacebookLoginProvider(ConfigLoginConstant.facebookAppId)
                },
               {
                 id: GoogleLoginProvider.PROVIDER_ID,
-                provider: new GoogleLoginProvider('806371952743-rno7ho38thn702uk77ghq8abj88hc9dp.apps.googleusercontent.com')
+                provider: new GoogleLoginProvider(ConfigLoginConstant.googleAppId)
       },
     ]
 );
@@ -80,7 +81,8 @@ export function getAuthServiceConfigs() {
       provide: AuthServiceConfig,
       useFactory: getAuthServiceConfigs
     },
-    ConfigLoginConstant
+    ConfigLoginConstant,
+    AccountService
   ],
   bootstrap: [AppComponent]
 })
