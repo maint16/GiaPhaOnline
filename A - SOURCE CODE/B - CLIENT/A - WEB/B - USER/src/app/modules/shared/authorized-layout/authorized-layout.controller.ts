@@ -1,4 +1,4 @@
-import {IController, IScope} from "angular";
+import {IController, IScope, IWindowService} from "angular";
 import {IAuthorizedLayoutScope} from "./authorized-layout.scope";
 import {StateService} from "@uirouter/core";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
@@ -14,6 +14,7 @@ export class AuthorizedLayoutController implements IController {
     public constructor(public profile: User,
                        public $state: StateService, public localStorageService: ILocalStorageService,
                        public $scope: IAuthorizedLayoutScope,
+                       public $window: IWindowService,
                        public $rootScope: IScope) {
 
         // Properties binding

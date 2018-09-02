@@ -7,4 +7,8 @@ export class AppSetting {
     public clientIdGoogle: string = '';
 
     public clientScopeGoogle: string = '';
+
+    public clientIdFacebook: string = '';
+
+    public clientScopeFacebook: string = '';
 }

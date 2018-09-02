@@ -20,6 +20,9 @@ export class AppController implements IController {
 
     // Called when component is initialized.
     private _ngOnInit = (): void =>{
+
+        //region Load Google sdk
+
         this.$auth.loadGoogleApiLib()
             .then(() => {
                 console.log('Google client library has been loaded successfully.');
@@ -28,6 +31,20 @@ export class AppController implements IController {
             .then(() => {
                 console.log('Google auth api has been loaded.');
             });
+
+        //#endregion
+
+        //#region Load facebook sdk
+
+        this.$auth.loadFacebookSdk()
+            .then(() => {
+                console.log('Facebook sdk has been loaded successfully.');
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        //#endregion
     }
 
     //#endregion

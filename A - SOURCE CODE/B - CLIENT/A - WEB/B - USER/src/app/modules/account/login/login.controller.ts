@@ -1,4 +1,4 @@
-import {IController} from "angular";
+import {IController, IWindowService} from "angular";
 import {ILoginScope} from "./login.scope";
 import {LoginViewModel} from "../../../view-models/users/login.view-model";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
@@ -27,7 +27,7 @@ export class LoginController implements IController {
     * Initialize controller with injectors.
     * */
     public constructor(public $scope: ILoginScope,
-                       public $state: StateService, public localStorageService: ILocalStorageService,
+                       public $state: StateService, public localStorageService: ILocalStorageService, public $window: IWindowService,
                        public $ui: IUiService, public $auth: IAuthService,
                        public $user: IUserService){
 
@@ -39,7 +39,9 @@ export class LoginController implements IController {
         $scope.ngOnForgotPasswordClicked = this._ngOnForgotPasswordClicked;
         $scope.ngOnRegisterClicked = this._ngOnRegisterClicked;
         $scope.ngOnGoogleLoginClicked = this._ngOnGoogleLoginClicked;
+        $scope.ngOnFacebookLoginClicked = this._ngOnFacebookLoginClicked;
         $scope.ngIsAbleToLoginGoogle = this._ngIsAbleToLoginGoogle;
+        $scope.ngIsAbleToLoginFacebook = $auth.bIsFacebookLoginInitialized;
     }
 
     //#endregion
@@ -97,10 +99,27 @@ export class LoginController implements IController {
 
         // Add loading screen.
         this.$ui.blockAppUI();
-        // Mark form as unsubmitted.
+
+        // Display google login.
         this.$auth.displayGoogleLogin()
             .then((code: string) => {
                 console.log(code);
+            })
+            .finally(() => {
+                this.$ui.unblockAppUI();
+            });
+    };
+
+    // Called when facebook login is clicked.
+    private _ngOnFacebookLoginClicked = (): void => {
+
+        // Add loading screen.
+        this.$ui.blockAppUI();
+
+        // Display facebook login.
+        this.$auth.displayFacebookLogin()
+            .then((authResponse: fb.AuthResponse) => {
+                console.log(authResponse);
             })
             .finally(() => {
                 this.$ui.unblockAppUI();
