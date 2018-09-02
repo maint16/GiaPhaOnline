@@ -62,7 +62,7 @@ export class AuthenticationService implements IAuthenticationService {
       return false;
 
     // Authorization token code is not valid.
-    if (authorizationToken.code == null || authorizationToken.code.length < 1)
+    if (authorizationToken.accessToken == null || authorizationToken.accessToken.length < 1)
       return false;
 
     // // Authorization token has been expired.

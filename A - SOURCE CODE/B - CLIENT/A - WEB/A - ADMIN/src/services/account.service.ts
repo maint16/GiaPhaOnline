@@ -1,9 +1,11 @@
 import {IAccountService} from "../interfaces/services/account-service.interface";
 import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ProfileViewModel} from "../view-models/profile.view-model";
 import {Observable} from "rxjs/Observable";
 import 'rxjs/add/observable/of';
+import {LoginViewModel} from '../view-models/login.view-model';
+import {ConfigUrlService} from '../constants/config-url-service.constant';
 @Injectable()
 export class AccountService implements IAccountService {
 
@@ -32,6 +34,14 @@ export class AccountService implements IAccountService {
     profile.photoRelativeUrl = 'https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png';
 
     return Observable.of(profile);
+  }
+  public basicLogin(user: LoginViewModel){
+    var data = {
+      email : user.email,
+      password: user.password,
+      captchaCode : 'abc'
+    };
+    return this.httpClient.post(ConfigUrlService.urlAPI + '/api/user/basic-login', data);
   }
   //#endregion
 

@@ -24,8 +24,6 @@ export class IsAuthorizedGuard implements CanActivate {
   * Check whether route can be activated or not.
   * */
   public canActivate(): boolean {
-
-
     // Find identity stored in cache.
     let identity = this.authenticationService.getAuthorization();
 
