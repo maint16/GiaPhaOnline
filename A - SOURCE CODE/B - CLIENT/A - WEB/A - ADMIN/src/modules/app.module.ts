@@ -16,6 +16,7 @@ import {GuardModule} from '../guards/guard.module';
 import {AppConfigService} from '../services/app-config.service';
 import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, SocialLoginModule} from 'angular5-social-login';
 import {ConfigLoginConstant} from '../constants/config-login.constant';
+import {AccountService} from '../services/account.service';
 
 //#region Factory functions
 
@@ -80,7 +81,8 @@ export function getAuthServiceConfigs() {
       provide: AuthServiceConfig,
       useFactory: getAuthServiceConfigs
     },
-    ConfigLoginConstant
+    ConfigLoginConstant,
+    AccountService
   ],
   bootstrap: [AppComponent]
 })
