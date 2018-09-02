@@ -1,7 +1,6 @@
 import {StateProvider} from "@uirouter/angularjs";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {IPromise, module} from 'angular';
-import {ProfileController} from "./profile.controller";
 import {User} from "../../../models/entities/user";
 import {StateParams, StateService} from '@uirouter/angularjs';
 import {LoadUserViewModel} from "../../../view-models/users/load-user.view-model";
@@ -48,6 +47,9 @@ export class ProfileModule {
 
                             const {ProfileController} = require('./profile.controller.ts');
                             ngModule.controller('profileController', ProfileController);
+
+                            const {ChangePasswordController} = require('./change-password/change-password.controller.ts');
+                            ngModule.controller('changePasswordController', ChangePasswordController);
                             $ocLazyLoad.load({name: ngModule.name});
                             resolve(ngModule.controller);
                         })

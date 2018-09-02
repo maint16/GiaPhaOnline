@@ -65,7 +65,8 @@
                                 <input class="form-control" type="password" ng-value="'This is password field'"
                                        ng-disabled="true"/>
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary">
+                                    <button class="btn btn-primary"
+                                            ng-click="ngOnChangePasswordClicked()">
                                         <span class="fa fa-edit"></span>
                                     </button>
                                 </span>
@@ -198,6 +199,61 @@
                 <button class="btn btn-default"
                         type="button"
                         ng-click="ngOnProfileModalCancelClicked()">
+                    <span>{{'TITLE_CANCEL' | translate}}</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</script>
+
+<!--Change password modal-->
+<script id="change-password.html"
+        type="text/ng-template">
+    <form name="changePasswordForm"
+          class="box box-info"
+          novalidate
+          ng-submit="ngOnPasswordSubmitted($event)">
+        <div class="box-header">
+            <h3 class="box-title"><span class="fa fa-key"></span> {{'TITLE_CHANGE_PASSWORD' | translate}}</h3>
+        </div>
+        <div class="box-body">
+
+            <div class="form-group">
+                <label>{{'TITLE_ORIGINAL_PASSWORD' | translate}}</label>
+                <input name="originalPassword"
+                       class="form-control"
+                       ng-model="originalPassword"
+                       type="password"
+                       ng-required="true">
+            </div>
+
+            <div class="form-group">
+                <label>{{'TITLE_NEW_PASSWORD' | translate}}</label>
+                <input name="password"
+                       class="form-control"
+                       ng-model="password"
+                       type="password"
+                       ng-required="true">
+            </div>
+
+            <div class="form-group">
+                <label>{{'TITLE_CONFIRM_PASSWORD' | translate}}</label>
+                <input name="confirmPassword"
+                       class="form-control"
+                       type="password"
+                       ng-model="confirmPassword"
+                       ng-required="true">
+            </div>
+
+        </div>
+        <div class="box-footer">
+            <div class="text-center">
+                <button class="btn btn-primary"
+                        ng-disabled="changePasswordForm.$invalid">
+                    <span>{{'TITLE_OK' | translate}}</span>
+                </button>
+                <button class="btn btn-default"
+                        ng-click="ng">
                     <span>{{'TITLE_CANCEL' | translate}}</span>
                 </button>
             </div>

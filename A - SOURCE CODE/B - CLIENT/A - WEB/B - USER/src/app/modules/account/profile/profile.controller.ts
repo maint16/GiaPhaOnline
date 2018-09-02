@@ -7,6 +7,9 @@ import {FileItem, FileUploaderFactory} from 'angular-file-upload';
 import {IFileService} from "../../../interfaces/services/file-service.interface";
 import {IUiService} from "../../../interfaces/services/ui-service.interface";
 import {IToastrService} from "angular-toastr";
+import {TokenViewModel} from "../../../view-models/users/token.view-model";
+import {ILocalStorageService} from "angular-local-storage";
+import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
 
 export class ProfileController implements IController {
 
@@ -15,12 +18,16 @@ export class ProfileController implements IController {
     // Upload profile image modal.
     private _uploadProfileImageModal: IModalInstanceService = null;
 
+    // Change password modal.
+    private _changePasswordModal: IModalInstanceService = null;
+
     //#endregion
 
     //#region Constructor
 
     public constructor(public profile: User,
-                       public $uibModal: IModalService, public toastr: IToastrService, public $translate: angular.translate.ITranslateService,
+                       public $uibModal: IModalService, public toastr: IToastrService,
+                       public $translate: angular.translate.ITranslateService, public localStorageService: ILocalStorageService,
                        public $user: IUserService,
                        public $file: IFileService, public $ui: IUiService,
                        public $scope: IProfileScope, public FileUploader: FileUploaderFactory,
@@ -47,6 +54,7 @@ export class ProfileController implements IController {
         $scope.ngOnProfileImageCropped = this._ngOnProfileImageCropped;
         $scope.ngIsAbleToResetCroppedImage = this._ngIsAbleToResetCroppedImage;
         $scope.ngOnResetOriginalImageClicked = this._ngOnResetOriginalImageClicked;
+        $scope.ngOnChangePasswordClicked = this._ngOnChangePasswordClicked;
     }
 
     //#endregion
@@ -144,6 +152,33 @@ export class ProfileController implements IController {
             fileUploader.val(null);
 
         this.$scope.originalProfileImage = null;
+    };
+
+    // Called when change change password is clicked.
+    private _ngOnChangePasswordClicked = (): void => {
+
+        if (this._changePasswordModal)
+            this._changePasswordModal.dismiss();
+
+        let options: IModalSettings = {};
+        options.size = 'md';
+        options.templateUrl = 'change-password.html';
+        options.controller = 'changePasswordController';
+
+        this._changePasswordModal = this.$uibModal
+            .open(options);
+
+        this._changePasswordModal.result
+            .then((token: TokenViewModel) => {
+                // Update access token.
+                this.localStorageService.set<TokenViewModel>(LocalStorageKeyConstant.accessTokenKey, token);
+
+                // Display success message.
+                let message = this.$translate.instant('MSG_PAsSWORD_CHANGED_SUCCESSFULLY');
+                this.toastr.success(message);
+            })
+            .catch(() => {
+            })
     };
 
     //#endregion

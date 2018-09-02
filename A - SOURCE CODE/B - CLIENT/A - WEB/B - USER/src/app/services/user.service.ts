@@ -10,6 +10,7 @@ import {ForgotPasswordViewModel} from "../view-models/users/forgot-password.view
 import {BasicRegisterViewModel} from "../view-models/users/basic-register.view-model";
 import {UserRole} from "../enums/user-role.enum";
 import {UserStatus} from "../enums/user-status.enum";
+import {ChangePasswordViewModel} from "../view-models/users/change-password.view-model";
 
 /* @ngInject */
 export class UserService implements IUserService {
@@ -145,8 +146,24 @@ export class UserService implements IUserService {
 
                 return <string> data.photo;
             });
-    }
+    };
 
+    // Allow user to change his/her account password.
+    public changePassword(changePasswordModel: ChangePasswordViewModel): IPromise<TokenViewModel>{
+        let url = `${this.appSettingConstant.apiEndPoint}/api/user/change-password`;
+        return this.$http
+            .post(url, changePasswordModel)
+            .then((changePasswordResponse: IHttpResponse<TokenViewModel>) => {
+                if (!changePasswordResponse)
+                    throw 'Failed to change password';
+
+                let token = changePasswordResponse.data;
+                if (!token)
+                    throw 'Failed to change password';
+
+                return token;
+            })
+    }
 
     //#endregion
 

@@ -50,6 +50,9 @@ export interface IProfileScope extends IScope {
     // Called when reset original image is clicked.
     ngOnResetOriginalImageClicked(): void;
 
+    // Called when change password is clicked.
+    ngOnChangePasswordClicked(): void;
+
     //#endregion
 
 }
