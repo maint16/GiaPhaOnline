@@ -1,3 +1,4 @@
+/* @ngInject */
 export class UnauthorizedLayoutController {
 
     //#region Constructor

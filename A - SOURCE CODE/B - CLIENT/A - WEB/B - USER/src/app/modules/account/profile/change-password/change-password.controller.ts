@@ -1,11 +1,11 @@
 import {IAngularEvent, IController} from "angular";
 import {IChangePasswordScope} from "./change-password.scope";
-import {IModalInstanceService} from 'angular-ui-bootstrap';
 import {IUserService} from "../../../../interfaces/services/user-service.interface";
 import {IUiService} from "../../../../interfaces/services/ui-service.interface";
 import {ChangePasswordViewModel} from "../../../../view-models/users/change-password.view-model";
 import {TokenViewModel} from "../../../../view-models/users/token.view-model";
 
+/* @ngInject */
 export class ChangePasswordController implements IController {
 
     //#region Properties

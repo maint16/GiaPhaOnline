@@ -1,5 +1,6 @@
 import {ICompileService, IController, IQService} from "angular";
 
+/* @ngInject */
 export class AppFooterController implements IController {
 
     //#region Properties

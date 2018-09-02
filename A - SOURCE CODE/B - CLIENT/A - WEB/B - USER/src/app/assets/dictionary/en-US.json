@@ -33,6 +33,8 @@
   "TITLE_CHANGE_PASSWORD": "Change password",
   "TITLE_ORIGINAL_PASSWORD": "Original password",
   "TITLE_NEW_PASSWORD": "New password",
+  "TITLE_CONTINUE_WITH_FACEBOOK": "Continue with facebook",
+  "TITLE_CONTINUE_WITH_GOOGLE": "Continue with google",
 
   "MSG_FIELD_REQUIRED": "This field is required",
   "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",

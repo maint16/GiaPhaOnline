@@ -3,6 +3,7 @@ import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {module} from 'angular';
 import {MainController} from "./main.controller";
 
+/* @ngInject */
 export class MainModule {
 
     //#region Constructor

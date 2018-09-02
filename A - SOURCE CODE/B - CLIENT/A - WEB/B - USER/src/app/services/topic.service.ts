@@ -5,6 +5,7 @@ import {Topic} from "../models/entities/topic";
 import {IHttpResponse, IHttpService, IPromise} from "angular";
 import {AppSetting} from "../models/app-setting";
 
+/* @ngInject */
 export class TopicService implements ITopicService {
 
 

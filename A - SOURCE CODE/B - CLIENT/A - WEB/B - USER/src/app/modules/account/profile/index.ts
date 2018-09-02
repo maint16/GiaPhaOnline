@@ -8,6 +8,7 @@ import {Pagination} from "../../../models/pagination";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
 import {SearchResult} from "../../../models/search-result";
 
+/* @ngInject */
 export class ProfileModule {
 
     //#region Constructor

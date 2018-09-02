@@ -1,6 +1,7 @@
 import {IFileService} from "../interfaces/services/file-service.interface";
 import {IPromise, IQService} from "angular";
 
+/* @ngInject */
 export class FileService implements IFileService{
 
     //#region Constructor

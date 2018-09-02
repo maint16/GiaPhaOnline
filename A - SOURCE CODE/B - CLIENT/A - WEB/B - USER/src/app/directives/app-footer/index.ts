@@ -1,6 +1,7 @@
 import {ICompileService, IDirective, IQService} from "angular";
 import {AppFooterController} from "./app-footer.controller";
 
+/* @ngInject */
 export class AppFooterDirective implements IDirective {
 
     //#region Properties

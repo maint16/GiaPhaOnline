@@ -10,6 +10,7 @@ import {StateService} from '@uirouter/core';
 import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
+import {IAuthService} from "../../../interfaces/services/auth-service.interface";
 
 /* @ngInject */
 export class LoginController implements IController {
@@ -27,7 +28,7 @@ export class LoginController implements IController {
     * */
     public constructor(public $scope: ILoginScope,
                        public $state: StateService, public localStorageService: ILocalStorageService,
-                       public $ui: IUiService,
+                       public $ui: IUiService, public $auth: IAuthService,
                        public $user: IUserService){
 
         // Properties binding.
@@ -37,6 +38,8 @@ export class LoginController implements IController {
         $scope.ngOnLoginClicked = this._ngOnLoginClicked;
         $scope.ngOnForgotPasswordClicked = this._ngOnForgotPasswordClicked;
         $scope.ngOnRegisterClicked = this._ngOnRegisterClicked;
+        $scope.ngOnGoogleLoginClicked = this._ngOnGoogleLoginClicked;
+        $scope.ngIsAbleToLoginGoogle = this._ngIsAbleToLoginGoogle;
     }
 
     //#endregion
@@ -87,6 +90,34 @@ export class LoginController implements IController {
     * */
     private _ngOnRegisterClicked = (): void => {
         this.$state.go(UrlStateConstant.accountRegisterModuleName);
+    };
+
+    // Called when google login is clicked.
+    private _ngOnGoogleLoginClicked = (): void => {
+
+        // Add loading screen.
+        this.$ui.blockAppUI();
+        // Mark form as unsubmitted.
+        this.$auth.displayGoogleLogin()
+            .then((code: string) => {
+                console.log(code);
+            })
+            .finally(() => {
+                this.$ui.unblockAppUI();
+            });
+    };
+
+    // Check whether user can do google login or not.
+    private _ngIsAbleToLoginGoogle = (): boolean => {
+
+        // gapi hasn't been loaded.
+        if (!this.$auth.bIsGoogleClientAuthorizeInitialized())
+            return false;
+
+        if (!this.$auth.bIsGoogleClientInitialized())
+            return false;
+
+        return true;
     }
 
     //#endregion

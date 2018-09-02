@@ -2,6 +2,7 @@ import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {StateProvider} from "@uirouter/angularjs";
 import {module} from 'angular';
 
+/* @ngInject */
 export class ForgotPasswordModule {
 
     //#region Constructor

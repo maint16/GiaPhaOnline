@@ -10,6 +10,7 @@ import {Pagination} from "../../../models/pagination";
 import {SearchResult} from "../../../models/search-result";
 import {Topic} from "../../../models/entities/topic";
 
+/* @ngInject */
 export class AddEditTopicModule {
 
     //#region Constructor

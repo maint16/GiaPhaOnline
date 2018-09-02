@@ -6,6 +6,7 @@ import {User} from "../../../models/entities/user";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
 
+/* @ngInject */
 export class AuthorizedLayoutController implements IController {
 
     //#region Constructors

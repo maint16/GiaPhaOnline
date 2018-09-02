@@ -11,6 +11,7 @@ import {TokenViewModel} from "../../../view-models/users/token.view-model";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
 
+/* @ngInject */
 export class ProfileController implements IController {
 
     //#region Properties

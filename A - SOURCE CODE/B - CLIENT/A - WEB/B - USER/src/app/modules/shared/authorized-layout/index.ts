@@ -7,6 +7,7 @@ import {TokenViewModel} from "../../../view-models/users/token.view-model";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
 import {User} from "../../../models/entities/user";
 
+/* @ngInject */
 export class AuthorizedLayoutModule {
 
     //#region Constructor

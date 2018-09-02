@@ -35,6 +35,12 @@ export interface ILoginScope extends IScope {
     * */
     ngOnRegisterClicked(): void;
 
+    // Called when google login is clicked.
+    ngOnGoogleLoginClicked(): void;
+
+    // Check whether user can do Google login.
+    ngIsAbleToLoginGoogle(): void;
+
     //#endregion
 
 }
