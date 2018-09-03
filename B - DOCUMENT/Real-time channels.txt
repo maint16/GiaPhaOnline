@@ -1,7 +1,7 @@
 Channels
 
-- Server channels:
-- Admin channels:
+- Server channels: (api-channel)
+- Admin channels: (admin-channel)
 
 	-	name: private-user_registered
 	- 	description: Fires a message when an user account is successfully activate his/her account using activation code.
