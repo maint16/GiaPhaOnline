@@ -43,5 +43,7 @@
   "MSG_INTERNAL_SERVER_ERROR": "Internal server error",
   "MSG_UNKNOWN_ERROR": "Unknown error",
   "MSG_PROFILE_IMAGE_UPLOADED_SUCCESSFULLY": "Profile image has been uploaded successfully.",
-  "MSG_PAsSWORD_CHANGED_SUCCESSFULLY": "Password has been changed successfully."
+  "MSG_PAsSWORD_CHANGED_SUCCESSFULLY": "Password has been changed successfully.",
+  "MSG_ERROR_HAPPENED_WHILE_SIGN_IN_GOOGLE": "Something wrong with Google sign-in",
+  "MSG_ERROR_HAPPENED_WHILE_SIGN_IN_FACEBOOK": "Something wrong with Facebook sign-in"
 }

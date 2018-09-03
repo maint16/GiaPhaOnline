@@ -1,4 +1,4 @@
-import {IController} from "angular";
+import {IController, IWindowService} from "angular";
 import {ILoginScope} from "./login.scope";
 import {LoginViewModel} from "../../../view-models/users/login.view-model";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
@@ -11,6 +11,7 @@ import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
 import {IAuthService} from "../../../interfaces/services/auth-service.interface";
+import {IToastrService} from "angular-toastr";
 
 /* @ngInject */
 export class LoginController implements IController {
@@ -27,7 +28,8 @@ export class LoginController implements IController {
     * Initialize controller with injectors.
     * */
     public constructor(public $scope: ILoginScope,
-                       public $state: StateService, public localStorageService: ILocalStorageService,
+                       public $state: StateService, public localStorageService: ILocalStorageService, public $window: IWindowService,
+                       public $translate: angular.translate.ITranslateService, public toastr: IToastrService,
                        public $ui: IUiService, public $auth: IAuthService,
                        public $user: IUserService){
 
@@ -39,7 +41,9 @@ export class LoginController implements IController {
         $scope.ngOnForgotPasswordClicked = this._ngOnForgotPasswordClicked;
         $scope.ngOnRegisterClicked = this._ngOnRegisterClicked;
         $scope.ngOnGoogleLoginClicked = this._ngOnGoogleLoginClicked;
+        $scope.ngOnFacebookLoginClicked = this._ngOnFacebookLoginClicked;
         $scope.ngIsAbleToLoginGoogle = this._ngIsAbleToLoginGoogle;
+        $scope.ngIsAbleToLoginFacebook = $auth.bIsFacebookLoginInitialized;
     }
 
     //#endregion
@@ -97,12 +101,61 @@ export class LoginController implements IController {
 
         // Add loading screen.
         this.$ui.blockAppUI();
-        // Mark form as unsubmitted.
+
+        // Display google login.
         this.$auth.displayGoogleLogin()
             .then((code: string) => {
-                console.log(code);
+                // Exchange google code with system access token.
+                return this.$user
+                    .loginGoogle(code);
             })
-            .finally(() => {
+            .then((token: TokenViewModel) => {
+                // Update local storage.
+                this.localStorageService.set<TokenViewModel>(LocalStorageKeyConstant.accessTokenKey, token);
+
+                // Redirect user to dashboard.
+                this.$state.go(UrlStateConstant.dashboardModuleName);
+
+                this.$ui.unblockAppUI();
+            })
+            .catch((error) => {
+                console.log(error);
+                // Get translated message.
+                let message = this.$translate.instant('MSG_ERROR_HAPPENED_WHILE_SIGN_IN_GOOGLE');
+                this.toastr.error(message);
+                this.$ui.unblockAppUI();
+            });
+    };
+
+    // Called when facebook login is clicked.
+    private _ngOnFacebookLoginClicked = (): void => {
+
+        // Add loading screen.
+        this.$ui.blockAppUI();
+
+        // Display facebook login.
+        this.$auth.displayFacebookLogin()
+            .then((authResponse: fb.AuthResponse) => {
+                return this.$user
+                    .loginFacebook(authResponse.accessToken);
+            })
+            .then((token: TokenViewModel) => {
+                // Update local storage.
+                this.localStorageService.set<TokenViewModel>(LocalStorageKeyConstant.accessTokenKey, token);
+
+                // Redirect user to dashboard.
+                this.$state.go(UrlStateConstant.dashboardModuleName);
+
+                this.$ui.unblockAppUI();
+            })
+            .catch((error) => {
+
+                // Display error message.
+                console.log(error);
+
+                // Get translated message.
+                let message = this.$translate.instant('MSG_ERROR_HAPPENED_WHILE_SIGN_IN_FACEBOOK');
+                this.toastr.error(message);
                 this.$ui.unblockAppUI();
             });
     };

@@ -1,7 +1,10 @@
 import {IAuthService} from "../interfaces/services/auth-service.interface";
 import {AppSetting} from "../models/app-setting";
-import {IPromise, IQService} from "angular";
+import {IPromise, IQService, IWindowService} from "angular";
 import ClientConfig = gapi.auth2.ClientConfig;
+
+declare const FB: any;
+declare const $: JQueryStatic;
 
 /* @ngInject */
 export class AuthService implements IAuthService {
@@ -69,6 +72,49 @@ export class AuthService implements IAuthService {
         })
     }
 
+    // Load facebook sdk.
+    public loadFacebookSdk(): IPromise<void> {
+        return this.$q((resolve, reject) => {
+
+            if (this.bIsFacebookLoginInitialized()) {
+                resolve();
+                return;
+            }
+
+            $.ajaxSetup({cache: true});
+            $.getScript('https://connect.facebook.net/en_US/sdk.js',
+                () => {
+                    FB.init({
+                        appId: this.appSettingConstant.clientIdFacebook,
+                        version: 'v2.12' // or v2.1, v2.2, v2.3, ...
+                    });
+                    resolve();
+                })
+                .fail(() => {
+                    reject();
+                });
+        });
+    };
+
+    // Display google login.
+    public displayFacebookLogin(): IPromise<fb.AuthResponse> {
+        // Add facebook sdk, in case of its unavailability.
+        return this.loadFacebookSdk()
+            .then(() => {
+                return this.$q<fb.AuthResponse>((resolve, reject) => {
+                    FB.login((response => {
+                        if (response.status === 'connected') {
+                            resolve(response.authResponse);
+                            return;
+                        }
+
+                        reject(response.status);
+                    }), {scope: this.appSettingConstant.clientScopeFacebook})
+                });
+
+            });
+    }
+
     // Display google login.
     public displayGoogleLogin(): IPromise<string> {
         // Load Google API.
@@ -94,18 +140,38 @@ export class AuthService implements IAuthService {
 
     // Check whether google client has been initialized or not.
     public bIsGoogleClientAuthorizeInitialized(): boolean {
-        if (!gapi)
-            return false;
+        try {
+            if (!gapi)
+                return false;
 
-        return true;
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     // Check whether google oauth2 has been initialized.
     public bIsGoogleClientInitialized(): boolean {
-        if (!gapi.auth2)
-            return false;
+        try {
+            if (!gapi.auth2)
+                return false;
 
-        return true;
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    // Check whether facebook login has been initialized or not.
+    public bIsFacebookLoginInitialized(): boolean{
+        try {
+            if (!FB)
+                return false;
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     //#endregion

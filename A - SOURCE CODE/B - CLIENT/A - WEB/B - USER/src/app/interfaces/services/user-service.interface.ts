@@ -37,7 +37,7 @@ export interface IUserService {
     * If id is specified, user whose id match to this one will be fetched.
     * If id is not specified, requester profile is fetched.
     * */
-    loadUserProfile(id? : number): IPromise<User>;
+    loadUserProfile(id?: number): IPromise<User>;
 
     // Load available statuses for user.
     loadUserAvailableStatuses(): Array<UserStatus>;
@@ -48,6 +48,12 @@ export interface IUserService {
 
     // Allow user to change his/her account password.
     changePassword(changePasswordModel: ChangePasswordViewModel): IPromise<TokenViewModel>;
+
+    // Exchange google code with system access token.
+    loginGoogle(code: string): IPromise<TokenViewModel>;
+
+    // Exchange facebook access token with system access token.
+    loginFacebook(fbAccessToken: string): IPromise<TokenViewModel>;
 
     //#endregion
 

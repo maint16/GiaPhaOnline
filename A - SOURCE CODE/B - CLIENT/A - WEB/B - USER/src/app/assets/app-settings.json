@@ -3,5 +3,13 @@
   "captchaPublicKey": "6LfgV2gUAAAAACS_PGjH2iHJJwPXQGvEzP4FB83E",
 
   "clientIdGoogle": "772965944359-iqnumj8hq21vee3k2h2hqr2del9eo5ks.apps.googleusercontent.com",
-  "clientScopeGoogle": "profile"
+  "clientScopeGoogle": "profile",
+
+  "clientIdFacebook": "266849570452043",
+  "clientScopeFacebook": "public_profile,email",
+
+
+  "apiKeyPusher": "4b7872f37a986b55f50b",
+  "clusterPusher": "ap1"
+
 }

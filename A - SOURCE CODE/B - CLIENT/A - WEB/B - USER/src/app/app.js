@@ -53,7 +53,6 @@ $.ajax({
         require('angular-ui-bootstrap');
         require('angular-sanitize');
         require('angular-confirm1');
-        require('ng-multi-selector');
         require('angular-messages');
         require('angular-ui-tinymce');
         require('angular-local-storage');
@@ -64,7 +63,7 @@ $.ajax({
 
         // Module declaration.
         let ngModule = angular.module('ngApp', ['ui.router', 'blockUI', 'toastr',
-            'ui.bootstrap', 'ngMultiSelector', 'ngMessages', 'oc.lazyLoad', 'vcRecaptcha',
+            'ui.bootstrap', 'ngMessages', 'oc.lazyLoad', 'vcRecaptcha',
             'pascalprecht.translate', 'angularMoment', 'ngSanitize', 'ui.tinymce',
             'cp.ngConfirm', 'LocalStorageModule']);
 
