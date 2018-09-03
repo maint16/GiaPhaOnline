@@ -17,6 +17,7 @@ import {AppConfigService} from '../services/app-config.service';
 import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, SocialLoginModule} from 'angular5-social-login';
 import {ConfigLoginConstant} from '../constants/config-login.constant';
 import {AccountService} from '../services/account.service';
+import {TableModule} from 'primeng/table';
 
 //#region Factory functions
 
@@ -66,7 +67,8 @@ export function getAuthServiceConfigs() {
     ResolveModule.forRoot(),
     SharedModule,
     AppRouteModule,
-    SocialLoginModule
+    SocialLoginModule,
+    TableModule
   ],
   providers: [
     AppSettings,
