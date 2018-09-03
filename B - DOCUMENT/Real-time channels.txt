@@ -1,0 +1,54 @@
+Channels
+
+- Server channels:
+- Admin channels:
+
+	-	name: private-user_registered
+	- 	description: Fires a message when an user account is successfully activate his/her account using activation code.
+	- 	data:
+		- (User object)
+		
+	- 	name: private-user-changed-password
+	- 	description: Fires a message when an user changes his/her password.
+	-	data:
+		- (User object)
+	
+	- 	name: private-added_category_group
+	-	description: Fires a message when an admin creates a new category group.
+	-	data:
+		- (Category group object)
+	
+	-	name: private-added_category
+	-	description: Fires a message when an admin creates a new category.
+	-	data:
+		- (Category object)
+	
+	- 	name: private-added-topic.
+	-	description: Fires a message when user is added a topic to a specific category & category group.
+	-	data:
+		- (Topic object)
+		
+	- 	name: private-added-topic-reply
+	- 	description: Fires a message when user is added a topic reply to a specific topic.
+	-	data:
+		- (Topic reply)
+		
+	- 	name: private-report_topic
+	-	description: Fires a message when user reports a topic.
+	-	data:
+		- (Topic object)
+
+- User channels:
+	
+	-	name: private-added_topic_reply
+	-	description: Fires a message when an user add a topic reply to a topic.
+	- 	data:
+		- Topic
+		
+		
+
+** NOTE:
+	- Admin | Server channels are channels for broadcasting messages on server-side & admin system.
+	- User channels are channels for broadcasting messages on user web.
+		
+	
