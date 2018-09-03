@@ -1,5 +1,6 @@
 <div class="container-fluid">
-  <p-table>
+  <div>
+  <p-table [value]="users">
     <ng-template pTemplate="header">
       <tr>
         <th>Vin</th>
@@ -8,14 +9,14 @@
         <th>Color</th>
       </tr>
     </ng-template>
-    <!--<ng-template pTemplate="body" let-car>-->
-      <!--<tr>-->
-        <!--<td>{{car.vin}}</td>-->
-        <!--<td>{{car.year}}</td>-->
-        <!--<td>{{car.brand}}</td>-->
-        <!--<td>{{car.color}}</td>-->
-      <!--</tr>-->
-    <!--</ng-template>-->
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>{{user.email}}</td>
+        <td>{{user.nickname}}</td>
+        <td>{{user.status}}</td>
+        <td>{{user.photo}}</td>
+      </tr>
+    </ng-template>
   </p-table>
-
+  </div>
 </div>
