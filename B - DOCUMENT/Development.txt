@@ -1,0 +1,3 @@
+-- Google captcha:
+site_key = 6LfgV2gUAAAAACS_PGjH2iHJJwPXQGvEzP4FB83E
+secret_key = 6LfgV2gUAAAAAFKMnagrqpmDkue46aHHgiD4IzUW
