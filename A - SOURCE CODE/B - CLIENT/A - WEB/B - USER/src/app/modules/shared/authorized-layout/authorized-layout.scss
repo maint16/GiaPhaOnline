@@ -1,0 +1,25 @@
+.layout-header {
+  height: 160px;
+  background-color: #26BCB0;
+  background-image: url(https://vgy.me/Va7blo.png);
+  background-repeat: no-repeat;
+  background-position: top center;
+  width: 100%;
+
+  .title-panel{
+    margin-top: 30px;
+  }
+
+  h2.site-name {
+    text-align: center;
+    font-size: 50px;
+    color: white;
+  }
+
+  p.site-description {
+    text-align: center;
+    font-size: 14px;
+    color: white;
+  }
+}
+

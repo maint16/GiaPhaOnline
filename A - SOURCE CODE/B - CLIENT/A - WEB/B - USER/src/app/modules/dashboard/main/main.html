@@ -1,0 +1,77 @@
+<div class="row"
+     ng-init="ngOnInit()">
+
+    <!--Categories group-->
+    <div class="col-lg-12">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <span class="fa fa-home"></span> <a href>Home</a>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div ng-repeat="categoryGroup in loadCategoryGroupsResult.records">
+            <div class="panel panel-default panel-category-group">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-8 col-xs-12">
+                            <span class="category-name">{{categoryGroup.name}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="topic"
+                         ng-repeat="category in mCategoryGroupIdToCategoriesMap[categoryGroup.id]">
+                        <div class="row">
+                            <div class="col-sm-8 col-xs-12">
+                                <div class="form-group">
+                                    <div class="topic-group-main-info">
+                                        <img class="img img-topic-group" ng-src="{{category.photo}}"/>
+                                        <div class="master-info"
+                                             ng-click="ngOnCategoryClicked(category.id)">
+                                            <a class="topic-name"
+                                               href>{{category.name}}</a><br>
+                                            <div class="topic-description">{{category.description}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-sm-2 col-xs-12 topic-posts">
+                                <div class="form-group">
+                                    <b class="fa fa-folder-open-o"></b> <span>&raquo;</span> {{topic.totalPost}}
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-2 col-xs-12 topic-user-description">
+                                <div>
+                                    <div class="text-ellipsis">
+                                        <b class="fa fa-edit"></b>&nbsp;
+                                        <i>Last post by</i> <a href="javascript:void(0);" data-toggle="tooltip"
+                                                               title="{{topic.latestPost.username}}">{{topic.latestPost.username}}</a>
+                                    </div>
+                                    <div class="text-ellipsis">
+                                        <b class="fa fa-clock-o"></b>&nbsp;
+                                        <i>Created at</i> {{topic.latestPost.time}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <ol class="breadcrumb">
+                    <li class="active">
+                        <span class="fa fa-home"></span> <a href>Home</a>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

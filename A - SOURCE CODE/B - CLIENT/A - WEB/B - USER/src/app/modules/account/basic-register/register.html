@@ -1,0 +1,141 @@
+<form class="register-account-box"
+      novalidate
+      name="basicRegisterForm"
+      ng-submit="ngOnBasicRegisterFormSubmitted($event)">
+    <div class="col-lg-6 col-md-8">
+        <div class="box box-default">
+            <div class="box-body">
+
+                <div class="form-group">
+                    <img class="img img-responsive"
+                         ng-src="{{'https://vgy.me/vpj0on.png'}}"/>
+
+                    <div class="text-center">
+                        <h1 class="text-center">
+                            <span class="fa fa-envelope"></span> iConfess
+                        </h1>
+                        <a href>Say everything you want.</a>
+                    </div>
+
+                </div>
+
+                <!--Email-->
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label>{{'TITLE_EMAIL' | translate}}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-envelope"></span>
+                                    </span>
+                                <input name="email"
+                                       class="form-control"
+                                       ng-model="basicRegisterModel.email"
+                                       ng-required="true"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Email-->
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label>{{'TITLE_NICKNAME' | translate}}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-user"></span>
+                                    </span>
+                                <input name="nickname"
+                                       class="form-control"
+                                       ng-model="basicRegisterModel.nickname"
+                                       ng-required="true"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Password-->
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label>{{'TITLE_PASSWORD' | translate}}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="fa fa-key"></span>
+                                </span>
+                                <input name="password"
+                                       class="form-control"
+                                       type="password"
+                                       ng-model="basicRegisterModel.password"
+                                       ng-required="true"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Password confirmation-->
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <label>{{'TITLE_CONFIRM_PASSWORD' | translate}}</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="fa fa-key"></span>
+                                </span>
+                                <input name="confirmPassword"
+                                       class="form-control"
+                                       type="password"
+                                       ng-model="basicRegisterModel.confirmPassword"
+                                       ng-required="true"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Captcha-->
+                <div class="col-sm-9 col-sm-push-3">
+                    <div class="form-group">
+                        <div vc-recaptcha
+                             on-create="ngOnWidgetInitialized(widgetId)"
+                             ng-model="basicRegisterModel.captchaCode"></div>
+                    </div>
+                </div>
+
+                <!--Forgot password-->
+                <div class="col-sm-9 col-sm-push-3">
+                    <!--Login-->
+                    <div class="form-group">
+                        <a href
+                           ng-click="ngOnLoginClicked()">
+                            <span class="fa fa-sign-in"></span> {{'TITLE_LOGIN' | translate}}
+                        </a>
+                    </div>
+
+                    <!--Forgot password-->
+                    <div class="form-group">
+                        <a href
+                           ng-click="ngOnForgotPasswordClicked()">{{'TITLE_FORGOT_PASSWORD' | translate}}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="text-center">
+                    <button class="btn btn-primary"
+                            type="submit"
+                            ng-disabled="basicRegisterForm.$invalid">
+                        <span class="fa fa-sign-in"></span> {{'TITLE_REGISTER' | translate}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

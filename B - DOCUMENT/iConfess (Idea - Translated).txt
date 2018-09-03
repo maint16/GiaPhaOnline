@@ -1,0 +1,46 @@
+iConfess (Idea)
+
++) Origin: 
+	- Nowaday, there are so many websites on the Internet. There are more and more websites day by day especially confession websites. Their contents are very diversed. But they have some disadvantages such as:
+		- Contents are chaostic, uncontrollable.
+		- Contents can only be posted to website with administrators permission (some websites)
+		- Users cannot follow their favorite categories, such as: School, Office, Love, Friendship, ....
+	
+	It is showed that people are surfing Internet to find interesting things to read and to view everyday. Their favorite contents are mostly confessions, short news, ...
+	
++) Ideas:
+	- Create a website where people are free to talk, hide their identity and say whatever they want.
+	- Share posts, comments.
+	- Follow their favorite confession categories, ...
+	- Posts are divided into many categories.
+
++) Future:
+	- Create mobile applications for users to help them follow confessions anytime, anyplace.
+	- Embed advertisments on website & apps.
+	
+*) Funtionalities:
+	*) Ordinary users:
+		- Read posts, comments without registering account.
+		- Register an account to:
+			- Create a new confession posts.
+			- Edit their confession posts.
+			- Hide identity (post | comments will be shown with title: Unknown (instead of <user name>))
+			- Upload a comment about a post on website.
+			- Follow a category, follow a post.
+			- View personal profile.
+			- Change account password.
+			- Rate a post.
+			- Receive notification through email & notification center about a new post, new comment.
+			- Filter post information.
+			- Report an invalid post | comment to administrators.
+	
+	*) Administrators:
+		- Activate / Deactivate an account.
+		- View account informations: email, nickname, ...
+		- Create/Edit/Delete a new confession category.
+		- Change account information.
+		- Filter account/category/post/post report/comment/comment report.
+		- Receive notification when an account has been created.
+		- Receive notification when a post/comment is reported.
+		- Delete a post when there are at least 10 reports.
+		- View post , account statistic, ...

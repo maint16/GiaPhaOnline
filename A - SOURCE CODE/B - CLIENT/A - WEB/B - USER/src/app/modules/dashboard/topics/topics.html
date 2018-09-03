@@ -1,0 +1,132 @@
+<div ng-init="ngOnInit()">
+    <div>
+        <ol class="breadcrumb">
+            <li><a href>Home</a></li>
+            <li class="active"><a href>Category 01</a></li>
+        </ol>
+    </div>
+
+    <!--Forum description-->
+    <div>
+        <h1 class="topics-title">
+            <a href>
+                Your first
+                forum
+            </a>
+        </h1>
+    </div>
+
+    <!--Add topic & pagination-->
+    <div class="row">
+        <div class="col-xs-4">
+            <button class="btn btn-primary btn-add-topic"
+                    ng-click="ngOnAddTopicClicked()">
+                <span class="fa fa-plus"></span>
+                <span>New topic</span>
+            </button>
+        </div>
+        <div class="col-xs-8">
+            <div class="text-right">
+                <ul uib-pagination
+                    class="pagination-sm"
+                    total-items="loadTopicsResult.total"
+                    ng-model="loadTopicsCondition.pagination.page"
+                    ng-change="ngOnTopicsPageChanged()"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!--Topics list-->
+    <div class="row">
+        <div class="col-lg-12">
+            <div ng-repeat="topic in loadTopicsResult.records"
+                 class="topic-container">
+                <div class="box box-default">
+                    <div class="box-header">
+                        <div class="box-tools pull-right">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="fa fa-wrench"></i></button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li ng-click="ngOnEditTopicClicked(topic.id)">
+                                        <a href>{{'TITLE_EDIT_TOPIC' | translate}}</a>
+                                    </li>
+                                    <li><a href="#">Something else here</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-10 col-sm-8 topic-main-info">
+                            <div class="topic-image">
+                                <img src="https://via.placeholder.com/64x64"/>
+                            </div>
+                            <div class="topic-title"
+                                 ng-click="ngOnTopicTitleClicked(topic.id)">
+                                <a href class="main-title">{{topic.title}}</a>
+                                <div class="topic-creator">
+                                    &raquo;
+                                    <a href ng-click="ngOnProfileClicked(profile.id)">
+                                    <small>{{mIdToUser[topic.ownerId].nickname}}</small>
+                                </a>
+                                </div>
+                                <div>
+                                    &raquo; <a href>
+                                    <small>2018-01-01</small>
+                                </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-1 col-sm-2 col-xs-6 topic-views">
+                            <div>
+                                <span class="views-number"> 1216 </span>
+                                <div>
+                                    <small>Replies</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-2 col-xs-6 topic-views">
+                            <div>
+                                <span class="views-number"> 368 </span>
+                                <div>
+                                    <small>Followers</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!--Add topic & pagination-->
+    <div class="row">
+        <div class="col-xs-4">
+            <button class="btn btn-primary btn-add-topic"
+                    ng-click="ngOnAddTopicClicked()">
+                <span class="fa fa-plus"></span>
+                <span>New topic</span>
+            </button>
+        </div>
+        <div class="col-xs-8">
+            <div class="text-right">
+                <ul uib-pagination
+                    class="pagination-sm"
+                    total-items="loadTopicsResult.total"
+                    ng-model="loadTopicsCondition.pagination.page"
+                    ng-change="ngOnTopicsPageChanged()"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <ol class="breadcrumb">
+            <li><a href>Home</a></li>
+            <li class="active"><a href>Category 01</a></li>
+        </ol>
+    </div>
+</div>

@@ -1,0 +1,224 @@
+<div ng-init="ngOnInit()">
+    <div class="row">
+        <div class="col-lg-12">
+
+            <!--Breadcrumb-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <ol class="breadcrumb">
+                        <li><a href>{{'TITLE_HOME' | translate}}</a></li>
+                        <li class="active"><a href>Category 01</a></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!--Topic pagination-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <nav aria-label="Page navigation" class="text-right">
+                        <ul uib-pagination
+                            boundary-links="true"
+                            total-items="loadTopicRepliesResult.total"
+                            ng-model="loadTopicRepliesCondition.pagination.page"
+                            ng-change="ngOnRepliesPageChanged()"></ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!--Posts-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <div class="box box-widget post">
+                            <div class="box-body">
+                                <div class="col-md-2 col-sm-3 col-xs-12">
+                                    <div class="form-group text-center">
+                                        <img class="img img-responsive"
+                                             ng-src="{{mIdToUserMap[topic.ownerId].photo}}"/>
+                                    </div>
+
+                                    <div>
+                                        <a href ng-click="ngOnProfileClicked(topic.ownerId)">
+                                            <b>{{mIdToUserMap[topic.ownerId].nickname}}</b>
+                                        </a>
+                                    </div>
+
+                                    <!--User role in the system-->
+                                    <div class="user-role">
+                                        <b>{{mIdToUserMap[topic.ownerId].role | toUserRoleTitle | translate}}</b>
+                                    </div>
+
+                                    <!--Joined time-->
+                                    <div class="user-joined-date">
+                                        <b>{{'TITLE_JOINED_TIME' | translate}} :</b>
+                                        <span>&nbsp;</span>
+                                        <span>{{mIdToUserMap[topic.ownerId].joinedTime}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <div class="post-title">
+                                        <table class="table table-condensed">
+                                            <tbody>
+                                            <tr>
+                                                <th class="icon-container">
+                                                    <span class="fa fa-file"></span>
+                                                </th>
+                                                <td>
+                                                    <b><a href="javascript:void(0)">{{topic.title}}</a></b>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="icon-container">
+                                                    <span class="fa fa-clock-o"></span>
+                                                </th>
+                                                <td>
+                                                    <span class="time">{{topic.createdTime}}</span>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="post-content">
+                                        <ng-bind-html ng-bind-html="topic.body"></ng-bind-html>
+                                    </div>
+                                    <div class="post-signature">
+                                        <ng-bind-html ng-bind-html="mIdToUserMap[topic.ownerId].signature"></ng-bind-html>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Replies-->
+            <div ng-repeat="reply in loadTopicRepliesResult.records">
+                <div class="form-group">
+                    <div class="box box-widget post">
+                        <div class="box-body">
+                            <div class="col-md-2 col-sm-3 col-xs-12">
+                                <div class="form-group text-center">
+                                    <img class="img img-thumbnail img-responsive"
+                                         ng-src="{{mIdToUserMap[reply.ownerId].photo}}"/>
+                                </div>
+                                <div>
+                                    <a href ng-click="ngOnProfileClicked(reply.ownerId)">
+                                        <b>{{mIdToUserMap[reply.ownerId].nickname}}</b>
+                                    </a>
+                                </div>
+
+                                <!--User role in the system-->
+                                <div class="user-role">
+                                    {{mIdToUserMap[reply.ownerId].role | toUserRoleTitle | translate}}
+                                </div>
+
+                                <!--Joined time-->
+                                <div class="user-joined-date">
+                                    <b>{{'TITLE_JOINED_TIME' | translate}}:</b>
+                                    <span>&nbsp;</span>
+                                    <span>{{mIdToUserMap[topic.ownerId].joinedTime}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-10 col-sm-9 col-xs-12">
+                                <div class="post-title">
+                                    <table class="table table-condensed">
+                                        <tbody>
+                                        <tr>
+                                            <th class="icon-container">
+                                                <span class="fa fa-reply"></span>
+                                            </th>
+                                            <td>
+                                                <b><a href="javascript:void(0)">Re: {{topic.title}}</a></b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="icon-container">
+                                                <span class="fa fa-clock-o"></span>
+                                            </th>
+                                            <td>
+                                                <span class="time">{{reply.createdTime}}</span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="post-content">
+                                    <ng-bind-html ng-bind-html="reply.content"></ng-bind-html>
+                                </div>
+                                <div class="post-signature">
+                                    <ng-bind-html ng-bind-html="mIdToUserMap[topic.ownerId].signature"></ng-bind-html>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Breadcrumb-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <ol class="breadcrumb">
+                        <li><a href>{{'TITLE_HOME' | translate}}</a></li>
+                        <li class="active"><a href>Category 01</a></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!--Bottom pagination-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <nav aria-label="Page navigation" class="text-right">
+                        <ul uib-pagination
+                            boundary-links="true"
+                            total-items="loadTopicRepliesResult.total"
+                            ng-model="loadTopicRepliesCondition.pagination.page"
+                            ng-change="ngOnRepliesPageChanged()"></ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!--Quick reply-->
+            <div class="box box-default">
+                <div class="box-header">
+                    <h3 class="box-title">{{'TITLE_QUICK_REPLY' | translate}}</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button"
+                                class="btn btn-box-tool"
+                                ng-click="ngOnEditorToggleClicked()">
+                            <i class="fa"
+                               ng-class="{'fa-minus': !bIsEditorCollapsed, 'fa-plus': bIsEditorCollapsed}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body"
+                     ng-hide="bIsEditorCollapsed">
+                    <div ng-class="{'col-sm-6': bIsEditorInPreviewMode, 'col-sm-12': !bIsEditorInPreviewMode}">
+                        <textarea ui-tinymce
+                                  ng-model="addQuickReply"></textarea>
+                    </div>
+
+                    <div ng-class="{'col-sm-6': bIsEditorInPreviewMode, 'hidden': !bIsEditorInPreviewMode}">
+                        <ng-bind-html ng-bind-html="addQuickReply"></ng-bind-html>
+                    </div>
+                </div>
+                <div class="box-footer"
+                     ng-hide="bIsEditorCollapsed">
+                    <div class="text-center">
+                        <!--Preview toggle button-->
+                        <button class="btn"
+                                ng-class="{'btn-info': !bIsEditorInPreviewMode, 'btn-warning': bIsEditorInPreviewMode}"
+                                ng-click="ngOnToggleEditorPreviewMode()">
+                            <span class="fa fa-eye"></span> {{'TITLE_PREVIEW' | translate}}
+                        </button>
+
+                        <!--Reply button-->
+                        <button class="btn btn-primary"
+                                ng-click="ngOnAddReplyClicked()">
+                            {{'TITLE_REPLY' | translate}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+Ý tưởng JustSayIt (Cứ nói đi)
+
++) Nguồn gốc ý tưởng: Hiện tại trên facebook xuất hiện các trang confession, tâm sự, ... Nội dung rất đa dạng và phong phú. Tuy vậy chúng còn tồn tại một số nhược điểm sau:
+	- Chủ đề lộn xộn, linh tinh, không có sự kiểm soát
+	- Phải có sự kiểm duyệt của admin mà không được tự ý đăng bài.
+	- Người dùng khó theo dõi những chủ đề mình yêu thích.
+	- Cũng có sự xuất hiện của vnexpress, voz, ... nhưng việc theo dõi bài viết khó. Mỗi bình luận lại bị kiểm duyệt bởi admin.
+	- Hiện nay trong giờ giải lao ở các công sở, trường học, ... ngoài việc chơi game, người dùng các thiết bị công nghệ rất hay lên các trang tin tức, trang chém gió để đọc tin tức hoặc theo dõi các chuyện phiếm.
+	
++) Ý tưởng: 
+	- Xây dựng một trang web tâm sự nơi mà người sử dụng có thể thoải mái nói lên tâm trạng của mình mà không để người thân của mình biết.
+	- Chia ra các chủ đề để tiện theo dõi.
+	- Có thể đăng ký và theo dõi những chủ đề mình quan tâm.
+	
++) Phát triển lâu dài:
+	- Hình thành dịch vụ (web service), phát triển trên nền tảng web và các app trên thiết bị di động.
+	- Khi có một lượng người dùng cụ thể, có thể tiến hành liên hệ với các công ty để đăng quảng cáo.
+	
++) Chức năng:
+	
+	Người dùng thông thường :
+		- Đăng ký tài khoản để thực hiện việc quản lý bài viết của mình.
+		- Bài viết có thể đặt ẩn danh (không hiển thị tên, hoặc hiển thị Anonymous - người lạ) trên tiêu đề.
+		- Có thể đăng ký theo dõi bài viết.
+		- Đăng bình luận ở bài viết.
+		- Báo cáo bài viết vi phạm tới admin.
+		- Xem thông tin cá nhân của mình
+		- Đổi mật khẩu
+		- Tìm mật khẩu bị mất
+		- Nhận thông báo về bài viết mới trong mục mình theo dõi
+		- Hủy theo dõi mục tâm sự / bài viết
+		- Đánh giá bài viết (mức độ từ 1 - 5)
+		- Lọc thông tin bài viết
+		- Báo cáo bình luận vi phạm đến admin
+	
+	Người quản trị:
+		- Hủy / kích hoạt tài khoản nếu như có vi phạm
+		- Xem thông tin thống kê các tài khoản: Email, tên
+		- Thêm/xóa mục tâm sự.
+		- Sửa thông tin tài khoản (mật khẩu, ...)
+		- Lọc tài khoản theo thông tin định sẵn
+		- Nhận thông báo khi có 1 tài khoản đăng ký vào trong hệ thống.
+		- Nhận thông báo về một báo cáo bài viết vi phạm từ các thành viên khác
+		- Xóa bài viết khi có ít nhất 10 báo cáo vi phạm.
+		- Xem thống kê số lượng bài viết, tài khoản đăng ký mới, báo cáo trong dashboard.
+		
+		
+	
+
