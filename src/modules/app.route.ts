@@ -23,7 +23,12 @@ export const routes: Routes = [
       {
         path: 'login',
         loadChildren: 'modules/account/account.module#AccountModule'
-      }
+      },
+      {
+        path: 'manage-users',
+        loadChildren: 'modules/manage-users/manage-users.module#ManageUsersModule',
+        canActivate : [IsAuthorizedGuard]
+      },
     ]
   }
 ];
