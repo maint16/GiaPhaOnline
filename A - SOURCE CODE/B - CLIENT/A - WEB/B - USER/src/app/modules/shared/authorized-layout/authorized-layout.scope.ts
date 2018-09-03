@@ -24,5 +24,8 @@ export interface IAuthorizedLayoutScope extends IScope {
     // Called when profile is clicked.
     ngOnProfileClicked(): void;
 
+    // Called when component is initialized.
+    ngOnInit(): void;
+
     //#endregion
 }

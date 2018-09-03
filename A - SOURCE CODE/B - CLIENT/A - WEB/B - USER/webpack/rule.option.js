@@ -114,20 +114,6 @@ exports = module.exports = {
 
         //#endregion
 
-        //#region Pusher
-
-        rules.push({
-            test: require.resolve('pusher-js'),
-            use:[
-                {
-                    loader: 'expose-loader',
-                    options: 'Pusher'
-                }
-            ]
-        });
-
-        //#endregion
-
         return rules;
     }
 };

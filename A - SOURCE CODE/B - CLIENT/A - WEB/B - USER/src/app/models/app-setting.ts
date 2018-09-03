@@ -11,4 +11,8 @@ export class AppSetting {
     public clientIdFacebook: string = '';
 
     public clientScopeFacebook: string = '';
+
+    public apiKeyPusher: string = '';
+
+    public clusterPusher: string = '';
 }

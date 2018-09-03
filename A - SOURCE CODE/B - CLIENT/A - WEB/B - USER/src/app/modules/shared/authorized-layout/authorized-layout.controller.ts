@@ -1,20 +1,31 @@
-import {IController, IScope, IWindowService} from "angular";
+import {IController, IScope, ITimeoutService, IWindowService} from "angular";
 import {IAuthorizedLayoutScope} from "./authorized-layout.scope";
 import {StateService} from "@uirouter/core";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {User} from "../../../models/entities/user";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
+import {IRealTimeService} from "../../../interfaces/services/real-time-service.interface";
+import {RealTimeConstant} from "../../../constants/real-time.constant";
+import {RealTimeEventConstant} from "../../../constants/real-time-event.constant";
+import {Channel} from "pusher-js";
 
 /* @ngInject */
 export class AuthorizedLayoutController implements IController {
 
+    //#region Properties
+
+    private _publicUserChannel: Channel;
+
+    //#endregion
+
     //#region Constructors
 
     public constructor(public profile: User,
+                       public $realTime: IRealTimeService,
                        public $state: StateService, public localStorageService: ILocalStorageService,
                        public $scope: IAuthorizedLayoutScope,
-                       public $window: IWindowService,
+                       public $window: IWindowService, public $timeout: ITimeoutService,
                        public $rootScope: IScope) {
 
         // Properties binding
@@ -25,6 +36,8 @@ export class AuthorizedLayoutController implements IController {
         $scope.ngOnRegisterClicked = this._ngOnRegisterClicked;
         $scope.ngOnSignOutClicked = this._ngOnSignOutClicked;
         $scope.ngOnProfileClicked = this._ngOnProfileClicked;
+        $scope.ngOnInit = this._ngOnInit;
+
     }
 
     //#endregion
@@ -54,6 +67,32 @@ export class AuthorizedLayoutController implements IController {
     private _ngOnProfileClicked = (): void => {
         // Redirect user to profile page.
         this.$state.go(UrlStateConstant.profileModuleName, {profileId: 0});
+    };
+
+    // Register real-time channels.
+    private _ngOnInit = () => {
+
+        // Initialize real-time connection.
+        this.$realTime
+            .initRealTimeConnection()
+            .then(() => {
+                console.log('Real-time connection has been established.');
+
+                // Broadcast an event to all component.
+                this.$rootScope.$broadcast(RealTimeConstant.addRealTimeSubscriberEventConstant);
+
+                // Hook to user channel.
+                this._publicUserChannel = this.$realTime.hookChannel(RealTimeConstant.publicUserChannelName);
+                this._publicUserChannel.bind(RealTimeEventConstant.addedTopic, this._ngOnPublicUserChannelRaiseEvent);
+            })
+            .catch(() => {
+                console.log('Something wrong while establishing real-time connection.')
+            });
+    };
+
+    // Called when user public channel raises an event.
+    private _ngOnPublicUserChannelRaiseEvent = (data: any): void => {
+        console.log(data);
     };
 
     //#endregion

@@ -6,5 +6,10 @@
   "clientScopeGoogle": "profile",
 
   "clientIdFacebook": "266849570452043",
-  "clientScopeFacebook": "public_profile,email"
+  "clientScopeFacebook": "public_profile,email",
+
+
+  "apiKeyPusher": "4b7872f37a986b55f50b",
+  "clusterPusher": "ap1"
+
 }

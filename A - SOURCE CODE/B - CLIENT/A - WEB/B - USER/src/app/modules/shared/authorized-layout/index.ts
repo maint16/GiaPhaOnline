@@ -6,6 +6,7 @@ import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.cons
 import {TokenViewModel} from "../../../view-models/users/token.view-model";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
 import {User} from "../../../models/entities/user";
+import {RealTimeService} from "../../../services/real-time.service";
 
 /* @ngInject */
 export class AuthorizedLayoutModule {
@@ -38,8 +39,14 @@ export class AuthorizedLayoutModule {
                 loadController: ($q, $ocLazyLoad) => {
                     return $q((resolve) => {
                         require.ensure([], () => {
+
+                            // Load pusher library.
+                            require('pusher-js');
+                            const {RealTimeService} = require('../../../services/real-time.service');
+
                             // load only controller module
                             let ngModule = module('shared.authorized-layout', []);
+                            ngModule.service('$realTime', RealTimeService);
                             const {AuthorizedLayoutController} = require('./authorized-layout.controller.ts');
                             ngModule.controller('authorizedLayoutController', AuthorizedLayoutController);
                             $ocLazyLoad.load({name: ngModule.name});
