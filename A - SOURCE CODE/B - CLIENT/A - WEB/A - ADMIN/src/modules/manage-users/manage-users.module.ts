@@ -4,6 +4,7 @@ import {NgModule} from "@angular/core";
 import {SharedModule} from "../shared/shared.module";
 import {ManageUsersComponent} from './manage-users.component';
 import {ManageUsersRouteModule} from './manage-users.route';
+import {TableModule} from 'primeng/table';
 
 //#region Routes declaration
 
@@ -17,6 +18,7 @@ import {ManageUsersRouteModule} from './manage-users.route';
     CommonModule,
     FormsModule,
     SharedModule,
+    TableModule,
     ManageUsersRouteModule
   ],
   declarations: [
