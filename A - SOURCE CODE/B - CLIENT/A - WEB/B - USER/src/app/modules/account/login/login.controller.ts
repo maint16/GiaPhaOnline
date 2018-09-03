@@ -11,6 +11,7 @@ import {UrlStateConstant} from "../../../constants/url-state.constant";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
 import {IAuthService} from "../../../interfaces/services/auth-service.interface";
+import {IToastrService} from "angular-toastr";
 
 /* @ngInject */
 export class LoginController implements IController {
@@ -28,6 +29,7 @@ export class LoginController implements IController {
     * */
     public constructor(public $scope: ILoginScope,
                        public $state: StateService, public localStorageService: ILocalStorageService, public $window: IWindowService,
+                       public $translate: angular.translate.ITranslateService, public toastr: IToastrService,
                        public $ui: IUiService, public $auth: IAuthService,
                        public $user: IUserService){
 
@@ -103,9 +105,24 @@ export class LoginController implements IController {
         // Display google login.
         this.$auth.displayGoogleLogin()
             .then((code: string) => {
-                console.log(code);
+                // Exchange google code with system access token.
+                return this.$user
+                    .loginGoogle(code);
             })
-            .finally(() => {
+            .then((token: TokenViewModel) => {
+                // Update local storage.
+                this.localStorageService.set<TokenViewModel>(LocalStorageKeyConstant.accessTokenKey, token);
+
+                // Redirect user to dashboard.
+                this.$state.go(UrlStateConstant.dashboardModuleName);
+
+                this.$ui.unblockAppUI();
+            })
+            .catch((error) => {
+                console.log(error);
+                // Get translated message.
+                let message = this.$translate.instant('MSG_ERROR_HAPPENED_WHILE_SIGN_IN_GOOGLE');
+                this.toastr.error(message);
                 this.$ui.unblockAppUI();
             });
     };
@@ -119,9 +136,26 @@ export class LoginController implements IController {
         // Display facebook login.
         this.$auth.displayFacebookLogin()
             .then((authResponse: fb.AuthResponse) => {
-                console.log(authResponse);
+                return this.$user
+                    .loginFacebook(authResponse.accessToken);
             })
-            .finally(() => {
+            .then((token: TokenViewModel) => {
+                // Update local storage.
+                this.localStorageService.set<TokenViewModel>(LocalStorageKeyConstant.accessTokenKey, token);
+
+                // Redirect user to dashboard.
+                this.$state.go(UrlStateConstant.dashboardModuleName);
+
+                this.$ui.unblockAppUI();
+            })
+            .catch((error) => {
+
+                // Display error message.
+                console.log(error);
+
+                // Get translated message.
+                let message = this.$translate.instant('MSG_ERROR_HAPPENED_WHILE_SIGN_IN_FACEBOOK');
+                this.toastr.error(message);
                 this.$ui.unblockAppUI();
             });
     };

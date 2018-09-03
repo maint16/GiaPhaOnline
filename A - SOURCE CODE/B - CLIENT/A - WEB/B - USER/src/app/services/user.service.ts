@@ -149,7 +149,7 @@ export class UserService implements IUserService {
     };
 
     // Allow user to change his/her account password.
-    public changePassword(changePasswordModel: ChangePasswordViewModel): IPromise<TokenViewModel>{
+    public changePassword(changePasswordModel: ChangePasswordViewModel): IPromise<TokenViewModel> {
         let url = `${this.appSettingConstant.apiEndPoint}/api/user/change-password`;
         return this.$http
             .post(url, changePasswordModel)
@@ -163,6 +163,50 @@ export class UserService implements IUserService {
 
                 return token;
             })
+    }
+
+    // Exchange google code with system access token.
+    public loginGoogle(code: string): IPromise<TokenViewModel> {
+        let url = `${this.appSettingConstant.apiEndPoint}/api/user/google-login`;
+        let model: any = {
+            code: code
+        };
+
+        return this.$http
+            .post(url, model)
+            .then((loginResponse: IHttpResponse<TokenViewModel>) => {
+                if (!loginResponse)
+                    throw 'Failed to login';
+
+                let token = loginResponse.data;
+                if (!token)
+                    throw 'Failed to login';
+
+                return token;
+            })
+    }
+
+    // Exchange facebook access token with system access token.
+    public loginFacebook(fbAccessToken: string): IPromise<TokenViewModel> {
+
+        // Initialize model.
+        let model = {
+            accessToken: fbAccessToken
+        };
+
+        let url = `${this.appSettingConstant.apiEndPoint}/api/user/facebook-login`;
+        return this.$http
+            .post(url, model)
+            .then((loginFacebookResult: IHttpResponse<TokenViewModel>) => {
+                if (!loginFacebookResult)
+                    throw 'Failed to login facebook';
+
+                let token = loginFacebookResult.data;
+                if (!token.accessToken)
+                    throw 'Failed to login facebook';
+
+                return token;
+            });
     }
 
     //#endregion
