@@ -20,6 +20,7 @@ using Main.Constants;
 using Main.Interfaces;
 using Main.Interfaces.Services;
 using Main.Models;
+using Main.Models.Captcha;
 using Main.Models.ExternalAuthentication;
 using Main.Models.PushNotification;
 using Main.Services;
@@ -128,6 +129,7 @@ namespace Main
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IPusherService, PusherService>();
+            services.AddScoped<ICaptchaService, CaptchaService>();
 
             // Store user information in cache
             services.AddSingleton<IValueCacheService<int, Account>, ProfileCacheService>();
@@ -159,7 +161,8 @@ namespace Main
             services.Configure<FcmOption>(Configuration.GetSection(nameof(FcmOption)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
             services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
-            
+            services.Configure<CaptchaSetting>(Configuration.GetSection(nameof(CaptchaSetting)));
+
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
             var jwtBearerSettings = servicesProvider.GetService<IOptions<JwtConfiguration>>().Value;

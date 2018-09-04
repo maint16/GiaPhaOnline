@@ -8,7 +8,6 @@ using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AutoMapper;
 using Main.Interfaces.Services;
-using Main.ViewModels.Category;
 using Main.ViewModels.CategoryGroup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +18,25 @@ using Shared.Resources;
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class CategoryController : ApiBaseController
+    public class CategoryGroupController : ApiBaseController
     {
-        #region Constructors
+        #region Properties
 
-        public CategoryController(
+        /// <summary>
+        ///     Instance for accessing database.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        ///     Provide access to generic database functions.
+        /// </summary>
+        private readonly IRelationalDbService _databaseFunction;
+        
+        #endregion
+
+        #region Constructures
+
+        public CategoryGroupController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
@@ -38,35 +51,21 @@ namespace Main.Controllers
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        ///     Add category to system.
+        ///     Add category group to system.
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> AddCategory([FromBody] AddCategoryViewModel info)
+        public async Task<IActionResult> AddCategoryGroup([FromBody] AddCategoryGroupViewModel info)
         {
             #region Parameters validation
 
             if (info == null)
             {
-                info = new AddCategoryViewModel();
+                info = new AddCategoryGroupViewModel();
                 TryValidateModel(info);
             }
 
@@ -75,58 +74,57 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find category
+            #region Find category group
 
-            // Find category.
-            var categories = UnitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Name == info.Name && x.Status == ItemStatus.Active);
+            // Find category group.
+            var categoryGroups = UnitOfWork.CategoryGroups.Search();
+            categoryGroups = categoryGroups.Where(x => x.Name == info.Name && x.Status == ItemStatus.Active);
 
-            // Check whether category exists or not.
-            var bIsCategoryAvailable = await categories.AnyAsync();
-            if (!bIsCategoryAvailable)
-                return Conflict(new ApiResponse(HttpMessages.CategoryCannotConflict));
+            // Check whether category group exists or not.
+            var bIsCategoryGroupAvailable = await categoryGroups.AnyAsync();
+            if (!bIsCategoryGroupAvailable)
+                return Conflict(new ApiResponse(HttpMessages.CategoryGroupCannotConflict));
 
             #endregion
 
-            #region Category initialization
+            #region Category group initialization
 
             // Find identity from request.
             var identity = IdentityService.GetProfile(HttpContext);
 
-            // Category intialization.
-            var category = new Category();
-            category.CreatorId = identity.Id;
-            category.CategoryGroupId = info.CategoryGroupId;
-            category.Name = info.Name;
-            category.Description = info.Description;
-            category.Status = ItemStatus.Active;
-            category.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            category.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            // Category group intialization.
+            var categoryGroup = new CategoryGroup();
+            categoryGroup.CreatorId = identity.Id;
+            categoryGroup.Name = info.Name;
+            categoryGroup.Description = info.Description;
+            categoryGroup.Status = ItemStatus.Active;
+            categoryGroup.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-            // Insert category into system.
-            UnitOfWork.Categories.Insert(category);
+            // Insert category group into system.
+            UnitOfWork.CategoryGroups.Insert(categoryGroup);
 
             await UnitOfWork.CommitAsync();
 
             #endregion
 
-            return Ok(category);
+            return Ok(categoryGroup);
         }
 
         /// <summary>
-        /// Edit category by using specific information.
+        /// Edit category group by using specific information.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCategory([FromRoute] int id, [FromBody] EditCategoryViewModel info)
+        public async Task<IActionResult> EditCategoryGroup([FromRoute] int id, [FromBody] EditCategoryGroupViewModel info)
         {
             #region Parameters validation
 
             if (info == null)
             {
-                info = new EditCategoryViewModel();
+                info = new EditCategoryGroupViewModel();
                 TryValidateModel(info);
             }
 
@@ -135,59 +133,52 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find category
+            #region Find category group
 
             // Get request identity.
             var identity = IdentityService.GetProfile(HttpContext);
 
-            // Get all category in database.
-            var categories = UnitOfWork.Categories.Search();
+            // Get all category group in database.
+            var categoryGroups = UnitOfWork.CategoryGroups.Search();
 
-            categories = categories.Where(x => x.Id == id && x.Status == ItemStatus.Active);
+            categoryGroups = categoryGroups.Where(x => x.Id == id && x.Status == ItemStatus.Active);
 
             // Get the first matched category group.
-            var category = await categories.FirstOrDefaultAsync();
-            if (category == null)
-                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
+            var categoryGroup = await categoryGroups.FirstOrDefaultAsync();
+            if (categoryGroup == null)
+                return NotFound(new ApiResponse(HttpMessages.CategoryGroupNotFound));
 
             #endregion
 
-            #region Update category information
+            #region Update category group. information
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
 
-            // Category group id is defined
-            if (info.CategoryGroupId != category.CategoryGroupId)
-            {
-                category.CategoryGroupId = info.CategoryGroupId;
-                bHasInformationChanged = true;
-            }
-
             // Name is defined
-            if (info.Name != null && info.Name != category.Name)
+            if (info.Name != null && info.Name != categoryGroup.Name)
             {
-                category.Name = info.Name;
+                categoryGroup.Name = info.Name;
                 bHasInformationChanged = true;
             }
 
             // Description is defined
-            if (info.Description != null && info.Description != category.Description)
+            if (info.Description != null && info.Description != categoryGroup.Description)
             {
-                category.Description = info.Description;
+                categoryGroup.Description = info.Description;
                 bHasInformationChanged = true;
             }
 
             // Status is defined.
-            if (info.Status != category.Status)
+            if (info.Status != categoryGroup.Status)
             {
-                category.Status = info.Status;
+                categoryGroup.Status = info.Status;
                 bHasInformationChanged = true;
             }
 
             if (bHasInformationChanged)
             {
-                category.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                categoryGroup.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Commit changes to database.
                 await UnitOfWork.CommitAsync();
@@ -195,22 +186,22 @@ namespace Main.Controllers
 
             #endregion
 
-            return Ok(category);
+            return Ok(categoryGroup);
         }
 
         /// <summary>
-        ///     Load category by using specific conditions.
+        ///     Load category group by using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> LoadCategories([FromBody] SearchCategoryViewModel condition)
+        public async Task<IActionResult> LoadCategoryGroups([FromBody] SearchCategoryGroupViewModel condition)
         {
             #region Parameters validation
 
             if (condition == null)
             {
-                condition = new SearchCategoryViewModel();
+                condition = new SearchCategoryGroupViewModel();
                 TryValidateModel(condition);
             }
 
@@ -224,8 +215,8 @@ namespace Main.Controllers
 
             #region Search for information
 
-            // Get all category
-            var categories = _unitOfWork.Categories.Search();
+            // Get all category groups
+            var categoryGroups = _unitOfWork.CategoryGroups.Search();
 
             // Id have been defined.
             if (condition.Ids != null && condition.Ids.Count > 0)
@@ -233,17 +224,7 @@ namespace Main.Controllers
                 condition.Ids = condition.Ids.Where(x => x > 0).ToList();
                 if (condition.Ids != null && condition.Ids.Count > 0)
                 {
-                    categories = categories.Where(x => condition.Ids.Contains(x.Id));
-                }
-            }
-
-            // Category group Id have been defined.
-            if (condition.CategoryGroupIds != null && condition.CategoryGroupIds.Count > 0)
-            {
-                condition.CategoryGroupIds = condition.CategoryGroupIds.Where(x => x > 0).ToList();
-                if (condition.CategoryGroupIds != null && condition.CategoryGroupIds.Count > 0)
-                {
-                    categories = categories.Where(x => condition.CategoryGroupIds.Contains(x.CategoryGroupId));
+                    categoryGroups = categoryGroups.Where(x => condition.Ids.Contains(x.Id));
                 }
             }
 
@@ -253,7 +234,7 @@ namespace Main.Controllers
                 condition.CreatorIds = condition.CreatorIds.Where(x => x > 0).ToList();
                 if (condition.CreatorIds != null && condition.CreatorIds.Count > 0)
                 {
-                    categories = categories.Where(x => condition.CreatorIds.Contains(x.CreatorId));
+                    categoryGroups = categoryGroups.Where(x => condition.CreatorIds.Contains(x.CreatorId));
                 }
             }
 
@@ -263,7 +244,7 @@ namespace Main.Controllers
                 condition.Names = condition.Names.Where(x => !string.IsNullOrEmpty(x)).ToList();
                 if (condition.Names != null && condition.Names.Count > 0)
                 {
-                    categories = categories.Where(x => condition.Names.Any(y => x.Name.Contains(y)));
+                    categoryGroups = categoryGroups.Where(x => condition.Names.Any(y => x.Name.Contains(y)));
                 }
             }
 
@@ -273,7 +254,7 @@ namespace Main.Controllers
                 condition.Descriptions = condition.Descriptions.Where(x => !string.IsNullOrEmpty(x)).ToList();
                 if (condition.Descriptions != null && condition.Descriptions.Count > 0)
                 {
-                    categories = categories.Where(x => condition.Descriptions.Any(y => x.Description.Contains(y)));
+                    categoryGroups = categoryGroups.Where(x => condition.Descriptions.Any(y => x.Description.Contains(y)));
                 }
             }
 
@@ -287,7 +268,7 @@ namespace Main.Controllers
                     condition.Statuses =
                         condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x)).ToList();
                     if (condition.Statuses.Count > 0)
-                        categories = categories.Where(x => condition.Statuses.Contains(x.Status));
+                        categoryGroups = categoryGroups.Where(x => condition.Statuses.Contains(x.Status));
                 }
             }
 
@@ -295,17 +276,17 @@ namespace Main.Controllers
 
             // Sort by properties.
             if (condition.Sort != null)
-                categories =
-                    _databaseFunction.Sort(categories, condition.Sort.Direction,
+                categoryGroups =
+                    _databaseFunction.Sort(categoryGroups, condition.Sort.Direction,
                         condition.Sort.Property);
             else
-                categories = _databaseFunction.Sort(categories, SortDirection.Decending,
-                    CategoriesSort.Name);
+                categoryGroups = _databaseFunction.Sort(categoryGroups, SortDirection.Decending,
+                    CategoryGroupSort.Name);
 
             // Result initialization.
-            var result = new SearchResult<IList<Category>>();
-            result.Total = await categories.CountAsync();
-            result.Records = await _databaseFunction.Paginate(categories, condition.Pagination).ToListAsync();
+            var result = new SearchResult<IList<CategoryGroup>>();
+            result.Total = await categoryGroups.CountAsync();
+            result.Records = await _databaseFunction.Paginate(categoryGroups, condition.Pagination).ToListAsync();
 
             return Ok(result);
         }

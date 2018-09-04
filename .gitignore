@@ -2,3 +2,19 @@
 /.idea
 /package-lock.json
 /e2e
+/A - SOURCE CODE/A - SERVICE/AppDb/AppDb.csproj.user
+/A - SOURCE CODE/A - SERVICE/AppDb/bin
+/A - SOURCE CODE/A - SERVICE/AppDb/obj
+/A - SOURCE CODE/A - SERVICE/AppModel/bin
+/A - SOURCE CODE/A - SERVICE/AppModel/obj
+/A - SOURCE CODE/A - SERVICE/Main/bin
+/A - SOURCE CODE/A - SERVICE/Main/obj
+/A - SOURCE CODE/A - SERVICE/Main/logs
+/A - SOURCE CODE/A - SERVICE/Shared/Shared.csproj.user
+/A - SOURCE CODE/A - SERVICE/Shared/bin
+/A - SOURCE CODE/A - SERVICE/Shared/obj
+/A - SOURCE CODE/A - SERVICE/SystemConstant/bin
+/A - SOURCE CODE/A - SERVICE/SystemConstant/obj
+/A - SOURCE CODE/A - SERVICE/SystemDatabase/bin
+/A - SOURCE CODE/A - SERVICE/SystemDatabase/obj
+
