@@ -2,13 +2,10 @@ import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {NgModule} from "@angular/core";
 import {SharedModule} from "../shared/shared.module";
-import {ManageUsersComponent} from './manage-users.component';
-import {ManageUsersRouteModule} from './manage-users.route';
+import {UserDetailComponent} from './user-detail.component';
+// import {ManageUsersRouteModule} from './user-detail.route';
 import {TableModule} from 'primeng/table';
 import {DataTableModule} from 'primeng/primeng';
-import {PaginatorModule} from 'primeng/paginator';
-import {UserDetailModule} from '../user-detail/user-detail.module';
-import {NgxPaginationModule} from 'ngx-pagination';
 //#region Routes declaration
 
 
@@ -21,22 +18,21 @@ import {NgxPaginationModule} from 'ngx-pagination';
     CommonModule,
     FormsModule,
     SharedModule,
-    ManageUsersRouteModule,
+    // ManageUsersRouteModule,
     TableModule,
-    DataTableModule,
-    PaginatorModule,
-    UserDetailModule,
-    NgxPaginationModule
+    DataTableModule
   ],
   declarations: [
-    ManageUsersComponent
+    UserDetailComponent
   ],
   exports: [
-    ManageUsersComponent
+    UserDetailComponent
   ]
-  })
 
-export class ManageUsersModule {
+
+})
+
+export class UserDetailModule {
 }
 
 //#endregion

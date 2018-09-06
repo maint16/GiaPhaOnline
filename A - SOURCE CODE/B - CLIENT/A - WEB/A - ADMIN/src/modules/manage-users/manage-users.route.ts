@@ -18,7 +18,7 @@ const routes: Routes = [
     },
     children: [
       {
-        path: 'manage-users',
+        path: '',
         component: ManageUsersComponent,
         pathMatch: 'full'
       }

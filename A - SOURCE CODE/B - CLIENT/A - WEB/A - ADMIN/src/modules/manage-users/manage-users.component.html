@@ -1,21 +1,49 @@
 <div class="container-fluid">
-  <p-table>
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Vin</th>
-        <th>Year</th>
-        <th>Brand</th>
-        <th>Color</th>
-      </tr>
-    </ng-template>
-    <!--<ng-template pTemplate="body" let-car>-->
-      <!--<tr>-->
-        <!--<td>{{car.vin}}</td>-->
-        <!--<td>{{car.year}}</td>-->
-        <!--<td>{{car.brand}}</td>-->
-        <!--<td>{{car.color}}</td>-->
-      <!--</tr>-->
-    <!--</ng-template>-->
-  </p-table>
-
-</div>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="#">User</a>
+      </li>
+      <li class="breadcrumb-item active">Manage</li>
+    </ol>
+    <div class="card mb-3">
+      <div class="card-header">
+        <i class="fa fa-table"></i> List user
+      </div>
+      <div class="card-body">
+        <p-dataTable [value]="users" class="table" [rows]="5">
+          <p-column field="id" header="Id" [sortable]="true">
+          </p-column>
+          <p-column field="email" header="Email" [sortable]="true">
+          </p-column>
+          <p-column field="nickname" header="Nick Name" [sortable]="true">
+          </p-column>
+          <p-column field="status" header="Status" [sortable]="true">
+          </p-column>
+          <p-column field="photo" header="Photo" [sortable]="true">
+          </p-column>
+          <p-column header="Action">
+            <ng-template let-user="rowData" let-index="rowIndex"  pTemplate="body" >
+              <span (click)="editUser(user)" class="fa fa-edit pointer" style="color: green"></span>
+              <!--<span href="" class="fa fa-trash-alt trashCan"></span>-->
+            </ng-template>
+          </p-column>
+        </p-dataTable>
+        <pagination-controls  id="some_id"
+                              (pageChange)="pageChanged($event)"
+                              maxSize="9"
+                              directionLinks="true"
+                              autoHide="true"
+                              responsive="true"
+                              previousLabel="Previous"
+                              nextLabel="Next"
+                              screenReaderPaginationLabel="Pagination"
+                              screenReaderPageLabel="page"
+                              screenReaderCurrentLabel="You're on page">
+        </pagination-controls>
+      </div>
+      <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+    </div>
+    <div class="form-group">
+      <user-detail [userId]="selectedUserId"></user-detail>
+    </div>
+  </div>
