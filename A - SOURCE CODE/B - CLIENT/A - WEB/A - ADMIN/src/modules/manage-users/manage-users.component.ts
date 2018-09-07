@@ -7,7 +7,6 @@ import {IUserService} from '../../interfaces/services/user-service.interface';
   styleUrls: ['manage-users.component.css']
 })
 export class ManageUsersComponent implements OnInit {
-  public p: number = 3;
   public users: [UserViewModel];
   public selectedUserId: number;
   public totalUser: number;
@@ -23,7 +22,6 @@ export class ManageUsersComponent implements OnInit {
         }
       };
       this.userService.searchUser(dat).subscribe((data: any) => {
-        debugger;
         this.users = data.records;
         this.totalUser = data.total;
       });

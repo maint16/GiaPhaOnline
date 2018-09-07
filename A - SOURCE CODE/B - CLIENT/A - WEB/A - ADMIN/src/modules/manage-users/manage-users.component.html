@@ -10,7 +10,7 @@
         <i class="fa fa-table"></i> List user
       </div>
       <div class="card-body">
-        <p-dataTable [value]="users" class="table" [rows]="5">
+        <p-dataTable [value]= "users" class="table">
           <p-column field="id" header="Id" [sortable]="true">
           </p-column>
           <p-column field="email" header="Email" [sortable]="true">
@@ -24,22 +24,21 @@
           <p-column header="Action">
             <ng-template let-user="rowData" let-index="rowIndex"  pTemplate="body" >
               <span (click)="editUser(user)" class="fa fa-edit pointer" style="color: green"></span>
-              <!--<span href="" class="fa fa-trash-alt trashCan"></span>-->
             </ng-template>
           </p-column>
         </p-dataTable>
-        <pagination-controls  id="some_id"
-                              (pageChange)="pageChanged($event)"
-                              maxSize="9"
-                              directionLinks="true"
-                              autoHide="true"
-                              responsive="true"
-                              previousLabel="Previous"
-                              nextLabel="Next"
-                              screenReaderPaginationLabel="Pagination"
-                              screenReaderPageLabel="page"
-                              screenReaderCurrentLabel="You're on page">
-        </pagination-controls>
+        <!--<pagination-controls  id="some_id"-->
+                              <!--(pageChange)="pageChanged($event)"-->
+                              <!--maxSize="9"-->
+                              <!--directionLinks="true"-->
+                              <!--autoHide="true"-->
+                              <!--responsive="true"-->
+                              <!--previousLabel="Previous"-->
+                              <!--nextLabel="Next"-->
+                              <!--screenReaderPaginationLabel="Pagination"-->
+                              <!--screenReaderPageLabel="page"-->
+                              <!--screenReaderCurrentLabel="You're on page">-->
+        <!--</pagination-controls>-->
       </div>
       <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
     </div>
