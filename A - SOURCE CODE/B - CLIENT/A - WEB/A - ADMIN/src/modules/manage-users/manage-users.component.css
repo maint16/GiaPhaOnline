@@ -1,0 +1,8 @@
+.changeTextAlign{
+  text-align: center;
+}
+.trashCan{
+  color:red;
+  padding-left: 10%;
+}
+.pointer {cursor: pointer;}

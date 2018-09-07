@@ -77,8 +77,14 @@ export class LoginComponent {
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
     }
     this.socialAuthService.signIn(socialPlatformProvider).then(
-      (userData) => {
-        console.log(socialPlatform+" sign in data : " , userData);
+      (userData: any) => {
+        var data : AuthorizationToken = {
+          accessToken: userData.idToken,
+          expire: 49517600,
+          lifeTime: 34700961
+        };
+        this.authenticationService.setAuthorization(data);
+        this.router.navigate(['/dashboard']);
       });
   }
   //#endregion
