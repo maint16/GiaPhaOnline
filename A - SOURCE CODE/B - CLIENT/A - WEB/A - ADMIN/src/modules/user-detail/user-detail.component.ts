@@ -2,6 +2,7 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import {UserViewModel} from '../../view-models/user.view-model';
 import {IUserService} from '../../interfaces/services/user-service.interface';
 import {ToastrService} from 'ngx-toastr';
+import {SaveUserStatusViewModel} from '../../view-models/user/save-user-status.view-model';
 @Component({
   selector: 'user-detail',
   templateUrl: 'user-detail.component.html',
@@ -21,24 +22,26 @@ export class UserDetailComponent implements OnInit {
   }
   @Input('userId')
   set userId(value: number) {
-    this._userId = value;
-    if (this._userId != null) {
-      this.userService.getUserDetail(this._userId).subscribe((data: any) => {
-        this.user = new UserViewModel();
-        this.user.email = data.email;
-        this.user.nickname = data.nickname;
-        this.user.status = data.status;
-      });
-    }
-  }
+  this._userId = value;
+  if (this._userId != null) {
+  this.userService.getUserDetail(this._userId).subscribe((data: any) => {
+  this.user = new UserViewModel();
+  this.user.email = data.email;
+  this.user.nickname = data.nickname;
+  this.user.status = data.status;
+});
+}
+}
   public constructor(@Inject('IUserService') private userService: IUserService, private toastr: ToastrService) {
   }
 
   ngOnInit() {
   }
   public saveUserStatus() {
-  this.userService.saveUserStatus(this.user.id, this.user.status).subscribe((data: any) => {
-    debugger;
+    let saveUserStatusViewModel = new SaveUserStatusViewModel();
+    saveUserStatusViewModel.userId = this.user.id;
+    saveUserStatusViewModel.userStatus = this.user.status;
+  this.userService.saveUserStatus(saveUserStatusViewModel).subscribe((data: any) => {
     this.user = null;
     this.toastr.success('Hello world!', 'Toastr fun!');
     this.toastr.error('everything is broken', 'Major Error', {

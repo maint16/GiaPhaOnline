@@ -10,35 +10,35 @@
         <i class="fa fa-table"></i> List user
       </div>
       <div class="card-body">
-        <p-dataTable [value]= "users" class="table">
-          <p-column field="id" header="Id" [sortable]="true">
-          </p-column>
-          <p-column field="email" header="Email" [sortable]="true">
-          </p-column>
-          <p-column field="nickname" header="Nick Name" [sortable]="true">
-          </p-column>
-          <p-column field="status" header="Status" [sortable]="true">
-          </p-column>
-          <p-column field="photo" header="Photo" [sortable]="true">
-          </p-column>
-          <p-column header="Action">
-            <ng-template let-user="rowData" let-index="rowIndex"  pTemplate="body" >
-              <span (click)="editUser(user)" class="fa fa-edit pointer" style="color: green"></span>
-            </ng-template>
-          </p-column>
-        </p-dataTable>
-        <!--<pagination-controls  id="some_id"-->
-                              <!--(pageChange)="pageChanged($event)"-->
-                              <!--maxSize="9"-->
-                              <!--directionLinks="true"-->
-                              <!--autoHide="true"-->
-                              <!--responsive="true"-->
-                              <!--previousLabel="Previous"-->
-                              <!--nextLabel="Next"-->
-                              <!--screenReaderPaginationLabel="Pagination"-->
-                              <!--screenReaderPageLabel="page"-->
-                              <!--screenReaderCurrentLabel="You're on page">-->
-        <!--</pagination-controls>-->
+        <p-table [value]="users" [responsive]="true" [lazy]="true"
+                 [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadCarsLazy($event)" [rows]= "5"
+                 [totalRecords]="totalUser"
+                 [paginator]="true" sortMode="multiple">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Email</th>
+              <th>Nickname</th>
+              <th>Status</th>
+              <th>Role</th>
+              <th>Joined time</th>
+              <th>Last modified time</th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user>
+            <tr>
+              <td>{{user.email}}</td>
+              <td>{{user.nickname}}</td>
+              <td>{{user.status}}</td>
+              <td>{{user.role}}</td>
+              <td>{{user.joinedTime}}</td>
+              <td>{{user.lastModifiedTime}}</td>
+              <td>
+                <span class="fas fa-edit greenColor pointer" (click)="editUser(user.id)"></span>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
       </div>
       <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
     </div>

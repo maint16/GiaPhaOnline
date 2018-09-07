@@ -4,10 +4,10 @@ import {NgModule} from "@angular/core";
 import {SharedModule} from "../shared/shared.module";
 import {ManageUsersComponent} from './manage-users.component';
 import {ManageUsersRouteModule} from './manage-users.route';
-import {DataTableModule} from 'primeng/primeng';
 import {PaginatorModule} from 'primeng/paginator';
 import {UserDetailModule} from '../user-detail/user-detail.module';
 import {NgxPaginationModule} from 'ngx-pagination';
+import {TableModule} from 'primeng/table';
 //#region Routes declaration
 
 
@@ -21,10 +21,10 @@ import {NgxPaginationModule} from 'ngx-pagination';
     FormsModule,
     SharedModule,
     ManageUsersRouteModule,
-    DataTableModule,
     PaginatorModule,
     UserDetailModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    TableModule
   ],
   declarations: [
     ManageUsersComponent

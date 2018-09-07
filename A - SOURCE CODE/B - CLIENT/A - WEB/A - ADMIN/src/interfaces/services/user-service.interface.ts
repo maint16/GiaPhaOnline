@@ -1,17 +1,17 @@
-import {UserViewModel} from '../../view-models/user.view-model';
 import {Observable} from 'rxjs/Observable';
-
+import {LoadUserViewModel} from '../../view-models/user/load-user.view-model';
+import {User} from '../../models/entities/user';
+import {SearchResult} from '../../models/search-result';
+import {SaveUserStatusViewModel} from '../../view-models/user/save-user-status.view-model';
 export interface IUserService {
-
   //#region Methods
-
   /*
-  * Get profile information.
-  * */
+ * Get profile information.
+ * */
   getUser();
-  searchUser(data: any);
-  getUserDetail(id: any);
-  saveUserStatus(id: any, status: number);
+  // Load users from api end-point.
+  loadUsers(conditions: LoadUserViewModel): Observable<SearchResult<User>>;
+  getUserDetail(id: number);
+  saveUserStatus(conditions: SaveUserStatusViewModel);
   //#endregion
-
 }

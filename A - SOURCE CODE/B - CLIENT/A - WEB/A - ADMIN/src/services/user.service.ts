@@ -4,6 +4,11 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import 'rxjs/add/observable/of';
 import {ConfigUrlService} from '../constants/config-url-service.constant';
 import {ConfigUrlUserServiceConstant} from '../constants/config-url-user-service.constant';
+import {LoadUserViewModel} from '../view-models/user/load-user.view-model';
+import {Observable} from 'rxjs/Rx';
+import {SearchResult} from '../models/search-result';
+import {User} from '../models/entities/user';
+import {SaveUserStatusViewModel} from '../view-models/user/save-user-status.view-model';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -27,11 +32,12 @@ export class UserService implements IUserService {
   public getUser() {
     return this.httpClient.get(ConfigUrlService.urlAPI + '/api/user/search');
   }
-  public searchUser()
-    {
-      var data = {};
-      var url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.searchUser;
-      return this.httpClient.post(url, data);
+
+  // Load users by using specific conditions.
+  public loadUsers(condition: LoadUserViewModel): Observable<SearchResult<User>> {
+      const url = `${ConfigUrlService.urlAPI}/${ConfigUrlUserServiceConstant.searchUser}`;
+      return this.httpClient
+        .post<SearchResult<User>>(url, condition);
     }
   public getUserDetail(id)
     {
@@ -39,12 +45,12 @@ export class UserService implements IUserService {
       url.replace('{id}', id);
       return this.httpClient.get(url);
     }
-  public saveUserStatus(id, status)
+  public saveUserStatus(condition: SaveUserStatusViewModel)
     {
       var url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.saveUserStatus;
-      url.replace('{id}', id);
+      url.replace('{id}', String(condition.userId));
       var body = {
-        status: status
+        status: condition.userStatus
       };
       return this.httpClient.put(url, body);
     }

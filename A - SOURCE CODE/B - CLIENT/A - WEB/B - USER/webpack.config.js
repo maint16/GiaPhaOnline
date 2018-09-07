@@ -27,9 +27,6 @@ module.exports = (env, argv) => {
     return {
         context: webpackOption.paths.getSource(__dirname),
         entry: {
-            'JQueryVendors': ['jquery', 'bootstrap', 'bluebird',
-                'pusher-js',
-                'firebase/app', 'firebase/messaging'],
             'app': path.resolve(paths.app, 'app.js')
         },
         devtool: "source-map",
