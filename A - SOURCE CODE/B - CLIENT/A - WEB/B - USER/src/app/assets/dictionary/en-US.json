@@ -35,6 +35,10 @@
   "TITLE_NEW_PASSWORD": "New password",
   "TITLE_CONTINUE_WITH_FACEBOOK": "Continue with facebook",
   "TITLE_CONTINUE_WITH_GOOGLE": "Continue with google",
+  "TITLE_CREATED_TIME": "Created time",
+  "TITLE_TYPE": "Type",
+  "TITLE_TITLE": "Title",
+  "TITLE_OWNER": "Owner",
 
   "MSG_FIELD_REQUIRED": "This field is required",
   "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",

@@ -8,6 +8,8 @@ export class LoadTopicViewModel {
 
     public ids: Array<number> | null = null;
 
+    public ownerIds: Array<number> | null = null;
+
     public categoryIds: Array<number> | null = null;
 
     public types: Array<TopicTypeEnum> | null = null;

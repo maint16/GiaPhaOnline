@@ -2,10 +2,14 @@ import {IAngularEvent, IFormController, IScope} from "angular";
 import {User} from "../../../models/entities/user";
 import {UserStatus} from "../../../enums/user-status.enum";
 import {FileUploader} from "angular-file-upload";
+import {UrlStateConstant} from "../../../constants/url-state.constant";
 
 export interface IProfileScope extends IScope {
 
     //#region Properties
+
+    // Constant import.
+    urlStateConstant: UrlStateConstant;
 
     // User of profile.
     user: User;
