@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using AppModel.Enumerations;
 using Newtonsoft.Json;
 
@@ -11,11 +13,14 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Id of account (Auto incremented)
         /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
         ///     Email which is used for account registration.
         /// </summary>
+        [Required]
         public string Email { get; set; }
 
         /// <summary>
@@ -27,6 +32,7 @@ namespace AppDb.Models.Entities
         ///     Password of account.
         /// </summary>
         [JsonIgnore]
+        [Required]
         public string Password { get; set; }
 
         /// <summary>
@@ -53,6 +59,7 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When was the account created.
         /// </summary>
+        [Required]
         public double JoinedTime { get; set; }
 
         /// <summary>

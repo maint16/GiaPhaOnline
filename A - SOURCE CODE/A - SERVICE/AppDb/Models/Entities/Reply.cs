@@ -30,6 +30,18 @@ namespace AppDb.Models.Entities
         public int TopicId { get; set; }
 
         /// <summary>
+        ///     Category that reply belongs to.
+        /// </summary>
+        [Required]
+        public int CategoryId { get; set; }
+
+        /// <summary>
+        ///     Category group that reply belongs to.
+        /// </summary>
+        [Required]
+        public int CategoryGroupId { get; set; }
+
+        /// <summary>
         ///     Comment content.
         /// </summary>
         [Required]
