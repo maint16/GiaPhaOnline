@@ -14,7 +14,6 @@ require('../../node_modules/font-awesome/css/font-awesome.css');
 require('../../node_modules/angular-block-ui/dist/angular-block-ui.css');
 require('../../node_modules/angular-confirm1/css/angular-confirm.css');
 require('../../node_modules/ui-cropper/compile/unminified/ui-cropper.css');
-require('../../node_modules/ng-multi-selector/ng-multi-selector.css');
 require('../../node_modules/tinymce/skins/lightgray/skin.min.css');
 
 require('./styles/app.scss');
@@ -27,8 +26,6 @@ require('moment');
 require('pusher-js');
 require('tinymce');
 require('tinymce/themes/modern');
-
-require('rxjs/bundles/rxjs.umd');
 const firebase = require('firebase');
 require('firebase/messaging');
 
