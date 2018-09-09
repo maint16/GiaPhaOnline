@@ -35,6 +35,12 @@ namespace AppDb.Models.Entities
         public string Photo { get; set; }
 
         /// <summary>
+        ///     Description of category
+        /// </summary>
+        [Required]
+        public string Description { get; set; }
+
+        /// <summary>
         ///     Status of category.
         /// </summary>
         public ItemStatus Status { get; set; }

@@ -1,19 +1,21 @@
-import {IController, IPromise} from "angular";
+import {IController, IPromise, IQService} from "angular";
 import {IPersonalTopicsScope} from "./topics.scope";
 import {LoadTopicViewModel} from "../../../../view-models/load-topic.view-model";
 import {Pagination} from "../../../../models/pagination";
 import {PaginationConstant} from "../../../../constants/pagination.constant";
-import {User} from "../../../../models/entities/user";
 import {IUiService} from "../../../../interfaces/services/ui-service.interface";
 import {SearchResult} from "../../../../models/search-result";
 import {ITopicService} from "../../../../interfaces/services/topic-service.interface";
 import {Topic} from "../../../../models/entities/topic";
+import {Category} from "../../../../models/entities/category";
+import {ICategoryService} from "../../../../interfaces/services/category-service.interface";
+import {LoadCategoryViewModel} from "../../../../view-models/load-category.view-model";
+import {IUserService} from "../../../../interfaces/services/user-service.interface";
 
 /* @ngInject */
 export class PersonalTopicsController implements IController {
 
     //#region Properties
-
 
     //#endregion
 
@@ -21,8 +23,9 @@ export class PersonalTopicsController implements IController {
 
     // Initialize controller with injectors.
     public constructor(public $ui: IUiService,
-                       public $topic: ITopicService,
-                       public $scope: IPersonalTopicsScope){
+                       public $topic: ITopicService, public $category: ICategoryService, public $user: IUserService,
+                       public $q: IQService,
+                       public $scope: IPersonalTopicsScope) {
 
         // Property binding.
         let loadPersonalTopicsCondition = new LoadTopicViewModel();
@@ -74,8 +77,43 @@ export class PersonalTopicsController implements IController {
             condition.pagination = pagination;
         }
 
+        // Id to category map.
+        let mIdToCategoryMap: { [id: number]: Category } = {};
+
         return this.$topic
-            .loadTopics(condition);
+            .loadTopics(condition)
+            .then((loadTopicsResult: SearchResult<Topic>) => {
+
+                // Get list of categories.
+                let topics: Topic[] = loadTopicsResult.records;
+
+                // Initialize promises list.
+                let promises: IPromise<any>[] = [];
+
+                //#region Load categories.
+
+                // Load categories condition.
+                let loadCategoriesCondition = new LoadCategoryViewModel();
+                loadCategoriesCondition.ids = topics.map((topic: Topic) => topic.categoryId);
+                promises[0] = this.$category
+                    .loadCategories(loadCategoriesCondition)
+                    .then((loadCategoriesResult: SearchResult<Category>) => {
+                        let categories = loadCategoriesResult.records;
+                        for (let category of categories)
+                            mIdToCategoryMap[category.id] = category;
+                    });
+
+                //#endregion
+
+                return this.$q
+                    .all(promises)
+                    .then(() => loadTopicsResult);
+            })
+            .then((loadTopicsResult: SearchResult<Topic>) => {
+                this.$scope.mIdToCategoryMap = mIdToCategoryMap;
+                return loadTopicsResult;
+            });
+
     };
 
     //#endregion

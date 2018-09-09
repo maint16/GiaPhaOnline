@@ -2,15 +2,15 @@
 
 namespace Main.ViewModels.Users
 {
-    public class FacebookLoginViewModel
+    public class ResendActivationCodeViewModel
     {
         #region Properties
 
         /// <summary>
-        /// Facebook code which has been returned by facebook api endpoint.
+        /// email of account
         /// </summary>
         [Required]
-        public string AccessToken { get; set; }
+        public string Email { get; set; }
 
         #endregion
     }

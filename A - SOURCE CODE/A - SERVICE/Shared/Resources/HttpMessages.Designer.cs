@@ -133,11 +133,47 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CAPTCHA_INVALID.
+        /// </summary>
+        public static string CaptchaInvalid {
+            get {
+                return ResourceManager.GetString("CaptchaInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CATEGORIZATION_NOT_FOUND.
         /// </summary>
         public static string CategorizationNotFound {
             get {
                 return ResourceManager.GetString("CategorizationNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CATEGORY_CANNOT_CONFLICT.
+        /// </summary>
+        public static string CategoryCannotConflict {
+            get {
+                return ResourceManager.GetString("CategoryCannotConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CATEGORY_GROUP_CANNOT_CONFLICT.
+        /// </summary>
+        public static string CategoryGroupCannotConflict {
+            get {
+                return ResourceManager.GetString("CategoryGroupCannotConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CATEGORY_GROUP_NOT_FOUND.
+        /// </summary>
+        public static string CategoryGroupNotFound {
+            get {
+                return ResourceManager.GetString("CategoryGroupNotFound", resourceCulture);
             }
         }
         
@@ -282,6 +318,15 @@ namespace Shared.Resources {
         public static string TokenNotFound {
             get {
                 return ResourceManager.GetString("TokenNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TOPIC_NOT_FOUND.
+        /// </summary>
+        public static string TopicNotFound {
+            get {
+                return ResourceManager.GetString("TopicNotFound", resourceCulture);
             }
         }
         
