@@ -30,5 +30,14 @@ export interface IPersonalTopicsScope extends IScope {
     // Called when topics page is changed.
     ngOnTopicsPageChanged(): void;
 
+    // Called when view topic is clicked.
+    ngOnViewTopicClicked(topic: Topic): void;
+
+    // Called when edit topic is clicked.
+    ngOnEditTopicClicked(topic: Topic): void;
+
+    // Called when delete topic is clicked.
+    ngOnDeleteTopicClicked(topic: Topic): void;
+
     //#endregion
 }

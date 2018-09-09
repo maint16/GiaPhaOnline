@@ -20,10 +20,10 @@
                 <a href>{{topic.title}}</a>
             </td>
             <td>
-                <a href>{{topic.type}}</a>
+                <a href>{{topic.type | toTopicTypeTitle | translate}}</a>
             </td>
             <td>
-                <a href>{{topic.status}}</a>
+                <a href>{{topic.status | toItemStatusTitle | translate}}</a>
             </td>
             <td>
                 {{topic.createdTime}}
@@ -32,15 +32,18 @@
                 {{topic.lastModifiedTime}}
             </td>
             <td>
-                <button class="btn btn-info">
+                <button class="btn btn-info"
+                        ng-click="ngOnViewTopicClicked(topic)">
                     <span class="fa fa-eye"></span>
                 </button>
 
-                <button class="btn btn-info">
+                <button class="btn btn-info"
+                        ng-click="ngOnEditTopicClicked(topic)">
                     <span class="fa fa-edit"></span>
                 </button>
 
-                <button class="btn btn-danger">
+                <button class="btn btn-danger"
+                        ng-click="ngOnDeleteTopicClicked()">
                     <span class="fa fa-trash"></span>
                 </button>
             </td>
