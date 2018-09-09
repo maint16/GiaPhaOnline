@@ -2,6 +2,7 @@ import {LoadTopicViewModel} from "../../view-models/load-topic.view-model";
 import {SearchResult} from "../../models/search-result";
 import {Topic} from "../../models/entities/topic";
 import {IPromise} from "angular";
+import {UrlStateConstant} from "../../constants/url-state.constant";
 
 export interface ITopicService {
 

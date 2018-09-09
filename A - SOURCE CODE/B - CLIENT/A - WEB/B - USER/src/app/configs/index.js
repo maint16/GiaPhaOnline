@@ -1,5 +1,6 @@
 module.exports = (ngModule) => {
-    require('./blockUI.config')(ngModule);
+    const {BlockUiConfiguration} = require('./block-ui.configuration');
+    ngModule.config((blockUIConfig) => new BlockUiConfiguration(blockUIConfig));
 
     const {LocalStorageConfiguration} = require('./local-storage.configuration');
     ngModule.config((localStorageServiceProvider) => new LocalStorageConfiguration(localStorageServiceProvider));

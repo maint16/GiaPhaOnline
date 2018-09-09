@@ -10,6 +10,7 @@ import {IToastrService} from "angular-toastr";
 import {TokenViewModel} from "../../../view-models/users/token.view-model";
 import {ILocalStorageService} from "angular-local-storage";
 import {LocalStorageKeyConstant} from "../../../constants/local-storage-key.constant";
+import {UrlStateConstant} from "../../../constants/url-state.constant";
 
 /* @ngInject */
 export class ProfileController implements IController {
@@ -35,6 +36,8 @@ export class ProfileController implements IController {
                        public $element: IRootElementService){
 
         // Properties binding.
+        $scope.urlStateConstant = UrlStateConstant;
+
         $scope.user = profile;
         $scope.availableUserStatuses = $user.loadUserAvailableStatuses();
         $scope.blobProfileImage = null;

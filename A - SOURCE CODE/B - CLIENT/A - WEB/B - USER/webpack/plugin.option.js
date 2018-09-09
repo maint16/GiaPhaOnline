@@ -1,5 +1,5 @@
 const CleanObsoleteChunks = require('webpack-clean-obsolete-chunks');
-const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
+// const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -95,8 +95,8 @@ exports = module.exports = {
         //#endregion
 
         if (bProductionMode){
-            // Annotate plugin.
-            plugins.push(new ngAnnotatePlugin({add: true}));
+            // // Annotate plugin.
+            // plugins.push(new ngAnnotatePlugin({add: true}));
 
         } else {
 
