@@ -39,6 +39,9 @@
   "TITLE_TYPE": "Type",
   "TITLE_TITLE": "Title",
   "TITLE_OWNER": "Owner",
+  "TITLE_TOPICS": "Topics",
+  "TITLE_FOLLOWING_TOPICS": "Following topics",
+  "TITLE_FOLLOWING_CATEGORIES": "Following categories",
 
   "MSG_FIELD_REQUIRED": "This field is required",
   "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",

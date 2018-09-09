@@ -1,24 +1,56 @@
-<table class="table table-condensed">
-    <thead>
-    <tr>
-        <th class="text-center">{{'TITLE_OWNER' | translate}}</th>
-        <th class="text-center">{{'TITLE_CATEGORY' | translate}}</th>
-        <th class="text-center">{{'TITLE_TITLE' | translate}}</th>
-        <th class="text-center">{{'TITLE_TYPE' | translate}}</th>
-        <th class="text-center">{{'TITLE_STATUS' | translate}}</th>
-        <th class="text-center">{{'TITLE_CREATED_TIME' | translate}}</th>
-        <th class="text-center">{{'TITLE_LAST_MODIFIED_TIME' | translate}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    </tbody>
-</table>
+<div ng-init="ngOnInit()" class="box-body">
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <th>{{'TITLE_CATEGORY' | translate}}</th>
+            <th>{{'TITLE_TITLE' | translate}}</th>
+            <th>{{'TITLE_TYPE' | translate}}</th>
+            <th>{{'TITLE_STATUS' | translate}}</th>
+            <th>{{'TITLE_CREATED_TIME' | translate}}</th>
+            <th>{{'TITLE_LAST_MODIFIED_TIME' | translate}}</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="topic in loadedPersonalTopics.records">
+            <td>
+                <a href>{{mIdToCategoryMap[topic.categoryId].name}}</a>
+            </td>
+            <td>
+                <a href>{{topic.title}}</a>
+            </td>
+            <td>
+                <a href>{{topic.type}}</a>
+            </td>
+            <td>
+                <a href>{{topic.status}}</a>
+            </td>
+            <td>
+                {{topic.createdTime}}
+            </td>
+            <td>
+                {{topic.lastModifiedTime}}
+            </td>
+            <td>
+                <button class="btn btn-info">
+                    <span class="fa fa-eye"></span>
+                </button>
+
+                <button class="btn btn-info">
+                    <span class="fa fa-edit"></span>
+                </button>
+
+                <button class="btn btn-danger">
+                    <span class="fa fa-trash"></span>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="box-footer text-center">
+    <ul uib-pagination
+        total-items="loadedPersonalTopics.total"
+        ng-model="loadPersonalTopicsCondition.pagination.page"
+        ng-change="ngOnTopicsPageChanged()"></ul>
+</div>

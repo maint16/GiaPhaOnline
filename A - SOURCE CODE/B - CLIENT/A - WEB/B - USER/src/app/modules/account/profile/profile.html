@@ -134,19 +134,17 @@
             <div class="box-body">
                 <ul class="nav nav-pills nav-justified">
                     <li role="presentation" class="active">
-                        <a href="javascript:void(0);">Topics</a>
+                        <a href="javascript:void(0);">{{'TITLE_TOPICS' | translate}}</a>
                     </li>
                     <li role="presentation">
-                        <a href="javascript:void(0);">Messages</a>
+                        <a href="javascript:void(0);">{{'TITLE_FOLLOWING_TOPICS' | translate}}</a>
                     </li>
                     <li role="presentation">
-                        <a href="javascript:void(0);">Notification</a>
+                        <a href="javascript:void(0);">{{'TITLE_FOLLOWING_CATEGORIES' | translate}}</a>
                     </li>
                 </ul>
             </div>
-            <div class="box-body">
-                <div ui-view="{{urlStateConstant.profileTopicsModuleName}}"></div>
-            </div>
+            <div ui-view="{{urlStateConstant.profileTopicsModuleName}}"></div>
         </div>
     </div>
 </div>

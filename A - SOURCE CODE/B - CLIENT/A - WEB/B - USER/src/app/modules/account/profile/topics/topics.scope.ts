@@ -3,10 +3,14 @@ import {SearchResult} from "../../../../models/search-result";
 import {Topic} from "../../../../models/entities/topic";
 import {LoadTopicViewModel} from "../../../../view-models/load-topic.view-model";
 import {UrlStateConstant} from "../../../../constants/url-state.constant";
+import {Category} from "../../../../models/entities/category";
 
 export interface IPersonalTopicsScope extends IScope {
 
     //#region Properties
+
+    // Id to category mapping.
+    mIdToCategoryMap: {[id: number]: Category};
 
     urlStateConstant: UrlStateConstant;
 
