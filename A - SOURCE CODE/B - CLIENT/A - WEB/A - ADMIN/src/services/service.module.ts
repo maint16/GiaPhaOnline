@@ -4,6 +4,7 @@ import {AccountService} from './account.service';
 import {IAuthenticationService} from '../interfaces/services/authentication-service.interface';
 import {AuthenticationService} from './authentication.service';
 import {UserService} from './user.service';
+import {CategoryGroupService} from './category-group.service';
 
 @NgModule({})
 
@@ -18,6 +19,7 @@ export class ServiceModule {
                 {provide: 'IAccountService', useClass: AccountService},
                 {provide: 'IAuthenticationService', useClass: AuthenticationService},
                 {provide: 'IUserService', useClass: UserService},
+                {provide: 'ICategoryGroupService', useClass: CategoryGroupService},
       ]
     };
   }

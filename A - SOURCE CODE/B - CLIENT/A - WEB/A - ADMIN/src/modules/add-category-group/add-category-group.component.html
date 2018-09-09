@@ -1,0 +1,69 @@
+<div class="container-fluid">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="manage-category-group">Manage</a>
+    </li>
+    <li class="breadcrumb-item"><a href="manage-category-group">Category Group</a></li>
+    <li class="breadcrumb-item active">New Category</li>
+  </ol>
+  <div class="card mb-3">
+    <div class="card-header">
+      <i class="fa fa-table"></i> New Category
+    </div>
+    <div class="card-body">
+      <form #addCategoryGroup ="ngForm"
+            novalidate
+            (submit)="saveCategoryGroup($event)">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="form-label-group">
+                <input type="text" name="name"
+                       id="inputName" class="form-control" placeholder="Name"
+                       [(ngModel)]="categoryGroup.name" required="required" autofocus="autofocus"
+                       maxlength="128" #name="ngModel">
+                <label for="inputName">Name</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="form-label-group">
+                <input type="text-area" id="inputDescription" class="form-control" placeholder="Name"
+                       required="required" autofocus="autofocus"
+                name="description" [(ngModel)]="categoryGroup.description" #description="ngModel">
+                <label for="inputDescription">Description</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="isEditMode">
+          <div class="col-md-4">
+            <div class="form-group">
+              <div class="select">
+                <select [(ngModel)]="categoryGroup.status" name="status" #status="ngModel" class="form-control">
+                  <option *ngFor="let item of statuss" [value]="item.value">{{item.category}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-1">
+            <input type="submit" value="Save" class="btn btn-primary"/>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary" (click)="cancel()">Cancel</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+  </div>
+</div>

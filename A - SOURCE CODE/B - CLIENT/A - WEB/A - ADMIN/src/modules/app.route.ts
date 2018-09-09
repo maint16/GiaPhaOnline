@@ -28,9 +28,30 @@ export const routes: Routes = [
         path: 'manage-users',
         loadChildren: 'modules/manage-users/manage-users.module#ManageUsersModule',
         canActivate : [IsAuthorizedGuard]
-      },
+      }
     ]
-  }
+  },
+  {
+    path: 'manage-category-group',
+    canActivate : [IsAuthorizedGuard],
+    children: [
+      {
+        path: '',
+        loadChildren: 'modules/manage-category-group/manage-category-group.module#ManageCategoryGroupModule',
+        canActivate : [IsAuthorizedGuard]
+      },
+      {
+        path: 'category-group',
+        loadChildren: 'modules/add-category-group/add-category-group.module#AddCategoryGroupModule',
+        canActivate : [IsAuthorizedGuard]
+      },
+      {
+        path: 'category-group/:id',
+        loadChildren: 'modules/add-category-group/add-category-group.module#AddCategoryGroupModule',
+        canActivate : [IsAuthorizedGuard]
+      }
+    ]
+  },
 ];
 
 //#endregion

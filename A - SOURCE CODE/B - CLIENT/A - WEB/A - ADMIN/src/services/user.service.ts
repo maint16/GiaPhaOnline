@@ -41,15 +41,15 @@ export class UserService implements IUserService {
     }
   public getUserDetail(id)
     {
-      var url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.getUserDetail;
-      url.replace('{id}', id);
+      const url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.getUserDetail;
+      url = url.replace('{id}', id);
       return this.httpClient.get(url);
     }
   public saveUserStatus(condition: SaveUserStatusViewModel)
     {
-      var url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.saveUserStatus;
+      const url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.saveUserStatus;
       url.replace('{id}', String(condition.userId));
-      var body = {
+      let body = {
         status: condition.userStatus
       };
       return this.httpClient.put(url, body);

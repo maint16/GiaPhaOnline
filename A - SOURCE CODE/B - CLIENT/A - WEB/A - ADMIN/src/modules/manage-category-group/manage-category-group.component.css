@@ -1,0 +1,13 @@
+.field_set{
+  border-color: #F00;
+  border-style: solid;
+}
+
+.greenColor{
+  color:green;
+}
+.trashCan{
+  color:red;
+  padding-left: 5%;
+}
+.pointer {cursor: pointer;}

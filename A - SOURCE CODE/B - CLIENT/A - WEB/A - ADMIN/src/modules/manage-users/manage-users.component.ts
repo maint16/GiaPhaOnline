@@ -15,6 +15,7 @@ import {LazyLoadEvent} from 'primeng/api';
 export class ManageUsersComponent implements OnInit {
   public users: User[];
   public selectedUserId: number;
+  public getPersonalProfileId: number;
   public totalUser: number;
   public loadUsersCondition: LoadUserViewModel;
   public pagination: Pagination;
@@ -36,6 +37,9 @@ export class ManageUsersComponent implements OnInit {
     editUser(userId) {
       this.selectedUserId = userId;
     }
+  getPersonalProfile(userId) {
+    this.getPersonalProfileId = userId;
+  }
   loadCarsLazy(event: LazyLoadEvent) {
       if (this.users) {
         this.pagination = new Pagination();

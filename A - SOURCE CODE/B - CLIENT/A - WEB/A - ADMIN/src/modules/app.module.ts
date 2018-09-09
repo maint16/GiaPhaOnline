@@ -17,7 +17,6 @@ import {AppConfigService} from '../services/app-config.service';
 import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, SocialLoginModule} from 'angular5-social-login';
 import {ConfigLoginConstant} from '../constants/config-login.constant';
 import {AccountService} from '../services/account.service';
-import {ConfigUrlUserServiceConstant} from '../constants/config-url-user-service.constant';
 import {ToastrModule, ToastrService} from 'ngx-toastr';
 import {NgxPaginationModule} from 'ngx-pagination';
 //#region Factory functions
