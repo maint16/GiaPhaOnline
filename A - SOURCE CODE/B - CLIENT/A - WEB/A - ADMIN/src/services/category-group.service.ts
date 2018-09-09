@@ -37,7 +37,7 @@ export class CategoryGroupService implements ICategoryGroupService {
     return this.httpClient.post<SearchResult<CategoryGroup>>(url, condition);
   }
   public updateCategoryGroup(id: number, conditions: AddCategoryGroup): Observable<CategoryGroup>{
-      const url = `${ConfigUrlService.urlAPI}/${ConfigUrlCategoryGroupServiceConstant.editCategoryGroup}`;
+      let url = `${ConfigUrlService.urlAPI}/${ConfigUrlCategoryGroupServiceConstant.editCategoryGroup}`;
     url = url.replace('{id}', String(id));
     return this.httpClient.put<CategoryGroup>(url, conditions);
   }
