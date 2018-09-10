@@ -18,6 +18,9 @@ module.exports = (ngModule) => {
     const {UserService} = require('./user.service');
     ngModule.service('$user', UserService);
 
+    const {FollowingTopicService} = require('./following-topic.service');
+    ngModule.service('$followingTopic', FollowingTopicService);
+
     const {FileService} = require('./file.service');
     ngModule.service('$file', FileService);
 

@@ -1,6 +1,6 @@
 import {StateProvider} from "@uirouter/angularjs";
 import {UrlStateConstant} from "../../../constants/url-state.constant";
-import {IPromise, module} from 'angular';
+import {IPromise, IQService, module} from 'angular';
 import {User} from "../../../models/entities/user";
 import {StateParams, StateService} from '@uirouter/angularjs';
 import {LoadUserViewModel} from "../../../view-models/users/load-user.view-model";
@@ -8,6 +8,7 @@ import {Pagination} from "../../../models/pagination";
 import {IUserService} from "../../../interfaces/services/user-service.interface";
 import {SearchResult} from "../../../models/search-result";
 import {Ng1ViewDeclaration} from "@uirouter/angularjs/lib/interface";
+import {PersonalFollowingTopicsController} from "./following-topics/following-topics.controller";
 
 /* @ngInject */
 export class ProfileModule {
@@ -53,6 +54,18 @@ export class ProfileModule {
             controller: 'profileTopicsController'
         };
 
+        views[`${UrlStateConstant.followingTopicsModuleName}@${UrlStateConstant.profileModuleName}`] = {
+            templateProvider: ['$q', ($q) => {
+                // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
+                return $q((resolve) => {
+                    // lazy load the view
+                    require.ensure([], () => {
+                        resolve(require('./following-topics/following-topics.html'));
+                    });
+                });
+            }],
+            controller: 'followingTopicsController'
+        };
 
         //#endregion
 
@@ -94,6 +107,20 @@ export class ProfileModule {
 
                                 const {PersonalTopicsController} = require('./topics/topics.controller.ts');
                                 ngModule.controller('profileTopicsController', PersonalTopicsController);
+                                $ocLazyLoad.load({name: ngModule.name});
+                                resolve(ngModule.controller);
+                            })
+                        });
+                    },
+
+                    loadFollowingTopicsController: ($q: IQService, $ocLazyLoad) => {
+                        return $q((resolve) => {
+                            require.ensure([], () => {
+                                // load only controller module
+                                let ngModule = module('account.profile.following-topics', []);
+
+                                const {PersonalFollowingTopicsController} = require('./following-topics/following-topics.controller.ts');
+                                ngModule.controller('followingTopicsController', PersonalFollowingTopicsController);
                                 $ocLazyLoad.load({name: ngModule.name});
                                 resolve(ngModule.controller);
                             })
