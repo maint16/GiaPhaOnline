@@ -6,6 +6,7 @@ import {UserDetailComponent} from './user-detail.component';
 // import {ManageUsersRouteModule} from './user-detail.route';
 import {TableModule} from 'primeng/table';
 import {DataTableModule} from 'primeng/primeng';
+import {TranslateModule} from '@ngx-translate/core';
 //#region Routes declaration
 
 
@@ -20,7 +21,8 @@ import {DataTableModule} from 'primeng/primeng';
     SharedModule,
     // ManageUsersRouteModule,
     TableModule,
-    DataTableModule
+    DataTableModule,
+    TranslateModule
   ],
   declarations: [
     UserDetailComponent

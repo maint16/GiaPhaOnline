@@ -40,7 +40,7 @@ export class ManageUsersComponent implements OnInit {
   getPersonalProfile(userId) {
     this.getPersonalProfileId = userId;
   }
-  loadCarsLazy(event: LazyLoadEvent) {
+  loadUsersLazy(event: LazyLoadEvent) {
       if (this.users) {
         this.pagination = new Pagination();
         this.pagination.page = event.first / event.rows + 1;

@@ -4,5 +4,10 @@
   "TITLE_STUDENT_PROFILE": "Student profile",
   "TITLE_EMAIL_LOGIN": "Email Address",
   "TITLE_PASSWORD_LOGIN": "Password",
-  "TITLE_STUDENT_DASHBOARD": "Student dashboard"
+  "TITLE_EMAIL": "Email",
+  "TITLE_NICKNAME": "Nick Name",
+  "TITLE_STATUS": "Status",
+  "TITLE_NAME": "Name",
+  "TITLE_DESCRIPTION": "Description"
+
 }

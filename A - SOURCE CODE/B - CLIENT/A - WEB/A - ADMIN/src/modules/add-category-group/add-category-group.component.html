@@ -22,7 +22,7 @@
                        id="inputName" class="form-control" placeholder="Name"
                        [(ngModel)]="categoryGroup.name" required="required" autofocus="autofocus"
                        maxlength="128" #name="ngModel">
-                <label for="inputName">Name</label>
+                <label for="inputName">{{ 'TITLE_NAME' | translate }}</label>
               </div>
             </div>
           </div>
@@ -35,7 +35,7 @@
                 <input type="text-area" id="inputDescription" class="form-control" placeholder="Name"
                        required="required" autofocus="autofocus"
                 name="description" [(ngModel)]="categoryGroup.description" #description="ngModel">
-                <label for="inputDescription">Description</label>
+                <label for="inputDescription">{{ 'TITLE_DESCRIPTION' | translate }}</label>
               </div>
             </div>
           </div>

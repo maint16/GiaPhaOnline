@@ -3,6 +3,7 @@ import {UserViewModel} from '../../view-models/user.view-model';
 import {IUserService} from '../../interfaces/services/user-service.interface';
 import {ToastrService} from 'ngx-toastr';
 import {SaveUserStatusViewModel} from '../../view-models/user/save-user-status.view-model';
+import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'user-detail',
   templateUrl: 'user-detail.component.html',
@@ -32,7 +33,9 @@ export class UserDetailComponent implements OnInit {
 });
 }
 }
-  public constructor(@Inject('IUserService') private userService: IUserService, private toastr: ToastrService) {
+  public constructor(@Inject('IUserService') private userService: IUserService, private toastr: ToastrService,
+                     private translate: TranslateService) {
+    translate.setDefaultLang('en');
   }
 
   ngOnInit() {

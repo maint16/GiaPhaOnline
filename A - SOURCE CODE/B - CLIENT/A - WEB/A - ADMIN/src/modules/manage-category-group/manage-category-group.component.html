@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
       <p-table [value]="categoryGroups" [responsive]="true" [lazy]="true"
-               [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadCarsLazy($event)" [rows]= "5"
+               [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadCGLazy($event)" [rows]= "5"
                [totalRecords]="totalCategoryGroup"
                [paginator]="true" sortMode="multiple">
         <ng-template pTemplate="header">

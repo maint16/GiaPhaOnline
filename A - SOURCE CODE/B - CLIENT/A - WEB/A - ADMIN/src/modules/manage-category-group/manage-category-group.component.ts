@@ -36,7 +36,7 @@ export class ManageCategoryGroupComponent implements OnInit {
         this.totalCategoryGroup = loadCategoryGroupsResult.total;
       });
   }
-  loadCarsLazy(event: LazyLoadEvent) {
+  loadCGLazy(event: LazyLoadEvent) {
     if (this.categoryGroups) {
       this.pagination = new Pagination();
       this.pagination.page = event.first / event.rows + 1;

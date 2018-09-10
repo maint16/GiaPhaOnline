@@ -6,6 +6,7 @@ import {AddCategoryGroupComponent} from './add-category-group.component';
 import {TableModule} from 'primeng/table';
 import {DataTableModule} from 'primeng/primeng';
 import {AddCategoryGroupRouteModule} from './add-category-group.route';
+import {TranslateModule} from '@ngx-translate/core';
 //#region Routes declaration
 
 
@@ -21,6 +22,7 @@ import {AddCategoryGroupRouteModule} from './add-category-group.route';
     TableModule,
     DataTableModule,
     AddCategoryGroupRouteModule,
+    TranslateModule
   ],
   declarations: [
     AddCategoryGroupComponent

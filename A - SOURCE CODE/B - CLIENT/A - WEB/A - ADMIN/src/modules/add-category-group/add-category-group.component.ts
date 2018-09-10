@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {CategoryGroup} from '../../models/entities/category-group';
 import {SearchResult} from '../../models/search-result';
 import {LoadCategoryGroupViewModel} from '../../view-models/category-group/load-category-group.view-model';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'add-category-group',
@@ -25,7 +26,8 @@ export class AddCategoryGroupComponent implements OnInit {
     {category: 'Inactive', value: 2}
   ];
   public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService, private toastr: ToastrService,
-                     public router: Router, private route: ActivatedRoute) {
+                     public router: Router, private route: ActivatedRoute, private translate: TranslateService) {
+    translate.setDefaultLang('en');
     this.categoryGroup = new AddCategoryGroup();
     // check if route has parameter => in edit mode => load model from database
     this.route.params.subscribe(params => {
