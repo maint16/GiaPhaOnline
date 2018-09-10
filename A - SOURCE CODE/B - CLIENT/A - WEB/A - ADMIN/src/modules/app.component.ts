@@ -1,8 +1,9 @@
 import {Component, OnInit, Renderer2} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'body',
@@ -18,7 +19,6 @@ export class AppComponent implements OnInit {
   public constructor(private router: Router,
                      private activatedRoute: ActivatedRoute,
                      private renderer: Renderer2) {
-
   }
 
   //#endrgion
@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
         if (!classes || classes.length < 1)
           return;
 
-        for (let szClass of classes){
+        for (let szClass of classes) {
           this.renderer.addClass(document.body, szClass);
         }
 

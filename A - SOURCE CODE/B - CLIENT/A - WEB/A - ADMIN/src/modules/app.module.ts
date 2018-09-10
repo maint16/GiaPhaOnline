@@ -10,7 +10,7 @@ import {AppSettings} from '../constants/app-settings.constant';
 import {ServiceModule} from '../services/service.module';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {HttpLoaderFactory} from '../factories/ngx-translate.factory';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {ResolveModule} from '../resolves/resolve.module';
 import {GuardModule} from '../guards/guard.module';
 import {AppConfigService} from '../services/app-config.service';
@@ -94,5 +94,8 @@ export function getAuthServiceConfigs() {
 
 export class AppModule {
 }
-
+// required for AOT compilation
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 //#endregion

@@ -35,7 +35,7 @@ export class NavigationBarComponent {
   public clickSignOut(): void {
     // Clear the authentication service.
     this.authenticationService.clearIdentity();
-
+debugger;
     // Re-direct to login page.
     this.router.navigate(['/login']);
   }

@@ -43,10 +43,7 @@ export class UserDetailComponent implements OnInit {
     saveUserStatusViewModel.userStatus = this.user.status;
   this.userService.saveUserStatus(saveUserStatusViewModel).subscribe((data: any) => {
     this.user = null;
-    this.toastr.success('Hello world!', 'Toastr fun!');
-    this.toastr.error('everything is broken', 'Major Error', {
-      timeOut: 3000
-    });
+    this.toastr.success('Update Successfully');
   });
   }
   public cancel() {

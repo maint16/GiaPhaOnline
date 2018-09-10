@@ -19,7 +19,7 @@
                    [readonly]="isBusy"
                    required="required"
                    maxlength="128">
-            <label for="inputEmail">Email address</label>
+            <label for="inputEmail">{{ 'TITLE_EMAIL_LOGIN' | translate }}</label>
           </div>
             <!-- Email validation messages -->
             <div class="validation-summary"
@@ -45,7 +45,7 @@
                    minlength="6"
                    maxlength="16"
                    pattern="^[A-Za-z0-9!@#$%^&*]*$">
-            <label for="password">Password</label>
+            <label for="password">{{ 'TITLE_PASSWORD_LOGIN' | translate }}</label>
           </div>
             <div class="validation-summary"
                  *ngIf="!password.valid && password.dirty">

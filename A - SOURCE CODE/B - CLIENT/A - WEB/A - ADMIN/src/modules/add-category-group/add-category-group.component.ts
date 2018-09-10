@@ -50,7 +50,7 @@ export class AddCategoryGroupComponent implements OnInit {
     // if is in edit mode
     if(this.isEditMode){
       this.categoryGroupService.updateCategoryGroup(this.itemId, this.categoryGroup).subscribe((data: any)=>{
-        this.toastr.success('Hello world!', 'Toastr fun!');
+        this.toastr.success('Update Category Group Successfully');
         // Redirect to manage-category-group.
         this.router.navigate(['/manage-category-group']);
       });
@@ -58,7 +58,7 @@ export class AddCategoryGroupComponent implements OnInit {
     // if is in create new mode
     else{
       this.categoryGroupService.addCategoryGroup(this.categoryGroup).subscribe((data: any)=>{
-        this.toastr.success('Hello world!', 'Toastr fun!');
+        this.toastr.success('Save Category Group Successfully');
         // Redirect to manage-category-group.
         this.router.navigate(['/manage-category-group']);
       });

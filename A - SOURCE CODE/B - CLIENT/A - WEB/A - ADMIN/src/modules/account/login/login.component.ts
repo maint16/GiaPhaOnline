@@ -8,10 +8,9 @@ import {
   FacebookLoginProvider,
   GoogleLoginProvider
 } from 'angular5-social-login';
-import {AppSettings} from '../../../constants/app-settings.constant';
 import {ConfigLoginConstant} from '../../../constants/config-login.constant';
 import {AccountService} from '../../../services/account.service';
-import {AuthenticationService} from '../../../services/authentication.service';
+import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'account-login',
   templateUrl: 'login.component.html',
@@ -37,7 +36,9 @@ export class LoginComponent {
   //#region Constructor
 
   public constructor(@Inject('IAuthenticationService') public authenticationService: IAuthenticationService,
-                     public router: Router, private socialAuthService: AuthService, private userService: AccountService) {
+                     public router: Router, private socialAuthService: AuthService, private userService: AccountService,
+                     private translate: TranslateService) {
+    translate.setDefaultLang('en');
     this.model = new LoginViewModel();
 
   }
