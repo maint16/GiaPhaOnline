@@ -13,6 +13,8 @@ export class PaginationConstant {
 
     public static followingTopics: number = 30;
 
+    public static followingCategories: number = 30;
+
     //#endregion
 
 }

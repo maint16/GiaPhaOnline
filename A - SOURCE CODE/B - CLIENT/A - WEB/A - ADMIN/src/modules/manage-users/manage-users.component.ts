@@ -7,26 +7,42 @@ import {Pagination} from '../../models/pagination';
 import {SearchResult} from '../../models/search-result';
 import {User} from '../../models/entities/user';
 import {LazyLoadEvent} from 'primeng/api';
+
 @Component({
   selector: 'manage-users',
   templateUrl: 'manage-users.component.html',
   styleUrls: ['manage-users.component.css']
 })
 export class ManageUsersComponent implements OnInit {
+
+  //#region Properties
+
   public users: User[];
   public selectedUserId: number;
   public getPersonalProfileId: number;
   public totalUser: number;
   public loadUsersCondition: LoadUserViewModel;
   public pagination: Pagination;
+
+  //#endregion
+
+  //#region Constructor
+
   public constructor(@Inject('IUserService') private userService: IUserService) {
   }
-  ngOnInit() {
+
+  //#endregion
+
+  //#region Methods
+
+  // Called when component is initialized.
+  public ngOnInit(): void {
     this.loadUsersCondition = new LoadUserViewModel();
     this.pagination = new Pagination();
     this.pagination.page = 1;
     this.pagination.records = 5;
     this.loadUsersCondition.pagination = this.pagination;
+
     // Load user using specific conditions.
     this.userService.loadUsers(this.loadUsersCondition)
       .subscribe((loadUsersResult: SearchResult<User>) => {
@@ -34,22 +50,29 @@ export class ManageUsersComponent implements OnInit {
         this.totalUser = loadUsersResult.total;
       });
   }
-    editUser(userId) {
-      this.selectedUserId = userId;
-    }
-  getPersonalProfile(userId) {
+
+  // Display modal to edit user.
+  public editUser(userId: number): void {
+    this.selectedUserId = userId;
+  }
+
+  // Display user profile.
+  public getPersonalProfile(userId: number): void {
     this.getPersonalProfileId = userId;
   }
+
   loadCarsLazy(event: LazyLoadEvent) {
-      if (this.users) {
-        this.pagination = new Pagination();
-        this.pagination.page = event.first / event.rows + 1;
-        this.pagination.records = event.rows;
-        this.userService.loadUsers(this.loadUsersCondition)
-          .subscribe((loadUsersResult: SearchResult<User>) => {
-            this.users = loadUsersResult.records;
-            this.totalUser = loadUsersResult.total;
-          });
-      }
+    if (this.users) {
+      this.pagination = new Pagination();
+      this.pagination.page = event.first / event.rows + 1;
+      this.pagination.records = event.rows;
+      this.userService.loadUsers(this.loadUsersCondition)
+        .subscribe((loadUsersResult: SearchResult<User>) => {
+          this.users = loadUsersResult.records;
+          this.totalUser = loadUsersResult.total;
+        });
+    }
   }
-  }
+
+  //#endregion
+}
