@@ -39,6 +39,7 @@ export interface IUserService {
     * */
     loadUserProfile(id?: number): IPromise<User>;
 
+
     // Load available statuses for user.
     loadUserAvailableStatuses(): Array<UserStatus>;
 

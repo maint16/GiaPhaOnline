@@ -22,8 +22,6 @@ export class UrlStateConstant {
 
     public static profileTopicsModuleName: string = 'profile-topics';
 
-    public static profileTopicsModuleUrl: string = '/profile-topics';
-
     // Category topic module name.
     public static categoryTopicModuleName: string = 'topics';
 
@@ -35,6 +33,9 @@ export class UrlStateConstant {
 
     // Topic module name.
     public static topicModuleName: string = 'topic';
+
+    // Following topics name.
+    public static followingTopicsModuleName: string = 'following-topics';
 
     // Add topic url.
     public static addTopicModuleUrl: string = '/add-topic';

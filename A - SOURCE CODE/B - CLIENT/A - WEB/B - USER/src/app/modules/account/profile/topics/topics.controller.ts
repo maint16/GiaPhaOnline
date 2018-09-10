@@ -11,6 +11,8 @@ import {Category} from "../../../../models/entities/category";
 import {ICategoryService} from "../../../../interfaces/services/category-service.interface";
 import {LoadCategoryViewModel} from "../../../../view-models/load-category.view-model";
 import {IUserService} from "../../../../interfaces/services/user-service.interface";
+import {StateService} from "@uirouter/core";
+import {UrlStateConstant} from "../../../../constants/url-state.constant";
 
 /* @ngInject */
 export class PersonalTopicsController implements IController {
@@ -24,7 +26,7 @@ export class PersonalTopicsController implements IController {
     // Initialize controller with injectors.
     public constructor(public $ui: IUiService,
                        public $topic: ITopicService, public $category: ICategoryService, public $user: IUserService,
-                       public $q: IQService,
+                       public $q: IQService, public $state: StateService,
                        public $scope: IPersonalTopicsScope) {
 
         // Property binding.
@@ -35,12 +37,15 @@ export class PersonalTopicsController implements IController {
         // loadPersonalTopicsCondition.ownerIds = [user.id];
         loadPersonalTopicsCondition.pagination = pagination;
 
-        $scope.urlStateConstant = require('../../../../constants/url-state.constant').UrlStateConstant;
+        $scope.urlStateConstant = UrlStateConstant;
         $scope.loadPersonalTopicsCondition = loadPersonalTopicsCondition;
 
         // Methods binding.
         $scope.ngOnInit = this._ngOnInit;
         $scope.ngOnTopicsPageChanged = this._ngOnTopicsPageChanged;
+        $scope.ngOnViewTopicClicked = this._ngOnViewTopicClicked;
+        $scope.ngOnEditTopicClicked = this._ngOnEditTopicClicked;
+        $scope.ngOnDeleteTopicClicked = this._ngOnDeleteTopicClicked;
     }
 
     //#endregion
@@ -65,6 +70,22 @@ export class PersonalTopicsController implements IController {
             .finally(() => {
                 this.$ui.unblockAppUI();
             });
+    };
+
+    // Called when view topic is clicked.
+    private _ngOnViewTopicClicked = (topic: Topic): void => {
+        this.$state
+            .go(UrlStateConstant.topicModuleName, {topicId: topic.id});
+    };
+
+    // Called when edit topic is clicked.
+    private _ngOnEditTopicClicked = (topic: Topic): void => {
+        this.$state
+            .go(UrlStateConstant.editTopicModuleName, {topicId: topic.id});
+    };
+
+    // Called when delete topic is clicked.
+    private _ngOnDeleteTopicClicked = (topic: Topic): void => {
     };
 
     // Load personal topics using specific conditions.

@@ -1,4 +1,4 @@
-export enum TopicTypeEnum {
+export enum TopicType {
     private,
     public
 }

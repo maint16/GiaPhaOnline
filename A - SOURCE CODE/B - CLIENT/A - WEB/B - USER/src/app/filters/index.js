@@ -5,4 +5,10 @@ module.exports = (ngModule) => {
 
     const {toUserRoleTitle} = require('./to-user-role-title.filter');
     ngModule.filter('toUserRoleTitle', toUserRoleTitle);
+
+    const {toItemStatusTitle} = require('./to-item-status-title.filter');
+    ngModule.filter('toItemStatusTitle', toItemStatusTitle);
+
+    const {toTopicTypeTitle} = require('./to-topic-type-title.filter');
+    ngModule.filter('toTopicTypeTitle', toTopicTypeTitle);
 };

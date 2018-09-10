@@ -1,6 +1,7 @@
 import {TopicType} from "../../enums/topic-type.enum";
+import {ItemStatus} from "../../enums/item-status.enum";
 
-export class Topic {
+export class FollowingTopicViewModel {
 
     //#region Properties
 
@@ -12,14 +13,14 @@ export class Topic {
 
     public title: string = '';
 
-    public body: string = '';
-
     public type: TopicType = TopicType.private;
+
+    public status: ItemStatus = ItemStatus.available;
 
     public createdTime: number = 0;
 
     public lastModifiedTime: number | null = null;
-    
+
     //#endregion
 
 }

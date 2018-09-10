@@ -1,0 +1,36 @@
+<div ng-init="ngOnInit()"
+     class="box-body">
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <th>{{'TITLE_TOPIC' | translate}}</th>
+            <th>{{'TITLE_FOLLOWED_TIME' | translate}}</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="followingTopic in loadedFollowingTopic.records"
+            ng-init="topic = ngGetTopic(followingTopic.topicId)">
+            <td>
+                <a href>{{topic.title}}</a>
+            </td>
+            <td>
+                <a href>{{followingTopic.createdTime}}</a>
+            </td>
+            <td>
+                <button class="btn btn-info"
+                        ng-click="ngOnTopicClicked(topic.id)">
+                    <span class="fa fa-eye"></span>
+                </button>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="box-footer text-center">
+    <ul uib-pagination
+        total-items="loadedFollowingTopic.total"
+        ng-model="loadedPersonalTopics.pagination.page"
+        ng-change="ngOnPageChanged()"></ul>
+</div>
