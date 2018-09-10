@@ -32,8 +32,7 @@ export class ProfileController implements IController {
                        public $translate: angular.translate.ITranslateService, public localStorageService: ILocalStorageService,
                        public $user: IUserService,
                        public $file: IFileService, public $ui: IUiService,
-                       public $scope: IProfileScope, public FileUploader: FileUploaderFactory,
-                       public $element: IRootElementService){
+                       public $scope: IProfileScope, public FileUploader: FileUploaderFactory){
 
         // Properties binding.
         $scope.urlStateConstant = UrlStateConstant;
@@ -51,6 +50,9 @@ export class ProfileController implements IController {
 
         profileImageUploader.onAfterAddingFile = this._ngOnAfterAddingProfileImage;
         $scope.profileImageUploader = profileImageUploader;
+
+        // Make no tab selected.
+        $scope.activeProfileTab = 0;
 
         // Method binding.
         $scope.ngOnUploadProfileModalClicked = this._ngOnUploadProfileModalClicked;

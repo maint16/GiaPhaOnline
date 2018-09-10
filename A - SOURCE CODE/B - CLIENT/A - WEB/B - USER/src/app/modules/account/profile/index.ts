@@ -9,6 +9,7 @@ import {IUserService} from "../../../interfaces/services/user-service.interface"
 import {SearchResult} from "../../../models/search-result";
 import {Ng1ViewDeclaration} from "@uirouter/angularjs/lib/interface";
 import {PersonalFollowingTopicsController} from "./following-topics/following-topics.controller";
+import {FollowingCategoriesController} from "./following-categories/following-categories.controller";
 
 /* @ngInject */
 export class ProfileModule {
@@ -41,6 +42,7 @@ export class ProfileModule {
             controller: 'profileController'
         };
 
+        // Created topics sub-view
         views[`${UrlStateConstant.profileTopicsModuleName}@${UrlStateConstant.profileModuleName}`] = {
             templateProvider: ['$q', ($q) => {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
@@ -54,6 +56,7 @@ export class ProfileModule {
             controller: 'profileTopicsController'
         };
 
+        // Following topics.
         views[`${UrlStateConstant.followingTopicsModuleName}@${UrlStateConstant.profileModuleName}`] = {
             templateProvider: ['$q', ($q) => {
                 // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
@@ -65,6 +68,20 @@ export class ProfileModule {
                 });
             }],
             controller: 'followingTopicsController'
+        };
+
+        // Following categories
+        views[`${UrlStateConstant.followingCategoriesModuleName}@${UrlStateConstant.profileModuleName}`] = {
+            templateProvider: ['$q', ($q) => {
+                // We have to inject $q service manually due to some reasons that ng-annotate cannot add $q service in production mode.
+                return $q((resolve) => {
+                    // lazy load the view
+                    require.ensure([], () => {
+                        resolve(require('./following-categories/following-categories.html'));
+                    });
+                });
+            }],
+            controller: 'followingCategoriesController'
         };
 
         //#endregion
@@ -109,10 +126,11 @@ export class ProfileModule {
                                 ngModule.controller('profileTopicsController', PersonalTopicsController);
                                 $ocLazyLoad.load({name: ngModule.name});
                                 resolve(ngModule.controller);
-                            })
+                            });
                         });
                     },
 
+                    // Load following topics controller.
                     loadFollowingTopicsController: ($q: IQService, $ocLazyLoad) => {
                         return $q((resolve) => {
                             require.ensure([], () => {
@@ -123,7 +141,22 @@ export class ProfileModule {
                                 ngModule.controller('followingTopicsController', PersonalFollowingTopicsController);
                                 $ocLazyLoad.load({name: ngModule.name});
                                 resolve(ngModule.controller);
-                            })
+                            });
+                        });
+                    },
+
+                    // Load following categories controller.
+                    loadFollowingCategoriesController: ($q: IQService, $ocLazyLoad) => {
+                        return $q((resolve) => {
+                            require.ensure([], () => {
+                                // load only controller module
+                                let ngModule = module('account.profile.following-categories', []);
+
+                                const {FollowingCategoriesController} = require('./following-categories/following-categories.controller.ts');
+                                ngModule.controller('followingCategoriesController', FollowingCategoriesController);
+                                $ocLazyLoad.load({name: ngModule.name});
+                                resolve(ngModule.controller);
+                            });
                         });
                     },
 

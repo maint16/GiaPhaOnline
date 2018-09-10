@@ -3,20 +3,20 @@
     <table class="table table-condensed">
         <thead>
         <tr>
-            <th>{{'TITLE_TOPIC' | translate}}</th>
+            <th>{{'TITLE_CATEGORY' | translate}}</th>
             <th>{{'TITLE_FOLLOWED_TIME' | translate}}</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="followingTopic in loadedFollowingTopic.records"
-            ng-init="topic = ngGetTopic(followingTopic.topicId)">
+        <tr ng-repeat="followingCategory in loadFollowingCategoriesResult.records"
+            ng-init="category = ngGetCategory(followingCategory.categoryId)">
             <td>
                 <a href
-                   ng-click="ngOnTopicClicked(topic.id)">{{topic.title}}</a>
+                   ng-click="ngOnTopicClicked(topic.id)">{{category.name}}</a>
             </td>
             <td>
-                <a href>{{followingTopic.createdTime}}</a>
+                <a href>{{followingCategory.createdTime}}</a>
             </td>
             <td>
                 <button class="btn btn-info"
@@ -31,7 +31,7 @@
 </div>
 <div class="box-footer text-center">
     <ul uib-pagination
-        total-items="loadedFollowingTopic.total"
-        ng-model="loadedPersonalTopics.pagination.page"
+        total-items="loadFollowingCategoriesResult.total"
+        ng-model="loadFollowingCategoriesCondition.pagination.page"
         ng-change="ngOnPageChanged()"></ul>
 </div>

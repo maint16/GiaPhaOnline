@@ -37,6 +37,9 @@ export class UrlStateConstant {
     // Following topics name.
     public static followingTopicsModuleName: string = 'following-topics';
 
+    // Following categories name.
+    public static followingCategoriesModuleName: string = 'following-categories';
+
     // Add topic url.
     public static addTopicModuleUrl: string = '/add-topic';
 

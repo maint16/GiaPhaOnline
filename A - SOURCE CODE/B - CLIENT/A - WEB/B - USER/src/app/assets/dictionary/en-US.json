@@ -46,6 +46,8 @@
   "TITLE_PRIVATE": "Private",
   "TITLE_TOPIC": "Topic",
   "TITLE_FOLLOWED_TIME": "Followed time",
+  "TITLE_FOLLOWING_CATEGORY": "Following category",
+  "TITLE_FOLLOWING_TOPIC": "Following topic",
 
   "MSG_FIELD_REQUIRED": "This field is required",
   "MSG_REQUEST_RESET_PASSWORD_SUCCESSFULLY": "A reset password email has been sent to you. Please check your inbox.",

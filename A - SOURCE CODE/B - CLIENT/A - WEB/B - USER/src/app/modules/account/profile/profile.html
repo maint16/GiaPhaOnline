@@ -132,20 +132,21 @@
 
         <div class="box box-info">
             <div class="box-body">
-                <ul class="nav nav-pills nav-justified">
-                    <li role="presentation" class="active">
-                        <a href="javascript:void(0);">{{'TITLE_TOPICS' | translate}}</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="javascript:void(0);">{{'TITLE_FOLLOWING_TOPICS' | translate}}</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="javascript:void(0);">{{'TITLE_FOLLOWING_CATEGORIES' | translate}}</a>
-                    </li>
-                </ul>
+                <uib-tabset active="activeProfileTab" justified="true">
+                    <uib-tab index="1" heading="{{'TITLE_TOPIC' | translate}}">
+                        <div ng-if="activeProfileTab === 1" ui-view="{{urlStateConstant.profileTopicsModuleName}}"></div>
+                    </uib-tab>
+                    <uib-tab index="2" heading="{{'TITLE_FOLLOWING_CATEGORY' | translate}}">
+                        <div ng-if="activeProfileTab === 2" ui-view="{{urlStateConstant.followingTopicsModuleName}}"></div>
+                    </uib-tab>
+                    <uib-tab index="3" heading="{{'TITLE_FOLLOWING_TOPIC' | translate}}">
+                        <div ng-if="activeProfileTab === 3" ui-view="{{urlStateConstant.followingCategoriesModuleName}}"></div>
+                    </uib-tab>
+                </uib-tabset>
             </div>
-            <!--<div ui-view="{{urlStateConstant.profileTopicsModuleName}}"></div>-->
-            <div ui-view="{{urlStateConstant.followingTopicsModuleName}}"></div>
+
+
+
         </div>
     </div>
 </div>

@@ -25,7 +25,7 @@ export interface IFollowingTopicsScope extends IScope {
     ngOnPageChanged(): void;
 
     // Called when topic is clicked.
-    ngOnTopicClicked(topic: Topic): void;
+    ngOnTopicClicked(topicId: number): void;
 
     // Get topic information.
     ngGetTopic(id: number): Topic;
