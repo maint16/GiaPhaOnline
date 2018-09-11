@@ -1,13 +1,14 @@
 import {Component, Inject, Input, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {ICategoryGroupService} from '../../interfaces/services/category-group-service.interface';
-import {SearchResult} from '../../models/search-result';
-import {Pagination} from '../../models/pagination';
-import {CategoryGroup} from '../../models/entities/category-group';
-import {LoadCategoryGroupViewModel} from '../../view-models/category-group/load-category-group.view-model';
+import {ICategoryGroupService} from '../../../interfaces/services/category-group-service.interface';
+import {SearchResult} from '../../../models/search-result';
+import {Pagination} from '../../../models/pagination';
+import {CategoryGroup} from '../../../models/entities/category-group';
+import {LoadCategoryGroupViewModel} from '../../../view-models/category-group/load-category-group.view-model';
 import {LazyLoadEvent} from 'primeng/api';
-import {User} from '../../models/entities/user';
+import {User} from '../../../models/entities/user';
 import {Router} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'manage-category-group',
@@ -21,7 +22,8 @@ export class ManageCategoryGroupComponent implements OnInit {
   public loadCategoryGroupCondition: LoadCategoryGroupViewModel;
   public pagination: Pagination;
   public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService, private toastr: ToastrService,
-                     public route: Router) {
+                     public route: Router, private translate: TranslateService) {
+    translate.setDefaultLang('en');
   }
   ngOnInit() {
     this.loadCategoryGroupCondition = new LoadCategoryGroupViewModel();

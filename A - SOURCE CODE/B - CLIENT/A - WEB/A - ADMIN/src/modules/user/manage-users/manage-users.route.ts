@@ -1,9 +1,9 @@
 import {RouterModule, Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {AuthorizeLayoutComponent} from '../shared/authorize-layout/authorize-layout.component';
-import {IsAuthorizedGuard} from '../../guards/is-authorized-guard';
-import {ProfileResolve} from '../../resolves/profile.resolve';
 import {ManageUsersComponent} from './manage-users.component';
+import {AuthorizeLayoutComponent} from '../../shared/authorize-layout/authorize-layout.component';
+import {IsAuthorizedGuard} from '../../../guards/is-authorized-guard';
+import {ProfileResolve} from '../../../resolves/profile.resolve';
 
 //#region Route configuration
 

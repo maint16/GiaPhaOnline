@@ -1,9 +1,10 @@
 <div *ngIf="user">
   <div class="card mb-3">
-    <div class="card-header"><i class="fa fa-edit"></i> Edit User</div>
+    <div class="card-header"><i class="fa fa-edit"></i> Edit User
+    </div>
     <div class="card-body">
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
           <label>{{ 'TITLE_EMAIL' | translate }}</label>
         </div>
         <div class="col-md-4">
@@ -13,7 +14,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
           <label>{{ 'TITLE_NICKNAME' | translate }}</label>
         </div>
         <div class="col-md-4">
@@ -23,10 +24,10 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-md-3">
           <label>{{ 'TITLE_STATUS' | translate }}</label>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-4">
           <div class="form-group">
             <div class="select">
               <select [(ngModel)]="user.status" class="form-control">
@@ -37,11 +38,11 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-1">
+        <div class="col-md-5">
           <button class="btn btn-primary" (click)="saveUserStatus()">Save</button>
-        </div>
-        <div class="col-md-1">
-          <button class="btn btn-primary" (click)="cancel()">Cancel</button>
+        <!--</div>-->
+        <!--<div class="col-md-2">-->
+          <button class="btn btn-primary marginLeft" (click)="cancel()">Cancel</button>
         </div>
       </div>
     </div>

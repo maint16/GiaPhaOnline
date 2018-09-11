@@ -26,7 +26,7 @@ export const routes: Routes = [
       },
       {
         path: 'manage-users',
-        loadChildren: 'modules/manage-users/manage-users.module#ManageUsersModule',
+        loadChildren: 'modules/user/manage-users/manage-users.module#ManageUsersModule',
         canActivate : [IsAuthorizedGuard]
       }
     ]
@@ -37,17 +37,17 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: 'modules/manage-category-group/manage-category-group.module#ManageCategoryGroupModule',
+        loadChildren: 'modules/category-group/manage-category-group/manage-category-group.module#ManageCategoryGroupModule',
         canActivate : [IsAuthorizedGuard]
       },
       {
         path: 'category-group',
-        loadChildren: 'modules/add-category-group/add-category-group.module#AddCategoryGroupModule',
+        loadChildren: 'modules/category-group/add-category-group/add-category-group.module#AddCategoryGroupModule',
         canActivate : [IsAuthorizedGuard]
       },
       {
         path: 'category-group/:id',
-        loadChildren: 'modules/add-category-group/add-category-group.module#AddCategoryGroupModule',
+        loadChildren: 'modules/category-group/add-category-group/add-category-group.module#AddCategoryGroupModule',
         canActivate : [IsAuthorizedGuard]
       }
     ]

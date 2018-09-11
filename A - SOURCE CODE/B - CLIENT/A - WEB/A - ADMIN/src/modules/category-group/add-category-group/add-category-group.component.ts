@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {ToastrService} from 'ngx-toastr';
-import {ICategoryGroupService} from '../../interfaces/services/category-group-service.interface';
-import {Pagination} from '../../models/pagination';
-import {AddCategoryGroup} from '../../view-models/category-group/add-category-group.view-model';
+import {ICategoryGroupService} from '../../../interfaces/services/category-group-service.interface';
+import {Pagination} from '../../../models/pagination';
+import {AddCategoryGroup} from '../../../view-models/category-group/add-category-group.view-model';
 import {ActivatedRoute, Router} from '@angular/router';
-import {CategoryGroup} from '../../models/entities/category-group';
-import {SearchResult} from '../../models/search-result';
-import {LoadCategoryGroupViewModel} from '../../view-models/category-group/load-category-group.view-model';
+import {CategoryGroup} from '../../../models/entities/category-group';
+import {SearchResult} from '../../../models/search-result';
+import {LoadCategoryGroupViewModel} from '../../../view-models/category-group/load-category-group.view-model';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({

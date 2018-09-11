@@ -1,8 +1,8 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
-import {UserViewModel} from '../../view-models/user.view-model';
-import {IUserService} from '../../interfaces/services/user-service.interface';
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
+import {UserViewModel} from '../../../view-models/user.view-model';
+import {IUserService} from '../../../interfaces/services/user-service.interface';
 import {ToastrService} from 'ngx-toastr';
-import {SaveUserStatusViewModel} from '../../view-models/user/save-user-status.view-model';
+import {SaveUserStatusViewModel} from '../../../view-models/user/save-user-status.view-model';
 import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'user-detail',
@@ -12,6 +12,7 @@ import {TranslateService} from '@ngx-translate/core';
 
 export class UserDetailComponent implements OnInit {
   public user: UserViewModel;
+  @Output() closeModal = new EventEmitter<boolean>();
   public statuss = [
     {category: 'Active', value: 1},
     {category: 'Inactive', value: 2}
@@ -45,11 +46,11 @@ export class UserDetailComponent implements OnInit {
     saveUserStatusViewModel.userId = this.user.id;
     saveUserStatusViewModel.userStatus = this.user.status;
   this.userService.saveUserStatus(saveUserStatusViewModel).subscribe((data: any) => {
-    this.user = null;
     this.toastr.success('Update Successfully');
+    this.closeModal.emit(true);
   });
   }
   public cancel() {
-    this.user = null;
+    this.closeModal.emit(true);
   }
 }

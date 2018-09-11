@@ -16,10 +16,10 @@
                [paginator]="true" sortMode="multiple">
         <ng-template pTemplate="header">
           <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>createdTime</th>
-            <th>Action</th>
+            <th>{{'TITLE_NAME' | translate}}</th>
+            <th>{{'TITLE_DESCRIPTION' | translate}}</th>
+            <th>{{'TITLE_CREATED_TIME' | translate}}</th>
+            <th>{{'TITLE_ACTION' | translate}}</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-categoryGroup>
