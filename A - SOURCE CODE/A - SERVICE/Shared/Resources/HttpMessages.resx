@@ -212,6 +212,9 @@
   <data name="ReplyNotFound" xml:space="preserve">
     <value>REPLY_NOT_FOUND</value>
   </data>
+  <data name="ReportTopicNotFound" xml:space="preserve">
+    <value>REPORT_TOPIC_NOT_FOUND</value>
+  </data>
   <data name="TokenNotFound" xml:space="preserve">
     <value>TOKEN_NOT_FOUND</value>
   </data>
