@@ -1,9 +1,9 @@
 import {RouterModule, Routes} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {ManageUsersComponent} from './manage-users.component';
-import {AuthorizeLayoutComponent} from '../../shared/authorize-layout/authorize-layout.component';
-import {IsAuthorizedGuard} from '../../../guards/is-authorized-guard';
-import {ProfileResolve} from '../../../resolves/profile.resolve';
+import {IsAuthorizedGuard} from '../../guards/is-authorized-guard';
+import {ProfileResolve} from '../../resolves/profile.resolve';
+import {AuthorizeLayoutComponent} from '../shared/authorize-layout/authorize-layout.component';
+import {ManageUsersComponent} from './manage-users/manage-users.component';
 
 //#region Route configuration
 
@@ -18,9 +18,13 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '',
+        path: 'manage-users',
         component: ManageUsersComponent,
         pathMatch: 'full'
+      },
+      {
+        path: '**',
+        redirectTo: 'manage-users'
       }
     ]
   }
@@ -36,7 +40,7 @@ const routes: Routes = [
     RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ManageUsersRouteModule {
+export class UserRouteModule {
 }
 
 //#endregion

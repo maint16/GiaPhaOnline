@@ -18,7 +18,10 @@ export class AppComponent implements OnInit {
 
   public constructor(private router: Router,
                      private activatedRoute: ActivatedRoute,
+                     private translate: TranslateService,
                      private renderer: Renderer2) {
+    this.translate.use('en');
+
   }
 
   //#endrgion
@@ -54,6 +57,11 @@ export class AppComponent implements OnInit {
       });
   }
 
+
+  // Setup application language.
+  private _ngSetupAppLanguage(): void {
+
+  }
 
   //#endregion
 }

@@ -2,7 +2,7 @@
   "TITLE_ITEM_01": "Item 01",
   "TITLE_ITEM_02": "Item 02",
   "TITLE_STUDENT_PROFILE": "Student profile",
-  "TITLE_EMAIL_LOGIN": "Email Address",
+  "TITLE_EMAIL_LOGIN": "Email address",
   "TITLE_PASSWORD_LOGIN": "Password",
   "TITLE_EMAIL": "Email",
   "TITLE_NICKNAME": "Nickname",
@@ -10,8 +10,9 @@
   "TITLE_NAME": "Name",
   "TITLE_ROLE": "Role",
   "TITLE_DESCRIPTION": "Description",
-  "TITLE_JOINED_TIME": "Joined Time",
-  "TITLE_LAST_MODIFIED": "Last Modified",
+  "TITLE_JOINED_TIME": "Joined time",
+  "TITLE_LAST_MODIFIED": "Last modified",
   "TITLE_ACTION": "Action",
-  "TITLE_CREATED_TIME": "Created Time"
+  "TITLE_CREATED_TIME": "Created time",
+  "TITLE_USER_MANAGEMENT": "User management"
 }

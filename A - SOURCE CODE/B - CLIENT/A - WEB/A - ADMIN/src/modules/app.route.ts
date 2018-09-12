@@ -25,8 +25,8 @@ export const routes: Routes = [
         loadChildren: 'modules/account/account.module#AccountModule'
       },
       {
-        path: 'manage-users',
-        loadChildren: 'modules/user/manage-users/manage-users.module#ManageUsersModule',
+        path: 'user',
+        loadChildren: 'modules/user/user.module#UserModule',
         canActivate : [IsAuthorizedGuard]
       }
     ]

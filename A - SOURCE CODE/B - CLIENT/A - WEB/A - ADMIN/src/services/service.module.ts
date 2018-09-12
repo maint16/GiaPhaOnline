@@ -13,13 +13,18 @@ export class ServiceModule {
   //#region Methods
 
   static forRoot(): ModuleWithProviders {
-            return {
-              ngModule: ServiceModule,
-              providers: [
-                {provide: 'IAccountService', useClass: AccountService},
-                {provide: 'IAuthenticationService', useClass: AuthenticationService},
-                {provide: 'IUserService', useClass: UserService},
-                {provide: 'ICategoryGroupService', useClass: CategoryGroupService},
+    return {
+      ngModule: ServiceModule,
+      providers: [
+        {provide: 'IAccountService', useClass: AccountService},
+        {provide: 'IAuthenticationService', useClass: AuthenticationService},
+        {provide: 'IUserService', useClass: UserService},
+        {provide: 'ICategoryGroupService', useClass: CategoryGroupService},
+        {
+          provide: 'Window', useFactory: () => {
+            return window;
+          }
+        }
       ]
     };
   }

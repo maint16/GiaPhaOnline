@@ -19,9 +19,10 @@ import {ConfigLoginConstant} from '../constants/config-login.constant';
 import {AccountService} from '../services/account.service';
 import {ToastrModule, ToastrService} from 'ngx-toastr';
 import {NgxPaginationModule} from 'ngx-pagination';
+
 //#region Factory functions
 
-export function appConfigServiceFactory(appConfigService: AppConfigService, configLogin : ConfigLoginConstant) {
+export function appConfigServiceFactory(appConfigService: AppConfigService, configLogin: ConfigLoginConstant) {
   return () => appConfigService.loadConfigurationFromFile();
 }
 
@@ -29,20 +30,21 @@ export function appConfigServiceFactory(appConfigService: AppConfigService, conf
 
 // Configs
 export function getAuthServiceConfigs() {
-          let config = new AuthServiceConfig(
-            [
-               {
-                 id: FacebookLoginProvider.PROVIDER_ID,
-                 provider: new FacebookLoginProvider(ConfigLoginConstant.facebookAppId)
-               },
-              {
-                id: GoogleLoginProvider.PROVIDER_ID,
-                provider: new GoogleLoginProvider(ConfigLoginConstant.googleAppId)
+  let config = new AuthServiceConfig(
+    [
+      {
+        id: FacebookLoginProvider.PROVIDER_ID,
+        provider: new FacebookLoginProvider(ConfigLoginConstant.facebookAppId)
+      },
+      {
+        id: GoogleLoginProvider.PROVIDER_ID,
+        provider: new GoogleLoginProvider(ConfigLoginConstant.googleAppId)
       },
     ]
-);
+  );
   return config;
 }
+
 //#region Module declaration
 
 @NgModule({
@@ -94,8 +96,10 @@ export function getAuthServiceConfigs() {
 
 export class AppModule {
 }
+
 // required for AOT compilation
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+export function HttpLoaderFactory(httpClient: HttpClient) {
+  return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
+
 //#endregion

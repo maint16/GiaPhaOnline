@@ -1,18 +1,14 @@
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NgModule} from '@angular/core';
-import {ManageUsersComponent} from './manage-users.component';
-import {ManageUsersRouteModule} from './manage-users.route';
-import {PaginatorModule} from 'primeng/paginator';
-import {UserDetailModule} from '../user-detail/user-detail.module';
-import {NgxPaginationModule} from 'ngx-pagination';
-import {TableModule} from 'primeng/table';
+import {MomentModule} from 'ngx-moment';
 import {TranslateModule} from '@ngx-translate/core';
-import {SharedModule} from '../../shared/shared.module';
-//#region Routes declaration
-
-
-//#endregion
+import {UserRouteModule} from './user-route.module';
+import {ManageUsersComponent} from './manage-users/manage-users.component';
+import {NgxPaginationModule} from 'ngx-pagination';
+import {UserDetailModule} from './user-detail/user-detail.module';
+import {TableModule} from 'primeng/table';
+import {PaginatorModule} from 'primeng/paginator';
 
 //#region Module declaration
 
@@ -20,13 +16,13 @@ import {SharedModule} from '../../shared/shared.module';
   imports: [
     CommonModule,
     FormsModule,
-    SharedModule,
-    ManageUsersRouteModule,
     PaginatorModule,
     UserDetailModule,
     NgxPaginationModule,
     TableModule,
-    TranslateModule
+    TranslateModule.forChild({}),
+    MomentModule,
+    UserRouteModule
   ],
   declarations: [
     ManageUsersComponent
@@ -34,9 +30,9 @@ import {SharedModule} from '../../shared/shared.module';
   exports: [
     ManageUsersComponent
   ]
-  })
+})
 
-export class ManageUsersModule {
+export class UserModule {
 }
 
 //#endregion
