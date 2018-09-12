@@ -340,6 +340,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to REPORT_TOPIC_NOT_FOUND.
+        /// </summary>
+        public static string ReportTopicNotFound {
+            get {
+                return ResourceManager.GetString("ReportTopicNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TOKEN_NOT_FOUND.
         /// </summary>
         public static string TokenNotFound {
