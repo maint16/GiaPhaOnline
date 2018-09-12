@@ -9,16 +9,19 @@ using AppModel.Enumerations.Order;
 using AutoMapper;
 using Main.Interfaces.Services;
 using Main.ViewModels.FollowCategory;
+using Main.ViewModels.FollowTopic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace Main.Controllers
 {
-    [Route("api/follow-category")]
-    public class FollowCategoryController : Controller
+    [Route("api/follow-topic")]
+    public class FollowTopicControler : Controller
     {
         #region Constructors
 
@@ -30,7 +33,7 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
-        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService,
+        public FollowTopicControler(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService,
             ITimeService timeService, IRelationalDbService databaseFunction)
         {
             _unitOfWork = unitOfWork;
@@ -74,54 +77,54 @@ namespace Main.Controllers
         #region Methods
 
         /// <summary>
-        /// Start following a category.
+        /// Start following a topic.
         /// </summary>
-        /// <param name="categoryId"></param>
+        /// <param name="topicId"></param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> FollowCategory([FromQuery] int categoryId)
+        public async Task<IActionResult> FollowTopic([FromQuery] int topicId)
         {
-            #region Find category
+            #region Find topic
 
-            // Find categories.
-            var categories = _unitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Id == categoryId && x.Status == ItemStatus.Active);
+            // Find topics.
+            var topics = _unitOfWork.Topics.Search();
+            topics = topics.Where(x => x.Id == topicId && x.Status == ItemStatus.Active);
 
             // Find the first matched result.
-            var category = await categories.FirstOrDefaultAsync();
-            if (category == null)
-                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
+            var topic = await topics.FirstOrDefaultAsync();
+            if (topic == null)
+                return NotFound(new ApiResponse(HttpMessages.TopicNotFound));
 
             #endregion
 
-            #region Check whether user already followed category or not
+            #region Check whether user already followed topic or not
 
             // Find request identity.
             var identity = _identityService.GetProfile(HttpContext);
 
-            // Find follow categories.
-            var followCategories = _unitOfWork.FollowCategories.Search();
-            followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
-            var followCategory = await followCategories.FirstOrDefaultAsync();
+            // Find follow topics.
+            var followTopics = _unitOfWork.FollowTopics.Search();
+            followTopics = followTopics.Where(x => x.TopicId == topicId && x.FollowerId == identity.Id);
+            var followTopic = await followTopics.FirstOrDefaultAsync();
 
             #endregion
 
-            #region Follow category initalization
+            #region Follow topic initalization
 
             // Already followed the category.
-            if (followCategory != null)
-                followCategory.Status = FollowStatus.Following;
+            if (followTopic != null)
+                followTopic.Status = FollowStatus.Following;
             else
             {
                 // Initialize follow category.
-                followCategory = new FollowCategory();
-                followCategory.FollowerId = identity.Id;
-                followCategory.CategoryId = categoryId;
-                followCategory.Status = FollowStatus.Following;
-                followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                followTopic = new FollowTopic();
+                followTopic.FollowerId = identity.Id;
+                followTopic.TopicId = topicId;
+                followTopic.Status = FollowStatus.Following;
+                followTopic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
-                _unitOfWork.FollowCategories.Insert(followCategory);
+                _unitOfWork.FollowTopics.Insert(followTopic);
             }
 
             // Commit changes.
@@ -129,30 +132,30 @@ namespace Main.Controllers
 
             #endregion
 
-            return Ok(followCategory);
+            return Ok(followTopic);
         }
 
         /// <summary>
-        /// Stop following a category.
+        /// Stop following a topic.
         /// </summary>
-        /// <param name="categoryId"></param>
+        /// <param name="topicId"></param>
         /// <returns></returns>
         [HttpDelete("")]
-        public async Task<IActionResult> StopFollowingCategory([FromRoute] int categoryId)
+        public async Task<IActionResult> StopFollowingTopic([FromRoute] int topicId)
         {
             // Find request identity.
             var identity = _identityService.GetProfile(HttpContext);
 
-            // Find categories by using specific conditions.
-            var followCategories = _unitOfWork.FollowCategories.Search();
-            followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
+            // Find topics by using specific conditions.
+            var followTopics = _unitOfWork.FollowTopics.Search();
+            followTopics = followTopics.Where(x => x.TopicId == topicId && x.FollowerId == identity.Id);
 
-            // Find the first matched category.
-            var followCategory = await followCategories.FirstOrDefaultAsync();
+            // Find the first matched.
+            var followCategory = await followTopics.FirstOrDefaultAsync();
             if (followCategory == null)
-                return NotFound(new ApiResponse(HttpMessages.FollowCategoryNotFound));
+                return NotFound(new ApiResponse(HttpMessages.FollowTopicNotFound));
 
-            // Stop following category.
+            // Stop following topic.
             followCategory.Status = FollowStatus.Ignore;
 
             // Save changes.
@@ -162,18 +165,18 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Search for following category by using specific conditions.
+        /// Search for following topic by using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> SearchForFollowingCategories([FromBody] SearchFollowCategoryViewModel condition)
+        public async Task<IActionResult> SearchForFollowingTopics([FromBody] SearchFollowTopicViewModel condition)
         {
             #region Parameters validation
 
             if (condition == null)
             {
-                condition = new SearchFollowCategoryViewModel();
+                condition = new SearchFollowTopicViewModel();
                 TryValidateModel(condition);
             }
 
@@ -187,15 +190,15 @@ namespace Main.Controllers
             // Find identity in request.
             var identity = _identityService.GetProfile(HttpContext);
 
-            // Search for posts.
-            var followCategories = _unitOfWork.FollowCategories.Search();
+            // Search for follow topics.
+            var followTopics = _unitOfWork.FollowTopics.Search();
 
-            // Category id is defined.
-            if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
+            // Topic id is defined.
+            if (condition.TopicIds != null && condition.TopicIds.Count > 0)
             {
-                var categoryIds = condition.CategoryIds.Where(x => x > 0).ToList();
-                if (categoryIds.Count > 0)
-                    followCategories = followCategories.Where(x => condition.CategoryIds.Contains(x.CategoryId));
+                var topicIds = condition.TopicIds.Where(x => x > 0).ToList();
+                if (topicIds.Count > 0)
+                    followTopics = followTopics.Where(x => condition.TopicIds.Contains(x.TopicId));
             }
 
             // Search conditions which are based on roles.
@@ -206,7 +209,7 @@ namespace Main.Controllers
                 {
                     var followerIds = condition.FollowerIds.Where(x => x > 0).ToList();
                     if (followerIds.Count > 0)
-                        followCategories = followCategories.Where(x => condition.FollowerIds.Contains(x.FollowerId));
+                        followTopics = followTopics.Where(x => condition.FollowerIds.Contains(x.FollowerId));
                 }
 
                 // Statuses have been defined.
@@ -215,13 +218,13 @@ namespace Main.Controllers
                     condition.Statuses =
                       condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x)).ToList();
                     if (condition.Statuses.Count > 0)
-                        followCategories = followCategories.Where(x => condition.Statuses.Contains(x.Status));
+                        followTopics = followTopics.Where(x => condition.Statuses.Contains(x.Status));
                 }
             }
             else
             {
                 // Normal users can his/her followed categories.
-                followCategories = followCategories.Where(x => x.FollowerId == identity.Id);
+                followTopics = followTopics.Where(x => x.FollowerId == identity.Id);
             }
 
             // Created time has been defined.
@@ -232,24 +235,24 @@ namespace Main.Controllers
                 var to = createdTime.To;
 
                 if (from != null)
-                    followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, from.Value,
+                    followTopics = _databaseFunction.SearchNumericProperty(followTopics, x => x.CreatedTime, from.Value,
                         NumericComparision.GreaterEqual);
 
                 if (to != null)
-                    followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, to.Value,
+                    followTopics = _databaseFunction.SearchNumericProperty(followTopics, x => x.CreatedTime, to.Value,
                         NumericComparision.LowerEqual);
             }
 
             // Sort property & direction.
             var sort = condition.Sort;
             if (sort != null)
-                followCategories = _databaseFunction.Sort(followCategories, sort.Direction, sort.Property);
+                followTopics = _databaseFunction.Sort(followTopics, sort.Direction, sort.Property);
             else
-                followCategories = _databaseFunction.Sort(followCategories, SortDirection.Decending, FollowCategorySort.CreatedTime);
+                followTopics = _databaseFunction.Sort(followTopics, SortDirection.Decending, FollowTopicSort.CreatedTime);
 
-            var result = new SearchResult<IList<FollowCategory>>();
-            result.Total = await followCategories.CountAsync();
-            result.Records = await _databaseFunction.Paginate(followCategories, condition.Pagination).ToListAsync();
+            var result = new SearchResult<IList<FollowTopic>>();
+            result.Total = await followTopics.CountAsync();
+            result.Records = await _databaseFunction.Paginate(followTopics, condition.Pagination).ToListAsync();
 
             #endregion
 

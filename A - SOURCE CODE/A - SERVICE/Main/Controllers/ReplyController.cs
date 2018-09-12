@@ -8,7 +8,7 @@ using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AutoMapper;
 using Main.Interfaces.Services;
-using Main.ViewModels.Topic;
+using Main.ViewModels.Reply;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
@@ -20,11 +20,11 @@ using Shared.Resources;
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class TopicController : ApiBaseController
+    public class ReplyController : ApiBaseController
     {
         #region Constructors
 
-        public TopicController(
+        public ReplyController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
@@ -56,18 +56,18 @@ namespace Main.Controllers
         #region Methods
 
         /// <summary>
-        ///     Add topic to system.
+        ///     Add reply to system.
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> AddTopic([FromBody] AddTopicViewModel info)
+        public async Task<IActionResult> AddReply([FromBody] AddReplyViewModel info)
         {
             #region Parameters validation
 
             if (info == null)
             {
-                info = new AddTopicViewModel();
+                info = new AddReplyViewModel();
                 TryValidateModel(info);
             }
 
@@ -78,57 +78,57 @@ namespace Main.Controllers
 
             #region Find topic
 
-            // Find category.
-            var categories = UnitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Id == info.CategoryId && x.Status == ItemStatus.Active);
+            // Find all topics.
+            var topics = UnitOfWork.Topics.Search();
+            topics = topics.Where(x => x.Id == info.TopicId && x.Status == ItemStatus.Active);
 
-            // Check whether category exists or not.
-            var bIsCategoryAvailable = await categories.AnyAsync();
-            if (!bIsCategoryAvailable)
-                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
+            // Check whether topic exists or not.
+            var bIsTopicAvailable = await topics.AnyAsync();
+            if (!bIsTopicAvailable)
+                return NotFound(new ApiResponse(HttpMessages.TopicNotFound));
 
             #endregion
 
-            #region Topic initialization
+            #region Reply initialization
 
             // Find identity from request.
             var identity = IdentityService.GetProfile(HttpContext);
 
-            // Topic intialization.
-            var topic = new Topic();
-            topic.OwnerId = identity.Id;
-            topic.CategoryId = info.CategoryId;
-            topic.CategoryGroupId = info.CategoryGroupId;
-            topic.Title = info.Title;
-            topic.Body = info.Body;
-            topic.Status = ItemStatus.Active;
-            topic.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            topic.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            // Reply intialization.
+            var reply = new Reply();
+            reply.OwnerId = identity.Id;
+            reply.TopicId = info.TopicId;
+            reply.CategoryId = info.CategoryId;
+            reply.CategoryGroupId = info.CategoryGroupId;
+            reply.Content = info.Content;
+            reply.Status = ItemStatus.Active;
+            reply.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reply.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-            // Insert topic into system.
-            UnitOfWork.Topics.Insert(topic);
+            // Insert reply into system.
+            UnitOfWork.Replies.Insert(reply);
 
             await UnitOfWork.CommitAsync();
 
             #endregion
 
-            return Ok(topic);
+            return Ok(reply);
         }
 
         /// <summary>
-        /// Edit topic by using specific information.
+        /// Edit reply by using specific information.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditTopic([FromRoute] int id, [FromBody] EditTopicViewModel info)
+        public async Task<IActionResult> EditReply([FromRoute] int id, [FromBody] EditReplyViewModel info)
         {
             #region Parameters validation
 
             if (info == null)
             {
-                info = new EditTopicViewModel();
+                info = new EditReplyViewModel();
                 TryValidateModel(info);
             }
 
@@ -137,66 +137,45 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find topic
+            #region Find reply
 
             // Get request identity.
             var identity = IdentityService.GetProfile(HttpContext);
 
-            // Get all topics in database.
-            var topics = UnitOfWork.Topics.Search();
+            // Get all replies in database.
+            var replies = UnitOfWork.Replies.Search();
 
-            topics = topics.Where(x => x.Id == id && x.Status == ItemStatus.Active);
+            replies = replies.Where(x => x.Id == id && x.Status == ItemStatus.Active);
 
-            // Get the first matched topic.
-            var topic = await topics.FirstOrDefaultAsync();
-            if (topic == null)
-                return NotFound(new ApiResponse(HttpMessages.TopicNotFound));
+            // Get the first matched reply.
+            var reply = await replies.FirstOrDefaultAsync();
+            if (reply == null)
+                return NotFound(new ApiResponse(HttpMessages.ReplyNotFound));
 
             #endregion
 
-            #region Update topic information
+            #region Update reply information
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
 
-            // Category id is defined
-            if (info.CategoryId != topic.CategoryId)
+            // Content is defined
+            if (info.Content != null && info.Content != reply.Content)
             {
-                topic.CategoryId = info.CategoryId;
-                bHasInformationChanged = true;
-            }
-
-            // Category group id is defined
-            if (info.CategoryGroupId != topic.CategoryGroupId)
-            {
-                topic.CategoryGroupId = info.CategoryGroupId;
-                bHasInformationChanged = true;
-            }
-
-            // Title is defined
-            if (info.Title != null && info.Title != topic.Title)
-            {
-                topic.Title = info.Title;
-                bHasInformationChanged = true;
-            }
-
-            // Body is defined
-            if (info.Body != null && info.Body != topic.Body)
-            {
-                topic.Body = info.Body;
+                reply.Content = info.Content;
                 bHasInformationChanged = true;
             }
 
             // Status is defined.
-            if (info.Status != topic.Status)
+            if (info.Status != reply.Status)
             {
-                topic.Status = info.Status;
+                reply.Status = info.Status;
                 bHasInformationChanged = true;
             }
 
             if (bHasInformationChanged)
             {
-                topic.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                reply.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Commit changes to database.
                 await UnitOfWork.CommitAsync();
@@ -204,22 +183,22 @@ namespace Main.Controllers
 
             #endregion
 
-            return Ok(topic);
+            return Ok(reply);
         }
 
         /// <summary>
-        ///     Load topic by using specific conditions.
+        ///     Load reply by using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> LoadTopics([FromBody] SearchTopicViewModel condition)
+        public async Task<IActionResult> LoadReplies([FromBody] SearchReplyViewModel condition)
         {
             #region Parameters validation
 
             if (condition == null)
             {
-                condition = new SearchTopicViewModel();
+                condition = new SearchReplyViewModel();
                 TryValidateModel(condition);
             }
 
@@ -233,8 +212,8 @@ namespace Main.Controllers
 
             #region Search for information
 
-            // Get all topic
-            var topics = _unitOfWork.Topics.Search();
+            // Get all reply
+            var replies = _unitOfWork.Replies.Search();
 
             // Id have been defined.
             if (condition.Ids != null && condition.Ids.Count > 0)
@@ -242,7 +221,17 @@ namespace Main.Controllers
                 condition.Ids = condition.Ids.Where(x => x > 0).ToList();
                 if (condition.Ids != null && condition.Ids.Count > 0)
                 {
-                    topics = topics.Where(x => condition.Ids.Contains(x.Id));
+                    replies = replies.Where(x => condition.Ids.Contains(x.Id));
+                }
+            }
+
+            // Topic Id have been defined.
+            if (condition.TopicIds != null && condition.TopicIds.Count > 0)
+            {
+                condition.TopicIds = condition.TopicIds.Where(x => x > 0).ToList();
+                if (condition.TopicIds != null && condition.TopicIds.Count > 0)
+                {
+                    replies = replies.Where(x => condition.TopicIds.Contains(x.TopicId));
                 }
             }
 
@@ -252,7 +241,7 @@ namespace Main.Controllers
                 condition.CategoryIds = condition.CategoryIds.Where(x => x > 0).ToList();
                 if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
                 {
-                    topics = topics.Where(x => condition.CategoryIds.Contains(x.CategoryId));
+                    replies = replies.Where(x => condition.CategoryIds.Contains(x.CategoryId));
                 }
             }
 
@@ -262,7 +251,7 @@ namespace Main.Controllers
                 condition.CategoryGroupIds = condition.CategoryGroupIds.Where(x => x > 0).ToList();
                 if (condition.CategoryGroupIds != null && condition.CategoryGroupIds.Count > 0)
                 {
-                    topics = topics.Where(x => condition.CategoryGroupIds.Contains(x.CategoryGroupId));
+                    replies = replies.Where(x => condition.CategoryGroupIds.Contains(x.CategoryGroupId));
                 }
             }
 
@@ -272,27 +261,17 @@ namespace Main.Controllers
                 condition.OwnerIds = condition.OwnerIds.Where(x => x > 0).ToList();
                 if (condition.OwnerIds != null && condition.OwnerIds.Count > 0)
                 {
-                    topics = topics.Where(x => condition.OwnerIds.Contains(x.OwnerId));
+                    replies = replies.Where(x => condition.OwnerIds.Contains(x.OwnerId));
                 }
             }
 
-            // Title have been defined.
-            if (condition.Titles != null && condition.Titles.Count > 0)
+            // Content have been defined.
+            if (condition.Contents != null && condition.Contents.Count > 0)
             {
-                condition.Titles = condition.Titles.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Titles != null && condition.Titles.Count > 0)
+                condition.Contents = condition.Contents.Where(x => !string.IsNullOrEmpty(x)).ToList();
+                if (condition.Contents != null && condition.Contents.Count > 0)
                 {
-                    topics = topics.Where(x => condition.Titles.Any(y => x.Title.Contains(y)));
-                }
-            }
-
-            // Body have been defined.
-            if (condition.Bodies != null && condition.Bodies.Count > 0)
-            {
-                condition.Bodies = condition.Bodies.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Bodies != null && condition.Bodies.Count > 0)
-                {
-                    topics = topics.Where(x => condition.Bodies.Any(y => x.Body.Contains(y)));
+                    replies = replies.Where(x => condition.Contents.Any(y => x.Content.Contains(y)));
                 }
             }
 
@@ -306,7 +285,7 @@ namespace Main.Controllers
                     condition.Statuses =
                         condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x)).ToList();
                     if (condition.Statuses.Count > 0)
-                        topics = topics.Where(x => condition.Statuses.Contains(x.Status));
+                        replies = replies.Where(x => condition.Statuses.Contains(x.Status));
                 }
             }
 
@@ -314,17 +293,17 @@ namespace Main.Controllers
 
             // Sort by properties.
             if (condition.Sort != null)
-                topics =
-                    _databaseFunction.Sort(topics, condition.Sort.Direction,
+                replies =
+                    _databaseFunction.Sort(replies, condition.Sort.Direction,
                         condition.Sort.Property);
             else
-                topics = _databaseFunction.Sort(topics, SortDirection.Decending,
-                    TopicSort.Title);
+                replies = _databaseFunction.Sort(replies, SortDirection.Decending,
+                    ReplySort.Id);
 
             // Result initialization.
-            var result = new SearchResult<IList<Topic>>();
-            result.Total = await topics.CountAsync();
-            result.Records = await _databaseFunction.Paginate(topics, condition.Pagination).ToListAsync();
+            var result = new SearchResult<IList<Reply>>();
+            result.Total = await replies.CountAsync();
+            result.Records = await _databaseFunction.Paginate(replies, condition.Pagination).ToListAsync();
 
             return Ok(result);
         }

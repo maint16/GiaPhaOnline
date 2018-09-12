@@ -176,6 +176,12 @@
   <data name="FacebookCodeIsInvalid" xml:space="preserve">
     <value>FACEBOOK_CODE_IS_INVALID</value>
   </data>
+  <data name="FollowCategoryNotFound" xml:space="preserve">
+    <value>FOLLOW_CATEGORY_NOT_FOUND</value>
+  </data>
+  <data name="FollowTopicNotFound" xml:space="preserve">
+    <value>FOLLOW_TOPIC_NOT_FOUND</value>
+  </data>
   <data name="GoogleCodeIsInvalid" xml:space="preserve">
     <value>GOOGLE_CODE_IS_INVALID</value>
   </data>
@@ -202,6 +208,9 @@
   </data>
   <data name="PostReportNotFound" xml:space="preserve">
     <value>POST_REPORT_NOT_FOUND</value>
+  </data>
+  <data name="ReplyNotFound" xml:space="preserve">
+    <value>REPLY_NOT_FOUND</value>
   </data>
   <data name="TokenNotFound" xml:space="preserve">
     <value>TOKEN_NOT_FOUND</value>

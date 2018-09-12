@@ -232,6 +232,24 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FOLLOW_CATEGORY_NOT_FOUND.
+        /// </summary>
+        public static string FollowCategoryNotFound {
+            get {
+                return ResourceManager.GetString("FollowCategoryNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FOLLOW_TOPIC_NOT_FOUND.
+        /// </summary>
+        public static string FollowTopicNotFound {
+            get {
+                return ResourceManager.GetString("FollowTopicNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to GOOGLE_CODE_IS_INVALID.
         /// </summary>
         public static string GoogleCodeIsInvalid {
@@ -309,6 +327,15 @@ namespace Shared.Resources {
         public static string PostReportNotFound {
             get {
                 return ResourceManager.GetString("PostReportNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to REPLY_NOT_FOUND.
+        /// </summary>
+        public static string ReplyNotFound {
+            get {
+                return ResourceManager.GetString("ReplyNotFound", resourceCulture);
             }
         }
         
