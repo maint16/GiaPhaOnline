@@ -5,6 +5,7 @@ import {EditUserStatusViewModel} from '../../../view-models/user/edit-user-statu
 import {TranslateService} from '@ngx-translate/core';
 import {User} from '../../../models/entities/user';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap';
+import {UserStatus} from '../../../enums/user-status.enum';
 
 @Component({
   selector: 'user-detail',
@@ -20,11 +21,8 @@ export class UserDetailComponent implements OnInit {
   @Input('user')
   public user: User;
 
-  @Output() closeModal = new EventEmitter<boolean>();
-  public statuss = [
-    {category: 'Active', value: 1},
-    {category: 'Inactive', value: 2}
-  ];
+  // List of available statuses.
+  public availableUserStatuses = [UserStatus.disabled, UserStatus.active];
 
   public status = {};
   // _userId: number;
@@ -78,7 +76,7 @@ export class UserDetailComponent implements OnInit {
 
     let info = new EditUserStatusViewModel();
     info.userId = user.id;
-    info.userStatus = user.status;
+    info.status = user.status;
 
     this.userService
       .editUserStatus(info)

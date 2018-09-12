@@ -8,7 +8,7 @@ export class EditUserStatusViewModel {
   public userId: number;
 
   // Status to be changed.
-  public userStatus: UserStatus;
+  public status: UserStatus;
 
   //#endregion
 }

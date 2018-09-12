@@ -1,5 +1,5 @@
 export enum UserStatus {
-  disabled,
+  disabled = 0,
   pending,
   active
 }

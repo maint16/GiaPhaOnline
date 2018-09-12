@@ -17,5 +17,7 @@
   "TITLE_USER_MANAGEMENT": "User management",
   "TITLE_USER_CATEGORY_GROUP": "Category Group Management",
   "TITLE_SAVE": "Save",
-  "TITLE_CANCEL": "Cancel"
+  "TITLE_CANCEL": "Cancel",
+  "TITLE_DISABLED": "Disabled",
+  "TITLE_ACTIVE": "Active"
 }

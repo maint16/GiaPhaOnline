@@ -27,7 +27,9 @@
       <div class="form-group">
         <div class="select">
           <select [(ngModel)]="user.status" class="form-control">
-            <option *ngFor="let item of statuss" [value]="item.value">{{item.category}}</option>
+            <option *ngFor="let item of availableUserStatuses" [value]="item">{{item | toUserStatusTitle |
+              translate}}
+            </option>
           </select>
         </div>
       </div>

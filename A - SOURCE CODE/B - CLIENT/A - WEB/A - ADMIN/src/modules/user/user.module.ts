@@ -11,6 +11,7 @@ import {PaginatorModule} from 'primeng/paginator';
 import {ModalModule} from 'ngx-bootstrap/modal';
 import {UserDetailComponent} from './user-detail/user-detail.component';
 import {SharedModule} from '../shared/shared.module';
+import {ToUserStatusTitlePipe} from '../../pipes/to-user-status-title.pipe';
 
 //#region Module declaration
 
@@ -29,11 +30,14 @@ import {SharedModule} from '../shared/shared.module';
   ],
   declarations: [
     ManageUsersComponent,
-    UserDetailComponent
+    UserDetailComponent,
+
+    ToUserStatusTitlePipe
   ],
   exports: [
     ManageUsersComponent,
-    UserDetailComponent
+    UserDetailComponent,
+    ToUserStatusTitlePipe
   ],
   entryComponents: [
     UserDetailComponent
