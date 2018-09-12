@@ -10,9 +10,13 @@
       <i class="fa fa-table"></i> List user
     </div>
     <div class="card-body">
-      <p-table [value]="users" [responsive]="true" [lazy]="true"
-               [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadUsersLazy($event)" [rows]="5"
-               [totalRecords]="totalUser"
+      <p-table [value]="loadUsersResult.records"
+               [responsive]="true"
+               [lazy]="true"
+               [rowsPerPageOptions]="[5,10,20]"
+               (onLazyLoad)="loadUsers($event)"
+               [rows]="5"
+               [totalRecords]="loadUsersResult.total"
                [paginator]="true" sortMode="multiple">
         <ng-template pTemplate="header">
           <tr>
@@ -34,7 +38,7 @@
             <td>{{user.joinedTime}}</td>
             <td>{{user.lastModifiedTime}}</td>
             <td>
-              <span class="fas fa-edit greenColor pointer" (click)="editUser(user.id)"></span>
+              <span class="fas fa-edit greenColor pointer" (click)="editUser(user)"></span>
               <span class="fas fa-search pointer marginLeft" (click)="getPersonalProfile(user.id)"></span>
             </td>
           </tr>
@@ -44,25 +48,24 @@
     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
   </div>
 </div>
-//modal edit user
 <!-- Modal -->
 
-<div class="modal" [ngStyle]="{'display':display}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group" *ngIf="selectedUserId">
-          <user-detail [userId]="selectedUserId" (closeModal)="closeModal()"></user-detail>
-        </div>
-        <button hidden="true" type="button" class="close" data-dismiss="modal" #closeAddExpenseModal>&times;</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!--<div class="modal" [ngStyle]="{'display':display}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"-->
+     <!--aria-hidden="true">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<div class="modal-content">-->
+      <!--<div class="modal-header">-->
+        <!--<button type="button" class="close" (click)="closeModal()" aria-label="Close">-->
+          <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+      <!--</div>-->
+      <!--<div class="modal-body">-->
+        <!--<div class="form-group" *ngIf="selectedUserId">-->
+          <!--<user-detail [userId]="selectedUserId" (closeModal)="closeModal()"></user-detail>-->
+        <!--</div>-->
+        <!--<button hidden="true" type="button" class="close" data-dismiss="modal" #closeAddExpenseModal>&times;</button>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
 

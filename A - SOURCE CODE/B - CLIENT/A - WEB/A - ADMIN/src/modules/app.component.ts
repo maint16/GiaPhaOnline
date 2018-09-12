@@ -9,7 +9,6 @@ import {TranslateService} from '@ngx-translate/core';
   selector: 'body',
   templateUrl: 'app.component.html'
 })
-
 export class AppComponent implements OnInit {
 
   title = 'app';
@@ -19,9 +18,8 @@ export class AppComponent implements OnInit {
   public constructor(private router: Router,
                      private activatedRoute: ActivatedRoute,
                      private translate: TranslateService,
-                     private renderer: Renderer2) {
-    this.translate.use('en');
-
+                     private renderer: Renderer2, private window: Window) {
+    this._ngSetupAppLanguage();
   }
 
   //#endrgion
@@ -60,7 +58,9 @@ export class AppComponent implements OnInit {
 
   // Setup application language.
   private _ngSetupAppLanguage(): void {
-
+    this.translate.use('en');
+    // let language = this.window.navigator.language || this.window.navigator['user-language'];
+    // this.translate.use(language);
   }
 
   //#endregion

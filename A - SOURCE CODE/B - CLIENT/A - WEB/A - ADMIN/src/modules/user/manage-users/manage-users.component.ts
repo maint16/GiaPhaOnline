@@ -6,7 +6,10 @@ import {SearchResult} from '../../../models/search-result';
 import {User} from '../../../models/entities/user';
 import {LazyLoadEvent} from 'primeng/api';
 import {TranslateService} from '@ngx-translate/core';
-import * as $ from 'jquery';
+import {BsModalService} from 'ngx-bootstrap';
+import {UserDetailComponent} from '../user-detail/user-detail.component';
+import {UserDetailModalState} from '../../../models/modal-state/user-detail.modal-state';
+
 @Component({
   selector: 'manage-users',
   templateUrl: 'manage-users.component.html',
@@ -15,19 +18,26 @@ import * as $ from 'jquery';
 export class ManageUsersComponent implements OnInit {
 
   //#region Properties
-  public display : string = 'none';
-  public users: User[];
+  public display: string = 'none';
+
   public selectedUserId: number;
+
   public getPersonalProfileId: number;
-  public totalUser: number;
+
   public loadUsersCondition: LoadUserViewModel;
-  public pagination: Pagination;
+
+  public loadUsersResult: SearchResult<User>;
+
   //#endregion
 
   //#region Constructor
 
-  public constructor(@Inject('IUserService') private userService: IUserService, private translate: TranslateService) {
-    translate.setDefaultLang('en');
+  // Initialize component with injectors.
+  public constructor(@Inject('IUserService') private userService: IUserService,
+                     public bsModalService: BsModalService,
+                     private translate: TranslateService) {
+    this.loadUsersResult = new SearchResult<User>();
+
   }
 
   //#endregion
@@ -36,24 +46,27 @@ export class ManageUsersComponent implements OnInit {
 
   // Called when component is initialized.
   public ngOnInit(): void {
+
     this.loadUsersCondition = new LoadUserViewModel();
-    this.pagination = new Pagination();
-    this.pagination.page = 1;
-    this.pagination.records = 5;
-    this.loadUsersCondition.pagination = this.pagination;
+    let pagination = new Pagination();
+    pagination.page = 1;
+    pagination.records = 5;
+    this.loadUsersCondition.pagination = pagination;
 
     // Load user using specific conditions.
     this.userService.loadUsers(this.loadUsersCondition)
       .subscribe((loadUsersResult: SearchResult<User>) => {
-        this.users = loadUsersResult.records;
-        this.totalUser = loadUsersResult.total;
+        this.loadUsersResult = loadUsersResult;
       });
   }
 
   // Display modal to edit user.
-  public editUser(userId: number): void {
-    this.selectedUserId = userId;
-    this.display = 'block';
+  public editUser(user: User): void {
+
+    // Load user by using id.
+    let initialState = new UserDetailModalState();
+    initialState.user = user;
+    this.bsModalService.show(UserDetailComponent, {initialState: initialState});
   }
 
   // Display user profile.
@@ -61,19 +74,27 @@ export class ManageUsersComponent implements OnInit {
     this.getPersonalProfileId = userId;
   }
 
-  loadUsersLazy(event: LazyLoadEvent) {    if (this.users) {
-      this.pagination = new Pagination();
-      this.pagination.page = event.first / event.rows + 1;
-      this.pagination.records = event.rows;
-      this.userService.loadUsers(this.loadUsersCondition)
-        .subscribe((loadUsersResult: SearchResult<User>) => {
-          this.users = loadUsersResult.records;
-          this.totalUser = loadUsersResult.total;
-        });
+  // Load users using specific conditions.
+  public loadUsers(event: LazyLoadEvent): void {
+    let pagination = new Pagination();
+
+    if (event) {
+      pagination.page = event.first / event.rows + 1;
+      pagination.records = event.rows;
+    } else {
+      pagination.page = 1;
+      pagination.records = 5;
     }
+
+    this.userService.loadUsers(this.loadUsersCondition)
+      .subscribe((loadUsersResult: SearchResult<User>) => {
+        this.loadUsersResult = loadUsersResult;
+      });
   }
-  closeModal(){
+
+  closeModal() {
     this.display = 'none';
   }
+
   //#endregion
 }

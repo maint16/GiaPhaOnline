@@ -20,11 +20,7 @@ export class ServiceModule {
         {provide: 'IAuthenticationService', useClass: AuthenticationService},
         {provide: 'IUserService', useClass: UserService},
         {provide: 'ICategoryGroupService', useClass: CategoryGroupService},
-        {
-          provide: 'Window', useFactory: () => {
-            return window;
-          }
-        }
+        {provide: Window, useValue: window}
       ]
     };
   }

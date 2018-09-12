@@ -4,7 +4,7 @@ export class UserViewModel {
 
   // Account email address.
   public email: string;
-    public id: number;
+  public id: number;
   public nickname: string;
   public password: string;
   public photo: string;
