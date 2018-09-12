@@ -5,48 +5,40 @@
     </li>
     <li class="breadcrumb-item active">Manage</li>
   </ol>
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="fa fa-table"></i> List user
-    </div>
-    <div class="card-body">
-      <p-table [value]="loadUsersResult.records"
-               [responsive]="true"
-               [lazy]="true"
-               [rowsPerPageOptions]="[5,10,20]"
-               (onLazyLoad)="loadUsers($event)"
-               [rows]="5"
-               [totalRecords]="loadUsersResult.total"
-               [paginator]="true" sortMode="multiple">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>{{'TITLE_EMAIL' | translate}}</th>
-            <th>{{'TITLE_NICKNAME' | translate}}</th>
-            <th>{{'TITLE_STATUS' | translate}}</th>
-            <th>{{'TITLE_ROLE' | translate}}</th>
-            <th>{{'TITLE_JOINED_TIME' | translate}}</th>
-            <th>{{'TITLE_LAST_MODIFIED' | translate}}</th>
-            <th>{{'TITLE_ACTION' | translate}}</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-user>
-          <tr>
-            <td>{{user.email}}</td>
-            <td>{{user.nickname}}</td>
-            <td>{{user.status}}</td>
-            <td>{{user.role}}</td>
-            <td>{{user.joinedTime}}</td>
-            <td>{{user.lastModifiedTime}}</td>
-            <td>
-              <span class="fas fa-edit greenColor pointer" (click)="editUser(user)"></span>
-              <span class="fas fa-search pointer marginLeft" (click)="getPersonalProfile(user.id)"></span>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-  </div>
+  <p-table [value]="loadUsersResult.records"
+           [responsive]="true"
+           [lazy]="true"
+           [rowsPerPageOptions]="[5,10,20]"
+           (onLazyLoad)="loadUsers($event)"
+           [rows]="5"
+           [totalRecords]="loadUsersResult.total"
+           [paginator]="true" sortMode="multiple">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>{{'TITLE_EMAIL' | translate}}</th>
+        <th>{{'TITLE_NICKNAME' | translate}}</th>
+        <th>{{'TITLE_STATUS' | translate}}</th>
+        <th>{{'TITLE_ROLE' | translate}}</th>
+        <th>{{'TITLE_JOINED_TIME' | translate}}</th>
+        <th>{{'TITLE_LAST_MODIFIED' | translate}}</th>
+        <th>{{'TITLE_ACTION' | translate}}</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>{{user.email}}</td>
+        <td>{{user.nickname}}</td>
+        <td>{{user.status}}</td>
+        <td>{{user.role}}</td>
+        <td>{{user.joinedTime}}</td>
+        <td>{{user.lastModifiedTime}}</td>
+        <td>
+          <span class="fas fa-edit greenColor pointer" (click)="editUser(user)"></span>
+          <span class="fas fa-search pointer marginLeft" (click)="getPersonalProfile(user.id)"></span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 <!-- Modal -->
 
