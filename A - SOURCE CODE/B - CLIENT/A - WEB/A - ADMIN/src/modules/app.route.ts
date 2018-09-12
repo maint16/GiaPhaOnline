@@ -33,12 +33,12 @@ export const routes: Routes = [
   },
   {
     path: 'manage-category-group',
-    canActivate : [IsAuthorizedGuard],
-    children: [
-      {
-        path: '',
-        loadChildren: 'modules/category-group/manage-category-group/manage-category-group.module#ManageCategoryGroupModule',
-        canActivate : [IsAuthorizedGuard]
+        canActivate : [IsAuthorizedGuard],
+  children: [
+  {
+    path: '',
+    loadChildren: 'modules/category-group/manage-category-group/manage-category-group.module#ManageCategoryGroupModule',
+    canActivate : [IsAuthorizedGuard]
       },
       {
         path: 'category-group',

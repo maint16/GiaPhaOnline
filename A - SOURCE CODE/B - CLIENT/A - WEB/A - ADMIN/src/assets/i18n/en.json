@@ -14,5 +14,7 @@
   "TITLE_LAST_MODIFIED": "Last modified",
   "TITLE_ACTION": "Action",
   "TITLE_CREATED_TIME": "Created time",
-  "TITLE_USER_MANAGEMENT": "User management"
+  "TITLE_USER_MANAGEMENT": "User management",
+  "TITLE_USER_CATEGORY_GROUP": "Category Group Management"
+
 }
