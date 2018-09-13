@@ -388,10 +388,12 @@ namespace Main.Controllers
 
             #endregion
 
+#if !DISABLE_CAPTCHA_VALIDATION
             // Verify the captcha.
             var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(parameters.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
                 return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+#endif
 
             #region Search for duplicate accounts.
 
@@ -433,10 +435,7 @@ namespace Main.Controllers
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
 
             if (emailTemplate != null)
-            {
                 await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
-            }
-
 
             // TODO: Implement notification service which notifies administrators about the registration.
 
@@ -870,79 +869,79 @@ namespace Main.Controllers
             return Ok(result);
         }
 
-//        /// <summary>
-//        /// Upload Avatar
-//        /// </summary>
-//        /// <param name="info"></param>
-//        /// <returns></returns>
-//        [HttpPost("upload-avatar")]
-//        [Consumes("multipart/form-data")]
-//        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel info)
-//        {
-//            #region Parameters Validation
-//
-//            if (info == null)
-//            {
-//                info = new UploadPhotoViewModel();
-//                TryValidateModel(info);
-//            }
-//
-//            if (!ModelState.IsValid)
-//                return BadRequest(ModelState);
-//
-//            #endregion
-//
-//            // Get requester profile.
-//            var profile = IdentityService.GetProfile(HttpContext);
-//
-//            #region Image proccessing
-//
-//            // Reflect image variable.
-//            var image = info.Image;
-//
-//            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
-//            {
-//                var skBitmap = SKBitmap.Decode(skManagedStream);
-//
-//                try
-//                {
-//                    // Resize image to 512x512 size.
-//                    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-//
-//                    // Initialize file name.
-//                    var fileName = $"{Guid.NewGuid():D}.png";
-//
-//                    using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
-//                    using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
-//                    using (var memoryStream = new MemoryStream())
-//                    {
-//                        skData.SaveTo(memoryStream);
-//                        var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(memoryStream.ToArray(),
-//                            image.ContentType, fileName,
-//                            CancellationToken.None);
-//
-//                        // Response is empty.
-//                        if (vgySuccessRespone == null || vgySuccessRespone.IsError)
-//                            return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
-//
-//                        profile.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
-//                        profile.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
-//                    }
-//
-//                    // Save changes into database.
-//                    await _unitOfWork.CommitAsync();
-//
-//                    return Ok(profile);
-//                }
-//                catch (Exception exception)
-//                {
-//                    _logger.LogError(exception.Message, exception);
-//                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
-//                }
-//
-//                #endregion
-//            }
-//        }
+        //        /// <summary>
+        //        /// Upload Avatar
+        //        /// </summary>
+        //        /// <param name="info"></param>
+        //        /// <returns></returns>
+        //        [HttpPost("upload-avatar")]
+        //        [Consumes("multipart/form-data")]
+        //        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel info)
+        //        {
+        //            #region Parameters Validation
+        //
+        //            if (info == null)
+        //            {
+        //                info = new UploadPhotoViewModel();
+        //                TryValidateModel(info);
+        //            }
+        //
+        //            if (!ModelState.IsValid)
+        //                return BadRequest(ModelState);
+        //
+        //            #endregion
+        //
+        //            // Get requester profile.
+        //            var profile = IdentityService.GetProfile(HttpContext);
+        //
+        //            #region Image proccessing
+        //
+        //            // Reflect image variable.
+        //            var image = info.Image;
+        //
+        //            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
+        //            {
+        //                var skBitmap = SKBitmap.Decode(skManagedStream);
+        //
+        //                try
+        //                {
+        //                    // Resize image to 512x512 size.
+        //                    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+        //
+        //                    // Initialize file name.
+        //                    var fileName = $"{Guid.NewGuid():D}.png";
+        //
+        //                    using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
+        //                    using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+        //                    using (var memoryStream = new MemoryStream())
+        //                    {
+        //                        skData.SaveTo(memoryStream);
+        //                        var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(memoryStream.ToArray(),
+        //                            image.ContentType, fileName,
+        //                            CancellationToken.None);
+        //
+        //                        // Response is empty.
+        //                        if (vgySuccessRespone == null || vgySuccessRespone.IsError)
+        //                            return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+        //
+        //                        profile.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
+        //                        profile.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
+        //                    }
+        //
+        //                    // Save changes into database.
+        //                    await _unitOfWork.CommitAsync();
+        //
+        //                    return Ok(profile);
+        //                }
+        //                catch (Exception exception)
+        //                {
+        //                    _logger.LogError(exception.Message, exception);
+        //                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+        //                }
+        //
+        //                #endregion
+        //            }
+        //        }
 
         /// <summary>
         ///  Request service to send another email to obtain new account activation code.

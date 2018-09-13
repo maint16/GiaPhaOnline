@@ -200,16 +200,6 @@ namespace Main
 #endif
 
                 o.TokenValidationParameters = tokenValidationParameters;
-
-                o.Events = new JwtBearerEvents()
-                {
-                    OnMessageReceived = context =>
-                    {
-                        if (context.Request.Path.ToString().StartsWith("/HUB/", StringComparison.InvariantCultureIgnoreCase))
-                            context.Token = context.Request.Query["accessToken"];
-                        return Task.CompletedTask;
-                    },
-                };
             });
 
             // Add automaper configuration.
@@ -221,6 +211,8 @@ namespace Main
                 x.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={fcmOption.ServerKey}");
                 x.DefaultRequestHeaders.TryAddWithoutValidation("project_id", fcmOption.SenderId);
             });
+
+            services.AddHttpClient();
 
             #region Signalr builder
 
