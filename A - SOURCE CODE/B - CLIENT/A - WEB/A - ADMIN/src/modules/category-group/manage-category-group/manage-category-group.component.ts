@@ -31,13 +31,14 @@ export class ManageCategoryGroupComponent implements OnInit {
     this.pagination.page = 1;
     this.pagination.records = 5;
     this.loadCategoryGroupCondition.pagination = this.pagination;
-    // Load user using specific conditions.
+    // Load CG using specific conditions on first load
     this.categoryGroupService.loadCategoryGroup(this.loadCategoryGroupCondition)
       .subscribe((loadCategoryGroupsResult: SearchResult<CategoryGroup>) => {
         this.categoryGroups = loadCategoryGroupsResult.records;
         this.totalCategoryGroup = loadCategoryGroupsResult.total;
       });
   }
+  // load CG when change page
   loadCGLazy(event: LazyLoadEvent) {
     if (this.categoryGroups) {
       this.pagination = new Pagination();
@@ -50,10 +51,12 @@ export class ManageCategoryGroupComponent implements OnInit {
         });
     }
   }
-  addNewCG(){
-this.route.navigate(['manage-category-group/category-group']);
+  // route to add new CG component
+  addNewCG() {
+this.route.navigate(['category-group/add-new']);
   }
-  editCategoryGroup(id){
-    this.route.navigate(['manage-category-group/category-group/' + id]);
+  // route to edit cg component
+  editCategoryGroup(id) {
+    this.route.navigate(['category-group/' + id]);
   }
 }

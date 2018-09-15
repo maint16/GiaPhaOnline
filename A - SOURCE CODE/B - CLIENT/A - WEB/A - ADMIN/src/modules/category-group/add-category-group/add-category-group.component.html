@@ -43,7 +43,7 @@
             <div class="form-group">
               <div class="select">
                 <select [(ngModel)]="categoryGroup.status" name="status" #status="ngModel" class="form-control">
-                  <option *ngFor="let item of statuss" [value]="item.value">{{item.category}}</option>
+                  <option *ngFor="let item of availableCGStatuses" [value]="item">{{item | toCategoryGroupStatusTitle | translate}}</option>
                 </select>
               </div>
             </div>

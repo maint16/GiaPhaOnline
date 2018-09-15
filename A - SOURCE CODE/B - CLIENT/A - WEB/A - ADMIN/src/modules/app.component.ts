@@ -21,9 +21,7 @@ export class AppComponent implements OnInit {
                      private renderer: Renderer2, private window: Window) {
     this._ngSetupAppLanguage();
   }
-
-  //#endrgion
-
+  // #endrgion
   //#region Methods
 
   /*
