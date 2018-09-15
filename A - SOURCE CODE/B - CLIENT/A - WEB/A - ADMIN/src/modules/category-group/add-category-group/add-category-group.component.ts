@@ -71,6 +71,7 @@ export class AddCategoryGroupComponent implements OnInit {
     this.categoryGroup = new AddCategoryGroup();
   }
 
+// route to manage CG component when click cancel
   cancel() {
     this.router.navigate(['/category-group/manage']);
   }
