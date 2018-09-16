@@ -1,6 +1,6 @@
 ﻿namespace AppModel.Enumerations
 {
-    public enum AccountRole
+    public enum UserRole
     {
         Admin,
         User

@@ -12,7 +12,6 @@
     <Compile Remove="Models\Entities\Device.cs" />
     <Compile Remove="Models\Entities\FcmGroup.cs" />
     <Compile Remove="Models\Entities\PostNotification.cs" />
-    <Compile Remove="Models\Entities\SignalrConnection.cs" />
   </ItemGroup>
 
   <ItemGroup>

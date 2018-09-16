@@ -9,7 +9,7 @@ namespace Main.ViewModels.Users
         /// <summary>
         ///     Account status in the system.
         /// </summary>
-        public AccountStatus Status { get; set; }
+        public UserStatus Status { get; set; }
 
         #endregion
     }

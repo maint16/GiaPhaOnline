@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Data;
+using System.Threading.Tasks;
 using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AppDb.Interfaces
 {
@@ -11,7 +13,7 @@ namespace AppDb.Interfaces
         /// <summary>
         ///     Provides functions to access account database.
         /// </summary>
-        IRepository<Account> Accounts { get; }
+        IRepository<User> Accounts { get; }
 
         /// <summary>
         ///     Provides functions to access category group database.
@@ -47,56 +49,32 @@ namespace AppDb.Interfaces
         ///     Provides functions to access topic reports database.
         /// </summary>
         IRepository<ReportTopic> ReportTopics { get; }
-
-        /// <summary>
-        ///     Provides functions to access token database.
-        /// </summary>
-        IRepository<AccessToken> AccessTokens { get; }
-
+        
         /// <summary>
         ///     Provides functions to notification message database.
         /// </summary>
         IRepository<NotificationMessage> NotificationMessages { get; }
 
-        //        /// <summary>
-        //        ///     Provides function to access categorization database.
-        //        /// </summary>
-        //        IRepository<Categorization> PostCategorizations { get; }
+        /// <summary>
+        ///     Provides functions to notification message database.
+        /// </summary>
+        IRepository<ActivationToken> ActivationTokens { get; }
 
+        /// <summary>
+        /// Access tokens list.
+        /// </summary>
+        IRepository<AccessToken> AccessTokens { get; }
 
+            /// <summary>
+        ///     Provides functions to access signalr connections database.
+        /// </summary>
+        IRepository<SignalrConnection> SignalrConnections { get; }
 
-        //        /// <summary>
-        //        ///     Provides functions to access comment reports database.
-        //        /// </summary>
-        //        IRepository<CommentReport> CommentReports { get; }
-
-        //        /// <summary>
-        //        /// Provides functions to access CommentNotification table.
-        //        /// </summary>
-        //        IRepository<CommentNotification> CommentNotifications { get; }
-
-        //        /// <summary>
-        //        /// Provide functions to access PostNotification table.
-        //        /// </summary>
-        //        IRepository<PostNotification> PostNotifications { get; }
-
-        //        /// <summary>
-        //        ///     Provides functions to access signalr connections database.
-        //        /// </summary>
-        //        IRepository<SignalrConnection> SignalrConnections { get; }
-
-
-
-        //        /// <summary>
-        //        /// Provides function to access Device datablase.
-        //        /// </summary>
-        //        IRepository<Device> Devices { get; }
-
-        //        /// <summary>
-        //        /// List of groups in FCM service.
-        //        /// </summary>
-        //        IRepository<FcmGroup> FcmGroups { get; }
-
+        /// <summary>
+        /// Signal connection groups.
+        /// </summary>
+        IRepository<SignalrConnectionGroup> SignalrConnectionGroups { get; }
+        
         #endregion
 
         #region Methods
@@ -112,6 +90,19 @@ namespace AppDb.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<int> CommitAsync();
+
+        /// <summary>
+        /// Begin transaction scope.
+        /// </summary>
+        /// <returns></returns>
+        IDbContextTransaction BeginTransactionScope();
+
+        /// <summary>
+        /// Begin transaction scope.
+        /// </summary>
+        /// <param name="isolationLevel"></param>
+        /// <returns></returns>
+        IDbContextTransaction BeginTransactionScope(IsolationLevel isolationLevel);
 
         #endregion
     }

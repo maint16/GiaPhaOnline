@@ -1,4 +1,4 @@
-﻿namespace Main.Models
+﻿namespace Main.Models.Jwt
 {
     public class JwtResponse
     {

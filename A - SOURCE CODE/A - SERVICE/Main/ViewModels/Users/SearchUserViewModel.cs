@@ -23,12 +23,12 @@ namespace Main.ViewModels.Users
         /// <summary>
         /// List of account statuses
         /// </summary>
-        public List<AccountStatus> Statuses { get; set; }
+        public List<UserStatus> Statuses { get; set; }
 
         /// <summary>
         /// List of account roles
         /// </summary>
-        public List<AccountRole> Roles { get; set; }
+        public List<UserRole> Roles { get; set; }
 
         /// <summary>
         /// Pagination

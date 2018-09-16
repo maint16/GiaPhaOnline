@@ -1,6 +1,6 @@
 ﻿namespace AppModel.Enumerations
 {
-    public enum AccountStatus
+    public enum UserStatus
     {
         Disabled,
         Pending,

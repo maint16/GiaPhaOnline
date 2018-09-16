@@ -21,15 +21,13 @@ namespace Main.Controllers
         /// <param name="relationalDbService"></param>
         /// <param name="identityService"></param>
         /// <param name="pusherService"></param>
-        /// <param name="realTimeNotificationService"></param>
         public RealtimeConnectionController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
             IRelationalDbService relationalDbService, IIdentityService identityService,
-            IPusherService pusherService, IRealTimeNotificationService realTimeNotificationService
+            IPusherService pusherService
             ) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _pusherService = pusherService;
-            _realTimeNotificationService = realTimeNotificationService;
         }
 
         #endregion
@@ -40,9 +38,6 @@ namespace Main.Controllers
         ///     Pusher service to send realtime data.
         /// </summary>
         private readonly IPusherService _pusherService;
-
-        private readonly IRealTimeNotificationService _realTimeNotificationService;
-        
 
         #endregion
 

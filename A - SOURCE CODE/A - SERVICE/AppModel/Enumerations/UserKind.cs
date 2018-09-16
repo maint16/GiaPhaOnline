@@ -1,6 +1,6 @@
 ﻿namespace AppModel.Enumerations
 {
-    public enum AccountType
+    public enum UserKind
     {
         Basic,
         Google,

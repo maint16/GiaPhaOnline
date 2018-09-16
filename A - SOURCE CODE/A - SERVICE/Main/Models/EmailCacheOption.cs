@@ -20,7 +20,7 @@ namespace Main.Models
         /// Email subject.
         /// </summary>
         public string Subject { get; set; }
-
+        
         /// <summary>
         /// Content of cache.
         /// </summary>

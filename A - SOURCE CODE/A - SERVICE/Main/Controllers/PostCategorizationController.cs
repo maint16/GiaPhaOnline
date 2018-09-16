@@ -92,7 +92,7 @@ namespace Main.Controllers
         //    #region Post check
 
         //    // Get all posts in system.
-        //    var posts = _unitOfWork.Posts.Search();
+        //    var posts = _unitOfWork.Topics.Search();
         //    posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
 
         //    // Get the first post in database.

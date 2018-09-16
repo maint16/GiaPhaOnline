@@ -6,21 +6,18 @@ using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
 {
-    public class Account
+    public class User
     {
         #region Properties
 
         /// <summary>
         ///     Id of account (Auto incremented)
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
         ///     Email which is used for account registration.
         /// </summary>
-        [Required]
         public string Email { get; set; }
 
         /// <summary>
@@ -32,34 +29,31 @@ namespace AppDb.Models.Entities
         ///     Password of account.
         /// </summary>
         [JsonIgnore]
-        [Required]
         public string Password { get; set; }
 
         /// <summary>
         ///     Type of account
         /// </summary>
-        public AccountType Type { get; set; }
+        public UserKind Type { get; set; }
 
         /// <summary>
         ///     Account status in the system.
         /// </summary>
-        public AccountStatus Status { get; set; }
+        public UserStatus Status { get; set; }
 
         /// <summary>
         ///     Role of account
         /// </summary>
-        public AccountRole Role { get; set; }
+        public UserRole Role { get; set; }
 
         /// <summary>
         ///     Relative url (http url) of user photo.
         /// </summary>
-        [JsonProperty("Photo")]
         public string Photo { get; set; }
 
         /// <summary>
         ///     When was the account created.
         /// </summary>
-        [Required]
         public double JoinedTime { get; set; }
 
         /// <summary>
@@ -72,9 +66,14 @@ namespace AppDb.Models.Entities
         #region Relationships
 
         /// <summary>
-        ///     Token which belongs to user.
+        /// Activation token which belongs to user.
         /// </summary>
         [JsonIgnore]
+        public virtual ActivationToken ActivationToken { get; set; }
+
+        /// <summary>
+        /// Token for user to access the system.
+        /// </summary>
         public virtual ICollection<AccessToken> AccessTokens { get; set; }
 
         /// <summary>
@@ -130,7 +129,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<NotificationMessage> NotificationMessages { get; set; }
-
+        
         #endregion
     }
 }

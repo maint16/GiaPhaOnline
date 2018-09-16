@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Main.Models.PushNotification
 {
-    public class FcmMessage
+    public class FcmMessage<T>
     {
         #region Properties
 
@@ -68,7 +68,7 @@ namespace Main.Models.PushNotification
         /// This parameter specifies the custom key-value pairs of the message's payload.
         /// For example, with data:{"score":"3x1"}:
         /// </summary>
-        public IDictionary Data { get; set; }
+        public T Data { get; set; }
 
         /// <summary>
         /// Fcm notification

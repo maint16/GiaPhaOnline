@@ -72,7 +72,7 @@ namespace Main.Authentications.Handlers
             }
 
             // Find account validity.
-            var account = (Account)httpContext.Items[ClaimTypes.Actor];
+            var account = (User)httpContext.Items[ClaimTypes.Actor];
             if (account == null || !requirement.Roles.Contains(account.Role))
             {
                 // Controller or method allow by pass information analyze.

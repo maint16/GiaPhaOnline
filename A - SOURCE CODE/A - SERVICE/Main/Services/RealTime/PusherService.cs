@@ -4,7 +4,7 @@ using Main.Models;
 using Microsoft.Extensions.Options;
 using PusherServer;
 
-namespace Main.Services
+namespace Main.Services.RealTime
 {
     public class PusherService : IPusherService
     {
@@ -54,14 +54,14 @@ namespace Main.Services
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public Task<ITriggerResult> SendAsync(string socketId, string channelName, string eventName, object data)
+        public Task<ITriggerResult> SendAsync(string excludedSocketId, string channelName, string eventName, object data)
         {
             // Initialize trigger option.
             TriggerOptions options = null;
-            if (!string.IsNullOrWhiteSpace(socketId))
+            if (!string.IsNullOrWhiteSpace(excludedSocketId))
             {
                 options = new TriggerOptions();
-                options.SocketId = socketId;
+                options.SocketId = excludedSocketId;
             }
 
             return _pusher.TriggerAsync(channelName, eventName, data, options);
@@ -70,14 +70,14 @@ namespace Main.Services
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public Task<ITriggerResult> SendAsync(string socketId, string[] channelNames, string eventName, object data)
+        public Task<ITriggerResult> SendAsync(string excludedSocketId, string[] channelNames, string eventName, object data)
         {
             // Initialize trigger option.
             TriggerOptions options = null;
-            if (!string.IsNullOrWhiteSpace(socketId))
+            if (!string.IsNullOrWhiteSpace(excludedSocketId))
             {
                 options = new TriggerOptions();
-                options.SocketId = socketId;
+                options.SocketId = excludedSocketId;
             }
 
             return _pusher.TriggerAsync(channelNames, eventName, data, options);

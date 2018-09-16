@@ -2,7 +2,7 @@
 
 namespace Main.Models.PushNotification.Notification
 {
-    public class WebFcmNotification : FcmBaseNotification
+    public class WebFcmMessageContent : FcmBaseNotification
     {
         #region Properties
 
