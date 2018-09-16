@@ -87,7 +87,12 @@ export class ManageCategoryGroupComponent implements OnInit {
     this.pagination.page = 1;
     this.pagination.records = 5;
     this.loadCategoryGroupCondition.pagination = this.pagination;
-    this.loadCategoryGroupCondition.statuses = [+this.loadCategoryGroupCondition.statuses];
+    if (this.loadCategoryGroupCondition.statuses == [3]) {
+      this.loadCategoryGroupCondition.statuses = [CategoryGroupStatus.active, CategoryGroupStatus.disabled];
+    }
+    else {
+      this.loadCategoryGroupCondition.statuses = [+this.loadCategoryGroupCondition.statuses];
+    }
     if (this.searchName != null && this.searchName != undefined) {
       this.loadCategoryGroupCondition.names = [this.searchName];
     }
