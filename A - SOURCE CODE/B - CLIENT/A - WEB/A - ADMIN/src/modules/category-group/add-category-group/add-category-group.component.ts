@@ -24,6 +24,7 @@ export class AddCategoryGroupComponent implements OnInit {
   public itemId: number;
   public availableCGStatuses = [CategoryGroupStatus.active, CategoryGroupStatus.disabled];
 
+  //#region Constructor
   public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService, private toastr: ToastrService,
                      public router: Router, private route: ActivatedRoute, private translate: TranslateService) {
     translate.setDefaultLang('en');
@@ -47,6 +48,8 @@ export class AddCategoryGroupComponent implements OnInit {
     });
   }
 
+  //#endregion
+  //#region methods
   public saveCategoryGroup($event) {
     // if is in edit mode
     if (this.isEditMode) {
@@ -67,12 +70,13 @@ export class AddCategoryGroupComponent implements OnInit {
 
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.categoryGroup = new AddCategoryGroup();
   }
 
 // route to manage CG component when click cancel
-  cancel() {
+  public cancel() {
     this.router.navigate(['/category-group/manage']);
   }
+  // #endregion
 }

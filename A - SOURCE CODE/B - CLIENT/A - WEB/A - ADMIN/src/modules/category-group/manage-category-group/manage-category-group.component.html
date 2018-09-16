@@ -13,8 +13,7 @@
         </div>
         <div class="col-md-2">
           <div class="form-group">
-            <select class="select form-control" [(ngModel)]="loadCategoryGroupCondition.statuses"
-                    (change)="onChangeStatusDropdown($event.target.value)">
+            <select class="select form-control" [(ngModel)]="cgStatus">
               <option *ngFor="let item of availableCGStatuses" [value]="item">
                 {{item | toCategoryGroupStatusTitle | translate}}
               </option>
@@ -26,16 +25,21 @@
         </div>
         <div class="col-md-2">
           <div class="form-group">
-            <input type="text" class="form-control" [(ngModel)]="searchName"
-                   (input)="onSearchChangeName($event.target.value)"
-            />
+            <input type="text" class="form-control" [(ngModel)]="searchName"/>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-1">
+          <div class="form-group">
+            <button type="button" class="btn btn-primary" (click)="searchCategoryGroup()">Search</button>
           </div>
         </div>
       </div>
 
-      <p-table [value]="categoryGroups" [responsive]="true" [lazy]="true"
-               [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadCGLazy($event)" [rows]= "5"
-               [totalRecords]="totalCategoryGroup"
+      <p-table [value]="searchCategoryGroupResults.records" [responsive]="true" [lazy]="true"
+               [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadCategoryGroupLazy($event)" [rows]= "5"
+               [totalRecords]="searchCategoryGroupResults.total"
                [paginator]="true" sortMode="multiple">
         <ng-template pTemplate="header">
           <tr>
@@ -62,7 +66,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <button class="btn btn-primary" (click)="addNewCG()">New Category Group</button>
+      <button class="btn btn-primary" (click)="addNewCategoryGroup()">New Category Group</button>
     </div>
   </div>
 </div>

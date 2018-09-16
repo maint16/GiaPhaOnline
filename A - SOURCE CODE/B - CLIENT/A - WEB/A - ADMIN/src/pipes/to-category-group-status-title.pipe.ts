@@ -13,10 +13,10 @@ export class ToCategoryGroupStatusTitlePipe implements PipeTransform {
         return 'TITLE_DISABLED';
       case CategoryGroupStatus.pending:
         return 'TITLE_PENDING';
-      case CategoryGroupStatus.all:
-        return 'TITLE_ALL';
-      default:
+      case CategoryGroupStatus.active:
         return 'TITLE_ACTIVE';
+      default:
+        return 'TITLE_ALL';
     }
   }
 
