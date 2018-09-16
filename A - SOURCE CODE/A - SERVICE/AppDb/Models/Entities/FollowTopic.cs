@@ -40,14 +40,12 @@ namespace AppDb.Models.Entities
         ///     Who is following the post.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(FollowerId))]
-        public Account Follower { get; set; }
+        public User Follower { get; set; }
 
         /// <summary>
         ///     Topic which is being monitored by this relationship.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(TopicId))]
         public Topic Topic { get; set; }
 
         #endregion

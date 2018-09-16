@@ -19,6 +19,7 @@ using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Models;
+using Main.Models.Jwt;
 using Main.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -59,6 +60,7 @@ namespace Main.Controllers
         /// <param name="vgyService"></param>
         /// <param name="profileCacheService"></param>
         /// <param name="captchaService"></param>
+        /// <param name="pusherService"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -74,8 +76,8 @@ namespace Main.Controllers
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<UserController> logger,
             IVgyService vgyService,
-            IValueCacheService<int, Account> profileCacheService,
-            ICaptchaService captchaService) : base(unitOfWork, mapper, timeService,
+            IValueCacheService<int, User> profileCacheService,
+            ICaptchaService captchaService, IPusherService pusherService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _encryptionService = encryptionService;
@@ -92,6 +94,7 @@ namespace Main.Controllers
             _vgyService = vgyService;
             _profileCacheService = profileCacheService;
             _captchaService = captchaService;
+            _pusherService = pusherService;
         }
 
         #endregion
@@ -139,7 +142,7 @@ namespace Main.Controllers
             var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
                 x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == AccountType.Basic);
+                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == UserKind.Basic);
 
             // Find the first account in database.
             var account = await accounts.FirstOrDefaultAsync();
@@ -152,9 +155,9 @@ namespace Main.Controllers
 
             switch (account.Status)
             {
-                case AccountStatus.Pending:
+                case UserStatus.Pending:
                     return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
-                case AccountStatus.Disabled:
+                case UserStatus.Disabled:
                     return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.AccountIsDisabled));
             }
 
@@ -220,23 +223,23 @@ namespace Main.Controllers
             if (account != null)
             {
                 // Prevent account from logging into system because it is pending.
-                if (account.Status == AccountStatus.Pending)
+                if (account.Status == UserStatus.Pending)
                     return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
 
                 // Prevent account from logging into system because it is deleted.
-                if (account.Status == AccountStatus.Disabled)
+                if (account.Status == UserStatus.Disabled)
                     return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
             }
             else
             {
                 // Initialize account instance.
-                account = new Account();
+                account = new User();
                 account.Email = profile.Email;
                 account.Nickname = profile.Name;
-                account.Role = AccountRole.User;
+                account.Role = UserRole.User;
                 account.Photo = profile.Picture;
                 account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                account.Type = AccountType.Google;
+                account.Type = UserKind.Google;
 
                 // Add account to database.
                 UnitOfWork.Accounts.Insert(account);
@@ -300,22 +303,22 @@ namespace Main.Controllers
             if (account != null)
             {
                 // Prevent account from logging into system because it is pending.
-                if (account.Status == AccountStatus.Pending)
+                if (account.Status == UserStatus.Pending)
                     return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
 
                 // Prevent account from logging into system because it is deleted.
-                if (account.Status == AccountStatus.Disabled)
+                if (account.Status == UserStatus.Disabled)
                     return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
             }
             else
             {
                 // Initialize account instance.
-                account = new Account();
+                account = new User();
                 account.Email = profile.Email;
                 account.Nickname = profile.FullName;
-                account.Role = AccountRole.User;
+                account.Role = UserRole.User;
                 account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                account.Type = AccountType.Facebook;
+                account.Type = UserKind.Facebook;
 
                 // Add account to database.
                 UnitOfWork.Accounts.Insert(account);
@@ -357,8 +360,8 @@ namespace Main.Controllers
 
             // Only search for active account.
             // Admin can see deactivated account.
-            if (profile != null && profile.Role != AccountRole.Admin)
-                accounts = accounts.Where(x => x.Status == AccountStatus.Available);
+            if (profile != null && profile.Role != UserRole.Admin)
+                accounts = accounts.Where(x => x.Status == UserStatus.Available);
 
             // Find the first account in system.
             var account = await accounts.FirstOrDefaultAsync();
@@ -414,31 +417,49 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Initiate account
+            #region Add user & user activation code
 
-            // Initiate account with specific information.
-            account = new Account();
-            account.Email = parameters.Email;
-            account.Password = _encryptionService.Md5Hash(parameters.Password);
-            account.Nickname = parameters.Nickname;
+            using (var transactionScope = UnitOfWork.BeginTransactionScope())
+            {
+                // Initiate account with specific information.
+                account = new User();
+                account.Email = parameters.Email;
+                account.Password = _encryptionService.Md5Hash(parameters.Password);
+                account.Nickname = parameters.Nickname;
 
-            // Add account into database.
-            UnitOfWork.Accounts.Insert(account);
+                // Add account into database.
+                UnitOfWork.Accounts.Insert(account);
 
-            // Save changes asychronously.
-            await UnitOfWork.CommitAsync();
+                var activationToken = new ActivationToken();
+                activationToken.OwnerId = account.Id;
+                activationToken.Code = Guid.NewGuid().ToString("D");
+                activationToken.IssuedTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                activationToken.ExpiredTime = activationToken.IssuedTime + 3600;
+                UnitOfWork.ActivationTokens.Insert(activationToken);
 
+                // Commit the transaction.
+                _unitOfWork.Commit();
+                transactionScope.Commit();
+            }
+             
             #endregion
 
-            #region Send email
+
+            #region Background tasks execution
+
+            // Initialize background tasks.
+            var backgroundTasks = new List<Task>();
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
-
             if (emailTemplate != null)
-                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+            {
+                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> {account.Email}, null, null,
+                    emailTemplate.Subject, emailTemplate.Content, emailTemplate.IsHtmlContent, CancellationToken.None);
+                backgroundTasks.Add(pSendMailTask);
+            }
 
             // TODO: Implement notification service which notifies administrators about the registration.
-
+            //var pSendRealTimeNotificationTask = _pusherService.SendAsync()
             #endregion
 
             return Ok();
@@ -476,13 +497,13 @@ namespace Main.Controllers
             // Initiate search conditions.
             //            var conditions = new RequestPasswordViewModel();
             //            conditions.Email = new TextSearch(TextSearchMode.EndsWithIgnoreCase, parameter.Email);
-            //            conditions.Statuses = new[] { AccountStatus.Available };
+            //            conditions.Statuses = new[] { UserStatus.Available };
 
             // Search user in database.
             var accounts = UnitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
                 x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Status == AccountStatus.Available);
+                x.Status == UserStatus.Available);
 
             // Find the first matched account.
             var account = await accounts.FirstOrDefaultAsync();
@@ -555,60 +576,58 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Information search
+            //#region Information search
 
-            // Find active accounts.
-            var accounts = _unitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) && x.Status == AccountStatus.Available);
+            //// Find active accounts.
+            //var accounts = _unitOfWork.Accounts.Search();
+            //accounts = accounts.Where(x => x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) && x.Status == UserStatus.Available);
 
-            // Find active token.
-            var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            var tokens = _unitOfWork.AccessTokens.Search();
+            //// Find active token.
+            //var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            //var tokens = _unitOfWork.AccessTokens.Search();
 
-            // Find token.
-            var result = from account in accounts
-                         from token in tokens
-                         where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
-                         select new SearchAccountTokenResult
-                         {
-                             Token = token,
-                             Account = account
-                         };
+            //// Find token.
+            //var result = from account in accounts
+            //             from token in tokens
+            //             where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
+            //             select new SearchAccountTokenResult
+            //             {
+            //                 Token = token,
+            //                 Account = account
+            //             };
 
-            // No active token is found.
-            if (!await result.AnyAsync())
-                return NotFound(HttpMessages.InformationNotFound);
+            //// No active token is found.
+            //if (!await result.AnyAsync())
+            //    return NotFound(HttpMessages.InformationNotFound);
 
-            #endregion
+            //#endregion
 
-            #region Information change
+            //#region Information change
 
-            // Hash the password.
-            var password = _encryptionService.Md5Hash(parameter.Password);
+            //// Hash the password.
+            //var password = _encryptionService.Md5Hash(parameter.Password);
 
-            // Delete all found tokens.
-            _unitOfWork.AccessTokens.Remove(result.Select(x => x.Token));
-            await result.ForEachAsync(x => x.Account.Password = password);
+            //// Delete all found tokens.
+            //_unitOfWork.AccessTokens.Remove(result.Select(x => x.Token));
+            //await result.ForEachAsync(x => x.Account.Password = password);
 
-            // Commit changes.
-            await _unitOfWork.CommitAsync();
+            //// Commit changes.
+            //await _unitOfWork.CommitAsync();
 
-            #endregion
+            //#endregion
 
-            #region Send email
+            //#region Send email
 
-            // Find the first matched account.
-            var accountSendMail = await accounts.FirstOrDefaultAsync();
+            //// Find the first matched account.
+            //var accountSendMail = await accounts.FirstOrDefaultAsync();
 
-            var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordReset);
+            //var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordReset);
 
-            if (emailTemplate != null)
-            {
-                await _sendMailService.SendAsync(new HashSet<string> { accountSendMail.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
-            }
+            //if (emailTemplate != null)
+            //    await _sendMailService.SendAsync(new HashSet<string> { accountSendMail.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
 
-            #endregion
-
+            //#endregion
+            throw new NotImplementedException();
             return Ok();
         }
 
@@ -654,7 +673,7 @@ namespace Main.Controllers
             else
             {
                 var accounts = _unitOfWork.Accounts.Search();
-                accounts = accounts.Where(x => x.Id == id && x.Status == AccountStatus.Available);
+                accounts = accounts.Where(x => x.Id == id && x.Status == UserStatus.Available);
 
                 // Get the first matched account
                 var account = await accounts.FirstOrDefaultAsync();
@@ -706,9 +725,9 @@ namespace Main.Controllers
             // Status has been defined.
             if (info.Status != user.Status)
             {
-                if (info.Status == AccountStatus.Pending)
+                if (info.Status == UserStatus.Pending)
                 {
-                    user.Status = AccountStatus.Disabled;
+                    user.Status = UserStatus.Disabled;
                     bHasInformationChanged = true;
                 }
                 else
@@ -734,7 +753,7 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        private JwtResponse InitializeAccountToken(Account account)
+        private JwtResponse InitializeAccountToken(User account)
         {
             // Find current time on the system.
             var systemTime = DateTime.Now;
@@ -766,7 +785,7 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
-        private IList<Claim> InitUserClaim(Account account)
+        private IList<Claim> InitUserClaim(User account)
         {
             var claims = new List<Claim>();
             claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
@@ -829,13 +848,13 @@ namespace Main.Controllers
 
             // Search conditions which are based on roles.
 
-            if (identity?.Role == AccountRole.Admin)
+            if (identity?.Role == UserRole.Admin)
             {
                 // Statuses have been defined.
                 if (condition.Statuses != null && condition.Statuses.Count > 0)
                 {
                     condition.Statuses =
-                        condition.Statuses.Where(x => Enum.IsDefined(typeof(AccountStatus), x)).ToList();
+                        condition.Statuses.Where(x => Enum.IsDefined(typeof(UserStatus), x)).ToList();
                     if (condition.Statuses.Count > 0)
                         accounts = accounts.Where(x => condition.Statuses.Contains(x.Status));
                 }
@@ -844,7 +863,7 @@ namespace Main.Controllers
                 if (condition.Roles != null && condition.Roles.Count > 0)
                 {
                     condition.Roles =
-                        condition.Roles.Where(x => Enum.IsDefined(typeof(AccountRole), x)).ToList();
+                        condition.Roles.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToList();
                     if (condition.Roles.Count > 0)
                         accounts = accounts.Where(x => condition.Roles.Contains(x.Role));
                 }
@@ -862,7 +881,7 @@ namespace Main.Controllers
                     AccountSort.JoinedTime);
 
             // Result initialization.
-            var result = new SearchResult<IList<Account>>();
+            var result = new SearchResult<IList<User>>();
             result.Total = await accounts.CountAsync();
             result.Records = await _databaseFunction.Paginate(accounts, condition.Pagination).ToListAsync();
 
@@ -967,7 +986,7 @@ namespace Main.Controllers
             #region Search for account
 
             var accounts = _unitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Email.Equals(info.Email) && x.Status == AccountStatus.Pending && x.Type == AccountType.Basic);
+            accounts = accounts.Where(x => x.Email.Equals(info.Email) && x.Status == UserStatus.Pending && x.Type == UserKind.Basic);
 
             // Find the first matched account.
             var account = await accounts.FirstOrDefaultAsync();
@@ -1089,12 +1108,17 @@ namespace Main.Controllers
         /// <summary>
         ///     Service which is for handling profile caching.
         /// </summary>
-        private readonly IValueCacheService<int, Account> _profileCacheService;
+        private readonly IValueCacheService<int, User> _profileCacheService;
 
         /// <summary>
         ///     Service which is for checking captcha.
         /// </summary>
         private readonly ICaptchaService _captchaService;
+
+        /// <summary>
+        /// Service which is for sending notification to pusher server.
+        /// </summary>
+        private readonly IPusherService _pusherService;
 
         #endregion
     }

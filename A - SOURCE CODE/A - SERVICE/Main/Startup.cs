@@ -1,4 +1,4 @@
-﻿#define USE_SQLSERVER
+﻿
 
 using System;
 using System.Collections.Generic;
@@ -19,11 +19,13 @@ using Main.Authentications.TokenValidators;
 using Main.Constants;
 using Main.Interfaces;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Captcha;
 using Main.Models.ExternalAuthentication;
 using Main.Models.PushNotification;
 using Main.Services;
+using Main.Services.RealTime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -35,6 +37,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -106,24 +109,24 @@ namespace Main
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
 #elif USE_IN_MEMORY
             services.AddDbContext<RelationalDatabaseContext>(
-                options => options.UseInMemoryDatabase("iConfess"));
+                options => options.UseInMemoryDatabase("iConfess")
+                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
-            services.AddDbContext<RelationalDatabaseContext>(
-                options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+            services.AddDbContext<RelationalDatabaseContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
 #endif
 
             // Injections configuration.
             services.AddScoped<DbContext, RelationalDatabaseContext>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork<RelationalDatabaseContext>>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IRelationalDbService, RelationalDbService>();
 
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<ITimeService, TimeService>();
-            services.AddScoped<IPushService, FcmService>();
-//            services.AddScoped<INotifyService, NotifyService>();
+            services.AddScoped<ICloudMessagingService, FcmService>();
+            //            services.AddScoped<INotifyService, NotifyService>();
             services.AddScoped<ISendMailService, SendGridService>();
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
@@ -132,12 +135,12 @@ namespace Main
             services.AddScoped<ICaptchaService, CaptchaService>();
 
             // Store user information in cache
-            services.AddSingleton<IValueCacheService<int, Account>, ProfileCacheService>();
+            services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
             services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
             services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
 
             // Initialize real-time notification service as single instance.
-            services.AddSingleton<IRealTimeNotificationService, RealTimeNotificationService>();
+            services.AddSingleton<IRealTimeService, RealTimeService>();
 
             // Initialize vgy service.
             services.AddScoped<IVgyService, VgyService>();
@@ -229,7 +232,7 @@ namespace Main
 
             services.AddAuthorization(x => x.AddPolicy(PolicyConstant.IsAdminPolicy, builder =>
             {
-                builder.AddRequirements(new RoleRequirement(new[] {AccountRole.Admin}));
+                builder.AddRequirements(new RoleRequirement(new[] { UserRole.Admin }));
             }));
 
             #endregion
@@ -321,7 +324,7 @@ namespace Main
             // Use signalr connection.
             //app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
         }
-        
+
         #endregion
     }
 }

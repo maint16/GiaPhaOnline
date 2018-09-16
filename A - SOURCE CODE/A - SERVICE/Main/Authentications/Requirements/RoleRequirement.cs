@@ -11,7 +11,7 @@ namespace Main.Authentications.Requirements
         ///     Initiate requirement with roles.
         /// </summary>
         /// <param name="roles"></param>
-        public RoleRequirement(AccountRole[] roles)
+        public RoleRequirement(UserRole[] roles)
         {
             _roles = roles;
         }
@@ -23,12 +23,12 @@ namespace Main.Authentications.Requirements
         /// <summary>
         ///     Client valid roles.
         /// </summary>
-        private readonly AccountRole[] _roles;
+        private readonly UserRole[] _roles;
 
         /// <summary>
         ///     List of accessible role.
         /// </summary>
-        public AccountRole[] Roles => _roles;
+        public UserRole[] Roles => _roles;
 
         #endregion
     }

@@ -29,7 +29,7 @@ namespace Main.Authentications.Handlers
         public SolidAccountRequirementHandler(
             IUnitOfWork unitOfWork,
             IIdentityService identityService, IHttpContextAccessor httpContextAccessor,
-            IValueCacheService<int, Account> profileCacheService)
+            IValueCacheService<int, User> profileCacheService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
@@ -94,7 +94,7 @@ namespace Main.Authentications.Handlers
             // Find accounts based on conditions.
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
-                x.Id == iId && x.Status == AccountStatus.Available);
+                x.Id == iId && x.Status == UserStatus.Available);
 
             // Find the first matched account in the system.
             account = await accounts.FirstOrDefaultAsync();
@@ -141,7 +141,7 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Service which is for caching user information.
         /// </summary>
-        private readonly IValueCacheService<int, Account> _profileCacheService;
+        private readonly IValueCacheService<int, User> _profileCacheService;
 
         #endregion
     }

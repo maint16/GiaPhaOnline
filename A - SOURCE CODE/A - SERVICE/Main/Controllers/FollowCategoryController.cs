@@ -199,7 +199,7 @@ namespace Main.Controllers
             }
 
             // Search conditions which are based on roles.
-            if (identity.Role == AccountRole.Admin)
+            if (identity.Role == UserRole.Admin)
             {
                 // Follower id is defined.
                 if (condition.FollowerIds != null && condition.FollowerIds.Count > 0)

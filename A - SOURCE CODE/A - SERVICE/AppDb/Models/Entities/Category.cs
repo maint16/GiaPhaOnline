@@ -71,7 +71,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(CreatorId))]
-        public Account Creator { get; set; }
+        public User Creator { get; set; }
 
         /// <summary>
         ///     Category group which category belongs to.

@@ -279,7 +279,7 @@ namespace Main.Controllers
 
             // Search conditions which are based on roles.
 
-            if (identity?.Role == AccountRole.Admin)
+            if (identity?.Role == UserRole.Admin)
             {
                 // Statuses have been defined.
                 if (condition.Statuses != null && condition.Statuses.Count > 0)

@@ -13,38 +13,31 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Id of comment (Auto incremented)
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
         ///     Who wrote the comment.
         /// </summary>
-        [Required]
         public int OwnerId { get; set; }
 
         /// <summary>
         ///     Which post this comment belongs to.
         /// </summary>
-        [Required]
         public int TopicId { get; set; }
 
         /// <summary>
         ///     Category that reply belongs to.
         /// </summary>
-        [Required]
         public int CategoryId { get; set; }
 
         /// <summary>
         ///     Category group that reply belongs to.
         /// </summary>
-        [Required]
         public int CategoryGroupId { get; set; }
 
         /// <summary>
         ///     Comment content.
         /// </summary>
-        [Required]
         public string Content { get; set; }
 
         /// <summary>
@@ -55,7 +48,6 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When was the comment created.
         /// </summary>
-        [Required]
         public double CreatedTime { get; set; }
 
         /// <summary>
@@ -70,15 +62,11 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     One comment can only be initiated by one account.
         /// </summary>
-        [JsonIgnore]
-        [ForeignKey(nameof(OwnerId))]
-        public Account Owner { get; set; }
+        public User Owner { get; set; }
 
         /// <summary>
         ///     One reply can only belong to one topic.
         /// </summary>
-        [JsonIgnore]
-        [ForeignKey(nameof(TopicId))]
         public Topic Topic { get; set; }
 
         #endregion

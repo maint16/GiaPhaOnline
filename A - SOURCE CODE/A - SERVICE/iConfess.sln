@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppDb", "AppDb\AppDb.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppModel", "AppModel\AppModel.csproj", "{A2A65FA7-FBF8-4360-BFC7-F2593DD3414F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "micro-services", "micro-services", "{FA3975FA-44D0-4DFB-9D25-4AD7ACD27C79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Allow anonymous|Any CPU = Allow anonymous|Any CPU

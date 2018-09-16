@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\Services\ITemporaryValueCacheService.cs" />
-    <Compile Remove="Services\NotifyService.cs" />
+    <Compile Remove="Models\RealTimeNotification.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
   </ItemGroup>
 
@@ -36,6 +36,7 @@
     <PackageReference Include="GlobalExceptionHandler" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.3" />
     <PackageReference Include="Mustache" Version="1.0.1" />

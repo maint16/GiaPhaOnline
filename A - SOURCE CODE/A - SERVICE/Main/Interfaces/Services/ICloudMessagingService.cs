@@ -8,7 +8,7 @@ using Main.Models.PushNotification.Notification;
 
 namespace Main.Interfaces.Services
 {
-    public interface IPushService
+    public interface ICloudMessagingService
     {
         #region Methods
 
@@ -51,7 +51,7 @@ namespace Main.Interfaces.Services
         /// </summary>
         /// <param name="fcmMessage"></param>
         /// <param name="cancellationToken"></param>
-        Task<HttpResponseMessage> SendNotification(FcmMessage fcmMessage, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> SendAsync<T>(FcmMessage<T> fcmMessage, CancellationToken cancellationToken);
 
         /// <summary>
         /// Send notification to 
@@ -62,8 +62,8 @@ namespace Main.Interfaces.Services
         /// <param name="data"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<HttpResponseMessage> SendNotification(List<string> recipientIds,
-           FcmBaseNotification notification, string collapseKey, IDictionary data,
+        Task<HttpResponseMessage> SendAsync<T>(List<string> recipientIds,
+           FcmBaseNotification notification, string collapseKey, T data,
            CancellationToken cancellationToken);
 
 

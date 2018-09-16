@@ -13,38 +13,31 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Id of topcic.
         /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
         ///     Who owns the post.
         /// </summary>
-        [Required]
         public int OwnerId { get; set; }
 
         /// <summary>
         ///     Category that topic belongs to.
         /// </summary>
-        [Required]
         public int CategoryId { get; set; }
 
         /// <summary>
         ///     Category group that topic belongs to.
         /// </summary>
-        [Required]
         public int CategoryGroupId { get; set; }
 
         /// <summary>
         ///     Title of topic.
         /// </summary>
-        [Required]
         public string Title { get; set; }
 
         /// <summary>
         ///     Topic body.
         /// </summary>
-        [Required]
         public string Body { get; set; }
 
         /// <summary>
@@ -76,14 +69,12 @@ namespace AppDb.Models.Entities
         ///     Who create the post.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(OwnerId))]
-        public Account Owner { get; set; }
-
+        public User Owner { get; set; }
+        
         /// <summary>
         ///     Category which topic belongs to.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(CategoryId))]
         public Category Category { get; set; }
 
         /// <summary>

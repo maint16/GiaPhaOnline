@@ -60,7 +60,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(OwnerId))]
-        public Account Owner { get; set; }
+        public User Owner { get; set; }
 
         #endregion
     }
