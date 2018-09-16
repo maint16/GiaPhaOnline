@@ -56,7 +56,7 @@ export class AddCategoryGroupComponent implements OnInit {
       this.categoryGroupService.updateCategoryGroup(this.itemId, this.categoryGroup).subscribe((data: any) => {
         this.toastr.success('Update Category Group Successfully');
         // Redirect to manage-category-group.
-        this.router.navigate(['/manage-category-group']);
+        this.router.navigate(['/category-group/manage']);
       });
     }
     // if is in create new mode
@@ -64,7 +64,7 @@ export class AddCategoryGroupComponent implements OnInit {
       this.categoryGroupService.addCategoryGroup(this.categoryGroup).subscribe((data: any) => {
         this.toastr.success('Save Category Group Successfully');
         // Redirect to manage-category-group.
-        this.router.navigate(['/manage-category-group']);
+        this.router.navigate(['/category-group/manage']);
       });
     }
 

@@ -37,6 +37,9 @@ export class ManageCategoryGroupComponent implements OnInit {
   //#region Methods
 
   public ngOnInit(): void {
+    // Set default value for status dropdown list
+    this.cgStatus = 'null';
+    // Set paging
     this.loadCategoryGroupCondition = new LoadCategoryGroupViewModel();
     this.pagination = new Pagination();
     this.pagination.page = 1;
