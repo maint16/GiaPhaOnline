@@ -87,7 +87,7 @@ export class ManageCategoryGroupComponent implements OnInit {
     this.pagination.page = 1;
     this.pagination.records = 5;
     this.loadCategoryGroupCondition.pagination = this.pagination;
-    if (this.loadCategoryGroupCondition.statuses == [3]) {
+    if (this.loadCategoryGroupCondition.statuses == [CategoryGroupStatus.all]) {
       this.loadCategoryGroupCondition.statuses = [CategoryGroupStatus.active, CategoryGroupStatus.disabled];
     }
     else {
