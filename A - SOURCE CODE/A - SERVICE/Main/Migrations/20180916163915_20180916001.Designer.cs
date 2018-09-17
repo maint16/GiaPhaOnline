@@ -4,14 +4,16 @@ using AppDb.Models.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Main.Migrations
 {
-    [DbContext(typeof(RelationalDatabaseContext))]
-    partial class RelationalDatabaseContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(RelationalDbContext))]
+    [Migration("20180916163915_20180916001")]
+    partial class _20180916001
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -316,6 +318,8 @@ namespace Main.Migrations
                     b.Property<string>("Photo");
 
                     b.Property<int>("Role");
+
+                    b.Property<string>("Signature");
 
                     b.Property<int>("Status");
 

@@ -126,10 +126,12 @@ namespace Main.Controllers
 
             #endregion
 
+#if !DISABLE_CAPTCHA_VALIDATION
             // Verify the captcha.
             var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(parameters.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
                 return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+#endif
 
 #if !ALLOW_ANONYMOUS
 

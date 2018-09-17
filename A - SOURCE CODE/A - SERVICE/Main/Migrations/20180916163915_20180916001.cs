@@ -48,6 +48,7 @@ namespace Main.Migrations
                     Status = table.Column<int>(nullable: false),
                     Role = table.Column<int>(nullable: false),
                     Photo = table.Column<string>(nullable: true),
+                    Signature = table.Column<string>(nullable: true),
                     JoinedTime = table.Column<double>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true)
                 },

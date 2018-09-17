@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -7,14 +6,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace AppDb.Models.Contexts
 {
-    public class RelationalDatabaseContext : DbContext
+    public class RelationalDbContext : DbContext
     {
         #region Constructors
 
         /// <summary>
         ///     Initiate database context with connection string.
         /// </summary>
-        public RelationalDatabaseContext(DbContextOptions<RelationalDatabaseContext> dbContextOptions)
+        public RelationalDbContext(DbContextOptions dbContextOptions)
             : base(dbContextOptions)
         {
         }
@@ -68,8 +67,14 @@ namespace AppDb.Models.Contexts
         /// </summary>
         public virtual DbSet<Reply> Replies { get; set; }
         
+        /// <summary>
+        /// Signalr connection.
+        /// </summary>
         public virtual DbSet<SignalrConnection> SignalrConnections { get; set; }
 
+        /// <summary>
+        /// Signalr connection group.
+        /// </summary>
         public virtual DbSet<SignalrConnectionGroup> SignalrConnectionGroups { get; set; }
 
         #endregion
@@ -329,6 +334,7 @@ namespace AppDb.Models.Contexts
             // Relationship between topic report and account.
             topicReport.HasOne(x => x.TopicOwner).WithMany(x => x.OwnedTopicReports).HasForeignKey(x => x.OwnerId);
             topicReport.HasOne(x => x.TopicReporter).WithMany(x => x.ReportedPosts).HasForeignKey(x => x.ReporterId);
+            
 
         }
 
@@ -371,8 +377,8 @@ namespace AppDb.Models.Contexts
             signalrConnectionGroup.HasKey(x => x.Id);
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }

@@ -52,6 +52,11 @@ namespace AppDb.Models.Entities
         public string Photo { get; set; }
 
         /// <summary>
+        /// Signature of user.
+        /// </summary>
+        public string Signature { get; set; }
+
+        /// <summary>
         ///     When was the account created.
         /// </summary>
         public double JoinedTime { get; set; }

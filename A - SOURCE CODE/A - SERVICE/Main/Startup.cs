@@ -1,12 +1,10 @@
-﻿
+﻿//#define USE_IN_MEMORY
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
+using AppDb.Models;
 using AppDb.Models.Contexts;
 using AppDb.Models.Entities;
 using AppDb.Repositories;
@@ -17,7 +15,7 @@ using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
 using Main.Constants;
-using Main.Interfaces;
+using Main.Extensions;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
@@ -30,12 +28,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -43,11 +39,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Shared.Interfaces.Services;
-using Shared.Models;
 using Shared.Services;
 using VgySdk.Interfaces;
 using VgySdk.Service;
@@ -64,7 +58,7 @@ namespace Main
         public IConfigurationRoot Configuration { get; }
 
         /// <summary>
-        /// Hosting environement configuration.
+        ///     Hosting environement configuration.
         /// </summary>
         public IHostingEnvironment HostingEnvironment { get; }
 
@@ -108,16 +102,29 @@ namespace Main
             services.AddDbContext<RelationalDatabaseContext>(
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
 #elif USE_IN_MEMORY
-            services.AddDbContext<RelationalDatabaseContext>(
+
+            services.AddOptions<DbSeedOption>();
+            //services.AddDbContext<RelationalDbContext>(
+            //    options =>
+            //    {
+            //        options.ReplaceService<RelationalDbContext, InMemoryRelationalDbContext>();
+            //        options.UseInMemoryDatabase("iConfess")
+            //            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+            //    });
+
+            services.AddDbContext<InMemoryRelationalDbContext>(
                 options => options.UseInMemoryDatabase("iConfess")
-                .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+                    .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+
+            services.AddMockingRecords(HostingEnvironment);
+            services.AddScoped<DbContext>(context => context.GetService<InMemoryRelationalDbContext>());
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
-            services.AddDbContext<RelationalDatabaseContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+            services.AddDbContext<RelationalDbContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+            services.AddScoped<DbContext, RelationalDbContext>();
 #endif
 
             // Injections configuration.
-            services.AddScoped<DbContext, RelationalDatabaseContext>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IRelationalDbService, RelationalDbService>();
@@ -150,7 +157,8 @@ namespace Main
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
 
             // Get email cache option.
-            var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache").Get(typeof(Dictionary<string, EmailCacheOption>));
+            var emailCacheOption = (Dictionary<string, EmailCacheOption>) Configuration.GetSection("emailCache")
+                .Get(typeof(Dictionary<string, EmailCacheOption>));
             var emailCacheService = new EmailCacheService();
             emailCacheService.HostingEnvironment = HostingEnvironment;
             emailCacheService.ReadConfiguration(emailCacheOption);
@@ -227,13 +235,11 @@ namespace Main
             services.AddAuthorization(x => x.AddPolicy(PolicyConstant.DefaultSignalRPolicyName, builder =>
             {
                 builder.RequireAuthenticatedUser()
-                .AddRequirements(new SolidAccountRequirement());
+                    .AddRequirements(new SolidAccountRequirement());
             }));
 
-            services.AddAuthorization(x => x.AddPolicy(PolicyConstant.IsAdminPolicy, builder =>
-            {
-                builder.AddRequirements(new RoleRequirement(new[] { UserRole.Admin }));
-            }));
+            services.AddAuthorization(x => x.AddPolicy(PolicyConstant.IsAdminPolicy,
+                builder => { builder.AddRequirements(new RoleRequirement(new[] {UserRole.Admin})); }));
 
             #endregion
 
@@ -247,7 +253,7 @@ namespace Main
                         .RequireAuthenticatedUser()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
 #if !ALLOW_ANONYMOUS
-                    .AddRequirements(new SolidAccountRequirement())
+                        .AddRequirements(new SolidAccountRequirement())
 #endif
                         .Build();
 
@@ -257,7 +263,8 @@ namespace Main
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1); ;
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            ;
 
             #endregion
         }
@@ -280,31 +287,8 @@ namespace Main
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
 
-            // Use exception handler for errors handling.
-            app.UseExceptionHandler(options =>
-            {
-                options.Run(
-                    async context =>
-                    {
-                        // Mark the response status as 500.
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        context.Response.ContentType = "application/json";
-                        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-
-                        // No exception handler feature has been found.
-                        if (exceptionHandlerFeature == null || exceptionHandlerFeature.Error == null)
-                            return;
-
-                        // Current environment is not development.
-                        if (!env.IsDevelopment())
-                            return;
-
-                        // Initialize response asynchronously.
-                        var apiResponse = new ApiResponse(exceptionHandlerFeature.Error.Message);
-                        var szApiResponse = JsonConvert.SerializeObject(apiResponse);
-                        await context.Response.WriteAsync(szApiResponse).ConfigureAwait(false);
-                    });
-            });
+            // Use in-app exception handler.
+            app.UseCustomizedExceptionHandler(env);
 
             // Use strict transport security.
             app.UseHsts();
