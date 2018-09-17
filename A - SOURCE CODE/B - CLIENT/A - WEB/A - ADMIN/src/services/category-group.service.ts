@@ -7,7 +7,7 @@ import {Observable} from 'rxjs/Rx';
 import {SearchResult} from '../models/search-result';
 import {ICategoryGroupService} from '../interfaces/services/category-group-service.interface';
 import {CategoryGroup} from '../models/entities/category-group';
-import {ConfigUrlCategoryGroupServiceConstant} from '../constants/config-url-category-service.constant';
+import {ConfigUrlCategoryGroupServiceConstant} from '../constants/config-url-category-group-service.constant';
 import {LoadCategoryGroupViewModel} from '../view-models/category-group/load-category-group.view-model';
 import {AddCategoryGroup} from '../view-models/category-group/add-category-group.view-model';
 

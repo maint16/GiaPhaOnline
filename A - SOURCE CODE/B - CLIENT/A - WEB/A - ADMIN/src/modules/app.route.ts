@@ -33,6 +33,11 @@ export const routes: Routes = [
         path: 'category-group',
         loadChildren: 'modules/category-group/category-group.module#CategoryGroupModule',
 canActivate : [IsAuthorizedGuard]
+      },
+      {
+        path: 'category',
+        loadChildren: 'modules/category/category.module#CategoryModule',
+        canActivate : [IsAuthorizedGuard]
       }
     ]
   }
