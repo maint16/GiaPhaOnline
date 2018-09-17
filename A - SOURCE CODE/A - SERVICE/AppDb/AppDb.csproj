@@ -23,4 +23,8 @@
     <ProjectReference Include="..\AppModel\AppModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCOREAPP2_1;DISABLE_CAPTCHA_VALIDATION</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCOREAPP2_1;DISABLE_CAPTCHA_VALIDATION;</DefineConstants>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
 
@@ -25,10 +25,6 @@
     <Compile Remove="Interfaces\Services\ITemporaryValueCacheService.cs" />
     <Compile Remove="Models\RealTimeNotification.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
