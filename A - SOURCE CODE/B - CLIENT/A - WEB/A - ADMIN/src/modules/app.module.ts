@@ -20,6 +20,7 @@ import {AccountService} from '../services/account.service';
 import {ToastrModule, ToastrService} from 'ngx-toastr';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {ToUserStatusTitlePipe} from '../pipes/to-user-status-title.pipe';
+import {NgxLocalStorageModule} from 'ngx-localstorage';
 
 //#region Factory functions
 
@@ -68,6 +69,9 @@ export function getAuthServiceConfigs() {
     GuardModule.forRoot(),
     ServiceModule.forRoot(),
     ResolveModule.forRoot(),
+    NgxLocalStorageModule.forRoot({
+      prefix: 'i-confess'
+    }),
     SharedModule,
     AppRouteModule,
     SocialLoginModule,

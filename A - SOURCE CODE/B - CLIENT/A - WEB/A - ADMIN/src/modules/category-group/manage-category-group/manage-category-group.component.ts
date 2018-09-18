@@ -9,6 +9,9 @@ import {LazyLoadEvent} from 'primeng/api';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {CategoryGroupStatus} from '../../../enums/category-group-status.enum';
+import {ISharedEventService} from '../../../interfaces/services/shared-event-service.interface';
+import {RealTimeChannelConstant} from '../../../constants/real-time/real-time-channel.constant';
+import {RealTimeEventConstant} from '../../../constants/real-time/real-time-event.constant';
 
 @Component({
   selector: 'manage-category-group',
@@ -17,6 +20,7 @@ import {CategoryGroupStatus} from '../../../enums/category-group-status.enum';
 })
 
 export class ManageCategoryGroupComponent implements OnInit {
+
   public loadCategoryGroupCondition: LoadCategoryGroupViewModel;
   public availableCGStatuses = [null, CategoryGroupStatus.active, CategoryGroupStatus.disabled];
   public pagination: Pagination;
@@ -26,10 +30,21 @@ export class ManageCategoryGroupComponent implements OnInit {
 
   //#region Constructor
 
-  public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService, private toastr: ToastrService,
-                     public route: Router, private translate: TranslateService) {
-    translate.setDefaultLang('en');
+  public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService,
+                     private toastr: ToastrService,
+                     public route: Router,
+                     private translateService: TranslateService,
+                     @Inject('ISharedEventService') public sharedEventService: ISharedEventService) {
+
+    translateService.setDefaultLang('en');
     this.searchCategoryGroupResults = new SearchResult<CategoryGroup>();
+
+    this.sharedEventService
+      .hookMessageChannel(RealTimeChannelConstant.notification, RealTimeEventConstant.addCategoryGroup)
+      .subscribe(message => {
+        this.handleAddCategoryGroupRealTimeEvent(message);
+      });
+
   }
 
   //#endregion
@@ -78,7 +93,7 @@ export class ManageCategoryGroupComponent implements OnInit {
     this.route.navigate(['category-group/' + id]);
   }
 
-// Search Category Group
+  // Search Category Group
   public searchCategoryGroup() {
     this.pagination = new Pagination();
     this.pagination.page = 1;
@@ -96,6 +111,20 @@ export class ManageCategoryGroupComponent implements OnInit {
         this.searchCategoryGroupResults.total = loadCategoryGroupsResult.total;
       });
 
-    //#endregion
+
   }
+
+  //#endregion
+
+  //#region Event handler
+
+  /*
+  * Called when a real-time message notifies a category is created.
+  * */
+  public handleAddCategoryGroupRealTimeEvent(categoryGroup: CategoryGroup): void {
+    let translatedMessage = this.translateService.instant("MSG_USER_ADDED_CATEGORY_GROUP", categoryGroup);
+    this.toastr.info(translatedMessage, null, {enableHtml: true});
+  }
+
+  //#endregion
 }

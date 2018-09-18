@@ -52,14 +52,14 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
-        /// <typeparam name="TMessageAdditionalData"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="clientIds"></param>
         /// <param name="eventName"></param>
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task SendToClientsAsync<TMessageAdditionalData>(string[] clientIds, string eventName,
-            RealTimeMessage<TMessageAdditionalData> message,
+        public async Task SendToClientsAsync<T>(string[] clientIds, string eventName,
+            T message,
             CancellationToken cancellationToken)
         {
             if (clientIds == null)
@@ -77,14 +77,14 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
-        /// <typeparam name="TMessageAdditionalData"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="groups"></param>
         /// <param name="eventName"></param>
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task SendToGroupsAsync<TMessageAdditionalData>(string[] groups, string eventName,
-            RealTimeMessage<TMessageAdditionalData> message,
+        public async Task SendToGroupsAsync<T>(string[] groups, string eventName,
+            T message,
             CancellationToken cancellationToken)
         {
             await _notificationHubContext
