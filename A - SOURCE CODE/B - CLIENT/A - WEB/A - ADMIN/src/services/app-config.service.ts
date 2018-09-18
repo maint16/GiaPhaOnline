@@ -26,7 +26,7 @@ export class AppConfigService {
   * */
   public loadConfigurationFromFile(): Promise<AppConfig> {
     return this.httpClient
-      .get('/assets//app.config.json')
+      .get('/src/assets/app.config.json')
       .toPromise()
       .then(data => {
         console.log(data);
