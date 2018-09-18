@@ -7,8 +7,6 @@ namespace AppDb.Models.Entities
     {
         #region Properties
         
-        public Guid Id { get; set; }
-
         public string ClientId { get; set; }
 
         public string Group { get; set; }

@@ -244,22 +244,6 @@ namespace Main.Migrations
                     b.ToTable("SignalrConnection");
                 });
 
-            modelBuilder.Entity("AppDb.Models.Entities.SignalrConnectionGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ClientId");
-
-                    b.Property<string>("Group");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SignalrConnectionGroup");
-                });
-
             modelBuilder.Entity("AppDb.Models.Entities.Topic", b =>
                 {
                     b.Property<int>("Id")
@@ -326,6 +310,22 @@ namespace Main.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.Property<string>("DeviceId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("CreatedTime");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("DeviceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserDeviceToken");
                 });
 
             modelBuilder.Entity("AppDb.Models.Entities.AccessToken", b =>
@@ -445,6 +445,14 @@ namespace Main.Migrations
                     b.HasOne("AppDb.Models.Entities.User", "Owner")
                         .WithMany("Topics")
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.HasOne("AppDb.Models.Entities.User", "User")
+                        .WithMany("DeviceTokens")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618

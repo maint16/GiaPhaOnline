@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Main.Migrations
 {
     [DbContext(typeof(RelationalDbContext))]
-    [Migration("20180916163915_20180916001")]
-    partial class _20180916001
+    [Migration("20180917060839_20180917001")]
+    partial class _20180917001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -114,6 +114,19 @@ namespace Main.Migrations
                     b.HasIndex("CreatorId");
 
                     b.ToTable("CategoryGroup");
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.Property<Guid>("DeviceId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("KeyName")
+                        .IsRequired();
+
+                    b.HasKey("DeviceId");
+
+                    b.ToTable("UserDeviceToken");
                 });
 
             modelBuilder.Entity("AppDb.Models.Entities.FollowCategory", b =>

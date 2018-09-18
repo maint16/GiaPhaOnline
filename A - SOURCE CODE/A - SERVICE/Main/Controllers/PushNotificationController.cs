@@ -183,7 +183,7 @@ namespace Main.Controllers
 //            #endregion
 
 //            // Add devices to group.
-//            await _fcmService.AddDeviceToGroupAsync(new List<string> { info.DeviceId }, groups, CancellationToken.None);
+//            await _fcmService.AddDevicesToGroupAsync(new List<string> { info.DeviceId }, groups, CancellationToken.None);
 //            return Ok();
 //        }
 

@@ -6,9 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using Main.Constants;
+using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
+using Main.ViewModels.RealTime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -34,6 +36,9 @@ namespace Main.Services.RealTime
             _snakeCaseSerializerSettings.ContractResolver = contractResolver;
 
             _httpClientFactory = httpClientFactory;
+            _httpClient = httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
+            _httpClient.BaseAddress = new Uri(UrlFcmBaseUrl);
+
             _unitOfWork = unitOfWork;
         }
 
@@ -41,10 +46,10 @@ namespace Main.Services.RealTime
 
         #region Properties
 
-        /// <summary>
-        ///     Fcm setting information.
-        /// </summary>
-        private readonly FcmOption _fcmOption;
+        ///// <summary>
+        /////     Fcm setting information.
+        ///// </summary>
+        //private readonly FcmOption _fcmOption;
 
         /// <summary>
         ///     Instance to access database and its entities.
@@ -55,6 +60,11 @@ namespace Main.Services.RealTime
         ///     Snake case serializer setting.
         /// </summary>
         private readonly JsonSerializerSettings _snakeCaseSerializerSettings;
+
+        /// <summary>
+        ///     Base url of FCM service.
+        /// </summary>
+        private const string UrlFcmBaseUrl = "https://fcm.googleapis.com";
 
         /// <summary>
         ///     Url to send FCM notification message.
@@ -71,11 +81,47 @@ namespace Main.Services.RealTime
         /// </summary>
         private const string UrlDeleteDevicesFromTopic = "https://iid.googleapis.com/iid/v1:batchRemove";
 
+        /// <summary>
+        ///     Url to find device group notification key.
+        /// </summary>
+        private const string UrlFindDeviceGroupNotificationKey = "fcm/notification?notification_key_name={0}";
+
+        /// <summary>
+        ///     Url to manage device group.
+        /// </summary>
+        private const string UrlDeviceGroupManagement = "fcm/notification";
+
         private readonly IHttpClientFactory _httpClientFactory;
+
+        private readonly HttpClient _httpClient;
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Get device group notification key by using notification key name.
+        /// </summary>
+        /// <param name="notificationKeyName"></param>
+        /// <returns></returns>
+        public async Task<string> GetDeviceGroupNotificationKey(string notificationKeyName)
+        {
+            var subUrl = string.Format(UrlFindDeviceGroupNotificationKey, notificationKeyName);
+            var httpResponseMessage = await _httpClient.GetAsync(new Uri(subUrl));
+            var httpContent = httpResponseMessage.Content;
+
+            if (httpContent == null)
+                throw new Exception("No content responded from service.");
+
+            var content = await httpContent.ReadAsAsync<FirebaseDeviceGroupContent>();
+            if (httpResponseMessage.IsSuccessStatusCode)
+                return content.NotificationKey;
+
+            if (FcmErrorMessageConstant.NotificationKeyNotFound.Equals(content.ErrorMessage))
+                return null;
+
+            throw new Exception("Invalid server response");
+        }
 
         /// <summary>
         ///     Add device to a specific group.
@@ -131,15 +177,42 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     Add device to a specific group.
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceIds"></param>
         /// <param name="group"></param>
         /// <param name="cancellationToken"></param>
-        public async Task<HttpResponseMessage> AddDeviceToGroupAsync(string deviceId, string group,
+        public async Task<HttpResponseMessage> AddDevicesToGroupAsync(string[] deviceIds, string group,
             CancellationToken cancellationToken)
         {
+            #region Use topic instead (deprecated)
+
             // Due to the fcm complexity of firebase cloud messaging group. 
             // Use topics instead.
-            return await AddDeviceToTopicAsync(deviceId, group, cancellationToken);
+            //return await AddDeviceToTopicAsync(deviceId, group, cancellationToken);
+
+            #endregion
+
+            // Get group notification key.
+            var notificationKey = await GetDeviceGroupNotificationKey(group);
+
+            // Create model to submit to fcm service.
+            var model = new ManageDeviceGroupViewModel();
+            model.NotificationKey = group;
+            model.RegistrationIds = deviceIds;
+
+            // No notification key is found.
+            if (string.IsNullOrEmpty(notificationKey))
+            {
+                model.Operation = "create";
+            }
+            else
+            {
+                model.Operation = "add";
+                model.NotificationKeyName = notificationKey;
+            }
+
+            // Initialize uri.
+            var subUri = new Uri(UrlDeviceGroupManagement);
+            return await _httpClient.PostAsJsonAsync(subUri, model, cancellationToken);
         }
 
         /// <summary>
@@ -149,10 +222,25 @@ namespace Main.Services.RealTime
         /// <param name="groups"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IList<HttpResponseMessage>> AddDeviceToGroupAsync(IList<string> deviceIds,
+        public async Task<IList<HttpResponseMessage>> AddDevicesToGroupsAsync(string[] deviceIds,
             IList<string> groups, CancellationToken cancellationToken)
         {
-            return await AddDevicesToTopics(deviceIds, groups, cancellationToken);
+            // Initialize background tasks.
+            var backgroundTasks = new List<Task>();
+
+            // Intialize list of http response message.
+            var httpResponseMessages = new List<HttpResponseMessage>();
+
+            foreach (var group in groups)
+            {
+                var pAddDevicesToGroupTask = AddDevicesToGroupAsync(deviceIds, group, cancellationToken)
+                    .ContinueWith(httpResponseMessageTask => httpResponseMessages.Add(httpResponseMessageTask.Result),
+                        cancellationToken);
+                backgroundTasks.Add(pAddDevicesToGroupTask);
+            }
+
+            await Task.WhenAll(backgroundTasks.ToArray());
+            return httpResponseMessages;
         }
 
         /// <summary>

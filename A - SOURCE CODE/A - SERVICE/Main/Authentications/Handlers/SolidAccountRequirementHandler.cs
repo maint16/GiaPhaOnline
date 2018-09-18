@@ -51,13 +51,13 @@ namespace Main.Authentications.Handlers
             SolidAccountRequirement requirement)
         {
             // Convert authorization filter context into authorization filter context.
-            var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
+            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
 
             //var httpContext = authorizationFilterContext.HttpContext;
             var httpContext = _httpContextAccessor.HttpContext;
 
             // Find claim identity attached to principal.
-            var claimIdentity = (ClaimsIdentity) httpContext.User.Identity;
+            var claimIdentity = (ClaimsIdentity)httpContext.User.Identity;
 
             // Find id from claims list.
             var id = claimIdentity.Claims.Where(x => x.Type.Equals("Id"))
@@ -68,6 +68,12 @@ namespace Main.Authentications.Handlers
             // Id is invalid
             if (string.IsNullOrEmpty(id) || !int.TryParse(id, out var iId))
             {
+                if (authorizationFilterContext == null)
+                {
+                    context.Fail();
+                    return;
+                }
+
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
                 {

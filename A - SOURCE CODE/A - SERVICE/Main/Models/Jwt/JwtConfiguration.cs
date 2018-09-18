@@ -33,7 +33,7 @@ namespace Main.Models
         public int LifeTime { get; set; }
 
         /// <summary>
-        /// Key which is used for signing to token.
+        /// DeviceId which is used for signing to token.
         /// </summary>
         public string SecurityKey { get; set; }
 
@@ -43,12 +43,12 @@ namespace Main.Models
         private SigningCredentials _signingCredentials;
 
         /// <summary>
-        /// Key which is used for calculating credential.
+        /// DeviceId which is used for calculating credential.
         /// </summary>
         private SymmetricSecurityKey _symmetricSecurityKey;
 
         /// <summary>
-        /// Key which is used for signing on token.
+        /// DeviceId which is used for signing on token.
         /// </summary>
         public SymmetricSecurityKey SigningKey
         {

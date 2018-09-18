@@ -1,7 +1,8 @@
-﻿//#define USE_IN_MEMORY
+﻿#define USE_IN_MEMORY
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
 using AppDb.Models;
@@ -16,6 +17,7 @@ using Main.Authentications.Requirements;
 using Main.Authentications.TokenValidators;
 using Main.Constants;
 using Main.Extensions;
+using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
@@ -90,79 +92,9 @@ namespace Main
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add entity framework to services collection.
-            var sqlConnection = "";
-
-#if USE_SQLITE
-            sqlConnection = Configuration.GetConnectionString("sqliteConnectionString");
-            services.AddDbContext<RelationalDatabaseContext>(
-                options => options.UseSqlite(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
-#elif USE_AZURE_SQL
-            sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
-            services.AddDbContext<RelationalDatabaseContext>(
-                options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
-#elif USE_IN_MEMORY
-
-            services.AddOptions<DbSeedOption>();
-            //services.AddDbContext<RelationalDbContext>(
-            //    options =>
-            //    {
-            //        options.ReplaceService<RelationalDbContext, InMemoryRelationalDbContext>();
-            //        options.UseInMemoryDatabase("iConfess")
-            //            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
-            //    });
-
-            services.AddDbContext<InMemoryRelationalDbContext>(
-                options => options.UseInMemoryDatabase("iConfess")
-                    .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
-
-            services.AddMockingRecords(HostingEnvironment);
-            services.AddScoped<DbContext>(context => context.GetService<InMemoryRelationalDbContext>());
-#else
-            sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
-            services.AddDbContext<RelationalDbContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
-            services.AddScoped<DbContext, RelationalDbContext>();
-#endif
-
-            // Injections configuration.
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IRelationalDbService, RelationalDbService>();
-
-            services.AddScoped<IEncryptionService, EncryptionService>();
-            services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<ITimeService, TimeService>();
-            services.AddScoped<ICloudMessagingService, FcmService>();
-            //            services.AddScoped<INotifyService, NotifyService>();
-            services.AddScoped<ISendMailService, SendGridService>();
-            services.AddScoped<IMustacheService, MustacheService>();
-            services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IPusherService, PusherService>();
-            services.AddScoped<ICaptchaService, CaptchaService>();
-
-            // Store user information in cache
-            services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
-            services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
-            services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
-
-            // Initialize real-time notification service as single instance.
-            services.AddSingleton<IRealTimeService, RealTimeService>();
-
-            // Initialize vgy service.
-            services.AddScoped<IVgyService, VgyService>();
-
-            // Requirement handler.
-            services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
-            services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
-
-            // Get email cache option.
-            var emailCacheOption = (Dictionary<string, EmailCacheOption>) Configuration.GetSection("emailCache")
-                .Get(typeof(Dictionary<string, EmailCacheOption>));
-            var emailCacheService = new EmailCacheService();
-            emailCacheService.HostingEnvironment = HostingEnvironment;
-            emailCacheService.ReadConfiguration(emailCacheOption);
-            services.AddSingleton<IEmailCacheService>(emailCacheService);
+            
+            // Add services DI to app.
+            AddServices(services);
 
             // Load jwt configuration from setting files.
             services.Configure<JwtConfiguration>(Configuration.GetSection(nameof(JwtConfiguration)));
@@ -211,7 +143,18 @@ namespace Main
 #endif
 
                 o.TokenValidationParameters = tokenValidationParameters;
+
+                o.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Path.ToString().StartsWith("/HUB/", StringComparison.InvariantCultureIgnoreCase))
+                            context.Token = context.Request.Query["access_token"];
+                        return Task.CompletedTask;
+                    },
+                };
             });
+
 
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
@@ -301,14 +244,97 @@ namespace Main
 
             // Enable cors.
             app.UseCors("AllowAll");
+            
+            // Use signalr connection.
+            app.UseSignalR(x =>
+            {
+                x.MapHub<NotificationHub>("/hub/notification");
+            });
 
             // Enable MVC features.
             app.UseMvc();
-
-            // Use signalr connection.
-            //app.UseSignalR(x => x.MapHub<NotificationHub>(RealtimeChannelConstant.NotificationHubName));
         }
 
+        /// <summary>
+        /// Add dependency injection of services to app.
+        /// </summary>
+        private void AddServices(IServiceCollection services)
+        {
+            // Add entity framework to services collection.
+            var sqlConnection = "";
+
+#if USE_SQLITE
+            sqlConnection = Configuration.GetConnectionString("sqliteConnectionString");
+            services.AddDbContext<RelationalDatabaseContext>(
+                options => options.UseSqlite(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+#elif USE_AZURE_SQL
+            sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
+            services.AddDbContext<RelationalDatabaseContext>(
+                options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+#elif USE_IN_MEMORY
+            services.AddOptions<DbSeedOption>();
+            services.AddDbContext<InMemoryRelationalDbContext>(
+                options => options.UseInMemoryDatabase("iConfess")
+                    .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
+
+            services.AddMockingRecords(HostingEnvironment);
+            var bDbCreated = false;
+            services.AddScoped<DbContext>(context =>
+            {
+                var inMemoryContext = context.GetService<InMemoryRelationalDbContext>();
+                if (!bDbCreated)
+                {
+                    inMemoryContext.Database.EnsureCreated();
+                    bDbCreated = true;
+                }
+                return context.GetService<InMemoryRelationalDbContext>();
+            });
+#else
+            sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
+            services.AddDbContext<RelationalDbContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+            services.AddScoped<DbContext, RelationalDbContext>();
+#endif
+
+            // Injections configuration.
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IRelationalDbService, RelationalDbService>();
+
+            services.AddScoped<IEncryptionService, EncryptionService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<ITimeService, TimeService>();
+            services.AddScoped<ICloudMessagingService, FcmService>();
+            //            services.AddScoped<INotifyService, NotifyService>();
+            services.AddScoped<ISendMailService, SendGridService>();
+            services.AddScoped<IMustacheService, MustacheService>();
+            services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IPusherService, PusherService>();
+            services.AddScoped<ICaptchaService, CaptchaService>();
+
+            // Store user information in cache
+            services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
+            services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
+            services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
+
+            // Initialize real-time notification service as single instance.
+            services.AddSingleton<IRealTimeService, RealTimeService>();
+
+            // Initialize vgy service.
+            services.AddScoped<IVgyService, VgyService>();
+
+            // Requirement handler.
+            services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
+
+            // Get email cache option.
+            var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache")
+                .Get(typeof(Dictionary<string, EmailCacheOption>));
+            var emailCacheService = new EmailCacheService();
+            emailCacheService.HostingEnvironment = HostingEnvironment;
+            emailCacheService.ReadConfiguration(emailCacheOption);
+            services.AddSingleton<IEmailCacheService>(emailCacheService);
+        }
         #endregion
     }
 }

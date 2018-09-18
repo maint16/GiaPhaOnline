@@ -259,7 +259,7 @@ namespace Main.Controllers
 
         //    var categoryGroups = postCategorizations.GroupBy(x => x.CategoryId).Select(x => new CategoryPostCounterModel
         //    {
-        //        CategoryId = x.Key,
+        //        CategoryId = x.DeviceId,
         //        TotalPosts = x.Count()
         //    });
 
@@ -304,7 +304,7 @@ namespace Main.Controllers
 
         ////    var a = categorizations.GroupBy(x => x.CategoryId).Select(x => new
         ////    {
-        ////        CategoryId = x.Key,
+        ////        CategoryId = x.DeviceId,
         ////        Total = x.Count()
         ////    });
 

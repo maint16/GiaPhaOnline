@@ -72,7 +72,7 @@ namespace Main.Controllers
         //    var identity = IdentityService.GetProfile(HttpContext);
 
         //    // Get follow posts.
-        //    var followPosts = UnitOfWork.FollowTopics.Search();
+        //    var followPosts = UnitOfWork.FollowingTopics.Search();
         //    followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == post.Id);
         //    var followPost = await followPosts.FirstOrDefaultAsync();
 
@@ -89,7 +89,7 @@ namespace Main.Controllers
         //        followPost.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
         //        // Insert record into system.
-        //        UnitOfWork.FollowTopics.Insert(followPost);
+        //        UnitOfWork.FollowingTopics.Insert(followPost);
         //    }
 
         //    // Commit changes to system.
@@ -114,7 +114,7 @@ namespace Main.Controllers
         //    var identity = IdentityService.GetProfile(HttpContext);
 
         //    // Get follow posts.
-        //    var followPosts = UnitOfWork.FollowTopics.Search();
+        //    var followPosts = UnitOfWork.FollowingTopics.Search();
         //    followPosts = followPosts.Where(x => x.FollowerId == identity.Id && x.PostId == postId);
         //    var followPost = await followPosts.FirstOrDefaultAsync();
 
@@ -160,7 +160,7 @@ namespace Main.Controllers
         //    var identity = IdentityService.GetProfile(HttpContext);
 
         //    // Get all categories.
-        //    var followPosts = UnitOfWork.FollowTopics.Search();
+        //    var followPosts = UnitOfWork.FollowingTopics.Search();
 
         //    // Post id is defined.
         //    if (condition.PostId != null)
@@ -242,7 +242,7 @@ namespace Main.Controllers
         //    #region Search for information
 
         //    // Get all follow posts
-        //    var followPosts = _unitOfWork.FollowTopics.Search();
+        //    var followPosts = _unitOfWork.FollowingTopics.Search();
         //    followPosts = LoadFollowingPosts(followPosts, condition);
 
         //    // Sort by properties.

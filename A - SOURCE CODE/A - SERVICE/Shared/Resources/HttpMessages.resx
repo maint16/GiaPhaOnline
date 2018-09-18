@@ -173,6 +173,9 @@
   <data name="CurrentPasswordIsInvalid" xml:space="preserve">
     <value>CURRENT_PASSWORD_IS_INVALID</value>
   </data>
+  <data name="DeviceTokenInUse" xml:space="preserve">
+    <value>DEVICE_TOKEN_IN_USE</value>
+  </data>
   <data name="FacebookCodeIsInvalid" xml:space="preserve">
     <value>FACEBOOK_CODE_IS_INVALID</value>
   </data>

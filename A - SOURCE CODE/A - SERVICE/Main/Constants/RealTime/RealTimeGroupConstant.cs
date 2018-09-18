@@ -1,4 +1,4 @@
-﻿namespace Main.Constants
+﻿namespace Main.Constants.RealTime
 {
     public class RealTimeGroupConstant
     {
@@ -18,7 +18,12 @@
         /// User which haven't authenticated into system.
         /// </summary>
         public const string Anonymous = nameof(Anonymous);
-        
+
+        /// <summary>
+        /// Group of user / device who is followign topic.
+        /// </summary>
+        public const string FollowTopicPrefix = "FollowTopic_";
+
         #endregion
     }
 }

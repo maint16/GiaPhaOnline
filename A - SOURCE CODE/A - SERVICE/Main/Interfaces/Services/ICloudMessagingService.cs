@@ -13,12 +13,19 @@ namespace Main.Interfaces.Services
         #region Methods
 
         /// <summary>
+        /// Get device group notification key by using notification key name.
+        /// </summary>
+        /// <param name="notificationKeyName"></param>
+        /// <returns></returns>
+        Task<string> GetDeviceGroupNotificationKey(string notificationKeyName);
+
+        /// <summary>
         /// Add device to group.
         /// </summary>
-        /// <param name="deviceId"></param>
+        /// <param name="deviceIds"></param>
         /// <param name="group"></param>
         /// <param name="cancellationToken"></param>
-        Task<HttpResponseMessage> AddDeviceToGroupAsync(string deviceId, string group, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> AddDevicesToGroupAsync(string[] deviceIds, string group, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add device to group.
@@ -26,7 +33,7 @@ namespace Main.Interfaces.Services
         /// <param name="deviceIds"></param>
         /// <param name="groups"></param>
         /// <param name="cancellationToken"></param>
-        Task<IList<HttpResponseMessage>> AddDeviceToGroupAsync(IList<string> deviceIds, IList<string> groups, CancellationToken cancellationToken);
+        Task<IList<HttpResponseMessage>> AddDevicesToGroupsAsync(string[] deviceIds, IList<string> groups, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete device from a specific group.

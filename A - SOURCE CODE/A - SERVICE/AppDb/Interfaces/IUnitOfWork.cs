@@ -28,7 +28,7 @@ namespace AppDb.Interfaces
         /// <summary>
         ///     Provides functions to access follow category table.
         /// </summary>
-        IRepository<FollowCategory> FollowCategories { get; }
+        IRepository<FollowCategory> FollowingCategories { get; }
 
         /// <summary>
         ///     Provides functions to access reply database.
@@ -43,7 +43,7 @@ namespace AppDb.Interfaces
         /// <summary>
         ///     Provides functions to access FollowTopic table.
         /// </summary>
-        IRepository<FollowTopic> FollowTopics { get; }
+        IRepository<FollowTopic> FollowingTopics { get; }
 
         /// <summary>
         ///     Provides functions to access topic reports database.
@@ -70,11 +70,16 @@ namespace AppDb.Interfaces
         /// </summary>
         IRepository<SignalrConnection> SignalrConnections { get; }
 
+        ///// <summary>
+        ///// Signal connection groups.
+        ///// </summary>
+        //IRepository<SignalrConnectionGroup> SignalrConnectionGroups { get; }
+
         /// <summary>
-        /// Signal connection groups.
+        /// Cloud messaging device group.
         /// </summary>
-        IRepository<SignalrConnectionGroup> SignalrConnectionGroups { get; }
-        
+        IRepository<UserDeviceToken> UserDeviceTokens { get; }
+
         #endregion
 
         #region Methods

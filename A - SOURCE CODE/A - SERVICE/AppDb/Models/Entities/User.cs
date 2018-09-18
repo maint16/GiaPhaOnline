@@ -9,7 +9,7 @@ namespace AppDb.Models.Entities
     public class User
     {
         #region Properties
-
+        
         /// <summary>
         ///     Id of account (Auto incremented)
         /// </summary>
@@ -135,6 +135,35 @@ namespace AppDb.Models.Entities
         [JsonIgnore]
         public virtual ICollection<NotificationMessage> NotificationMessages { get; set; }
         
+        /// <summary>
+        /// Token of devices that are used for sending notification.
+        /// </summary>
+        public virtual ICollection<UserDeviceToken> DeviceTokens { get; set; }
+
+        #endregion
+
+        #region Constructor
+
+        public User()
+        {
+            
+        }
+
+        public User(int id, string email, string nickname, string password, UserKind type, UserStatus status, UserRole role, string photo, string signature, double joinedTime, double? lastModifiedTime)
+        {
+            Id = id;
+            Email = email;
+            Nickname = nickname;
+            Password = password;
+            Type = type;
+            Status = status;
+            Role = role;
+            Photo = photo;
+            Signature = signature;
+            JoinedTime = joinedTime;
+            LastModifiedTime = lastModifiedTime;
+        }
+
         #endregion
     }
 }

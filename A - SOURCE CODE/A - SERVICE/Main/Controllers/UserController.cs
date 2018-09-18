@@ -461,6 +461,7 @@ namespace Main.Controllers
             }
 
             // TODO: Implement notification service which notifies administrators about the registration.
+            
             //var pSendRealTimeNotificationTask = _pusherService.SendAsync()
             #endregion
 
@@ -749,56 +750,7 @@ namespace Main.Controllers
             #endregion
             return Ok();
         }
-
-        /// <summary>
-        /// Initialize account access token.
-        /// </summary>
-        /// <param name="account"></param>
-        /// <returns></returns>
-        private JwtResponse InitializeAccountToken(User account)
-        {
-            // Find current time on the system.
-            var systemTime = DateTime.Now;
-            var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
-
-            // Claims initalization.
-            var claims = InitUserClaim(account);
-
-            // Write a security token.
-            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
-                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
-
-            // Initiate token handler which is for generating token code.
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-
-            // Initialize jwt response.
-            var jwt = new JwtResponse();
-            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-            jwt.LifeTime = _jwtConfiguration.LifeTime;
-            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
-
-            _profileCacheService.Add(account.Id, account, LifeTimeConstant.JwtLifeTime);
-            return jwt;
-        }
-
-        /// <summary>
-        /// Initialize user claim.
-        /// </summary>
-        /// <param name="account"></param>
-        /// <returns></returns>
-        private IList<Claim> InitUserClaim(User account)
-        {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
-            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
-            claims.Add(new Claim(nameof(account.Id), account.Id.ToString()));
-
-            return claims;
-        }
-
+        
         /// <summary>
         ///     Load accounts by using specific conditions.
         /// </summary>
@@ -1042,7 +994,56 @@ namespace Main.Controllers
 
             return Ok();
         }
+        
+        /// <summary>
+        /// Initialize account access token.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        private JwtResponse InitializeAccountToken(User account)
+        {
+            // Find current time on the system.
+            var systemTime = DateTime.Now;
+            var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
 
+            // Claims initalization.
+            var claims = InitUserClaim(account);
+
+            // Write a security token.
+            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
+                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
+
+            // Initiate token handler which is for generating token code.
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+
+            // Initialize jwt response.
+            var jwt = new JwtResponse();
+            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+            jwt.LifeTime = _jwtConfiguration.LifeTime;
+            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
+
+            _profileCacheService.Add(account.Id, account, LifeTimeConstant.JwtLifeTime);
+            return jwt;
+        }
+
+        /// <summary>
+        /// Initialize user claim.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        private IList<Claim> InitUserClaim(User account)
+        {
+            var claims = new List<Claim>();
+            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
+            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
+            claims.Add(new Claim(nameof(account.Id), account.Id.ToString()));
+
+            return claims;
+        }
+        
         #endregion
 
         #region Properties

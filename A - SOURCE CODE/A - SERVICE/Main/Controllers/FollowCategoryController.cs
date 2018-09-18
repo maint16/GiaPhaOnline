@@ -100,7 +100,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find follow categories.
-            var followCategories = _unitOfWork.FollowCategories.Search();
+            var followCategories = _unitOfWork.FollowingCategories.Search();
             followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
             var followCategory = await followCategories.FirstOrDefaultAsync();
 
@@ -121,7 +121,7 @@ namespace Main.Controllers
                 followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
-                _unitOfWork.FollowCategories.Insert(followCategory);
+                _unitOfWork.FollowingCategories.Insert(followCategory);
             }
 
             // Commit changes.
@@ -144,7 +144,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find categories by using specific conditions.
-            var followCategories = _unitOfWork.FollowCategories.Search();
+            var followCategories = _unitOfWork.FollowingCategories.Search();
             followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
 
             // Find the first matched category.
@@ -188,7 +188,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Search for posts.
-            var followCategories = _unitOfWork.FollowCategories.Search();
+            var followCategories = _unitOfWork.FollowingCategories.Search();
 
             // Category id is defined.
             if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)

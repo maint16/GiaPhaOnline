@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Main.Migrations
 {
     [DbContext(typeof(RelationalDbContext))]
-    [Migration("20180916163915_20180916001")]
-    partial class _20180916001
+    [Migration("20180917155117_20180917002")]
+    partial class _20180917002
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -330,6 +330,22 @@ namespace Main.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.Property<string>("DeviceId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("CreatedTime");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("DeviceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserDeviceToken");
+                });
+
             modelBuilder.Entity("AppDb.Models.Entities.AccessToken", b =>
                 {
                     b.HasOne("AppDb.Models.Entities.User", "Owner")
@@ -370,12 +386,12 @@ namespace Main.Migrations
             modelBuilder.Entity("AppDb.Models.Entities.FollowCategory", b =>
                 {
                     b.HasOne("AppDb.Models.Entities.Category", "Category")
-                        .WithMany("FollowingCategories")
+                        .WithMany("FollowCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppDb.Models.Entities.User", "Follower")
-                        .WithMany("FollowingCategories")
+                        .WithMany("FollowCategories")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
@@ -383,12 +399,12 @@ namespace Main.Migrations
             modelBuilder.Entity("AppDb.Models.Entities.FollowTopic", b =>
                 {
                     b.HasOne("AppDb.Models.Entities.User", "Follower")
-                        .WithMany("FollowingTopics")
+                        .WithMany("FollowTopics")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppDb.Models.Entities.Topic", "Topic")
-                        .WithMany("FollowingTopics")
+                        .WithMany("FollowTopics")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
@@ -447,6 +463,14 @@ namespace Main.Migrations
                     b.HasOne("AppDb.Models.Entities.User", "Owner")
                         .WithMany("Topics")
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.HasOne("AppDb.Models.Entities.User", "User")
+                        .WithMany("DeviceTokens")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618

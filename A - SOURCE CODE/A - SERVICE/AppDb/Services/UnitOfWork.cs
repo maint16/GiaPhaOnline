@@ -103,11 +103,13 @@ namespace AppDb.Services
         /// </summary>
         private IRepository<SignalrConnection> _signalrConnections;
 
-        /// <summary>
-        /// Provides access to signal connection group database.
-        /// </summary>
-        private IRepository<SignalrConnectionGroup> _signalrConnectionGroups;
-        
+        ///// <summary>
+        ///// Provides access to signal connection group database.
+        ///// </summary>
+        //private IRepository<SignalrConnectionGroup> _signalrConnectionGroups;
+
+        private IRepository<UserDeviceToken> _userDeviceTokens;
+
         #endregion
 
         #region Repository accessors
@@ -130,7 +132,7 @@ namespace AppDb.Services
         /// <summary>
         /// Provides function to access follow category table.
         /// </summary>
-        public IRepository<FollowCategory> FollowCategories =>
+        public IRepository<FollowCategory> FollowingCategories =>
             _followCategories ?? (_followCategories = new Repository<FollowCategory>(_dbContext));
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace AppDb.Services
         /// <summary>
         /// Provides function to access FollowTopic table.
         /// </summary>
-        public IRepository<FollowTopic> FollowTopics =>
+        public IRepository<FollowTopic> FollowingTopics =>
             _followTopics ?? (_followTopics = new Repository<FollowTopic>(_dbContext));
         
         /// <summary>
@@ -178,11 +180,14 @@ namespace AppDb.Services
         public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
                                                                             (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
 
-        /// <summary>
-        ///     Provides functions to access realtime connection database.
-        /// </summary>
-        public IRepository<SignalrConnectionGroup> SignalrConnectionGroups => _signalrConnectionGroups ??
-                                                                    (_signalrConnectionGroups = new Repository<SignalrConnectionGroup>(_dbContext));
+        ///// <summary>
+        /////     Provides functions to access realtime connection database.
+        ///// </summary>
+        //public IRepository<SignalrConnectionGroup> SignalrConnectionGroups => _signalrConnectionGroups ??
+        //                                                            (_signalrConnectionGroups = new Repository<SignalrConnectionGroup>(_dbContext));
+
+        public IRepository<UserDeviceToken> UserDeviceTokens => _userDeviceTokens ??
+                                                                              (_userDeviceTokens = new Repository<UserDeviceToken>(_dbContext));
 
         #endregion
 

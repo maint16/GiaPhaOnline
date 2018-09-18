@@ -103,7 +103,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find follow topics.
-            var followTopics = _unitOfWork.FollowTopics.Search();
+            var followTopics = _unitOfWork.FollowingTopics.Search();
             followTopics = followTopics.Where(x => x.TopicId == topicId && x.FollowerId == identity.Id);
             var followTopic = await followTopics.FirstOrDefaultAsync();
 
@@ -124,7 +124,7 @@ namespace Main.Controllers
                 followTopic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
-                _unitOfWork.FollowTopics.Insert(followTopic);
+                _unitOfWork.FollowingTopics.Insert(followTopic);
             }
 
             // Commit changes.
@@ -147,7 +147,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Find topics by using specific conditions.
-            var followTopics = _unitOfWork.FollowTopics.Search();
+            var followTopics = _unitOfWork.FollowingTopics.Search();
             followTopics = followTopics.Where(x => x.TopicId == topicId && x.FollowerId == identity.Id);
 
             // Find the first matched.
@@ -191,7 +191,7 @@ namespace Main.Controllers
             var identity = _identityService.GetProfile(HttpContext);
 
             // Search for follow topics.
-            var followTopics = _unitOfWork.FollowTopics.Search();
+            var followTopics = _unitOfWork.FollowingTopics.Search();
 
             // Topic id is defined.
             if (condition.TopicIds != null && condition.TopicIds.Count > 0)

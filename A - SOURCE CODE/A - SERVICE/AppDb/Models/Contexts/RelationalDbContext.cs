@@ -75,7 +75,12 @@ namespace AppDb.Models.Contexts
         /// <summary>
         /// Signalr connection group.
         /// </summary>
-        public virtual DbSet<SignalrConnectionGroup> SignalrConnectionGroups { get; set; }
+        //public virtual DbSet<SignalrConnectionGroup> SignalrConnectionGroups { get; set; }
+
+        /// <summary>
+        /// List of device groups.
+        /// </summary>
+        public virtual DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
         #endregion
 
@@ -142,6 +147,8 @@ namespace AppDb.Models.Contexts
             AddSignalrConnectionGroupTable(modelBuilder);
 
             AddNotificationMessageTable(modelBuilder);
+
+            AddCloudMessagingDeviceGroupTable(modelBuilder);
 
             // Use model builder to specify composite primary keys.
             // Composite primary keys configuration
@@ -373,8 +380,21 @@ namespace AppDb.Models.Contexts
         /// <param name="modelBuilder"></param>
         private void AddSignalrConnectionGroupTable(ModelBuilder modelBuilder)
         {
-            var signalrConnectionGroup = modelBuilder.Entity<SignalrConnectionGroup>();
-            signalrConnectionGroup.HasKey(x => x.Id);
+            //var signalrConnectionGroup = modelBuilder.Entity<SignalrConnectionGroup>();
+            //signalrConnectionGroup.HasKey(x => x.Id);
+        }
+
+        /// <summary>
+        /// Add cloud messaging device group table.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void AddCloudMessagingDeviceGroupTable(ModelBuilder modelBuilder)
+        {
+            var userDeviceToken = modelBuilder.Entity<UserDeviceToken>();
+            userDeviceToken.HasKey(x => x.DeviceId);
+            userDeviceToken.Property(x => x.DeviceId).IsRequired();
+
+            userDeviceToken.HasOne(x => x.User).WithMany(x => x.DeviceTokens).HasForeignKey(x => x.UserId);
         }
 
 #endregion
