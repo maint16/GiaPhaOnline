@@ -32,9 +32,11 @@ export class ManageCategoryGroupComponent implements OnInit {
 
   public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService,
                      private toastr: ToastrService,
-                     public route: Router, private translate: TranslateService,
+                     public route: Router,
+                     private translateService: TranslateService,
                      @Inject('ISharedEventService') public sharedEventService: ISharedEventService) {
-    translate.setDefaultLang('en');
+
+    translateService.setDefaultLang('en');
     this.searchCategoryGroupResults = new SearchResult<CategoryGroup>();
 
     this.sharedEventService
@@ -109,14 +111,19 @@ export class ManageCategoryGroupComponent implements OnInit {
         this.searchCategoryGroupResults.total = loadCategoryGroupsResult.total;
       });
 
-    //#endregion
+
   }
+
+  //#endregion
 
   //#region Event handler
 
-
-  public handleAddCategoryGroupRealTimeEvent(message: any): void {
-    console.log(message);
+  /*
+  * Called when a real-time message notifies a category is created.
+  * */
+  public handleAddCategoryGroupRealTimeEvent(categoryGroup: CategoryGroup): void {
+    let translatedMessage = this.translateService.instant("MSG_USER_ADDED_CATEGORY_GROUP", categoryGroup);
+    this.toastr.info(translatedMessage, null, {enableHtml: true});
   }
 
   //#endregion

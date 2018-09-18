@@ -16,19 +16,19 @@ namespace Main.Interfaces.Services.RealTime
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendToClientsAsync<TMessageAdditionalData>(string[] clientIds, string eventName, RealTimeMessage<TMessageAdditionalData> message, CancellationToken cancellationToken);
+        Task SendToClientsAsync<T>(string[] clientIds, string eventName, T message, CancellationToken cancellationToken);
 
         /// <summary>
         /// Send real-time notification to specific group.
         /// </summary>
-        /// <typeparam name="TMessageAdditionalData"></typeparam>
+        /// <typeparam name="T"></typeparam>
         /// <param name="groups"></param>
         /// <param name="eventName"></param>
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendToGroupsAsync<TMessageAdditionalData>(string[] groups, string eventName,
-            RealTimeMessage<TMessageAdditionalData> message, CancellationToken cancellationToken);
+        Task SendToGroupsAsync<T>(string[] groups, string eventName,
+            T message, CancellationToken cancellationToken);
 
         #endregion
     }

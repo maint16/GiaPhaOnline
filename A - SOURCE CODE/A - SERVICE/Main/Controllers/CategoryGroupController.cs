@@ -113,7 +113,7 @@ namespace Main.Controllers
 
             var addCategoryGroupTask = UnitOfWork.CommitAsync();
             var addCategoryGroupNotificationTask = _realTimeService.SendToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategoryGroup, new RealTimeMessage<CategoryGroup>(categoryGroup), CancellationToken.None);
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategoryGroup, categoryGroup, CancellationToken.None);
 
             #endregion
 
