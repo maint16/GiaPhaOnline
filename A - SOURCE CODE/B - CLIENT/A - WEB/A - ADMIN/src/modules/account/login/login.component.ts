@@ -57,9 +57,8 @@ export class LoginComponent {
   /*
   * Callback which is fired when login button is clicked.
   * */
-  public clickLogin($event): void {
+  public ngOnBasicLogin($event): void {
     this.userService.basicLogin(this.model).subscribe((model: TokenViewModel) => {
-      this.authenticationService.setAuthorization(model);
       this.localStorageService.set(LocalStorageKeyConstant.accessToken, model.accessToken);
       console.log(model);
       // Redirect to dashboard.
@@ -75,14 +74,16 @@ export class LoginComponent {
     else if (socialPlatform == ConfigLoginConstant.google) {
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
     }
-    this.socialAuthService.signIn(socialPlatformProvider).then(
+    this.socialAuthService
+      .signIn(socialPlatformProvider).then(
       (userData: any) => {
         var data: AuthorizationToken = {
           accessToken: userData.idToken,
           expire: 49517600,
           lifeTime: 34700961
         };
-        this.authenticationService.setAuthorization(data);
+
+        // this.localStorageService.set(LocalStorageKeyConstant.accessToken, model.accessToken);
         this.router.navigate(['/dashboard']);
       });
   }
