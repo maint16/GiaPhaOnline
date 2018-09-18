@@ -6,6 +6,7 @@ import {AuthenticationService} from './authentication.service';
 import {UserService} from './user.service';
 import {CategoryGroupService} from './category-group.service';
 import {CategoryService} from './category.service';
+import {SharedEventService} from './shared-event.service';
 
 @NgModule({})
 
@@ -22,6 +23,7 @@ export class ServiceModule {
         {provide: 'IUserService', useClass: UserService},
         {provide: 'ICategoryGroupService', useClass: CategoryGroupService},
         {provide: 'ICategoryService', useClass: CategoryService},
+        {provide: 'ISharedEventService', useClass: SharedEventService},
         {provide: Window, useValue: window}
       ]
     };

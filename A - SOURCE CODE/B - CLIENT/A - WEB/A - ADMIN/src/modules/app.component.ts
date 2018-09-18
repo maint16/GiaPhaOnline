@@ -48,8 +48,6 @@ export class AppComponent implements OnInit {
         for (let szClass of classes) {
           this.renderer.addClass(document.body, szClass);
         }
-
-
       });
   }
 

@@ -1,8 +1,8 @@
-import {Component, Inject, ViewChild} from "@angular/core";
-import {LoginViewModel} from "../../../view-models/login.view-model";
-import {IAuthenticationService} from "../../../interfaces/services/authentication-service.interface";
-import {AuthorizationToken} from "../../../models/authorization-token";
-import {Router} from "@angular/router";
+import {Component, Inject, ViewChild} from '@angular/core';
+import {LoginViewModel} from '../../../view-models/login.view-model';
+import {IAuthenticationService} from '../../../interfaces/services/authentication-service.interface';
+import {AuthorizationToken} from '../../../models/authorization-token';
+import {Router} from '@angular/router';
 import {
   AuthService,
   FacebookLoginProvider,
@@ -11,6 +11,10 @@ import {
 import {ConfigLoginConstant} from '../../../constants/config-login.constant';
 import {AccountService} from '../../../services/account.service';
 import {TranslateService} from '@ngx-translate/core';
+import {TokenViewModel} from '../../../view-models/token.view-model';
+import {LocalStorageService} from 'ngx-localstorage';
+import {LocalStorageKeyConstant} from '../../../constants/local-storage-key.constant';
+
 @Component({
   selector: 'account-login',
   templateUrl: 'login.component.html',
@@ -36,7 +40,10 @@ export class LoginComponent {
   //#region Constructor
 
   public constructor(@Inject('IAuthenticationService') public authenticationService: IAuthenticationService,
-                     public router: Router, private socialAuthService: AuthService, private userService: AccountService,
+                     public router: Router,
+                     private socialAuthService: AuthService,
+                     private userService: AccountService,
+                     private localStorageService: LocalStorageService,
                      private translate: TranslateService) {
     translate.setDefaultLang('en');
     this.model = new LoginViewModel();
@@ -51,25 +58,26 @@ export class LoginComponent {
   * Callback which is fired when login button is clicked.
   * */
   public clickLogin($event): void {
-    this.userService.basicLogin(this.model).subscribe((data: any)=>{
-      this.authenticationService.setAuthorization(data);
+    this.userService.basicLogin(this.model).subscribe((model: TokenViewModel) => {
+      this.authenticationService.setAuthorization(model);
+      this.localStorageService.set(LocalStorageKeyConstant.accessToken, model.accessToken);
+      console.log(model);
       // Redirect to dashboard.
       this.router.navigate(['/dashboard']);
     });
   }
-  public socialSignIn(socialPlatform : string) {
+
+  public socialSignIn(socialPlatform: string) {
     let socialPlatformProvider;
-    if(socialPlatform == ConfigLoginConstant.facebook)
-    {
+    if (socialPlatform == ConfigLoginConstant.facebook) {
       socialPlatformProvider = FacebookLoginProvider.PROVIDER_ID;
     }
-    else if(socialPlatform == ConfigLoginConstant.google)
-    {
+    else if (socialPlatform == ConfigLoginConstant.google) {
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
     }
     this.socialAuthService.signIn(socialPlatformProvider).then(
       (userData: any) => {
-        var data : AuthorizationToken = {
+        var data: AuthorizationToken = {
           accessToken: userData.idToken,
           expire: 49517600,
           lifeTime: 34700961
@@ -78,5 +86,6 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       });
   }
+
   //#endregion
 }

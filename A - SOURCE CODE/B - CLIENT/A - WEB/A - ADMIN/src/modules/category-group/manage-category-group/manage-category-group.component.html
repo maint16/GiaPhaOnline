@@ -36,7 +36,6 @@
           </div>
         </div>
       </div>
-
       <p-table [value]="searchCategoryGroupResults.records" [responsive]="true" [lazy]="true"
                [rowsPerPageOptions]="[5,10,20]" (onLazyLoad)="loadCategoryGroupLazy($event)" [rows]= "5"
                [totalRecords]="searchCategoryGroupResults.total"
