@@ -75,7 +75,7 @@ namespace Main.Services
         {
             var actualKey = FindKey(key);
 
-            // Key doesn't exist in pairs.
+            // DeviceId doesn't exist in pairs.
             if (!_pairs.ContainsKey(actualKey))
                 return default(TValue);
 

@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
 using AppDb.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AppDb.Services
 {
-    public class UnitOfWork<T> : IUnitOfWork, IDisposable where T : DbContext
+    public class UnitOfWork : IUnitOfWork, IDisposable
     {
         #region Constructors
 
@@ -16,7 +18,7 @@ namespace AppDb.Services
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
         /// <param name="dbContext"></param>
-        public UnitOfWork(T dbContext)
+        public UnitOfWork(DbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -34,6 +36,7 @@ namespace AppDb.Services
         ///     Provide methods to access confession database.
         /// </summary>
         private readonly DbContext _dbContext;
+
         #endregion
 
         #region Properties
@@ -43,7 +46,7 @@ namespace AppDb.Services
         /// <summary>
         ///     Provide access to accounts database.
         /// </summary>
-        private IRepository<Account> _accounts;
+        private IRepository<User> _accounts;
 
         /// <summary>
         ///     Provide access to category groups database.
@@ -79,51 +82,33 @@ namespace AppDb.Services
         /// Provides access to FollowTopic table.
         /// </summary>
         private IRepository<FollowTopic> _followTopics;
-
-        /// <summary>
-        ///     Provide access to token database.
-        /// </summary>
-        private IRepository<AccessToken> _accessTokens;
-
+        
         /// <summary>
         ///     Provide access to notification message database.
         /// </summary>
         private IRepository<NotificationMessage> _notificationMessages;
 
-        //        /// <summary>
-        //        /// Provide access to categorization database.
-        //        /// </summary>
-        //        private IRepository<Categorization> _postCategorizations;
+        /// <summary>
+        /// Activation token.
+        /// </summary>
+        private IRepository<ActivationToken> _activationTokens;
 
-        //        /// <summary>
-        //        ///     Provide functions to access comment reports database.
-        //        /// </summary>
-        //        private IRepository<CommentReport> _commentReports;
+        /// <summary>
+        /// Access token.
+        /// </summary>
+        private IRepository<AccessToken> _accessTokens;
 
-        //        /// <summary>
-        //        /// Provides functions to access comment notification table.
-        //        /// </summary>
-        //        private IRepository<CommentNotification> _commentNotifications;
+        /// <summary>
+        ///     Provide access to signalr connection database.
+        /// </summary>
+        private IRepository<SignalrConnection> _signalrConnections;
 
-        //        /// <summary>
-        //        /// Provides access to PostNotification database.
-        //        /// </summary>
-        //        private IRepository<PostNotification> _postNotifications;
+        ///// <summary>
+        ///// Provides access to signal connection group database.
+        ///// </summary>
+        //private IRepository<SignalrConnectionGroup> _signalrConnectionGroups;
 
-        //        /// <summary>
-        //        ///     Provide access to signalr connection database.
-        //        /// </summary>
-        //        private IRepository<SignalrConnection> _signalrConnections;
-
-        //        /// <summary>
-        //        /// Provide access to device database.
-        //        /// </summary>
-        //        private IRepository<Device> _devices;
-
-        //        /// <summary>
-        //        /// List of groups in FCM services.
-        //        /// </summary>
-        //        private IRepository<FcmGroup> _fcmGroups;
+        private IRepository<UserDeviceToken> _userDeviceTokens;
 
         #endregion
 
@@ -132,7 +117,7 @@ namespace AppDb.Services
         /// <summary>
         ///     Provides functions to access account database.
         /// </summary>
-        public IRepository<Account> Accounts => _accounts ?? (_accounts = new Repository<Account>(_dbContext));
+        public IRepository<User> Accounts => _accounts ?? (_accounts = new Repository<User>(_dbContext));
 
         /// <summary>
         ///     Provides functions to access category group database.
@@ -147,7 +132,7 @@ namespace AppDb.Services
         /// <summary>
         /// Provides function to access follow category table.
         /// </summary>
-        public IRepository<FollowCategory> FollowCategories =>
+        public IRepository<FollowCategory> FollowingCategories =>
             _followCategories ?? (_followCategories = new Repository<FollowCategory>(_dbContext));
 
         /// <summary>
@@ -169,58 +154,40 @@ namespace AppDb.Services
         /// <summary>
         /// Provides function to access FollowTopic table.
         /// </summary>
-        public IRepository<FollowTopic> FollowTopics =>
+        public IRepository<FollowTopic> FollowingTopics =>
             _followTopics ?? (_followTopics = new Repository<FollowTopic>(_dbContext));
-
-        /// <summary>
-        ///     Provides function to access token database.
-        /// </summary>
-        public IRepository<AccessToken> AccessTokens => _accessTokens ?? (_accessTokens = new Repository<AccessToken>(_dbContext));
-
+        
         /// <summary>
         ///     Provides function to access notification message database.
         /// </summary>
         public IRepository<NotificationMessage> NotificationMessages => _notificationMessages ?? (_notificationMessages = new Repository<NotificationMessage>(_dbContext));
 
-        //        /// <summary>
-        //        /// Provides functions to access categorizations database.
-        //        /// </summary>
-        //        public IRepository<Categorization> PostCategorizations =>
-        //            _postCategorizations ?? (_postCategorizations = new Repository<Categorization>(_dbContext));
+        /// <summary>
+        /// Provides function to access activation token table.
+        /// </summary>
+        public IRepository<ActivationToken> ActivationTokens =>
+            _activationTokens ?? (_activationTokens = new Repository<ActivationToken>(_dbContext));
 
-        //        /// <summary>
-        //        ///     Provides functions to access CommentNotification database.
-        //        /// </summary>
-        //        public IRepository<CommentNotification> CommentNotifications => _commentNotifications ?? (_commentNotifications = new Repository<CommentNotification>(_dbContext));
+        /// <summary>
+        /// Provides function to access activation token table.
+        /// </summary>
+        public IRepository<AccessToken> AccessTokens =>
+            _accessTokens ?? (_accessTokens = new Repository<AccessToken>(_dbContext));
+        
+        /// <summary>
+        ///     Provides functions to access realtime connection database.
+        /// </summary>
+        public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
+                                                                            (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
 
-        //        /// <summary>
-        //        ///     Provides functions to access comment reports database.
-        //        /// </summary>
-        //        public IRepository<CommentReport> CommentReports => _commentReports ??
-        //                                                                      (_commentReports =
-        //                                                                          new Repository<CommentReport>(_dbContext));
+        ///// <summary>
+        /////     Provides functions to access realtime connection database.
+        ///// </summary>
+        //public IRepository<SignalrConnectionGroup> SignalrConnectionGroups => _signalrConnectionGroups ??
+        //                                                            (_signalrConnectionGroups = new Repository<SignalrConnectionGroup>(_dbContext));
 
-        //        /// <summary>
-        //        /// Provide access to PostNotification table.
-        //        /// </summary>
-        //        public IRepository<PostNotification> PostNotifications =>
-        //            _postNotifications ?? (_postNotifications = new Repository<PostNotification>(_dbContext));
-
-        //        /// <summary>
-        //        ///     Provides functions to access realtime connection database.
-        //        /// </summary>
-        //        public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
-        //                                                                            (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
-
-        //        /// <summary>
-        //        ///     Provides functions to access device database.
-        //        /// </summary>
-        //        public IRepository<Device> Devices => _devices ?? (_devices = new Repository<Device>(_dbContext));
-
-        //        /// <summary>
-        //        ///     List of groups on FCM service.
-        //        /// </summary>
-        //        public IRepository<FcmGroup> FcmGroups => _fcmGroups ?? (_fcmGroups = new Repository<FcmGroup>(_dbContext));
+        public IRepository<UserDeviceToken> UserDeviceTokens => _userDeviceTokens ??
+                                                                              (_userDeviceTokens = new Repository<UserDeviceToken>(_dbContext));
 
         #endregion
 
@@ -244,6 +211,25 @@ namespace AppDb.Services
         public async Task<int> CommitAsync()
         {
             return await _dbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Begin transaction scope.
+        /// </summary>
+        /// <returns></returns>
+        public IDbContextTransaction BeginTransactionScope()
+        {
+            return _dbContext.Database.BeginTransaction();
+        }
+
+        /// <summary>
+        /// Begin transaction scope.
+        /// </summary>
+        /// <param name="isolationLevel"></param>
+        /// <returns></returns>
+        public IDbContextTransaction BeginTransactionScope(IsolationLevel isolationLevel)
+        {
+            return _dbContext.Database.BeginTransaction(isolationLevel);
         }
 
         /// <summary>

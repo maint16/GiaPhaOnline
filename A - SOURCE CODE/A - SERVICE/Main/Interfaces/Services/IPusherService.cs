@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using PusherServer;
 
 namespace Main.Interfaces.Services
@@ -9,17 +8,17 @@ namespace Main.Interfaces.Services
         #region Methods
 
         /// <summary>
-        /// Send push notification to clients. 
+        ///     Send push notification to clients.
         /// </summary>
-        /// <param name="socketId"></param>
+        /// <param name="excludedSocketIds"></param>
         /// <param name="channelName"></param>
         /// <param name="eventName"></param>
         /// <param name="data"></param>
         /// <returns></returns>
-        Task<ITriggerResult> SendAsync(string socketId, string channelName, string eventName, object data = null);
+        Task<ITriggerResult> SendAsync(string excludedSocketIds, string channelName, string eventName, object data = null);
 
         /// <summary>
-        /// Send push notification to multiple channels.
+        ///     Send push notification to multiple channels.
         /// </summary>
         /// <param name="socketId"></param>
         /// <param name="channelNames"></param>
@@ -29,13 +28,14 @@ namespace Main.Interfaces.Services
         Task<ITriggerResult> SendAsync(string socketId, string[] channelNames, string eventName, object data = null);
 
         /// <summary>
-        /// Authenticate pusher client to a private channel.
+        ///     Authenticate pusher client to a private channel.
         /// </summary>
         /// <param name="channelName"></param>
         /// <param name="socketId"></param>
         /// <param name="presenceChannelData"></param>
         /// <returns></returns>
-        IAuthenticationData Authenticate(string channelName, string socketId, PresenceChannelData presenceChannelData = null);
+        IAuthenticationData Authenticate(string channelName, string socketId,
+            PresenceChannelData presenceChannelData = null);
 
         #endregion
     }

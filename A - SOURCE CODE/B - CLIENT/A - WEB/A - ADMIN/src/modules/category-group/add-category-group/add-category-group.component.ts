@@ -8,6 +8,7 @@ import {CategoryGroup} from '../../../models/entities/category-group';
 import {SearchResult} from '../../../models/search-result';
 import {LoadCategoryGroupViewModel} from '../../../view-models/category-group/load-category-group.view-model';
 import {TranslateService} from '@ngx-translate/core';
+import {CategoryGroupStatus} from '../../../enums/category-group-status.enum';
 
 @Component({
   selector: 'add-category-group',
@@ -21,10 +22,9 @@ export class AddCategoryGroupComponent implements OnInit {
   public pagination: Pagination;
   public isEditMode: boolean;
   public itemId: number;
-  public statuss = [
-    {category: 'Active', value: 1},
-    {category: 'Inactive', value: 2}
-  ];
+  public availableCGStatuses = [CategoryGroupStatus.active, CategoryGroupStatus.disabled];
+
+  //#region Constructor
   public constructor(@Inject('ICategoryGroupService') private categoryGroupService: ICategoryGroupService, private toastr: ToastrService,
                      public router: Router, private route: ActivatedRoute, private translate: TranslateService) {
     translate.setDefaultLang('en');
@@ -42,35 +42,41 @@ export class AddCategoryGroupComponent implements OnInit {
             this.categoryGroup.description = loadCategoryGroupsResult.records[0].description;
             this.categoryGroup.status = loadCategoryGroupsResult.records[0].status;
           });
-      }else{
+      } else {
         this.isEditMode = false;
       }
     });
   }
-  public saveCategoryGroup($event)
-  {
+
+  //#endregion
+  //#region methods
+  public saveCategoryGroup($event) {
     // if is in edit mode
-    if(this.isEditMode){
-      this.categoryGroupService.updateCategoryGroup(this.itemId, this.categoryGroup).subscribe((data: any)=>{
+    if (this.isEditMode) {
+      this.categoryGroupService.updateCategoryGroup(this.itemId, this.categoryGroup).subscribe((data: any) => {
         this.toastr.success('Update Category Group Successfully');
         // Redirect to manage-category-group.
-        this.router.navigate(['/manage-category-group']);
+        this.router.navigate(['/category-group/manage']);
       });
     }
     // if is in create new mode
-    else{
-      this.categoryGroupService.addCategoryGroup(this.categoryGroup).subscribe((data: any)=>{
+    else {
+      this.categoryGroupService.addCategoryGroup(this.categoryGroup).subscribe((data: any) => {
         this.toastr.success('Save Category Group Successfully');
         // Redirect to manage-category-group.
-        this.router.navigate(['/manage-category-group']);
+        this.router.navigate(['/category-group/manage']);
       });
     }
 
   }
-  ngOnInit() {
+
+  public ngOnInit() {
     this.categoryGroup = new AddCategoryGroup();
   }
-  cancel(){
-    this.router.navigate(['/manage-category-group']);
+
+// route to manage CG component when click cancel
+  public cancel() {
+    this.router.navigate(['/category-group/manage']);
   }
+  // #endregion
 }

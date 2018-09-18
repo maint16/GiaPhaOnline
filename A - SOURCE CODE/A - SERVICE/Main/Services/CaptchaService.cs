@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Main.Interfaces.Services;
 using Main.Models.Captcha;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Main.Services
@@ -16,10 +17,11 @@ namespace Main.Services
         /// <summary>
         ///     Initialize service with injectors.
         /// </summary>
-        public CaptchaService(HttpClient httpClient, CaptchaSetting captchaSetting)
+        public CaptchaService(IHttpClientFactory httpClientFactory, IOptions<CaptchaSetting> captchaSetting)
         {
-            _httpClient = httpClient;
-            _captchaSetting = captchaSetting;
+            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClientFactory.CreateClient();
+            _captchaSetting = captchaSetting.Value;
         }
 
         #endregion
@@ -71,6 +73,8 @@ namespace Main.Services
         ///     Http client which is for initializing http request.
         /// </summary>
         private readonly HttpClient _httpClient;
+
+        private readonly IHttpClientFactory _httpClientFactory;
 
         /// <summary>
         ///     Captcha setting model.

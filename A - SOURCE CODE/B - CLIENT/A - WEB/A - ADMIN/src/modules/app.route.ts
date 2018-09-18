@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
-import {RouterModule, Routes} from "@angular/router";
+import {RouterModule, Routes} from '@angular/router';
 import {IsAuthorizedGuard} from '../guards/is-authorized-guard';
 
 //#region Properties
@@ -28,30 +28,19 @@ export const routes: Routes = [
         path: 'user',
         loadChildren: 'modules/user/user.module#UserModule',
         canActivate : [IsAuthorizedGuard]
-      }
-    ]
-  },
-  {
-    path: 'manage-category-group',
-    canActivate : [IsAuthorizedGuard],
-    children: [
-      {
-        path: '',
-        loadChildren: 'modules/category-group/manage-category-group/manage-category-group.module#ManageCategoryGroupModule',
-        canActivate : [IsAuthorizedGuard]
       },
       {
         path: 'category-group',
-        loadChildren: 'modules/category-group/add-category-group/add-category-group.module#AddCategoryGroupModule',
-        canActivate : [IsAuthorizedGuard]
+        loadChildren: 'modules/category-group/category-group.module#CategoryGroupModule',
+canActivate : [IsAuthorizedGuard]
       },
       {
-        path: 'category-group/:id',
-        loadChildren: 'modules/category-group/add-category-group/add-category-group.module#AddCategoryGroupModule',
+        path: 'category',
+        loadChildren: 'modules/category/category.module#CategoryModule',
         canActivate : [IsAuthorizedGuard]
       }
     ]
-  },
+  }
 ];
 
 //#endregion

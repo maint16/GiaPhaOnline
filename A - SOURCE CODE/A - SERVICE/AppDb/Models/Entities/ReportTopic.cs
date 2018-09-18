@@ -12,25 +12,21 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Which topic is reported.
         /// </summary>
-        [Key]
         public int TopicId { get; set; }
 
         /// <summary>
         ///     Who report the topic.
         /// </summary>
-        [Key]
         public int ReporterId { get; set; }
 
         /// <summary>
         ///     Who owns the topic.
         /// </summary>
-        [Required]
         public int OwnerId { get; set; }
 
         /// <summary>
         ///     Reason the topic was reported.
         /// </summary>
-        [Required]
         public string Reason { get; set; }
 
         /// <summary>
@@ -41,7 +37,6 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When the report was created.
         /// </summary>
-        [Required]
         public double CreatedTime { get; set; }
 
         /// <summary>
@@ -57,22 +52,19 @@ namespace AppDb.Models.Entities
         ///     One report is about one topic, just one.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(TopicId))]
         public Topic Topic { get; set; }
 
         /// <summary>
         ///     Report can only be about one account.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(OwnerId))]
-        public Account TopicOwner { get; set; }
+        public User TopicOwner { get; set; }
 
         /// <summary>
         ///     Report can only belong to one account.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(ReporterId))]
-        public Account TopicReporter { get; set; }
+        public User TopicReporter { get; set; }
 
         #endregion
     }

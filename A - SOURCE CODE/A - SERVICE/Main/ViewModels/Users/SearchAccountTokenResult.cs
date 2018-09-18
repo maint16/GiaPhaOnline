@@ -14,7 +14,7 @@ namespace Main.ViewModels.Users
         /// <summary>
         /// Account information
         /// </summary>
-        public Account Account { get; set; }
+        public User Account { get; set; }
 
         #endregion
     }

@@ -23,7 +23,7 @@ namespace Main.Services
         /// <param name="httpContext"></param>
         /// <param name="account"></param>
         /// <returns></returns>
-        public void SetProfile(HttpContext httpContext, Account account)
+        public void SetProfile(HttpContext httpContext, User account)
         {
             var items = httpContext.Items;
             if (items.ContainsKey(ClaimTypes.Actor))
@@ -40,13 +40,13 @@ namespace Main.Services
         /// </summary>
         /// <param name="httpContext"></param>
         /// <returns></returns>
-        public Account GetProfile(HttpContext httpContext)
+        public User GetProfile(HttpContext httpContext)
         {
             var profile = httpContext.Items[ClaimTypes.Actor];
             if (profile == null)
                 return null;
 
-            return (Account)profile;
+            return (User)profile;
         }
 
         /// <summary>

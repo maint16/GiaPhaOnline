@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
@@ -8,46 +7,23 @@ namespace AppDb.Models.Entities
     {
         #region Properties
 
-        /// <summary>
-        ///     Id of token.
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-        /// <summary>
-        ///     Who this token belongs to.
-        /// </summary>
-        [Required]
-        public int OwnerId { get; set; }
-
-        /// <summary>
-        ///     Code of token
-        /// </summary>
-        [Required]
         public string Code { get; set; }
 
-        /// <summary>
-        ///     Time when the token was issued.
-        /// </summary>
-        [Required]
+        public int OwnerId { get; set; }
+
         public double IssuedTime { get; set; }
 
-        /// <summary>
-        ///     Time when the token should be expired.
-        /// </summary>
         public double? ExpiredTime { get; set; }
 
         #endregion
 
-        #region Relationships
+        #region Navigation properties
 
         /// <summary>
-        ///     One category have one owner.
+        /// Who own the access token.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(OwnerId))]
-        public Account Owner { get; set; }
+        public virtual User Owner { get; set; }
 
         #endregion
     }

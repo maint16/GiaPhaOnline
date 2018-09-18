@@ -18,4 +18,9 @@
 /A - SOURCE CODE/A - SERVICE/SystemDatabase/bin
 /A - SOURCE CODE/A - SERVICE/SystemDatabase/obj
 
+<<<<<<< HEAD
 /A - SOURCE CODE/A - SERVICE/Main/Main.csproj.user
+=======
+/A - SOURCE CODE/A - SERVICE/.vs
+>>>>>>> dd5a1f7e77e661a14db8afcb8d0f9a883a2862e0
+/A - SOURCE CODE/B - CLIENT/A - WEB/A - ADMIN/dist

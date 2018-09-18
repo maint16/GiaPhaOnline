@@ -29,7 +29,7 @@ namespace Main.Authentications.Handlers
         public SolidAccountRequirementHandler(
             IUnitOfWork unitOfWork,
             IIdentityService identityService, IHttpContextAccessor httpContextAccessor,
-            IValueCacheService<int, Account> profileCacheService)
+            IValueCacheService<int, User> profileCacheService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
@@ -51,13 +51,13 @@ namespace Main.Authentications.Handlers
             SolidAccountRequirement requirement)
         {
             // Convert authorization filter context into authorization filter context.
-            var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
+            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
 
             //var httpContext = authorizationFilterContext.HttpContext;
             var httpContext = _httpContextAccessor.HttpContext;
 
             // Find claim identity attached to principal.
-            var claimIdentity = (ClaimsIdentity) httpContext.User.Identity;
+            var claimIdentity = (ClaimsIdentity)httpContext.User.Identity;
 
             // Find id from claims list.
             var id = claimIdentity.Claims.Where(x => x.Type.Equals("Id"))
@@ -68,6 +68,12 @@ namespace Main.Authentications.Handlers
             // Id is invalid
             if (string.IsNullOrEmpty(id) || !int.TryParse(id, out var iId))
             {
+                if (authorizationFilterContext == null)
+                {
+                    context.Fail();
+                    return;
+                }
+
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
                 {
@@ -94,7 +100,7 @@ namespace Main.Authentications.Handlers
             // Find accounts based on conditions.
             var accounts = _unitOfWork.Accounts.Search();
             accounts = accounts.Where(x =>
-                x.Id == iId && x.Status == AccountStatus.Available);
+                x.Id == iId && x.Status == UserStatus.Available);
 
             // Find the first matched account in the system.
             account = await accounts.FirstOrDefaultAsync();
@@ -141,7 +147,7 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Service which is for caching user information.
         /// </summary>
-        private readonly IValueCacheService<int, Account> _profileCacheService;
+        private readonly IValueCacheService<int, User> _profileCacheService;
 
         #endregion
     }

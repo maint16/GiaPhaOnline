@@ -60,13 +60,19 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         [ForeignKey(nameof(CreatorId))]
-        public Account Creator { get; set; }
+        public User Creator { get; set; }
 
         /// <summary>
         ///     List of category which are related to the current category group.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Category> Categories { get; set; }
+
+        /// <summary>
+        /// Topics which this category group contains.
+        /// </summary>
+        [JsonIgnore]
+        public virtual ICollection<Topic> Topics { get; set; }
 
         #endregion
     }

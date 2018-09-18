@@ -223,6 +223,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DEVICE_TOKEN_IN_USE.
+        /// </summary>
+        public static string DeviceTokenInUse {
+            get {
+                return ResourceManager.GetString("DeviceTokenInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FACEBOOK_CODE_IS_INVALID.
         /// </summary>
         public static string FacebookCodeIsInvalid {

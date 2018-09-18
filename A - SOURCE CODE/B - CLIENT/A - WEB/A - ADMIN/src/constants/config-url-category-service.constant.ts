@@ -1,5 +1,5 @@
-export class ConfigUrlCategoryGroupServiceConstant {
-  public static addCategoryGroup: string = 'api/category-group';
-  public static editCategoryGroup: string = 'api/category-group/{id}';
-  public static searchCategoryGroup: string = 'api/category-group/search';
+export class ConfigUrlCategoryServiceConstant {
+  public static addCategory: string = 'api/category';
+  public static editCategory: string = 'api/category/{id}';
+  public static searchCategory: string = 'api/category/search';
 }

@@ -1,40 +1,38 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using Main.Authentications.Requirements;
+using AppModel.Enumerations;
 using Main.Constants;
+using Main.Constants.RealTime;
 using Main.Interfaces.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Shared.Interfaces.Services;
 
 namespace Main.Hubs
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Policy = PolicyConstant.DefaultSignalRPolicyName)]
+    [Authorize(PolicyConstant.DefaultSignalRPolicyName)]
     public class NotificationHub : Hub
     {
         #region Properties
 
         /// <summary>
-        /// Service to handle identity in incoming request.
+        /// Unit of work.
         /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
         private readonly IIdentityService _identityService;
 
-        /// <summary>
-        /// Service which is for handling profile cache.
-        /// </summary>
-        private readonly IRealTimeConnectionCacheService _realTimeConnectionCacheService;
+        private readonly ITimeService _timeService;
 
-        /// <summary>
-        /// Instance to resolve DI.
-        /// </summary>
-        private readonly IServiceProvider _serviceProvider;
+        private static readonly ConcurrentDictionary<string, List<string>> UserGroups = new ConcurrentDictionary<string, List<string>>();
+
         #endregion
 
         #region Constructor
@@ -42,11 +40,14 @@ namespace Main.Hubs
         /// <summary>
         /// Initialize hub with injectors.
         /// </summary>
-        public NotificationHub(IIdentityService identityService, IRealTimeConnectionCacheService realTimeConnectionCacheService, IServiceProvider serviceProvider)
+        /// <param name="unitOfWork"></param>
+        /// <param name="identityService"></param>
+        /// <param name="timeService"></param>
+        public NotificationHub(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
         {
+            _unitOfWork = unitOfWork;
             _identityService = identityService;
-            _realTimeConnectionCacheService = realTimeConnectionCacheService;
-            _serviceProvider = serviceProvider;
+            _timeService = timeService;
         }
 
         #endregion
@@ -54,59 +55,95 @@ namespace Main.Hubs
         #region Methods
 
         /// <summary>
-        /// Called when user connected to hub.
+        /// Called when a client connects to hub.
         /// </summary>
         /// <returns></returns>
-        public override async Task OnConnectedAsync()
+        public override Task OnConnectedAsync()
         {
-            // Find http context.
-            var httpContext = Context.GetHttpContext();
-            if (httpContext == null)
-                return;
-            
-            // Get profile in request.
-            var user = _identityService.GetProfile(httpContext);
-            if (user == null)
-                return;
-            
-            // Check whether connection string has been saved into cache or not.
-            var connection = _realTimeConnectionCacheService.Read(Context.ConnectionId);
+            // Get connection id.
+            var connectionId = Context.ConnectionId;
+            Debug.WriteLine($"Client {connectionId} has connected to {nameof(NotificationHub)}");
+            #region Save connection id to database
 
-            // Already in cache.
-            if (connection != null)
-                return;
+            // Get profle
+            var profile = _identityService.GetProfile(Context.GetHttpContext());
 
-            // Not in cache. Find the connection in the database. If the connection doesnt exist in database, initialize it.
-            // Get instance of UnitOfWork.
-            var unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
-            
-            // Get date time service.
-            var timeService = _serviceProvider.GetService<ITimeService>();
-
-            // Find the realtime connection in database.
-            var realTimeConnections = unitOfWork.SignalrConnections.Search();
-            realTimeConnections = realTimeConnections.Where(x => x.OwnerId == user.Id);
-
-            // Find the first connection.
-            var realTimeConnection = await realTimeConnections.FirstOrDefaultAsync();
-            if (realTimeConnection != null)
+            // Check whether connection id has been saved to this user.
+            var signalrConnections = _unitOfWork.SignalrConnections.Search();
+            signalrConnections = signalrConnections.Where(x => x.ClientId == connectionId);
+            var signalrConnection = signalrConnections.FirstOrDefault();
+            if (signalrConnection == null)
             {
-                // Add to cache.
-                _realTimeConnectionCacheService.Add(Context.ConnectionId, user);
-                return;
+                signalrConnection = new SignalrConnection();
+                signalrConnection.ClientId = connectionId;
+                signalrConnection.LastActivityTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                signalrConnection.UserId = profile.Id;
+                _unitOfWork.SignalrConnections.Insert(signalrConnection);
             }
+            else
+                signalrConnection.UserId = profile.Id;
 
-            // Add this connection to cache.
-            _realTimeConnectionCacheService.Add(Context.ConnectionId, user);
+            _unitOfWork.Commit();
 
-            // Initialize a new connection into database.
-            realTimeConnection = new SignalrConnection();
-            realTimeConnection.Id = Context.ConnectionId;
-            realTimeConnection.OwnerId = user.Id;
-            realTimeConnection.CreatedTime = timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            #endregion
 
-            unitOfWork.SignalrConnections.Insert(realTimeConnection);
-            unitOfWork.Commit();
+            #region Add connection to group
+
+            // Add connection to a specific groups.
+            var groups = new List<string>();
+
+            if (profile.Role == UserRole.Admin)
+                groups.Add(RealTimeGroupConstant.Admin);
+            
+            // Initialize background tasks.
+            var addClientToGroupTasks = new List<Task>();
+            foreach (var group in groups)
+            {
+                var addClientToGroupTask = Groups.AddToGroupAsync(Context.ConnectionId, group);
+                addClientToGroupTasks.Add(addClientToGroupTask);
+            }
+            
+            Task.WhenAll(addClientToGroupTasks.ToArray());
+            UserGroups.TryAdd(connectionId, groups);
+
+            #endregion
+
+            return base.OnConnectedAsync();
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            // Get connection id.
+            var connectionId = Context.ConnectionId;
+
+            Debug.WriteLine($"Client {connectionId} has disconnected from {nameof(NotificationHub)}");
+
+            // Find & remove the disconnected connection.
+            var signalrConnections = _unitOfWork.SignalrConnections.Search();
+            signalrConnections = signalrConnections.Where(x => x.ClientId == connectionId);
+            _unitOfWork.SignalrConnections.Remove(signalrConnections);
+            _unitOfWork.Commit();
+            
+            // Get all groups that client takes part in.
+            var groups = new List<string>();
+            UserGroups.TryGetValue(connectionId, out groups);
+            if (groups != null)
+            {
+                var deleteGroupTasks = new List<Task>();
+                foreach (var group in groups)
+                {
+                   var deleteGroupTask = Groups.RemoveFromGroupAsync(Context.ConnectionId, group, CancellationToken.None);
+                    deleteGroupTasks.Add(deleteGroupTask);
+                }
+
+                Task.WhenAll(deleteGroupTasks.ToArray());
+            }
+            return base.OnDisconnectedAsync(exception);
         }
 
         #endregion

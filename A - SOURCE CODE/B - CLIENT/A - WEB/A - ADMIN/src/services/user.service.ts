@@ -8,7 +8,7 @@ import {LoadUserViewModel} from '../view-models/user/load-user.view-model';
 import {Observable} from 'rxjs/Rx';
 import {SearchResult} from '../models/search-result';
 import {User} from '../models/entities/user';
-import {SaveUserStatusViewModel} from '../view-models/user/save-user-status.view-model';
+import {EditUserStatusViewModel} from '../view-models/user/edit-user-status.view-model';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -35,25 +35,28 @@ export class UserService implements IUserService {
 
   // Load users by using specific conditions.
   public loadUsers(condition: LoadUserViewModel): Observable<SearchResult<User>> {
-      const url = `${ConfigUrlService.urlAPI}/${ConfigUrlUserServiceConstant.searchUser}`;
-      return this.httpClient
-        .post<SearchResult<User>>(url, condition);
-    }
-  public getUserDetail(id)
-    {
-      let url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.getUserDetail;
-      url = url.replace('{id}', id);
-      return this.httpClient.get(url);
-    }
-  public saveUserStatus(condition: SaveUserStatusViewModel)
-    {
-      let url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.saveUserStatus;
-      url = url.replace('{id}', String(condition.userId));
-      let body = {
-        status: condition.userStatus
-      };
-      return this.httpClient.put(url, body);
-    }
-    //#endregion
-
+    const url = `${ConfigUrlService.urlAPI}/${ConfigUrlUserServiceConstant.searchUser}`;
+    return this.httpClient
+      .post<SearchResult<User>>(url, condition);
   }
+
+  public getUserDetail(id) {
+    let url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.getUserDetail;
+    url = url.replace('{id}', id);
+    return this.httpClient.get(url);
+  }
+
+
+  // Edit user status using specific condition.
+  public editUserStatus(condition: EditUserStatusViewModel): Observable<any> {
+    let url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.editUserStatus;
+
+    url = url.replace('{id}', `${condition.userId}`);
+
+    return this.httpClient
+      .put(url, condition);
+  }
+
+  //#endregion
+
+}

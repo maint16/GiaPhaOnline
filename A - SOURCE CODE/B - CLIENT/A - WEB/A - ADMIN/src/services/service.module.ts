@@ -5,6 +5,7 @@ import {IAuthenticationService} from '../interfaces/services/authentication-serv
 import {AuthenticationService} from './authentication.service';
 import {UserService} from './user.service';
 import {CategoryGroupService} from './category-group.service';
+import {CategoryService} from './category.service';
 
 @NgModule({})
 
@@ -20,11 +21,8 @@ export class ServiceModule {
         {provide: 'IAuthenticationService', useClass: AuthenticationService},
         {provide: 'IUserService', useClass: UserService},
         {provide: 'ICategoryGroupService', useClass: CategoryGroupService},
-        {
-          provide: 'Window', useFactory: () => {
-            return window;
-          }
-        }
+        {provide: 'ICategoryService', useClass: CategoryService},
+        {provide: Window, useValue: window}
       ]
     };
   }

@@ -92,7 +92,7 @@ namespace Main.Controllers
         //    #region Post check
 
         //    // Get all posts in system.
-        //    var posts = _unitOfWork.Posts.Search();
+        //    var posts = _unitOfWork.Topics.Search();
         //    posts = posts.Where(x => x.Id == info.PostId && x.Status == PostStatus.Available);
 
         //    // Get the first post in database.
@@ -259,7 +259,7 @@ namespace Main.Controllers
 
         //    var categoryGroups = postCategorizations.GroupBy(x => x.CategoryId).Select(x => new CategoryPostCounterModel
         //    {
-        //        CategoryId = x.Key,
+        //        CategoryId = x.DeviceId,
         //        TotalPosts = x.Count()
         //    });
 
@@ -304,7 +304,7 @@ namespace Main.Controllers
 
         ////    var a = categorizations.GroupBy(x => x.CategoryId).Select(x => new
         ////    {
-        ////        CategoryId = x.Key,
+        ////        CategoryId = x.DeviceId,
         ////        Total = x.Count()
         ////    });
 

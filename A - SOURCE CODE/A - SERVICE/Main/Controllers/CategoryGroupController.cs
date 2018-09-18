@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AutoMapper;
+using Main.Constants.RealTime;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.RealTime;
+using Main.Models.RealTime;
 using Main.ViewModels.CategoryGroup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +21,7 @@ using Shared.Resources;
 
 namespace Main.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/category-group")]
     public class CategoryGroupController : ApiBaseController
     {
         #region Properties
@@ -30,8 +34,10 @@ namespace Main.Controllers
         /// <summary>
         ///     Provide access to generic database functions.
         /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
-        
+        private readonly IRelationalDbService _dbService;
+
+        private readonly IRealTimeService _realTimeService;
+
         #endregion
 
         #region Constructures
@@ -42,11 +48,12 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService) : base(unitOfWork, mapper, timeService,
+            IIdentityService identityService, IRealTimeService realTimeService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _unitOfWork = unitOfWork;
-            _databaseFunction = relationalDbService;
+            _dbService = relationalDbService;
+            _realTimeService = realTimeService;
         }
 
         #endregion
@@ -81,8 +88,8 @@ namespace Main.Controllers
             categoryGroups = categoryGroups.Where(x => x.Name == info.Name && x.Status == ItemStatus.Active);
 
             // Check whether category group exists or not.
-            var bIsCategoryGroupAvailable = await categoryGroups.AnyAsync();
-            if (!bIsCategoryGroupAvailable)
+            var categoryGroup = await categoryGroups.FirstOrDefaultAsync();
+            if (categoryGroup != null)
                 return Conflict(new ApiResponse(HttpMessages.CategoryGroupCannotConflict));
 
             #endregion
@@ -93,7 +100,7 @@ namespace Main.Controllers
             var identity = IdentityService.GetProfile(HttpContext);
 
             // Category group intialization.
-            var categoryGroup = new CategoryGroup();
+            categoryGroup = new CategoryGroup();
             categoryGroup.CreatorId = identity.Id;
             categoryGroup.Name = info.Name;
             categoryGroup.Description = info.Description;
@@ -104,10 +111,13 @@ namespace Main.Controllers
             // Insert category group into system.
             UnitOfWork.CategoryGroups.Insert(categoryGroup);
 
-            await UnitOfWork.CommitAsync();
+            var addCategoryGroupTask = UnitOfWork.CommitAsync();
+            var addCategoryGroupNotificationTask = _realTimeService.SendToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategoryGroup, new RealTimeMessage<CategoryGroup>(categoryGroup), CancellationToken.None);
 
             #endregion
 
+            await Task.WhenAll(addCategoryGroupNotificationTask, addCategoryGroupTask);
             return Ok(categoryGroup);
         }
 
@@ -260,7 +270,7 @@ namespace Main.Controllers
 
             // Search conditions which are based on roles.
 
-            if (identity?.Role == AccountRole.Admin)
+            if (identity?.Role == UserRole.Admin)
             {
                 // Statuses have been defined.
                 if (condition.Statuses != null && condition.Statuses.Count > 0)
@@ -277,16 +287,16 @@ namespace Main.Controllers
             // Sort by properties.
             if (condition.Sort != null)
                 categoryGroups =
-                    _databaseFunction.Sort(categoryGroups, condition.Sort.Direction,
+                    _dbService.Sort(categoryGroups, condition.Sort.Direction,
                         condition.Sort.Property);
             else
-                categoryGroups = _databaseFunction.Sort(categoryGroups, SortDirection.Decending,
+                categoryGroups = _dbService.Sort(categoryGroups, SortDirection.Decending,
                     CategoryGroupSort.Name);
 
             // Result initialization.
             var result = new SearchResult<IList<CategoryGroup>>();
             result.Total = await categoryGroups.CountAsync();
-            result.Records = await _databaseFunction.Paginate(categoryGroups, condition.Pagination).ToListAsync();
+            result.Records = await _dbService.Paginate(categoryGroups, condition.Pagination).ToListAsync();
 
             return Ok(result);
         }

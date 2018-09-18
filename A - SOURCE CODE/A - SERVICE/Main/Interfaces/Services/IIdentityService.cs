@@ -19,14 +19,14 @@ namespace Main.Interfaces.Services
         /// Initiate identity claim from user information.
         /// </summary>
         /// <returns></returns>
-        void SetProfile(HttpContext httpContext, Account account);
+        void SetProfile(HttpContext httpContext, User account);
 
         /// <summary>
         /// Get identity attached in request.
         /// </summary>
         /// <param name="httpContext"></param>
         /// <returns></returns>
-        Account GetProfile(HttpContext httpContext);
+        User GetProfile(HttpContext httpContext);
         
         /// <summary>
         /// Initiate jwt from identity.

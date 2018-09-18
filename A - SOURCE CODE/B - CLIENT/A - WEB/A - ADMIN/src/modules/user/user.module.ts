@@ -6,9 +6,12 @@ import {TranslateModule} from '@ngx-translate/core';
 import {UserRouteModule} from './user-route.module';
 import {ManageUsersComponent} from './manage-users/manage-users.component';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {UserDetailModule} from './user-detail/user-detail.module';
 import {TableModule} from 'primeng/table';
 import {PaginatorModule} from 'primeng/paginator';
+import {ModalModule} from 'ngx-bootstrap/modal';
+import {UserDetailComponent} from './user-detail/user-detail.component';
+import {SharedModule} from '../shared/shared.module';
+import {ToUserStatusTitlePipe} from '../../pipes/to-user-status-title.pipe';
 
 //#region Module declaration
 
@@ -17,18 +20,27 @@ import {PaginatorModule} from 'primeng/paginator';
     CommonModule,
     FormsModule,
     PaginatorModule,
-    UserDetailModule,
     NgxPaginationModule,
     TableModule,
     TranslateModule.forChild({}),
     MomentModule,
-    UserRouteModule
+    UserRouteModule,
+    ModalModule.forRoot(),
+    SharedModule
   ],
   declarations: [
-    ManageUsersComponent
+    ManageUsersComponent,
+    UserDetailComponent,
+
+    ToUserStatusTitlePipe
   ],
   exports: [
-    ManageUsersComponent
+    ManageUsersComponent,
+    UserDetailComponent,
+    ToUserStatusTitlePipe
+  ],
+  entryComponents: [
+    UserDetailComponent
   ]
 })
 

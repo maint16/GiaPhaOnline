@@ -12,13 +12,11 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Owner of following relationship.
         /// </summary>
-        [Key]
         public int FollowerId { get; set; }
 
         /// <summary>
         ///     Category index.
         /// </summary>
-        [Key]
         public int CategoryId { get; set; }
 
         /// <summary>
@@ -29,7 +27,6 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When the relationship was lastly created.
         /// </summary>
-        [Required]
         public double CreatedTime { get; set; }
         
         #endregion
@@ -40,14 +37,12 @@ namespace AppDb.Models.Entities
         ///     Who starts watching.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(FollowerId))]
-        public virtual Account Follower { get; set; }
+        public virtual User Follower { get; set; }
 
         /// <summary>
         ///     Which is being watched.
         /// </summary>
         [JsonIgnore]
-        [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; }
 
         #endregion
