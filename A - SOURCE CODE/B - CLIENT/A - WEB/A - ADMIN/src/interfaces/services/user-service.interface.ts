@@ -24,6 +24,9 @@ export interface IUserService {
   * */
   getUserDetail(id: number);
 
+  // Add user device to push notification management.
+  addUserDevice(deviceTokenId: string): Observable<any>;
+
   // Edit user status using specific condition.
   editUserStatus(conditions: EditUserStatusViewModel): Observable<any>;
 

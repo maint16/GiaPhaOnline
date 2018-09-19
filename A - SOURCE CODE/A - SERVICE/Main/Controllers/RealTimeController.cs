@@ -34,7 +34,7 @@ namespace Main.Controllers
         /// Instance to manage identity
         /// </summary>
         private readonly IIdentityService _identityService;
-        
+
         private readonly ITimeService _timeService;
 
         private readonly IRealTimeService _realTimeService;
@@ -85,10 +85,10 @@ namespace Main.Controllers
             }
 
             #endregion
-            
+
             // Get user identity.
             var profile = _identityService.GetProfile(HttpContext);
-            
+
             // Find all device token that user has.
             var userDeviceTokens = _unitOfWork.UserDeviceTokens.Search();
             userDeviceTokens = userDeviceTokens.Where(x => x.DeviceId == model.DeviceId);
@@ -129,7 +129,7 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _realTimeService.SendToClientsAsync(model.ClientIds, model.EventName, model.Message, CancellationToken.None);
+            await _realTimeService.SendRealTimeMessageToClientsAsync(model.ClientIds, model.EventName, model.Message, CancellationToken.None);
             return Ok();
         }
 
@@ -151,7 +151,7 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _realTimeService.SendToGroupsAsync(model.Groups, model.EventName, model.Message, CancellationToken.None);
+            await _realTimeService.SendRealTimeMessageToGroupsAsync(model.Groups, model.EventName, model.Message, CancellationToken.None);
             return Ok();
         }
 
@@ -168,8 +168,52 @@ namespace Main.Controllers
             return Ok(offlineDeviceTokens);
         }
 
+        /// <summary>
+        /// Add device to specific group.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("add-device-to-group")]
+        public async Task<IActionResult> AddDeviceToGroup([FromBody] AddDeviceToGroupViewModel model)
+        {
+            if (model == null)
+            {
+                model = new AddDeviceToGroupViewModel();
+                TryValidateModel(model);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var profile = _identityService.GetProfile(HttpContext);
+
+            using (var transaction = _unitOfWork.BeginTransactionScope())
+            {
+                var userDevices = _unitOfWork.UserDeviceTokens.Search();
+                userDevices = userDevices.Where(x => x.DeviceId == model.DeviceId & x.UserId == profile.Id);
+                _unitOfWork.UserDeviceTokens.Remove(userDevices);
+
+                var userRealTimeGroups = _unitOfWork.UserRealTimeGroups.Search();
+                userRealTimeGroups = userRealTimeGroups.Where(x => x.UserId == profile.Id && x.Group == model.Group);
+                _unitOfWork.UserRealTimeGroups.Remove(userRealTimeGroups);
+
+                var userDeviceToken = new UserDeviceToken();
+                userDeviceToken.DeviceId = model.DeviceId;
+                userDeviceToken.UserId = profile.Id;
+                _unitOfWork.UserDeviceTokens.Insert(userDeviceToken);
+
+                var userRealTimeGroup = new UserRealTimeGroup();
+                userRealTimeGroup.Id = new Guid();
+                userRealTimeGroup.UserId = profile.Id;
+                userRealTimeGroup.CreatedTime = 0;
+                _unitOfWork.UserRealTimeGroups.Insert(userRealTimeGroup);
+
+                await _unitOfWork.CommitAsync();
+                transaction.Commit();
+            }
+            return Ok();
+        }
 #endif
 
-#endregion
+        #endregion
     }
 }

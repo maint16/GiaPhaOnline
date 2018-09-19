@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
@@ -9,8 +10,11 @@ using Main.Constants.RealTime;
 using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
+using Main.Models.PushNotification;
+using Main.Models.PushNotification.Notification;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Main.Services.RealTime
 {
@@ -26,7 +30,7 @@ namespace Main.Services.RealTime
             IUnitOfWork unitOfWork)
         {
             _notificationHubContext = notificationHubContext;
-            _fcmService = fcmService;
+            _cloudMessagingService = fcmService;
             _unitOfWork = unitOfWork;
         }
 
@@ -42,13 +46,13 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     Push service.
         /// </summary>
-        private readonly ICloudMessagingService _fcmService;
+        private readonly ICloudMessagingService _cloudMessagingService;
 
         /// <summary>
         ///     Unit of work.
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
-
+        
         #endregion
 
         #region Methods
@@ -62,7 +66,7 @@ namespace Main.Services.RealTime
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task SendToClientsAsync<T>(string[] clientIds, string eventName,
+        public async Task SendRealTimeMessageToClientsAsync<T>(string[] clientIds, string eventName,
             T message,
             CancellationToken cancellationToken)
         {
@@ -87,7 +91,7 @@ namespace Main.Services.RealTime
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task SendToGroupsAsync<T>(string[] groups, string eventName,
+        public async Task SendRealTimeMessageToGroupsAsync<T>(string[] groups, string eventName,
             T message,
             CancellationToken cancellationToken)
         {
@@ -95,6 +99,41 @@ namespace Main.Services.RealTime
                 .Clients
                 .Groups(groups)
                 .SendAsync(eventName, message, cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public async Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, string title, string body, string icon, T payload,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // No group is defined.
+            if (groups == null || groups.Length < 1)
+                throw new Exception("No group is defined.");
+
+            // Get recipient ids belongs groups.
+            var userRealTimeGroups = _unitOfWork.UserRealTimeGroups.Search();
+            userRealTimeGroups = userRealTimeGroups.Where(x => groups.Contains(x.Group));
+
+            var userDevices = _unitOfWork.UserDeviceTokens.Search();
+            var userDeviceIds = await (from userRealTimeGroup in userRealTimeGroups
+                from userDevice in userDevices
+                where userRealTimeGroup.UserId == userDevice.UserId
+                select userDevice.DeviceId).ToListAsync(cancellationToken);
+            
+            var firebasePushMessage = new FcmMessage<T>();
+            firebasePushMessage.RegistrationIds = userDeviceIds;
+            firebasePushMessage.CollapseKey = collapseKey;
+            firebasePushMessage.Data = payload;
+
+            var firebaseWebNotification = new WebFcmMessageContent();
+            firebaseWebNotification.Icon = icon;
+            firebaseWebNotification.Body = body;
+            firebaseWebNotification.Title = title;
+
+            await _cloudMessagingService.SendAsync(firebasePushMessage, cancellationToken);
         }
 
         /// <summary>

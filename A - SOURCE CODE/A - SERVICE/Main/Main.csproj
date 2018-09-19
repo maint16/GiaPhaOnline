@@ -22,9 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\Services\IPusherService.cs" />
     <Compile Remove="Interfaces\Services\ITemporaryValueCacheService.cs" />
+    <Compile Remove="Models\PusherSetting.cs" />
     <Compile Remove="Models\RealTimeNotification.cs" />
+    <Compile Remove="Services\RealTime\PusherService.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
+    <Compile Remove="ViewModels\RealtimeConnection\AuthorizePusherViewModel.cs" />
+    <Compile Remove="ViewModels\RealtimeConnection\SendPusherMessageViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -103,7 +103,7 @@ namespace Main
             services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
             services.Configure<FcmOption>(Configuration.GetSection(nameof(FcmOption)));
             services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
-            services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
+            //services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
             services.Configure<CaptchaSetting>(Configuration.GetSection(nameof(CaptchaSetting)));
 
             // Build a service provider.
@@ -309,7 +309,7 @@ namespace Main
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IPusherService, PusherService>();
+            //services.AddScoped<IPusherService, PusherService>();
             services.AddScoped<ICaptchaService, CaptchaService>();
 
             // Store user information in cache

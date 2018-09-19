@@ -60,7 +60,6 @@ namespace Main.Controllers
         /// <param name="vgyService"></param>
         /// <param name="profileCacheService"></param>
         /// <param name="captchaService"></param>
-        /// <param name="pusherService"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -77,7 +76,7 @@ namespace Main.Controllers
             ILogger<UserController> logger,
             IVgyService vgyService,
             IValueCacheService<int, User> profileCacheService,
-            ICaptchaService captchaService, IPusherService pusherService) : base(unitOfWork, mapper, timeService,
+            ICaptchaService captchaService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _encryptionService = encryptionService;
@@ -94,7 +93,6 @@ namespace Main.Controllers
             _vgyService = vgyService;
             _profileCacheService = profileCacheService;
             _captchaService = captchaService;
-            _pusherService = pusherService;
         }
 
         #endregion
@@ -1112,12 +1110,7 @@ namespace Main.Controllers
         ///     Service which is for checking captcha.
         /// </summary>
         private readonly ICaptchaService _captchaService;
-
-        /// <summary>
-        /// Service which is for sending notification to pusher server.
-        /// </summary>
-        private readonly IPusherService _pusherService;
-
+        
         #endregion
     }
 }

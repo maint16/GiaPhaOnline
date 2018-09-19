@@ -75,6 +75,17 @@ export class UserService implements IUserService {
       .put(url, condition);
   }
 
+  // Add user device to push notification.
+  public addUserDevice(deviceId: string): Observable<any> {
+    let url = `${this.baseApiEndPoint}/api/real-time/subscribe-push-device`;
+    let model = {
+      deviceId: deviceId
+    };
+
+    return this.httpClient
+      .post(url, model);
+  }
+
   /*
   * Exchange google code with system access token.
   * */

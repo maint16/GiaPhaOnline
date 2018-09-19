@@ -10,6 +10,7 @@ import {RealTimeChannelConstant} from '../../../constants/real-time/real-time-ch
 import * as firebase from 'firebase';
 import {AppConfig} from '../../../models/configuration/app-config';
 import {AppConfigService} from '../../../services/app-config.service';
+import {IUserService} from '../../../interfaces/services/user-service.interface';
 
 @Component({
   selector: 'authorize-layout',
@@ -40,6 +41,7 @@ export class AuthorizeLayoutComponent implements OnInit {
   public constructor(public activatedRoute: ActivatedRoute,
                      public localStorageService: LocalStorageService,
                      @Inject('ISharedEventService') public sharedEventService: ISharedEventService,
+                     @Inject('IUserService') public userService: IUserService,
                      public appConfigService: AppConfigService) {
 
     this.appConfig = this.appConfigService.loadAppConfig();
@@ -135,25 +137,21 @@ export class AuthorizeLayoutComponent implements OnInit {
     // Called when firebase cloud messaging attached to a specific service worker.
     pAddServiceWorkerTask
       .then(() => {
-        messaging
+        return messaging
           .requestPermission()
-          .then(() => {
-            messaging
-              .getToken()
-              .then((cloudMessagingToken: string) => {
-                if (!cloudMessagingToken) {
-                  // Show permission request.
-                  console.log('No Instance ID token available. Request permission to generate one.');
-                  return;
-                }
-                console.log(cloudMessagingToken);
-              }).catch((exception) => {
-              console.log('An error occurred while retrieving token. ', exception);
-            });
-          })
-          .catch((exception) => {
-            console.log('Unable to get permission to notify.', exception);
-          });
+      })
+      .then(() => {
+        return messaging
+          .getToken();
+      })
+      .then((deviceTokenId: string) => {
+        console.log(`Device token = ${deviceTokenId}`);
+        this.userService
+          .addUserDevice(deviceTokenId)
+          .toPromise();
+      })
+      .catch((exception) => {
+        console.log('Unable to get permission to notify.', exception);
       });
   }
 

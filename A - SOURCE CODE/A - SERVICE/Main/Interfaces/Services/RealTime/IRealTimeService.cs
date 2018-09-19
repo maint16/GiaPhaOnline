@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
+using Main.Models.PushNotification;
 using Main.Models.RealTime;
 
 namespace Main.Interfaces.Services.RealTime
@@ -17,7 +18,7 @@ namespace Main.Interfaces.Services.RealTime
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendToClientsAsync<T>(string[] clientIds, string eventName, T message, CancellationToken cancellationToken);
+        Task SendRealTimeMessageToClientsAsync<T>(string[] clientIds, string eventName, T message, CancellationToken cancellationToken);
 
         /// <summary>
         /// Send real-time notification to specific group.
@@ -28,8 +29,15 @@ namespace Main.Interfaces.Services.RealTime
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendToGroupsAsync<T>(string[] groups, string eventName,
+        Task SendRealTimeMessageToGroupsAsync<T>(string[] groups, string eventName,
             T message, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Send push message to specific groups of users.
+        /// </summary>
+        /// <returns></returns>
+        Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, string title, string body, string icon, T payload,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Get user available groups.

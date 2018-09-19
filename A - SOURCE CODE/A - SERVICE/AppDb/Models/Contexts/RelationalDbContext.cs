@@ -144,7 +144,7 @@ namespace AppDb.Models.Contexts
             AddSignalrConnectionTable(modelBuilder);
 
             // Add signalr connection group table.
-            AddSignalrConnectionGroupTable(modelBuilder);
+            AddUserDeviceGroupTable(modelBuilder);
 
             AddNotificationMessageTable(modelBuilder);
 
@@ -378,10 +378,13 @@ namespace AppDb.Models.Contexts
         /// Add signalrl connection group table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddSignalrConnectionGroupTable(ModelBuilder modelBuilder)
+        private void AddUserDeviceGroupTable(ModelBuilder modelBuilder)
         {
             //var signalrConnectionGroup = modelBuilder.Entity<SignalrConnectionGroup>();
             //signalrConnectionGroup.HasKey(x => x.Id);
+            var userDeviceGroup = modelBuilder.Entity<UserRealTimeGroup>();
+            userDeviceGroup.HasKey(x => x.Id);
+            userDeviceGroup.Property(x => x.Group).IsRequired();
         }
 
         /// <summary>

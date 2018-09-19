@@ -70,10 +70,10 @@ namespace AppDb.Interfaces
         /// </summary>
         IRepository<SignalrConnection> SignalrConnections { get; }
 
-        ///// <summary>
-        ///// Signal connection groups.
-        ///// </summary>
-        //IRepository<UserRealTimeGroup> UserRealTimeGroups { get; }
+        /// <summary>
+        /// Real time groups that user belongs.
+        /// </summary>
+        IRepository<UserRealTimeGroup> UserRealTimeGroups { get; }
 
         /// <summary>
         /// Cloud messaging device group.

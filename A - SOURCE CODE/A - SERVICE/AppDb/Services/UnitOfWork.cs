@@ -183,7 +183,7 @@ namespace AppDb.Services
         /// <summary>
         ///     Provides functions to access realtime connection database.
         /// </summary>
-        public IRepository<UserRealTimeGroup> SignalrConnectionGroups => _userRealTmeGroups ??
+        public IRepository<UserRealTimeGroup> UserRealTimeGroups => _userRealTmeGroups ??
                                                                     (_userRealTmeGroups = new Repository<UserRealTimeGroup>(_dbContext));
 
         /// <summary>

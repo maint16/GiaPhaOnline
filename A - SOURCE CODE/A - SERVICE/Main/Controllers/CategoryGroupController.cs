@@ -111,13 +111,22 @@ namespace Main.Controllers
             // Insert category group into system.
             UnitOfWork.CategoryGroups.Insert(categoryGroup);
 
-            var addCategoryGroupTask = UnitOfWork.CommitAsync();
-            var addCategoryGroupNotificationTask = _realTimeService.SendToGroupsAsync(
+            // Save the category group first.
+            await UnitOfWork.CommitAsync();
+
+            // Send real-time message to all admins.
+            var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
                 new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategoryGroup, categoryGroup, CancellationToken.None);
+
+            // Send push notification to all admin.
+            var collapseKey = Guid.NewGuid().ToString("D");
+            var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, "MSG_NEW_CATEGORY_GROUP_ADDED",
+                "MSG_CATEGORY_GROUP_ADDED", null, categoryGroup);
 
             #endregion
 
-            await Task.WhenAll(addCategoryGroupNotificationTask, addCategoryGroupTask);
+            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
             return Ok(categoryGroup);
         }
 
