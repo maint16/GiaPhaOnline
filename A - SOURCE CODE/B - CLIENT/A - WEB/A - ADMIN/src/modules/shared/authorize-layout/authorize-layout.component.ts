@@ -111,18 +111,6 @@ export class AuthorizeLayoutComponent implements OnInit {
         messagingSenderId: cloudMessaging.messagingSenderId
       });
 
-    navigator.serviceWorker.getRegistrations()
-      .then( (serviceWorkerRegistrations: ServiceWorkerRegistration[]) => {
-        // serviceWorkerRegistrations
-        //   .filter((serviceWorkerRegistration: ServiceWorkerRegistration) => {
-        //
-        //   });
-        // console.log(registrations);
-        for (let serviceWorkerRegistration of serviceWorkerRegistrations) {
-          serviceWorkerRegistration.unregister();
-        }
-      });
-
     // Get messaging instance.
     const messaging = firebase.messaging();
     messaging.usePublicVapidKey(cloudMessaging.webApiKey);
