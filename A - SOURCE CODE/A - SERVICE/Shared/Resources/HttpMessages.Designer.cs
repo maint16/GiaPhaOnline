@@ -223,6 +223,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DEVICE_ID_INVALID.
+        /// </summary>
+        public static string DeviceIdInvalid {
+            get {
+                return ResourceManager.GetString("DeviceIdInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DEVICE_TOKEN_IN_USE.
         /// </summary>
         public static string DeviceTokenInUse {

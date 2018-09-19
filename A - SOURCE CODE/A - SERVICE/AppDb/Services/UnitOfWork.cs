@@ -103,10 +103,10 @@ namespace AppDb.Services
         /// </summary>
         private IRepository<SignalrConnection> _signalrConnections;
 
-        ///// <summary>
-        ///// Provides access to signal connection group database.
-        ///// </summary>
-        //private IRepository<SignalrConnectionGroup> _signalrConnectionGroups;
+        /// <summary>
+        /// Provides access to signal connection group database.
+        /// </summary>
+        private IRepository<UserRealTimeGroup> _userRealTmeGroups;
 
         private IRepository<UserDeviceToken> _userDeviceTokens;
 
@@ -180,12 +180,15 @@ namespace AppDb.Services
         public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
                                                                             (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
 
-        ///// <summary>
-        /////     Provides functions to access realtime connection database.
-        ///// </summary>
-        //public IRepository<SignalrConnectionGroup> SignalrConnectionGroups => _signalrConnectionGroups ??
-        //                                                            (_signalrConnectionGroups = new Repository<SignalrConnectionGroup>(_dbContext));
+        /// <summary>
+        ///     Provides functions to access realtime connection database.
+        /// </summary>
+        public IRepository<UserRealTimeGroup> SignalrConnectionGroups => _userRealTmeGroups ??
+                                                                    (_userRealTmeGroups = new Repository<UserRealTimeGroup>(_dbContext));
 
+        /// <summary>
+        /// List of device tokens.
+        /// </summary>
         public IRepository<UserDeviceToken> UserDeviceTokens => _userDeviceTokens ??
                                                                               (_userDeviceTokens = new Repository<UserDeviceToken>(_dbContext));
 

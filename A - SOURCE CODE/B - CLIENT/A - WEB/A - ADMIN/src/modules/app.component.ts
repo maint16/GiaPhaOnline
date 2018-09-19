@@ -4,21 +4,23 @@ import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
 import {TranslateService} from '@ngx-translate/core';
+import {AppConfig} from '../models/configuration/app-config';
+import {AppConfigService} from '../services/app-config.service';
 
 @Component({
   selector: 'body',
-  templateUrl: 'app.component.html'
+  templateUrl: '/app.component.html'
 })
 export class AppComponent implements OnInit {
-
-  title = 'app';
 
   //#region Constructor
 
   public constructor(private router: Router,
                      private activatedRoute: ActivatedRoute,
                      private translate: TranslateService,
-                     private renderer: Renderer2, private window: Window) {
+                     private renderer: Renderer2,
+                     private window: Window, private appConfigService: AppConfigService) {
+    console.log(appConfigService);
     this._ngSetupAppLanguage();
   }
   // #endrgion

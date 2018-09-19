@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {AppConfig} from '../models/app-config';
+import {AppConfig} from '../models/configuration/app-config';
 
 @Injectable()
 export class AppConfigService {
@@ -24,12 +24,11 @@ export class AppConfigService {
   /*
   * Load app configuration from json file.
   * */
-  public loadConfigurationFromFile(): Promise<AppConfig> {
+  public loadAppConfigAsync(): Promise<AppConfig> {
     return this.httpClient
       .get('/src/assets/app.config.json')
       .toPromise()
       .then(data => {
-        console.log(data);
         let options = <AppConfig> data;
         this._appConfiguration = options;
         return options;
@@ -37,9 +36,9 @@ export class AppConfigService {
   }
 
   /*
-  * Load configuration from cache.
+  * Load app config from cache.
   * */
-  public loadConfigurationFromCache(): AppConfig {
+  public loadAppConfig(): AppConfig {
     return this._appConfiguration;
   }
 

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
+using AppDb.Models.Entities;
+using AppModel.Enumerations;
+using Main.Constants.RealTime;
 using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
@@ -91,6 +95,21 @@ namespace Main.Services.RealTime
                 .Clients
                 .Groups(groups)
                 .SendAsync(eventName, message, cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public string[] GetUserAvailableRealTimeGroups(User user)
+        {
+            var groups = new List<string>();
+
+            if (user.Role == UserRole.Admin)
+                groups.Add(RealTimeGroupConstant.Admin);
+
+            return groups.ToArray();
         }
 
         #endregion

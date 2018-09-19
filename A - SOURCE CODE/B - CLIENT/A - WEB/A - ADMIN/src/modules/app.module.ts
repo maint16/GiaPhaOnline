@@ -25,7 +25,7 @@ import {NgxLocalStorageModule} from 'ngx-localstorage';
 //#region Factory functions
 
 export function appConfigServiceFactory(appConfigService: AppConfigService, configLogin: ConfigLoginConstant) {
-  return () => appConfigService.loadConfigurationFromFile();
+  return () => appConfigService.loadAppConfigAsync();
 }
 
 //#endregion

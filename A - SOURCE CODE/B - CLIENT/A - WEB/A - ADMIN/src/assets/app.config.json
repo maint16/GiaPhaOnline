@@ -1,3 +1,7 @@
 {
-  "hello": "world"
+  "cloudMessaging": {
+    "webApiKey": "BOnpLotjnjgELQfS93wBKwUAcX7qMG4vZHdKhXoOnBEFh6REFbRbcX14g8lcM7vj4DfEZ3NoLlgXjJdPILs50QA",
+    "serviceWorkerPath": "/service-workers/firebase-messaging.service-worker.js",
+    "messagingSenderId": "772965944359"
+  }
 }

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
+using Main.ViewModels.RealTime;
 
 namespace Main.Interfaces.Services
 {
@@ -73,6 +74,14 @@ namespace Main.Interfaces.Services
            FcmBaseNotification notification, string collapseKey, T data,
            CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Get cloud messaging token information from client registration id.
+        /// </summary>
+        /// <param name="idToken"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<CloudMessagingTokenInfoViewModel> GetCloudMessagingTokenInformationAsync(string idToken,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion
     }

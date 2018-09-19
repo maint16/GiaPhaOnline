@@ -11,6 +11,7 @@ using AppModel.Enumerations;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Shared.Interfaces.Services;
@@ -31,6 +32,8 @@ namespace Main.Hubs
 
         private readonly ITimeService _timeService;
 
+        private readonly IRealTimeService _realTimeService;
+
         private static readonly ConcurrentDictionary<string, List<string>> UserGroups = new ConcurrentDictionary<string, List<string>>();
 
         #endregion
@@ -43,11 +46,13 @@ namespace Main.Hubs
         /// <param name="unitOfWork"></param>
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
-        public NotificationHub(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService)
+        /// <param name="realTimeService"></param>
+        public NotificationHub(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService, IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
             _timeService = timeService;
+            _realTimeService = realTimeService;
         }
 
         #endregion
@@ -90,21 +95,18 @@ namespace Main.Hubs
             #region Add connection to group
 
             // Add connection to a specific groups.
-            var groups = new List<string>();
+            var availableGroups = _realTimeService.GetUserAvailableRealTimeGroups(profile).ToList();
 
-            if (profile.Role == UserRole.Admin)
-                groups.Add(RealTimeGroupConstant.Admin);
-            
             // Initialize background tasks.
             var addClientToGroupTasks = new List<Task>();
-            foreach (var group in groups)
+            foreach (var group in availableGroups)
             {
                 var addClientToGroupTask = Groups.AddToGroupAsync(Context.ConnectionId, group);
                 addClientToGroupTasks.Add(addClientToGroupTask);
             }
             
             Task.WhenAll(addClientToGroupTasks.ToArray());
-            UserGroups.TryAdd(connectionId, groups);
+            UserGroups.TryAdd(connectionId, availableGroups);
 
             #endregion
 

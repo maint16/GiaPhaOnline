@@ -39,16 +39,19 @@ namespace Main.Controllers
 
         private readonly IRealTimeService _realTimeService;
 
+        private readonly ICloudMessagingService _cloudMessagingService;
+
         #endregion
 
         #region Constructor
 
-        public RealTimeController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService, IRealTimeService realTimeService)
+        public RealTimeController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService, IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
             _timeService = timeService;
             _realTimeService = realTimeService;
+            _cloudMessagingService = cloudMessagingService;
         }
 
         #endregion
@@ -62,6 +65,8 @@ namespace Main.Controllers
         [HttpPost("register-device-token")]
         public async Task<IActionResult> AssignPushChannel([FromBody] AssignPushChannelViewModel model)
         {
+            #region Model validation
+
             if (model == null)
             {
                 model = new AssignPushChannelViewModel();
@@ -71,6 +76,16 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // Get token information.
+            var clientIdToken = await _cloudMessagingService.GetCloudMessagingTokenInformationAsync(model.DeviceId);
+            if (clientIdToken == null)
+            {
+                ModelState.AddModelError($"{nameof(model)}.{nameof(model.DeviceId)}", HttpMessages.DeviceIdInvalid);
+                return BadRequest(ModelState);
+            }
+
+            #endregion
+            
             // Get user identity.
             var profile = _identityService.GetProfile(HttpContext);
             
@@ -138,6 +153,19 @@ namespace Main.Controllers
 
             await _realTimeService.SendToGroupsAsync(model.Groups, model.EventName, model.Message, CancellationToken.None);
             return Ok();
+        }
+
+        /// <summary>
+        /// Get all registered device token.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("device-tokens")]
+        [ByPassAuthorization]
+        public async Task<IActionResult> GetDeviceTokens()
+        {
+            var deviceTokens = _unitOfWork.UserDeviceTokens.Search();
+            var offlineDeviceTokens = await deviceTokens.ToListAsync();
+            return Ok(offlineDeviceTokens);
         }
 
 #endif

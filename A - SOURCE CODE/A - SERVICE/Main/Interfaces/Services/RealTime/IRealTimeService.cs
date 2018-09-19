@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using AppDb.Models.Entities;
 using Main.Models.RealTime;
 
 namespace Main.Interfaces.Services.RealTime
@@ -29,6 +30,13 @@ namespace Main.Interfaces.Services.RealTime
         /// <returns></returns>
         Task SendToGroupsAsync<T>(string[] groups, string eventName,
             T message, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Get user available groups.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        string[] GetUserAvailableRealTimeGroups(User user);
 
         #endregion
     }

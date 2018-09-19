@@ -82,6 +82,12 @@ namespace Main.Services.RealTime
         private const string UrlDeleteDevicesFromTopic = "https://iid.googleapis.com/iid/v1:batchRemove";
 
         /// <summary>
+        /// Url to get token information.
+        /// </summary>
+        private const string UrlGetCloudMessagingTokenInformation =
+                "https://iid.googleapis.com/iid/info/{0}";
+
+        /// <summary>
         ///     Url to find device group notification key.
         /// </summary>
         private const string UrlFindDeviceGroupNotificationKey = "fcm/notification?notification_key_name={0}";
@@ -279,6 +285,28 @@ namespace Main.Services.RealTime
             fcmMessage.Data = data;
 
             return await SendAsync(fcmMessage, cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="idToken"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<CloudMessagingTokenInfoViewModel> GetCloudMessagingTokenInformationAsync(string idToken, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
+            var url = string.Format(UrlGetCloudMessagingTokenInformation, idToken);
+            httpClient.BaseAddress = new Uri(url);
+            var httpResponseMessage = await httpClient.GetAsync("", cancellationToken);
+            if (!httpResponseMessage.IsSuccessStatusCode)
+                return null;
+
+            var httpContent = httpResponseMessage.Content;
+            if (httpContent == null)
+                return null;
+
+            return await httpContent.ReadAsAsync<CloudMessagingTokenInfoViewModel>(cancellationToken);
         }
 
         /// <summary>

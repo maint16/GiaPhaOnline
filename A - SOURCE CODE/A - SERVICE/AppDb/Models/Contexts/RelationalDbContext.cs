@@ -71,12 +71,12 @@ namespace AppDb.Models.Contexts
         /// Signalr connection.
         /// </summary>
         public virtual DbSet<SignalrConnection> SignalrConnections { get; set; }
-
+        
         /// <summary>
-        /// Signalr connection group.
+        /// User real time groups.
         /// </summary>
-        //public virtual DbSet<SignalrConnectionGroup> SignalrConnectionGroups { get; set; }
-
+        public virtual DbSet<UserRealTimeGroup> UserRealTimeGroups { get; set; }
+        
         /// <summary>
         /// List of device groups.
         /// </summary>
