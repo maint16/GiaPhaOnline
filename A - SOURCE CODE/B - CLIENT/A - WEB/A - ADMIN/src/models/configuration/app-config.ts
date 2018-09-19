@@ -8,7 +8,7 @@ export class AppConfig {
   /*
   * Api end-point base url.
   * */
-  public baseUrl: string = '';
+  public baseApiEndPoint: string = '';
 
   /*
   * Real-time hub configuration.
@@ -19,6 +19,18 @@ export class AppConfig {
   * Cloud messaging configuration.
   * */
   public cloudMessaging: CloudMessagingConfig;
+
+  //#region Google authentication setting
+
+  public googleClientId: string = '';
+
+  //#endregion
+
+  //#region Facebook authentication setting
+
+  public facebookClientId: string = '';
+
+  //#endregion
 
   //#endregion
 

@@ -22,7 +22,7 @@
   "TITLE_ACTIVE": "Active",
   "TITLE_ALL": "All",
   "TITLE_USER_CATEGORY": "Category Management",
-
+  "TITLE_CONTINUE_WITH_GOOGLE": "Continue with Google",
 
   "MSG_USER_ADDED_CATEGORY_GROUP": "[Category group] <b>{{name}}</b> has been added to category groups list."
 }

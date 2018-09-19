@@ -9,17 +9,30 @@ import {Observable} from 'rxjs/Rx';
 import {SearchResult} from '../models/search-result';
 import {User} from '../models/entities/user';
 import {EditUserStatusViewModel} from '../view-models/user/edit-user-status.view-model';
+import {AppConfigService} from './app-config.service';
+import {ProfileViewModel} from '../view-models/profile.view-model';
+import {GoogleLoginViewModel} from '../view-models/user/google-login.view-model';
+import {TokenViewModel} from '../view-models/token.view-model';
 
 @Injectable()
 export class UserService implements IUserService {
+
+  //#region Properties
+
+  // Base api end-point.
+  private baseApiEndPoint: string = '';
+
+  //#endregion
 
   //#region Constructor
 
   /*
   * Initiate service with injectors.
   * */
-  public constructor(public httpClient: HttpClient) {
-
+  public constructor(public httpClient: HttpClient,
+                     public appConfigService: AppConfigService) {
+    let appConfig = this.appConfigService.loadAppConfig();
+    this.baseApiEndPoint = appConfig.baseApiEndPoint;
   }
 
   //#endregion
@@ -35,26 +48,39 @@ export class UserService implements IUserService {
 
   // Load users by using specific conditions.
   public loadUsers(condition: LoadUserViewModel): Observable<SearchResult<User>> {
-    const url = `${ConfigUrlService.urlAPI}/${ConfigUrlUserServiceConstant.searchUser}`;
+    const url = `${this.baseApiEndPoint}/${ConfigUrlUserServiceConstant.searchUser}`;
     return this.httpClient
       .post<SearchResult<User>>(url, condition);
   }
 
+  /*
+  * Get user information by using specific information.
+  * */
   public getUserDetail(id) {
-    let url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.getUserDetail;
+    let url = `${this.baseApiEndPoint}/${ConfigUrlUserServiceConstant.getUserDetail}`;
     url = url.replace('{id}', id);
     return this.httpClient.get(url);
   }
 
 
-  // Edit user status using specific condition.
+  /*
+  * Edit user status using specific information.
+  * */
   public editUserStatus(condition: EditUserStatusViewModel): Observable<any> {
-    let url = ConfigUrlService.urlAPI + '/' + ConfigUrlUserServiceConstant.editUserStatus;
-
+    let url = `${this.baseApiEndPoint}/${ConfigUrlUserServiceConstant.editUserStatus}`;
     url = url.replace('{id}', `${condition.userId}`);
 
     return this.httpClient
       .put(url, condition);
+  }
+
+  /*
+  * Exchange google code with system access token.
+  * */
+  public googleLogin(model: GoogleLoginViewModel): Observable<TokenViewModel> {
+    let url = `${this.baseApiEndPoint}/user/google-login`;
+    return this.httpClient
+      .post<TokenViewModel>(url, model);
   }
 
   //#endregion

@@ -13,7 +13,7 @@ export class AppConfigService {
 
   //#region Constructors
 
-  constructor(public httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient) {
 
   }
 

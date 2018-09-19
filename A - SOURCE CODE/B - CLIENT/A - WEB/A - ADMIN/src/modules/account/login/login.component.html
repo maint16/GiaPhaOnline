@@ -11,23 +11,23 @@
             <input
               id="inputEmail"
               #email="ngModel"
-                   name="email"
-                   class="form-control"
-                   autofocus="true"
-                   [(ngModel)]="model.email"
-                   [readonly]="isBusy"
-                   required="required"
-                   maxlength="128">
+              name="email"
+              class="form-control"
+              autofocus="true"
+              [(ngModel)]="model.email"
+              [readonly]="isBusy"
+              required="required"
+              maxlength="128">
             <label for="inputEmail">{{ 'TITLE_EMAIL_LOGIN' | translate }}</label>
           </div>
-            <!-- Email validation messages -->
-            <div class="validation-summary"
-                 *ngIf="!email.valid && email.dirty">
-              <ul>
-                <li *ngIf="email.hasError('required')">Email is required.</li>
-                <li *ngIf="email.hasError('pattern')">Email format is invalid.</li>
-              </ul>
-            </div>
+          <!-- Email validation messages -->
+          <div class="validation-summary"
+               *ngIf="!email.valid && email.dirty">
+            <ul>
+              <li *ngIf="email.hasError('required')">Email is required.</li>
+              <li *ngIf="email.hasError('pattern')">Email format is invalid.</li>
+            </ul>
+          </div>
         </div>
         <div class="form-group">
           <div class="form-label-group">
@@ -45,13 +45,13 @@
                    pattern="^[A-Za-z0-9!@#$%^&*]*$">
             <label for="password">{{ 'TITLE_PASSWORD_LOGIN' | translate }}</label>
           </div>
-            <div class="validation-summary"
-                 *ngIf="!password.valid && password.dirty">
-              <ul>
-                <li *ngIf="password.hasError('required')">Password is required.</li>
-                <li *ngIf="password.hasError('pattern')">Password format is invalid.</li>
-              </ul>
-            </div>
+          <div class="validation-summary"
+               *ngIf="!password.valid && password.dirty">
+            <ul>
+              <li *ngIf="password.hasError('required')">Password is required.</li>
+              <li *ngIf="password.hasError('pattern')">Password format is invalid.</li>
+            </ul>
+          </div>
         </div>
         <div class="form-group">
           <div class="checkbox">
@@ -66,10 +66,10 @@
                [disabled]="!loginPanel.valid || bIsBusy"
                value="Log In">
       </form>
-      <a class="btn btn-block btn-social btn-google" (click)="socialSignIn('google')">
-        <i class="fab fa-google-plus" style="color: #e8590c"></i> Log in with Google
+      <a class="btn btn-block btn-social btn-google" (click)="ngOnGoogleLogin()">
+        <i class="fab fa-google-plus" style="color: #e8590c"></i> {{'TITLE_CONTINUE_WITH_GOOGLE' | translate}}
       </a>
-      <a class="btn btn-block btn-social btn-facebook" (click)="socialSignIn('facebook')">
+      <a class="btn btn-block btn-social btn-facebook" (click)="ngOnFacebookLogin('facebook')">
         <i class="fab fa-facebook" style="color: #4267b2"></i> Log in with Facebook
       </a>
       <div class="text-center">

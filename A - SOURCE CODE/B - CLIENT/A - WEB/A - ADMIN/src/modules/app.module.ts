@@ -15,37 +15,13 @@ import {ResolveModule} from '../resolves/resolve.module';
 import {GuardModule} from '../guards/guard.module';
 import {AppConfigService} from '../services/app-config.service';
 import {AuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider, SocialLoginModule} from 'angular5-social-login';
-import {ConfigLoginConstant} from '../constants/config-login.constant';
 import {AccountService} from '../services/account.service';
 import {ToastrModule, ToastrService} from 'ngx-toastr';
 import {NgxPaginationModule} from 'ngx-pagination';
-import {ToUserStatusTitlePipe} from '../pipes/to-user-status-title.pipe';
 import {NgxLocalStorageModule} from 'ngx-localstorage';
+import {appConfigFactory} from '../factories/app-config.factory';
+import {externalAuthenticationFactory} from '../factories/external-authentication.factory';
 
-//#region Factory functions
-
-export function appConfigServiceFactory(appConfigService: AppConfigService, configLogin: ConfigLoginConstant) {
-  return () => appConfigService.loadAppConfigAsync();
-}
-
-//#endregion
-
-// Configs
-export function getAuthServiceConfigs() {
-  let config = new AuthServiceConfig(
-    [
-      {
-        id: FacebookLoginProvider.PROVIDER_ID,
-        provider: new FacebookLoginProvider(ConfigLoginConstant.facebookAppId)
-      },
-      {
-        id: GoogleLoginProvider.PROVIDER_ID,
-        provider: new GoogleLoginProvider(ConfigLoginConstant.googleAppId)
-      },
-    ]
-  );
-  return config;
-}
 
 //#region Module declaration
 
@@ -83,15 +59,15 @@ export function getAuthServiceConfigs() {
     AppConfigService,
     {
       provide: APP_INITIALIZER,
-      useFactory: appConfigServiceFactory,
+      useFactory: appConfigFactory,
       multi: true,
       deps: [AppConfigService]
     },
     {
       provide: AuthServiceConfig,
-      useFactory: getAuthServiceConfigs
+      useFactory: externalAuthenticationFactory,
+      deps: [AppConfigService]
     },
-    ConfigLoginConstant,
     AccountService,
     ToastrService
   ],

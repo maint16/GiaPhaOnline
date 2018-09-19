@@ -1,7 +1,13 @@
 {
+  "baseApiEndPoint": "http://vlqy5vs38b4xkhqra-mock.stoplight-proxy.io",
+
   "cloudMessaging": {
     "webApiKey": "BOnpLotjnjgELQfS93wBKwUAcX7qMG4vZHdKhXoOnBEFh6REFbRbcX14g8lcM7vj4DfEZ3NoLlgXjJdPILs50QA",
     "serviceWorkerPath": "/service-workers/firebase-messaging.service-worker.js",
     "messagingSenderId": "772965944359"
-  }
+  },
+
+  "googleClientId": "772965944359-iqnumj8hq21vee3k2h2hqr2del9eo5ks.apps.googleusercontent.com",
+
+  "facebookClientId": "266849570452043"
 }
