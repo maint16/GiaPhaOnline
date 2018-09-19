@@ -5,6 +5,7 @@ import {SearchResult} from '../../models/search-result';
 import {EditUserStatusViewModel} from '../../view-models/user/edit-user-status.view-model';
 import {TokenViewModel} from '../../view-models/token.view-model';
 import {GoogleLoginViewModel} from '../../view-models/user/google-login.view-model';
+import {SignOutViewModel} from '../../view-models/user/sign-out.view-model';
 
 export interface IUserService {
 
@@ -28,6 +29,9 @@ export interface IUserService {
 
   // Exchange code returned by Google with system access token.
   googleLogin(model: GoogleLoginViewModel): Observable<TokenViewModel>;
+
+  // Sign user out from system.
+  signOut(model: SignOutViewModel): Observable<any>;
 
   //#endregion
 }

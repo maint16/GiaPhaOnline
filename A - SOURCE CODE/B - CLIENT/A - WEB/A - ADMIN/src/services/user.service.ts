@@ -13,6 +13,7 @@ import {AppConfigService} from './app-config.service';
 import {ProfileViewModel} from '../view-models/profile.view-model';
 import {GoogleLoginViewModel} from '../view-models/user/google-login.view-model';
 import {TokenViewModel} from '../view-models/token.view-model';
+import {SignOutViewModel} from '../view-models/user/sign-out.view-model';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -78,10 +79,20 @@ export class UserService implements IUserService {
   * Exchange google code with system access token.
   * */
   public googleLogin(model: GoogleLoginViewModel): Observable<TokenViewModel> {
-    let url = `${this.baseApiEndPoint}/user/google-login`;
+    let url = `${this.baseApiEndPoint}/api/user/google-login`;
     return this.httpClient
       .post<TokenViewModel>(url, model);
   }
+
+  /*
+  * Sign user out from system.
+  * */
+  public signOut(model: SignOutViewModel): Observable<any> {
+    let url = `${this.baseApiEndPoint}/api/user/sign-out`;
+    return this.httpClient
+      .post<any>(url, model);
+  }
+
 
   //#endregion
 
