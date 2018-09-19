@@ -166,10 +166,10 @@ export class UserService implements IUserService {
     }
 
     // Exchange google code with system access token.
-    public loginGoogle(code: string): IPromise<TokenViewModel> {
+    public loginGoogle(idToken: string): IPromise<TokenViewModel> {
         let url = `${this.appSettingConstant.apiEndPoint}/api/user/google-login`;
         let model: any = {
-            code: code
+            idToken: idToken
         };
 
         return this.$http

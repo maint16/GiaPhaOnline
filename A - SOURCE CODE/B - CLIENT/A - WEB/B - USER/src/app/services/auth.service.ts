@@ -2,6 +2,7 @@ import {IAuthService} from "../interfaces/services/auth-service.interface";
 import {AppSetting} from "../models/app-setting";
 import {IPromise, IQService, IWindowService} from "angular";
 import ClientConfig = gapi.auth2.ClientConfig;
+import GoogleUser = gapi.auth2.GoogleUser;
 
 declare const FB: any;
 declare const $: JQueryStatic;
@@ -126,10 +127,10 @@ export class AuthService implements IAuthService {
                 return this.$q<string>((resolve, reject) => {
                     gapi.auth2
                         .getAuthInstance()
-                        .grantOfflineAccess(null)
-                        .then(function (getGoogleCredentialResponse) {
-                            let code = <string> getGoogleCredentialResponse.code;
-                            resolve(code);
+                        .signIn()
+                        .then( (googleUser: GoogleUser) => {
+                            let authResponse = googleUser.getAuthResponse();
+                            resolve(authResponse.id_token);
                         })
                         .catch((exception) => {
                             reject(exception);

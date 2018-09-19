@@ -51,7 +51,7 @@ export interface IUserService {
     changePassword(changePasswordModel: ChangePasswordViewModel): IPromise<TokenViewModel>;
 
     // Exchange google code with system access token.
-    loginGoogle(code: string): IPromise<TokenViewModel>;
+    loginGoogle(idToken: string): IPromise<TokenViewModel>;
 
     // Exchange facebook access token with system access token.
     loginFacebook(fbAccessToken: string): IPromise<TokenViewModel>;

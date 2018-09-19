@@ -104,10 +104,10 @@ export class LoginController implements IController {
 
         // Display google login.
         this.$auth.displayGoogleLogin()
-            .then((code: string) => {
+            .then((idToken: string) => {
                 // Exchange google code with system access token.
                 return this.$user
-                    .loginGoogle(code);
+                    .loginGoogle(idToken);
             })
             .then((token: TokenViewModel) => {
                 // Update local storage.
