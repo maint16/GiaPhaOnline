@@ -1,16 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Main.ViewModels.Users
+﻿namespace Main.ViewModels.Users
 {
     public class GoogleLoginViewModel
     {
         #region Properties
-
+        
         /// <summary>
-        /// Google authentication code.
+        /// Google id token.
+        /// If this value is specified. Id token will be checked instead of exchanging code with Google server.
         /// </summary>
-        [Required]
-        public string Code { get; set; }
+        public string IdToken { get; set; }
 
         #endregion
     }

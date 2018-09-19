@@ -199,14 +199,9 @@ namespace Main.Controllers
             #endregion
 
             #region Authentication request
-
-            // Find token information.
-            var tokenInfo = await _externalAuthenticationService.GetGoogleTokenInfoAsync(info.Code);
-            if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.Id))
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.GoogleCodeIsInvalid));
-
+            
             // Get the profile information.
-            var profile = await _externalAuthenticationService.GetGoogleBasicProfileAsync(tokenInfo.Id);
+            var profile = await _externalAuthenticationService.GetGoogleBasicProfileAsync(info.IdToken);
             if (profile == null)
                 return StatusCode((int)HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
 
