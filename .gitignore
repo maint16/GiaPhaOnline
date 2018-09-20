@@ -24,3 +24,16 @@
 /A - SOURCE CODE/A - SERVICE/.vs
 >>>>>>> dd5a1f7e77e661a14db8afcb8d0f9a883a2862e0
 /A - SOURCE CODE/B - CLIENT/A - WEB/A - ADMIN/dist
+/AppDb/obj
+/AppDb/bin
+/AppModel/obj
+/AppModel/bin
+/AppDb/obj
+/AppDb/bin
+/AppModel/obj
+/AppModel/bin
+/Main/obj
+/Main/bin
+/Shared/obj
+/Shared/bin
+/.vs
