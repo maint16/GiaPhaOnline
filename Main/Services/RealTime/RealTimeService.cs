@@ -106,7 +106,7 @@ namespace Main.Services.RealTime
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, string title, string body, string icon, T payload,
+        public async Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, RealTimeMessage<T> message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // No group is defined.
@@ -123,15 +123,15 @@ namespace Main.Services.RealTime
                 where userRealTimeGroup.UserId == userDevice.UserId
                 select userDevice.DeviceId).ToListAsync(cancellationToken);
             
-            var firebasePushMessage = new FcmMessage<T>();
+            var firebasePushMessage = new FcmMessage<RealTimeMessage<T>>();
             firebasePushMessage.RegistrationIds = userDeviceIds;
             firebasePushMessage.CollapseKey = collapseKey;
-            firebasePushMessage.Data = payload;
+            firebasePushMessage.Data = message;
 
             var firebaseWebNotification = new WebFcmMessageContent();
-            firebaseWebNotification.Icon = icon;
-            firebaseWebNotification.Body = body;
-            firebaseWebNotification.Title = title;
+            firebaseWebNotification.Icon = message.Icon;
+            firebaseWebNotification.Body = message.Body;
+            firebaseWebNotification.Title = message.Title;
 
             await _cloudMessagingService.SendAsync(firebasePushMessage, cancellationToken);
         }

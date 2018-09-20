@@ -14,7 +14,7 @@ namespace Main.ViewModels.RealTime
         [Required]
         public string EventName { get; set; }
 
-        public RealTimeMessage<Dictionary<string, object>> Message { get; set; }
+        public Dictionary<string, object> Message { get; set; }
 
         #endregion
     }

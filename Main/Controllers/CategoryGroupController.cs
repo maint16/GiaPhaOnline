@@ -120,9 +120,13 @@ namespace Main.Controllers
 
             // Send push notification to all admin.
             var collapseKey = Guid.NewGuid().ToString("D");
+            var realTimeMessage = new RealTimeMessage<CategoryGroup>();
+            realTimeMessage.Title = "TITLE_NEW_CATEGORY_GROUP_ADDED";
+            realTimeMessage.Body = "MSG_CATEGORY_GROUP_ADDED";
+            realTimeMessage.AdditionalInfo = categoryGroup;
+
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, collapseKey, "MSG_NEW_CATEGORY_GROUP_ADDED",
-                "MSG_CATEGORY_GROUP_ADDED", null, categoryGroup);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             #endregion
 

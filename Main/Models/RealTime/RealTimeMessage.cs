@@ -8,6 +8,8 @@
 
         public string Body { get; set; }
         
+        public string Icon { get; set; }
+
         public T AdditionalInfo { get; set; }
 
         #endregion
@@ -16,13 +18,13 @@
 
         public RealTimeMessage()
         {
-            
         }
 
-        public RealTimeMessage(string title, string body, T additionalInfo)
+        public RealTimeMessage(string title, string body, string icon, T additionalInfo)
         {
             Title = title;
             Body = body;
+            Icon = icon;
             AdditionalInfo = additionalInfo;
         }
 
@@ -30,7 +32,6 @@
         {
             AdditionalInfo = additionalInfo;
         }
-
 
         #endregion
     }

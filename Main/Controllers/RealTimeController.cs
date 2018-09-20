@@ -11,6 +11,7 @@ using Main.Constants.RealTime;
 using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
+using Main.Models.PushNotification;
 using Main.ViewModels.RealTime;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -133,6 +134,23 @@ namespace Main.Controllers
             return Ok();
         }
 
+        [HttpPost("push-to-groups")]
+        [ByPassAuthorization]
+        public async Task<IActionResult> PushToGroup([FromBody] FcmMessage<Dictionary<string, object>> model)
+        {
+            if (model == null)
+            {
+                model = new FcmMessage<Dictionary<string, object>>();
+                TryValidateModel(model);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _cloudMessagingService.SendAsync(model, CancellationToken.None);
+            return Ok();
+        }
+
         /// <summary>
         /// Send to group.
         /// </summary>
@@ -204,6 +222,7 @@ namespace Main.Controllers
                 var userRealTimeGroup = new UserRealTimeGroup();
                 userRealTimeGroup.Id = new Guid();
                 userRealTimeGroup.UserId = profile.Id;
+                userRealTimeGroup.Group = model.Group;
                 userRealTimeGroup.CreatedTime = 0;
                 _unitOfWork.UserRealTimeGroups.Insert(userRealTimeGroup);
 

@@ -261,9 +261,16 @@ namespace Main.Services.RealTime
             var szHttpContent = JsonConvert.SerializeObject(fcmMessage, _snakeCaseSerializerSettings);
             var httpContent = new StringContent(szHttpContent, Encoding.UTF8, "application/json");
 
+#if !DEBUG
             // Make a request to notification server.
             var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
             return await httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
+#else
+            // Make a request to notification server.
+            var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
+            var httpResponseMessage = await httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
+            return httpResponseMessage;
+#endif
         }
 
         /// <summary>
@@ -374,6 +381,6 @@ namespace Main.Services.RealTime
             return await DeleteDevicesFromTopicsAsync(deviceIds, groups, cancellationToken);
         }
 
-        #endregion
+#endregion
     }
 }

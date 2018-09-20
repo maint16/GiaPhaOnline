@@ -36,7 +36,7 @@ namespace Main.Interfaces.Services.RealTime
         /// Send push message to specific groups of users.
         /// </summary>
         /// <returns></returns>
-        Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, string title, string body, string icon, T payload,
+        Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, RealTimeMessage<T> message,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
