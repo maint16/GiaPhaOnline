@@ -38,3 +38,5 @@
 /Shared/bin
 /.vs
 /Main/logs
+/micro-services/RealTimeMicroService/obj
+/micro-services/RealTimeMicroService/bin

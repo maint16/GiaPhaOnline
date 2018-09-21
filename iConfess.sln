@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppModel", "AppModel\AppMod
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "micro-services", "micro-services", "{FA3975FA-44D0-4DFB-9D25-4AD7ACD27C79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealTimeMicroService", "micro-services\RealTimeMicroService\RealTimeMicroService.csproj", "{CE40512F-A19A-4205-B677-6CEEF9C70074}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Allow anonymous|Any CPU = Allow anonymous|Any CPU
@@ -44,9 +46,18 @@ Global
 		{A2A65FA7-FBF8-4360-BFC7-F2593DD3414F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2A65FA7-FBF8-4360-BFC7-F2593DD3414F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2A65FA7-FBF8-4360-BFC7-F2593DD3414F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE40512F-A19A-4205-B677-6CEEF9C70074}.Allow anonymous|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE40512F-A19A-4205-B677-6CEEF9C70074}.Allow anonymous|Any CPU.Build.0 = Debug|Any CPU
+		{CE40512F-A19A-4205-B677-6CEEF9C70074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE40512F-A19A-4205-B677-6CEEF9C70074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE40512F-A19A-4205-B677-6CEEF9C70074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE40512F-A19A-4205-B677-6CEEF9C70074}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CE40512F-A19A-4205-B677-6CEEF9C70074} = {FA3975FA-44D0-4DFB-9D25-4AD7ACD27C79}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50F70D8B-B4D7-46D5-86B2-F85DCC78DCC4}

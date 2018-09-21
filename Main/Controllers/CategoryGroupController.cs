@@ -8,11 +8,13 @@ using AppDb.Models.Entities;
 using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AutoMapper;
+using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
 using Main.ViewModels.CategoryGroup;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
@@ -66,6 +68,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPost("")]
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
         public async Task<IActionResult> AddCategoryGroup([FromBody] AddCategoryGroupViewModel info)
         {
             #region Parameters validation
@@ -114,6 +117,8 @@ namespace Main.Controllers
             // Save the category group first.
             await UnitOfWork.CommitAsync();
 
+            #region Real-time message broadcast
+
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
                 new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategoryGroup, categoryGroup, CancellationToken.None);
@@ -121,16 +126,20 @@ namespace Main.Controllers
             // Send push notification to all admin.
             var collapseKey = Guid.NewGuid().ToString("D");
             var realTimeMessage = new RealTimeMessage<CategoryGroup>();
-            realTimeMessage.Title = "TITLE_NEW_CATEGORY_GROUP_ADDED";
-            realTimeMessage.Body = "MSG_CATEGORY_GROUP_ADDED";
+            realTimeMessage.Title = RealTimeMessages.AddNewCategoryGroupTitle;
+            realTimeMessage.Body = RealTimeMessages.AddNewCategoryGroupContent;
             realTimeMessage.AdditionalInfo = categoryGroup;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+
+            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
             #endregion
 
-            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+            #endregion
+
+
             return Ok(categoryGroup);
         }
 
@@ -141,6 +150,7 @@ namespace Main.Controllers
         /// <param name="info"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
         public async Task<IActionResult> EditCategoryGroup([FromRoute] int id, [FromBody] EditCategoryGroupViewModel info)
         {
             #region Parameters validation
@@ -205,6 +215,26 @@ namespace Main.Controllers
 
                 // Commit changes to database.
                 await UnitOfWork.CommitAsync();
+
+                #region Real-time message broadcast
+
+                // Send real-time message to all admins.
+                var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
+                    new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditCategoryGroup, categoryGroup, CancellationToken.None);
+
+                // Send push notification to all admin.
+                var collapseKey = Guid.NewGuid().ToString("D");
+                var realTimeMessage = new RealTimeMessage<CategoryGroup>();
+                realTimeMessage.Title = RealTimeMessages.EditCategoryGroupTitle;
+                realTimeMessage.Body = RealTimeMessages.EditCategoryGroupContent;
+                realTimeMessage.AdditionalInfo = categoryGroup;
+
+                var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
+                    new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+
+                await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+                #endregion
             }
 
             #endregion

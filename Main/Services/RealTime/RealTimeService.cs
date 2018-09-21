@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
@@ -13,8 +14,10 @@ using Main.Interfaces.Services.RealTime;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
 using Main.Models.RealTime;
+using Main.ViewModels.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Main.Services.RealTime
 {
@@ -122,7 +125,10 @@ namespace Main.Services.RealTime
                 from userDevice in userDevices
                 where userRealTimeGroup.UserId == userDevice.UserId
                 select userDevice.DeviceId).ToListAsync(cancellationToken);
-            
+
+            if (userDeviceIds == null || userDeviceIds.Count < 1)
+                return;
+
             var firebasePushMessage = new FcmMessage<RealTimeMessage<T>>();
             firebasePushMessage.RegistrationIds = userDeviceIds;
             firebasePushMessage.CollapseKey = collapseKey;
@@ -133,7 +139,8 @@ namespace Main.Services.RealTime
             firebaseWebNotification.Body = message.Body;
             firebaseWebNotification.Title = message.Title;
 
-            await _cloudMessagingService.SendAsync(firebasePushMessage, cancellationToken);
+            var httpResponseMessage = await _cloudMessagingService.SendAsync(firebasePushMessage, cancellationToken);
+            await DeleteFailedDeviceAsync(httpResponseMessage, userDeviceIds, cancellationToken);
         }
 
         /// <summary>
@@ -150,6 +157,47 @@ namespace Main.Services.RealTime
 
             return groups.ToArray();
         }
+
+        /// <summary>
+        /// Base on the response from FCM service to decide what device should be deleted.
+        /// </summary>
+        /// <param name="httpResponseMessage"></param>
+        /// <param name="originalDeviceIds"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task DeleteFailedDeviceAsync(HttpResponseMessage httpResponseMessage, List<string> originalDeviceIds, CancellationToken cancellationToken)
+        {
+            if (httpResponseMessage == null)
+                return;
+
+            var httpContent = httpResponseMessage.Content;
+            if (httpContent == null)
+                return;
+
+            var pushResponse = await httpContent.ReadAsAsync<FcmPushMessageResponseViewModel>(cancellationToken);
+            // If there is at least one failed token, find 'em and delete 'em from device database.
+            if (pushResponse.FailedRecipients == 0 || pushResponse.Results == null)
+                return;
+
+            var messageResults = pushResponse.Results;
+            var failedMessages = new[]{FcmErrorMessageConstant.DeviceNotRegistered,
+                FcmErrorMessageConstant.InvalidRegistrationToken};
+
+            var failedIndexes = messageResults.Select((c, i) => new { MessageResult = c, Index = i })
+                .Where(x => failedMessages.Contains(x.MessageResult.Error))
+                .Select(x => x.Index);
+
+            // Enlist of devices that must be removed.
+            var deletedDeviceId = originalDeviceIds.Select((d, i) => new { DeviceId = d, Index = i })
+                .Where(x => failedIndexes.Contains(x.Index))
+                .Select(x => x.DeviceId);
+
+            var deviceIds = _unitOfWork.UserDeviceTokens.Search();
+            deviceIds = deviceIds.Where(x => deletedDeviceId.Contains(x.DeviceId));
+            _unitOfWork.UserDeviceTokens.Remove(deviceIds);
+            await _unitOfWork.CommitAsync();
+        }
+        
 
         #endregion
     }

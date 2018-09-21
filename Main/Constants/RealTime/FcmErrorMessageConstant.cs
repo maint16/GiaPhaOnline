@@ -9,6 +9,17 @@
         /// </summary>
         public const string NotificationKeyNotFound = "notification_key not found";
 
+        /// <summary>
+        /// Device not registered.
+        /// </summary>
+        public const string DeviceNotRegistered = "NotRegistered";
+
+        /// <summary>
+        /// Token is invalid.
+        /// </summary>
+        public const string InvalidRegistrationToken = "InvalidRegistration";
+
+
         #endregion
     }
 }
