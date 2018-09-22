@@ -70,7 +70,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public User Owner { get; set; }
-        
+
         /// <summary>
         ///     Category which topic belongs to.
         /// </summary>
@@ -94,6 +94,28 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public ICollection<ReportTopic> ReportTopics { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        public Topic()
+        {
+        }
+
+        public Topic(int id, int ownerId, int categoryId, int categoryGroupId, string title, string body, TopicType type, ItemStatus status, double createdTime, double? lastModifiedTime)
+        {
+            Id = id;
+            OwnerId = ownerId;
+            CategoryId = categoryId;
+            CategoryGroupId = categoryGroupId;
+            Title = title;
+            Body = body;
+            Type = type;
+            Status = status;
+            CreatedTime = createdTime;
+            LastModifiedTime = lastModifiedTime;
+        }
 
         #endregion
     }

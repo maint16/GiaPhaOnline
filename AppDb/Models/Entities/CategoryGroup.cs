@@ -8,6 +8,7 @@ namespace AppDb.Models.Entities
 {
     public class CategoryGroup
     {
+
         #region Properties
 
         /// <summary>
@@ -73,6 +74,26 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Topic> Topics { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        public CategoryGroup()
+        {
+
+        }
+
+        public CategoryGroup(int id, int creatorId, string name, string description, ItemStatus status, double createdTime, double? lastModifiedTime)
+        {
+            Id = id;
+            CreatorId = creatorId;
+            Name = name;
+            Description = description;
+            Status = status;
+            CreatedTime = createdTime;
+            LastModifiedTime = lastModifiedTime;
+        }
 
         #endregion
     }
