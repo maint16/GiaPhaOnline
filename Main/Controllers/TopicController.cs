@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AutoMapper;
+using Main.Constants;
 using Main.Interfaces.Services;
 using Main.ViewModels.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
@@ -30,11 +33,17 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService) : base(unitOfWork, mapper, timeService,
+            IIdentityService identityService,
+            ISendMailService sendMailService,
+            IEmailCacheService emailCacheService,
+            ILogger logger) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _unitOfWork = unitOfWork;
             _databaseFunction = relationalDbService;
+            _sendMailService = sendMailService;
+            _emailCacheService = emailCacheService;
+            _logger = logger;
         }
 
         #endregion
@@ -50,6 +59,21 @@ namespace Main.Controllers
         ///     Provide access to generic database functions.
         /// </summary>
         private readonly IRelationalDbService _databaseFunction;
+
+        /// <summary>
+        ///     Send email service
+        /// </summary>
+        private readonly ISendMailService _sendMailService;
+
+        /// <summary>
+        ///     Email cache service.
+        /// </summary>
+        private readonly IEmailCacheService _emailCacheService;
+
+        /// <summary>
+        ///     Logging instance.
+        /// </summary>
+        private readonly ILogger _logger;
 
         #endregion
 
@@ -197,6 +221,28 @@ namespace Main.Controllers
             if (bHasInformationChanged)
             {
                 topic.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+
+                if (topic.Status == ItemStatus.Disabled)
+                {
+                    var users = UnitOfWork.Accounts.Search();
+
+                    users = users.Where(x => x.Id == topic.OwnerId);
+
+                    var user = await users.FirstOrDefaultAsync();
+
+                    if (user != null)
+                    {
+                        var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
+
+                        if (emailTemplate != null)
+                        {
+                            await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null, emailTemplate.Subject,
+                                emailTemplate.Content, true, CancellationToken.None);
+
+                            _logger.LogInformation($"Sent message to {user.Email} with subject {emailTemplate.Subject}");
+                        }
+                    }
+                }
 
                 // Commit changes to database.
                 await UnitOfWork.CommitAsync();

@@ -19,6 +19,10 @@ namespace Main.Constants
 
         public const string SubmitPasswordReset = nameof(SubmitPasswordReset);
 
+        public const string DeleteTopic = nameof(DeleteTopic);
+
+        public const string DeleteReply = nameof(DeleteReply);
+
         #endregion
     }
 }
