@@ -18,6 +18,7 @@ using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Jwt;
 using Main.ViewModels.Users;
@@ -60,6 +61,7 @@ namespace Main.Controllers
         /// <param name="vgyService"></param>
         /// <param name="profileCacheService"></param>
         /// <param name="captchaService"></param>
+        /// <param name="realTimeService"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -76,7 +78,7 @@ namespace Main.Controllers
             ILogger<UserController> logger,
             IVgyService vgyService,
             IValueCacheService<int, User> profileCacheService,
-            ICaptchaService captchaService) : base(unitOfWork, mapper, timeService,
+            ICaptchaService captchaService, IRealTimeService realTimeService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _encryptionService = encryptionService;
@@ -93,6 +95,7 @@ namespace Main.Controllers
             _vgyService = vgyService;
             _profileCacheService = profileCacheService;
             _captchaService = captchaService;
+            _realTimeService = realTimeService;
         }
 
         #endregion
@@ -438,6 +441,9 @@ namespace Main.Controllers
                 activationToken.IssuedTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 activationToken.ExpiredTime = activationToken.IssuedTime + 3600;
                 UnitOfWork.ActivationTokens.Insert(activationToken);
+
+                // Get available groups that user can take part in.
+                
 
                 // Commit the transaction.
                 _unitOfWork.Commit();
@@ -1117,7 +1123,10 @@ namespace Main.Controllers
         ///     Service which is for checking captcha.
         /// </summary>
         private readonly ICaptchaService _captchaService;
-        
+
+        private readonly IRealTimeService _realTimeService;
+
+
         #endregion
     }
 }

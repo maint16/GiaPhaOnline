@@ -58,6 +58,8 @@ namespace AppDb.Models.Contexts
             // Add reply moking data.
             AddReplies(modelBuilder);
 
+            AddUserRealTimeGroup(modelBuilder);
+
             //foreach (var type in _dbSeedOption.Columns.Keys)
             //{
             //    var originalContent = _dbSeedOption.Columns[type];
@@ -135,6 +137,16 @@ namespace AppDb.Models.Contexts
             modelBuilder.Entity<Reply>().HasData(replies.ToArray());
         }
 
+        /// <summary>
+        /// Add user real-time group.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void AddUserRealTimeGroup(ModelBuilder modelBuilder)
+        {
+            var userRealTimeGroups = new List<UserRealTimeGroup>();
+            userRealTimeGroups.Add(new UserRealTimeGroup(Guid.NewGuid(), "Admin", 1, 0));
+            modelBuilder.Entity<UserRealTimeGroup>().HasData(userRealTimeGroups.ToArray());
+        }
         #endregion
     }
 }
