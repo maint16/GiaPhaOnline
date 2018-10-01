@@ -73,6 +73,7 @@ namespace AppDb.Models.Contexts
         /// <param name="modelBuilder"></param>
         private void AddUsers(ModelBuilder modelBuilder)
         {
+
             var users = new List<User>();
             users.Add(new User(1, "admin@gmail.com", "Admin", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Basic, UserStatus.Available, UserRole.Admin, "https://via.placeholder.com/512x512", "Hello admin", 0, null));
             users.Add(new User(2, "user@gmail.com", "Admin", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Basic, UserStatus.Available, UserRole.User, "https://via.placeholder.com/512x512", "Hello user", 0, null));

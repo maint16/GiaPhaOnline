@@ -107,6 +107,7 @@ namespace Main.Controllers
             userDeviceToken.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             _unitOfWork.UserDeviceTokens.Insert(userDeviceToken);
+            await _unitOfWork.CommitAsync();
             return Ok();
         }
 

@@ -230,8 +230,9 @@ namespace Main.Controllers
                 // Initialize account instance.
                 account = new User();
 
-#if DEBUG
-                account.Id = 3;
+#if USE_IN_MEMORY
+                account.Id = UnitOfWork.Accounts.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
+                                 .FirstOrDefault() + 1;
 #endif
                 account.Email = profile.Email;
                 account.Nickname = profile.Name;
@@ -353,7 +354,8 @@ namespace Main.Controllers
                 if (profile != null)
                     accounts = accounts.Where(x => x.Id == profile.Id);
                 else
-                    return Ok();
+                    
+                    return NotFound();
             }
             else
                 accounts = accounts.Where(x => x.Id == id);

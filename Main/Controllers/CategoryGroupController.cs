@@ -104,6 +104,12 @@ namespace Main.Controllers
 
             // Category group intialization.
             categoryGroup = new CategoryGroup();
+
+#if USE_IN_MEMORY
+            categoryGroup.Id = UnitOfWork.CategoryGroups.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
+                             .FirstOrDefault() + 1;
+#endif
+
             categoryGroup.CreatorId = identity.Id;
             categoryGroup.Name = info.Name;
             categoryGroup.Description = info.Description;

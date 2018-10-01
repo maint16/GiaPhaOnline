@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCOREAPP2_1;DISABLE_CAPTCHA_VALIDATION;</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCOREAPP2_1;DISABLE_CAPTCHA_VALIDATION;USE_IN_MEMORY</DefineConstants>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
 
