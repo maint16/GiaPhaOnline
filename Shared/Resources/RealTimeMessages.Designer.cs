@@ -95,5 +95,49 @@ namespace Shared.Resources {
                 return ResourceManager.GetString("EditCategoryGroupTitle", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_ADD_NEW_CATEGORY.
+        /// </summary>
+        public static string AddNewCategoryContent
+        {
+            get
+            {
+                return ResourceManager.GetString("AddNewCategoryContent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to TITLE_NEW_CATEGORY.
+        /// </summary>
+        public static string AddNewCategoryTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("AddNewCategoryTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_EDIT_CATEGORY.
+        /// </summary>
+        public static string EditCategoryContent
+        {
+            get
+            {
+                return ResourceManager.GetString("EditCategoryContent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to TITLE_EDIT_CATEGORY.
+        /// </summary>
+        public static string EditCategoryTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("EditCategoryTitle", resourceCulture);
+            }
+        }
     }
 }

@@ -229,12 +229,17 @@ namespace Main.Controllers
             {
                 // Initialize account instance.
                 account = new User();
+
+#if DEBUG
+                account.Id = 3;
+#endif
                 account.Email = profile.Email;
                 account.Nickname = profile.Name;
                 account.Role = UserRole.User;
                 account.Photo = profile.Picture;
                 account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 account.Type = UserKind.Google;
+                account.Status = UserStatus.Available;
 
                 // Add account to database.
                 UnitOfWork.Accounts.Insert(account);

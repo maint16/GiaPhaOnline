@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AutoMapper;
+using Main.Constants.RealTime;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.RealTime;
+using Main.Models.RealTime;
 using Main.ViewModels.Category;
 using Main.ViewModels.CategoryGroup;
 using Microsoft.AspNetCore.Mvc;
@@ -29,11 +33,13 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService) : base(unitOfWork, mapper, timeService,
+            IIdentityService identityService,
+            IRealTimeService realTimeService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _unitOfWork = unitOfWork;
             _databaseFunction = relationalDbService;
+            _realTimeService = realTimeService;
         }
 
         #endregion
@@ -50,6 +56,7 @@ namespace Main.Controllers
         /// </summary>
         private readonly IRelationalDbService _databaseFunction;
 
+        private readonly IRealTimeService _realTimeService;
         #endregion
 
         #region Methods
@@ -107,6 +114,25 @@ namespace Main.Controllers
             UnitOfWork.Categories.Insert(category);
 
             await UnitOfWork.CommitAsync();
+            #region Real-time message broadcast
+
+            // Send real-time message to all admins.
+            var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategory, category, CancellationToken.None);
+
+            // Send push notification to all admin.
+            var collapseKey = Guid.NewGuid().ToString("D");
+            var realTimeMessage = new RealTimeMessage<Category>();
+            realTimeMessage.Title = RealTimeMessages.AddNewCategoryTitle;
+            realTimeMessage.Body = RealTimeMessages.AddNewCategoryContent;
+            realTimeMessage.AdditionalInfo = category;
+
+            var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+
+            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+            #endregion
 
             #endregion
 
@@ -193,6 +219,25 @@ namespace Main.Controllers
                 await UnitOfWork.CommitAsync();
             }
 
+            #region Real-time message broadcast
+
+            // Send real-time message to all admins.
+            var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditCategory, category, CancellationToken.None);
+
+            // Send push notification to all admin.
+            var collapseKey = Guid.NewGuid().ToString("D");
+            var realTimeMessage = new RealTimeMessage<Category>();
+            realTimeMessage.Title = RealTimeMessages.EditCategoryTitle;
+            realTimeMessage.Body = RealTimeMessages.EditCategoryContent;
+            realTimeMessage.AdditionalInfo = category;
+
+            var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+
+            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+            #endregion
             #endregion
 
             return Ok(category);
