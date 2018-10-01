@@ -229,12 +229,18 @@ namespace Main.Controllers
             {
                 // Initialize account instance.
                 account = new User();
+
+#if USE_IN_MEMORY
+                account.Id = UnitOfWork.Accounts.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
+                                 .FirstOrDefault() + 1;
+#endif
                 account.Email = profile.Email;
                 account.Nickname = profile.Name;
                 account.Role = UserRole.User;
                 account.Photo = profile.Picture;
                 account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 account.Type = UserKind.Google;
+                account.Status = UserStatus.Available;
 
                 // Add account to database.
                 UnitOfWork.Accounts.Insert(account);
@@ -348,7 +354,7 @@ namespace Main.Controllers
                 if (profile != null)
                     accounts = accounts.Where(x => x.Id == profile.Id);
                 else
-                    return Ok();
+                    return NotFound();
             }
             else
                 accounts = accounts.Where(x => x.Id == id);
