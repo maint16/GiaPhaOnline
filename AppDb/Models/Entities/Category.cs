@@ -79,7 +79,7 @@ namespace AppDb.Models.Entities
         [JsonIgnore]
         [ForeignKey(nameof(CategoryGroupId))]
         public CategoryGroup CategoryGroup { get; set; }
-        
+
         /// <summary>
         ///     Category follow.
         /// </summary>
@@ -91,6 +91,27 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Topic> Topics { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        public Category()
+        {
+        }
+
+        public Category(int id, int creatorId, int categoryGroupId, string photo, string description, ItemStatus status, string name, double createdTime, double? lastModifiedTime)
+        {
+            Id = id;
+            CreatorId = creatorId;
+            CategoryGroupId = categoryGroupId;
+            Photo = photo;
+            Description = description;
+            Status = status;
+            Name = name;
+            CreatedTime = createdTime;
+            LastModifiedTime = lastModifiedTime;
+        }
 
         #endregion
     }

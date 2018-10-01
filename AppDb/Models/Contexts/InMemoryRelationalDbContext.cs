@@ -46,6 +46,18 @@ namespace AppDb.Models.Contexts
             // Add user mocking data.
             AddUsers(modelBuilder);
 
+            // Add category group moking data.
+            AddCategoryGroups(modelBuilder);
+
+            // Add category moking data.
+            AddCategories(modelBuilder);
+
+            // Add topic moking data.
+            AddTopics(modelBuilder);
+
+            // Add reply moking data.
+            AddReplies(modelBuilder);
+
             //foreach (var type in _dbSeedOption.Columns.Keys)
             //{
             //    var originalContent = _dbSeedOption.Columns[type];
@@ -69,7 +81,60 @@ namespace AppDb.Models.Contexts
             modelBuilder.Entity<User>()
                 .HasData(users.ToArray());
         }
-        
+
+        /// <summary>
+        /// Add category group mocking data.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void AddCategoryGroups(ModelBuilder modelBuilder)
+        {
+            var categoryGroups = new List<CategoryGroup>();
+            categoryGroups.Add(new CategoryGroup(1, 1, "16+", "16+", 0, 0, null));
+            categoryGroups.Add(new CategoryGroup(2, 1, "18+", "18+", 0, 0, null));
+
+            modelBuilder.Entity<CategoryGroup>()
+                .HasData(categoryGroups.ToArray());
+        }
+
+        /// <summary>
+        /// Add category moking data.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void AddCategories(ModelBuilder modelBuilder)
+        {
+            var categories = new List<Category>();
+            categories.Add(new Category(1, 1, 1, "https://via.placeholder.com/512x512", "18+", 0, "18+", 0, null));
+            categories.Add(new Category(2, 1, 1, "https://via.placeholder.com/512x512", "16+", 0, "18+", 0, null));
+
+            modelBuilder.Entity<Category>().HasData(categories.ToArray());
+        }
+
+        /// <summary>
+        /// Add topic moking data.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void AddTopics(ModelBuilder modelBuilder)
+        {
+            var topics = new List<Topic>();
+            topics.Add(new Topic(1, 1, 1, 1, "Có nên mua mibook air ko các bác", "Mấy con 12.5 13.3 của nó ngon ko", 0, 0, 0, null));
+            topics.Add(new Topic(2, 2, 1, 1, "Mifit ray sale còn 10$ ", "Mua 10 cái còn 35$", 0, 0, 0, null));
+
+            modelBuilder.Entity<Topic>().HasData(topics.ToArray());
+        }
+
+        /// <summary>
+        /// Add reply moking data.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        private void AddReplies(ModelBuilder modelBuilder)
+        {
+            var replies = new List<Reply>();
+            replies.Add(new Reply(1, 1, 1, 1, 1, "hôm trước ra mi store thấy rồi, build khá tốt đó, văn phòng web này nọ thì đượ", 0, 0, null));
+            replies.Add(new Reply(2, 2, 1, 1, 1, "cho em ké với thím", 0, 0, null));
+
+            modelBuilder.Entity<Reply>().HasData(replies.ToArray());
+        }
+
         #endregion
     }
 }

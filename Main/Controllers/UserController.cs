@@ -542,7 +542,7 @@ namespace Main.Controllers
             if (emailTemplate != null)
             {
                 await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject,
-                    emailTemplate.Content, false, CancellationToken.None);
+                    emailTemplate.Content, true, CancellationToken.None);
 
                 _logger.LogInformation($"Sent message to {account.Email} with subject {emailTemplate.Subject}");
             }

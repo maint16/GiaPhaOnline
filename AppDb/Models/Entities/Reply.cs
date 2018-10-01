@@ -70,5 +70,26 @@ namespace AppDb.Models.Entities
         public Topic Topic { get; set; }
 
         #endregion
+
+        #region Constructors
+
+        public Reply()
+        {
+        }
+
+        public Reply(int id, int ownerId, int topicId, int categoryId, int categoryGroupId, string content, ItemStatus status, double createdTime, double? lastModifiedTime)
+        {
+            Id = id;
+            OwnerId = ownerId;
+            TopicId = topicId;
+            CategoryId = categoryId;
+            CategoryGroupId = categoryGroupId;
+            Content = content;
+            Status = status;
+            CreatedTime = createdTime;
+            LastModifiedTime = lastModifiedTime;
+        }
+
+        #endregion
     }
 }

@@ -40,3 +40,5 @@
 /Main/logs
 /micro-services/RealTimeMicroService/obj
 /micro-services/RealTimeMicroService/bin
+/Main/Main.csproj.user
+/Main/Main.csproj.user
