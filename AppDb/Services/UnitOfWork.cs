@@ -17,10 +17,23 @@ namespace AppDb.Services
         /// <summary>
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
-        /// <param name="dbContext"></param>
-        public UnitOfWork(DbContext dbContext)
+        public UnitOfWork(DbContext dbContext, IRepository<User> accounts, IRepository<CategoryGroup> categoryGroups, IRepository<Category> categories, IRepository<FollowCategory> followingCategories, IRepository<Reply> replies, IRepository<Topic> topics, IRepository<FollowTopic> followingTopics, IRepository<ReportTopic> reportTopics, IRepository<NotificationMessage> notificationMessages, IRepository<ActivationToken> activationTokens, IRepository<AccessToken> accessTokens, IRepository<SignalrConnection> signalrConnections, IRepository<UserRealTimeGroup> userRealTimeGroups, IRepository<UserDeviceToken> userDeviceTokens)
         {
             _dbContext = dbContext;
+            Accounts = accounts;
+            CategoryGroups = categoryGroups;
+            Categories = categories;
+            FollowingCategories = followingCategories;
+            Replies = replies;
+            Topics = topics;
+            FollowingTopics = followingTopics;
+            ReportTopics = reportTopics;
+            NotificationMessages = notificationMessages;
+            ActivationTokens = activationTokens;
+            AccessTokens = accessTokens;
+            SignalrConnections = signalrConnections;
+            UserRealTimeGroups = userRealTimeGroups;
+            UserDeviceTokens = userDeviceTokens;
         }
 
         #endregion
@@ -41,158 +54,20 @@ namespace AppDb.Services
 
         #region Properties
 
-        #region Repository instances
-
-        /// <summary>
-        ///     Provide access to accounts database.
-        /// </summary>
-        private IRepository<User> _accounts;
-
-        /// <summary>
-        ///     Provide access to category groups database.
-        /// </summary>
-        private IRepository<CategoryGroup> _categoryGroups;
-
-        /// <summary>
-        ///     Provide access to categories database.
-        /// </summary>
-        private IRepository<Category> _categories;
-
-        /// <summary>
-        /// Provide access to FollowCategory table.
-        /// </summary>
-        private IRepository<FollowCategory> _followCategories;
-
-        /// <summary>
-        ///     Provide access to replys database.
-        /// </summary>
-        private IRepository<Reply> _replies;
-
-        /// <summary>
-        ///     Provide access to topic report database.
-        /// </summary>
-        private IRepository<ReportTopic> _reportTopics;
-
-        /// <summary>
-        ///     Provides access to topic database.
-        /// </summary>
-        private IRepository<Topic> _topics;
-
-        /// <summary>
-        /// Provides access to FollowTopic table.
-        /// </summary>
-        private IRepository<FollowTopic> _followTopics;
-        
-        /// <summary>
-        ///     Provide access to notification message database.
-        /// </summary>
-        private IRepository<NotificationMessage> _notificationMessages;
-
-        /// <summary>
-        /// Activation token.
-        /// </summary>
-        private IRepository<ActivationToken> _activationTokens;
-
-        /// <summary>
-        /// Access token.
-        /// </summary>
-        private IRepository<AccessToken> _accessTokens;
-
-        /// <summary>
-        ///     Provide access to signalr connection database.
-        /// </summary>
-        private IRepository<SignalrConnection> _signalrConnections;
-
-        /// <summary>
-        /// Provides access to signal connection group database.
-        /// </summary>
-        private IRepository<UserRealTimeGroup> _userRealTmeGroups;
-
-        private IRepository<UserDeviceToken> _userDeviceTokens;
-
-        #endregion
-
-        #region Repository accessors
-
-        /// <summary>
-        ///     Provides functions to access account database.
-        /// </summary>
-        public IRepository<User> Accounts => _accounts ?? (_accounts = new Repository<User>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access category group database.
-        /// </summary>
-        public IRepository<CategoryGroup> CategoryGroups => _categoryGroups ?? (_categoryGroups = new Repository<CategoryGroup>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access categories database.
-        /// </summary>
-        public IRepository<Category> Categories => _categories ?? (_categories = new Repository<Category>(_dbContext));
-
-        /// <summary>
-        /// Provides function to access follow category table.
-        /// </summary>
-        public IRepository<FollowCategory> FollowingCategories =>
-            _followCategories ?? (_followCategories = new Repository<FollowCategory>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access reply database.
-        /// </summary>
-        public IRepository<Reply> Replies => _replies ?? (_replies = new Repository<Reply>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access to topic reports database.
-        /// </summary>
-        public IRepository<ReportTopic> ReportTopics
-            => _reportTopics ?? (_reportTopics = new Repository<ReportTopic>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access topic database.
-        /// </summary>
-        public IRepository<Topic> Topics => _topics ?? (_topics = new Repository<Topic>(_dbContext));
-
-        /// <summary>
-        /// Provides function to access FollowTopic table.
-        /// </summary>
-        public IRepository<FollowTopic> FollowingTopics =>
-            _followTopics ?? (_followTopics = new Repository<FollowTopic>(_dbContext));
-        
-        /// <summary>
-        ///     Provides function to access notification message database.
-        /// </summary>
-        public IRepository<NotificationMessage> NotificationMessages => _notificationMessages ?? (_notificationMessages = new Repository<NotificationMessage>(_dbContext));
-
-        /// <summary>
-        /// Provides function to access activation token table.
-        /// </summary>
-        public IRepository<ActivationToken> ActivationTokens =>
-            _activationTokens ?? (_activationTokens = new Repository<ActivationToken>(_dbContext));
-
-        /// <summary>
-        /// Provides function to access activation token table.
-        /// </summary>
-        public IRepository<AccessToken> AccessTokens =>
-            _accessTokens ?? (_accessTokens = new Repository<AccessToken>(_dbContext));
-        
-        /// <summary>
-        ///     Provides functions to access realtime connection database.
-        /// </summary>
-        public IRepository<SignalrConnection> SignalrConnections => _signalrConnections ??
-                                                                            (_signalrConnections = new Repository<SignalrConnection>(_dbContext));
-
-        /// <summary>
-        ///     Provides functions to access realtime connection database.
-        /// </summary>
-        public IRepository<UserRealTimeGroup> UserRealTimeGroups => _userRealTmeGroups ??
-                                                                    (_userRealTmeGroups = new Repository<UserRealTimeGroup>(_dbContext));
-
-        /// <summary>
-        /// List of device tokens.
-        /// </summary>
-        public IRepository<UserDeviceToken> UserDeviceTokens => _userDeviceTokens ??
-                                                                              (_userDeviceTokens = new Repository<UserDeviceToken>(_dbContext));
-
-        #endregion
+        public IRepository<User> Accounts { get; }
+        public IRepository<CategoryGroup> CategoryGroups { get; }
+        public IRepository<Category> Categories { get; }
+        public IRepository<FollowCategory> FollowingCategories { get; }
+        public IRepository<Reply> Replies { get; }
+        public IRepository<Topic> Topics { get; }
+        public IRepository<FollowTopic> FollowingTopics { get; }
+        public IRepository<ReportTopic> ReportTopics { get; }
+        public IRepository<NotificationMessage> NotificationMessages { get; }
+        public IRepository<ActivationToken> ActivationTokens { get; }
+        public IRepository<AccessToken> AccessTokens { get; }
+        public IRepository<SignalrConnection> SignalrConnections { get; }
+        public IRepository<UserRealTimeGroup> UserRealTimeGroups { get; }
+        public IRepository<UserDeviceToken> UserDeviceTokens { get; }
 
         #endregion
 
