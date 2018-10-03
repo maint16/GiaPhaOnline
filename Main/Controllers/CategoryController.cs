@@ -90,7 +90,7 @@ namespace Main.Controllers
 
             // Check whether category exists or not.
             var bIsCategoryAvailable = await categories.AnyAsync();
-            if (!bIsCategoryAvailable)
+            if (bIsCategoryAvailable)
                 return Conflict(new ApiResponse(HttpMessages.CategoryCannotConflict));
 
             #endregion
@@ -102,6 +102,10 @@ namespace Main.Controllers
 
             // Category intialization.
             var category = new Category();
+#if USE_IN_MEMORY
+            category.Id = UnitOfWork.Categories.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
+                                   .FirstOrDefault() + 1;
+#endif
             category.CreatorId = identity.Id;
             category.CategoryGroupId = info.CategoryGroupId;
             category.Name = info.Name;
