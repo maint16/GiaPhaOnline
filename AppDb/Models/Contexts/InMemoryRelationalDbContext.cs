@@ -91,8 +91,8 @@ namespace AppDb.Models.Contexts
         private void AddCategoryGroups(ModelBuilder modelBuilder)
         {
             var categoryGroups = new List<CategoryGroup>();
-            categoryGroups.Add(new CategoryGroup(1, 1, "16+", "16+", 0, 0, null));
-            categoryGroups.Add(new CategoryGroup(2, 1, "18+", "18+", 0, 0, null));
+            categoryGroups.Add(new CategoryGroup(1, 1, "16+", "16+", ItemStatus.Active, 0, null));
+            categoryGroups.Add(new CategoryGroup(2, 1, "18+", "18+", ItemStatus.Active, 0, null));
 
             modelBuilder.Entity<CategoryGroup>()
                 .HasData(categoryGroups.ToArray());
