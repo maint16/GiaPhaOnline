@@ -20,6 +20,8 @@
         public const string AddCategory = "event-add_category";
 
         public const string EditCategory = "event-edit_category";
+
+        public const string EditUserStatus = "event-edit_user_status";
         #endregion
     }
 }

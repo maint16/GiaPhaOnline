@@ -17,10 +17,12 @@ using AppModel.Models;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
+using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Jwt;
+using Main.Models.RealTime;
 using Main.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -752,6 +754,26 @@ namespace Main.Controllers
             // Information has been changed.
             if (bHasInformationChanged)
                 await _unitOfWork.CommitAsync();
+
+            #endregion
+
+            #region Real-time message broadcast
+
+            // Send real-time message to all admins.
+            var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditUserStatus, user, CancellationToken.None);
+
+            // Send push notification to all admin.
+            var collapseKey = Guid.NewGuid().ToString("D");
+            var realTimeMessage = new RealTimeMessage<User>();
+            realTimeMessage.Title = RealTimeMessages.EditUserStatusTitle;
+            realTimeMessage.Body = RealTimeMessages.EditUserStatusContent;
+            realTimeMessage.AdditionalInfo = user;
+
+            var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+
+            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
             #endregion
             return Ok();

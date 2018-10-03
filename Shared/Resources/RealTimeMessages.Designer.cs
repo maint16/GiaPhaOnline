@@ -139,5 +139,27 @@ namespace Shared.Resources {
                 return ResourceManager.GetString("EditCategoryTitle", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_EDIT_USER_STATUS.
+        /// </summary>
+        public static string EditUserStatusContent
+        {
+            get
+            {
+                return ResourceManager.GetString("EditUserStatusContent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to TITLE_EDIT_USER_STATUS.
+        /// </summary>
+        public static string EditUserStatusTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("EditUserStatusTitle", resourceCulture);
+            }
+        }
+
     }
 }
