@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
+using AppModel.Exceptions;
 using AutoMapper;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
 using Main.ViewModels.CategoryGroup;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
-using Shared.Models;
 using Shared.Resources;
 
 namespace Main.Controllers
@@ -26,22 +22,6 @@ namespace Main.Controllers
     [Route("api/category-group")]
     public class CategoryGroupController : ApiBaseController
     {
-        #region Properties
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IRelationalDbService _dbService;
-
-        private readonly IRealTimeService _realTimeService;
-
-        #endregion
-
         #region Constructures
 
         public CategoryGroupController(
@@ -50,13 +30,21 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService, IRealTimeService realTimeService) : base(unitOfWork, mapper, timeService,
+            IIdentityService identityService, IRealTimeService realTimeService,
+            ICategoryGroupService categoryGroupService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
-            _unitOfWork = unitOfWork;
-            _dbService = relationalDbService;
             _realTimeService = realTimeService;
+            _categoryGroupService = categoryGroupService;
         }
+
+        #endregion
+
+        #region Properties
+        
+        private readonly IRealTimeService _realTimeService;
+
+        private readonly ICategoryGroupService _categoryGroupService;
 
         #endregion
 
@@ -65,18 +53,18 @@ namespace Main.Controllers
         /// <summary>
         ///     Add category group to system.
         /// </summary>
-        /// <param name="info"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> AddCategoryGroup([FromBody] AddCategoryGroupViewModel info)
+        public async Task<IActionResult> AddCategoryGroup([FromBody] AddCategoryGroupViewModel model)
         {
             #region Parameters validation
 
-            if (info == null)
+            if (model == null)
             {
-                info = new AddCategoryGroupViewModel();
-                TryValidateModel(info);
+                model = new AddCategoryGroupViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
@@ -84,50 +72,14 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find category group
-
-            // Find category group.
-            var categoryGroups = UnitOfWork.CategoryGroups.Search();
-            categoryGroups = categoryGroups.Where(x => x.Name == info.Name && x.Status == ItemStatus.Active);
-
-            // Check whether category group exists or not.
-            var categoryGroup = await categoryGroups.FirstOrDefaultAsync();
-            if (categoryGroup != null)
-                return Conflict(new ApiResponse(HttpMessages.CategoryGroupCannotConflict));
-
-            #endregion
-
-            #region Category group initialization
-
-            // Find identity from request.
-            var identity = IdentityService.GetProfile(HttpContext);
-
-            // Category group intialization.
-            categoryGroup = new CategoryGroup();
-
-#if USE_IN_MEMORY
-            categoryGroup.Id = UnitOfWork.CategoryGroups.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
-                             .FirstOrDefault() + 1;
-#endif
-
-            categoryGroup.CreatorId = identity.Id;
-            categoryGroup.Name = info.Name;
-            categoryGroup.Description = info.Description;
-            categoryGroup.Status = ItemStatus.Active;
-            categoryGroup.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            categoryGroup.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-
-            // Insert category group into system.
-            UnitOfWork.CategoryGroups.Insert(categoryGroup);
-
-            // Save the category group first.
-            await UnitOfWork.CommitAsync();
+            var categoryGroup = await _categoryGroupService.AddCategoryGroup(model);
 
             #region Real-time message broadcast
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategoryGroup, categoryGroup, CancellationToken.None);
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.AddCategoryGroup, categoryGroup,
+                CancellationToken.None);
 
             // Send push notification to all admin.
             var collapseKey = Guid.NewGuid().ToString("D");
@@ -137,11 +89,9 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = categoryGroup;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
-
-            #endregion
 
             #endregion
 
@@ -150,21 +100,22 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Edit category group by using specific information.
+        ///     Edit category group by using specific information.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="info"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> EditCategoryGroup([FromRoute] int id, [FromBody] EditCategoryGroupViewModel info)
+        public async Task<IActionResult> EditCategoryGroup([FromRoute] int id,
+            [FromBody] EditCategoryGroupViewModel model)
         {
             #region Parameters validation
 
-            if (info == null)
+            if (model == null)
             {
-                info = new EditCategoryGroupViewModel();
-                TryValidateModel(info);
+                model = new EditCategoryGroupViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
@@ -172,61 +123,16 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find category group
-
-            // Get request identity.
-            var identity = IdentityService.GetProfile(HttpContext);
-
-            // Get all category group in database.
-            var categoryGroups = UnitOfWork.CategoryGroups.Search();
-
-            categoryGroups = categoryGroups.Where(x => x.Id == id && x.Status == ItemStatus.Active);
-
-            // Get the first matched category group.
-            var categoryGroup = await categoryGroups.FirstOrDefaultAsync();
-            if (categoryGroup == null)
-                return NotFound(new ApiResponse(HttpMessages.CategoryGroupNotFound));
-
-            #endregion
-
             #region Update category group. information
 
-            // Check whether information has been updated or not.
-            var bHasInformationChanged = false;
-
-            // Name is defined
-            if (info.Name != null && info.Name != categoryGroup.Name)
+            try
             {
-                categoryGroup.Name = info.Name;
-                bHasInformationChanged = true;
-            }
-
-            // Description is defined
-            if (info.Description != null && info.Description != categoryGroup.Description)
-            {
-                categoryGroup.Description = info.Description;
-                bHasInformationChanged = true;
-            }
-
-            // Status is defined.
-            if (info.Status != categoryGroup.Status)
-            {
-                categoryGroup.Status = info.Status;
-                bHasInformationChanged = true;
-            }
-
-            if (bHasInformationChanged)
-            {
-                categoryGroup.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-
-                // Commit changes to database.
-                await UnitOfWork.CommitAsync();
-
-                #region Real-time message broadcast
+                var categoryGroup = await _categoryGroupService.EditCategoryGroup(id, model);
 
                 // Send real-time message to all admins.
                 var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                    new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditCategoryGroup, categoryGroup, CancellationToken.None);
+                    new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditCategoryGroup, categoryGroup,
+                    CancellationToken.None);
 
                 // Send push notification to all admin.
                 var collapseKey = Guid.NewGuid().ToString("D");
@@ -236,16 +142,20 @@ namespace Main.Controllers
                 realTimeMessage.AdditionalInfo = categoryGroup;
 
                 var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                    new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                    new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
                 await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+                return Ok(categoryGroup);
+            }
+            catch (Exception exception)
+            {
+                if (!(exception is NotModifiedException))
+                    return Ok();
 
-                #endregion
+                throw;
             }
 
             #endregion
-
-            return Ok(categoryGroup);
         }
 
         /// <summary>
@@ -269,85 +179,8 @@ namespace Main.Controllers
 
             #endregion
 
-            // Find identity in request.
-            var identity = IdentityService.GetProfile(HttpContext);
-
-            #region Search for information
-
-            // Get all category groups
-            var categoryGroups = _unitOfWork.CategoryGroups.Search();
-
-            // Id have been defined.
-            if (condition.Ids != null && condition.Ids.Count > 0)
-            {
-                condition.Ids = condition.Ids.Where(x => x > 0).ToList();
-                if (condition.Ids != null && condition.Ids.Count > 0)
-                {
-                    categoryGroups = categoryGroups.Where(x => condition.Ids.Contains(x.Id));
-                }
-            }
-
-            // Creator Id have been defined.
-            if (condition.CreatorIds != null && condition.CreatorIds.Count > 0)
-            {
-                condition.CreatorIds = condition.CreatorIds.Where(x => x > 0).ToList();
-                if (condition.CreatorIds != null && condition.CreatorIds.Count > 0)
-                {
-                    categoryGroups = categoryGroups.Where(x => condition.CreatorIds.Contains(x.CreatorId));
-                }
-            }
-
-            // Name have been defined.
-            if (condition.Names != null && condition.Names.Count > 0)
-            {
-                condition.Names = condition.Names.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Names != null && condition.Names.Count > 0)
-                {
-                    categoryGroups = categoryGroups.Where(x => condition.Names.Any(y => x.Name.Contains(y)));
-                }
-            }
-
-            // Description have been defined.
-            if (condition.Descriptions != null && condition.Descriptions.Count > 0)
-            {
-                condition.Descriptions = condition.Descriptions.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Descriptions != null && condition.Descriptions.Count > 0)
-                {
-                    categoryGroups = categoryGroups.Where(x => condition.Descriptions.Any(y => x.Description.Contains(y)));
-                }
-            }
-
-            // Search conditions which are based on roles.
-
-            if (identity?.Role == UserRole.Admin)
-            {
-                // Statuses have been defined.
-                if (condition.Statuses != null && condition.Statuses.Count > 0)
-                {
-                    condition.Statuses =
-                        condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x)).ToList();
-                    if (condition.Statuses.Count > 0)
-                        categoryGroups = categoryGroups.Where(x => condition.Statuses.Contains(x.Status));
-                }
-            }
-
-            #endregion
-
-            // Sort by properties.
-            if (condition.Sort != null)
-                categoryGroups =
-                    _dbService.Sort(categoryGroups, condition.Sort.Direction,
-                        condition.Sort.Property);
-            else
-                categoryGroups = _dbService.Sort(categoryGroups, SortDirection.Decending,
-                    CategoryGroupSort.Name);
-
-            // Result initialization.
-            var result = new SearchResult<IList<CategoryGroup>>();
-            result.Total = await categoryGroups.CountAsync();
-            result.Records = await _dbService.Paginate(categoryGroups, condition.Pagination).ToListAsync();
-
-            return Ok(result);
+            var loadCategoryGroupsResult = await _categoryGroupService.SearchCategoryGroupsAsync(condition);
+            return Ok(loadCategoryGroupsResult);
         }
 
         #endregion

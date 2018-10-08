@@ -13,37 +13,37 @@ namespace Main.ViewModels.Topic
         /// <summary>
         /// List of topic id
         /// </summary>
-        public List<int> Ids { get; set; }
+        public HashSet<int> Ids { get; set; }
 
         /// <summary>
         /// List of category id
         /// </summary>
-        public List<int> CategoryIds { get; set; }
+        public HashSet<int> CategoryIds { get; set; }
 
         /// <summary>
         /// List of category group id
         /// </summary>
-        public List<int> CategoryGroupIds { get; set; }
+        public HashSet<int> CategoryGroupIds { get; set; }
 
         /// <summary>
         /// List of owner id
         /// </summary>
-        public List<int> OwnerIds { get; set; }
+        public HashSet<int> OwnerIds { get; set; }
 
         /// <summary>
         /// List of topic title
         /// </summary>
-        public List<string> Titles { get; set; }
+        public HashSet<string> Titles { get; set; }
 
         /// <summary>
         /// List of topic body
         /// </summary>
-        public List<string> Bodies { get; set; }
+        public HashSet<string> Bodies { get; set; }
 
         /// <summary>
         /// List of category status
         /// </summary>
-        public List<ItemStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
 
         /// <summary>
         /// Pagination

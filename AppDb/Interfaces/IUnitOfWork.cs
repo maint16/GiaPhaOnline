@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
@@ -94,7 +95,7 @@ namespace AppDb.Interfaces
         ///     Save changes into database asynchronously.
         /// </summary>
         /// <returns></returns>
-        Task<int> CommitAsync();
+        Task<int> CommitAsync(CancellationToken cancellationToken = default (CancellationToken));
 
         /// <summary>
         /// Begin transaction scope.

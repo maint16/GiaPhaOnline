@@ -13,27 +13,27 @@ namespace Main.ViewModels.ReportTopic
         /// <summary>
         /// List of topic id
         /// </summary>
-        public List<int> TopicIds { get; set; }
+        public HashSet<int> TopicIds { get; set; }
 
         /// <summary>
         /// List of reporter id
         /// </summary>
-        public List<int> ReporterIds { get; set; }
+        public HashSet<int> ReporterIds { get; set; }
 
         /// <summary>
         /// List of owner topic id
         /// </summary>
-        public List<int> OwnerIds { get; set; }
+        public HashSet<int> OwnerIds { get; set; }
 
         /// <summary>
         /// List of reason
         /// </summary>
-        public List<string> Reasons { get; set; }
+        public HashSet<string> Reasons { get; set; }
 
         /// <summary>
         /// List of report topic status
         /// </summary>
-        public List<ItemStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
 
         /// <summary>
         /// Created date.

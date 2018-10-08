@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
-using AppDb.Models.Entities;
 using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
 using AutoMapper;
 using Main.Constants;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.Businesses;
 using Main.ViewModels.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Interfaces.Services;
-using Shared.Models;
-using Shared.Resources;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -36,29 +32,18 @@ namespace Main.Controllers
             IIdentityService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger logger) : base(unitOfWork, mapper, timeService,
+            ILogger<TopicController> logger, ITopicService topicService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
-            _unitOfWork = unitOfWork;
-            _databaseFunction = relationalDbService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _logger = logger;
+            _topicService = topicService;
         }
 
         #endregion
 
         #region Properties
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
 
         /// <summary>
         ///     Send email service
@@ -75,6 +60,8 @@ namespace Main.Controllers
         /// </summary>
         private readonly ILogger _logger;
 
+        private readonly ITopicService _topicService;
+
         #endregion
 
         #region Methods
@@ -82,78 +69,40 @@ namespace Main.Controllers
         /// <summary>
         ///     Add topic to system.
         /// </summary>
-        /// <param name="info"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> AddTopic([FromBody] AddTopicViewModel info)
+        public async Task<IActionResult> AddTopic([FromBody] AddTopicViewModel model)
         {
-            #region Parameters validation
-
-            if (info == null)
+            if (model == null)
             {
-                info = new AddTopicViewModel();
-                TryValidateModel(info);
+                model = new AddTopicViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            #endregion
-
-            #region Find topic
-
-            // Find category.
-            var categories = UnitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Id == info.CategoryId && x.Status == ItemStatus.Active);
-
-            // Check whether category exists or not.
-            var bIsCategoryAvailable = await categories.AnyAsync();
-            if (!bIsCategoryAvailable)
-                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
-
-            #endregion
-
-            #region Topic initialization
-
-            // Find identity from request.
-            var identity = IdentityService.GetProfile(HttpContext);
-
-            // Topic intialization.
-            var topic = new Topic();
-            topic.OwnerId = identity.Id;
-            topic.CategoryId = info.CategoryId;
-            topic.CategoryGroupId = info.CategoryGroupId;
-            topic.Title = info.Title;
-            topic.Body = info.Body;
-            topic.Status = ItemStatus.Active;
-            topic.CreatedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            topic.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-
-            // Insert topic into system.
-            UnitOfWork.Topics.Insert(topic);
-
-            await UnitOfWork.CommitAsync();
-
-            #endregion
+            var topic = await _topicService.AddTopicAsync(model, CancellationToken.None);
 
             return Ok(topic);
         }
 
         /// <summary>
-        /// Edit topic by using specific information.
+        ///     Edit topic by using specific information.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="info"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditTopic([FromRoute] int id, [FromBody] EditTopicViewModel info)
+        public async Task<IActionResult> EditTopic([FromRoute] int id, [FromBody] EditTopicViewModel model)
         {
             #region Parameters validation
 
-            if (info == null)
+            if (model == null)
             {
-                info = new EditTopicViewModel();
-                TryValidateModel(info);
+                model = new EditTopicViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
@@ -161,94 +110,28 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find topic
+            // Update topic information.
+            var topic = await _topicService.EditTopicAsync(id, model);
 
-            // Get request identity.
-            var identity = IdentityService.GetProfile(HttpContext);
+            if (topic.Status != ItemStatus.Disabled)
+                return Ok(topic);
 
-            // Get all topics in database.
-            var topics = UnitOfWork.Topics.Search();
+            var users = UnitOfWork.Accounts.Search();
+            users = users.Where(x => x.Id == topic.OwnerId);
+            var user = await users.FirstOrDefaultAsync();
 
-            topics = topics.Where(x => x.Id == id && x.Status == ItemStatus.Active);
-
-            // Get the first matched topic.
-            var topic = await topics.FirstOrDefaultAsync();
-            if (topic == null)
-                return NotFound(new ApiResponse(HttpMessages.TopicNotFound));
-
-            #endregion
-
-            #region Update topic information
-
-            // Check whether information has been updated or not.
-            var bHasInformationChanged = false;
-
-            // Category id is defined
-            if (info.CategoryId != topic.CategoryId)
+            if (user != null)
             {
-                topic.CategoryId = info.CategoryId;
-                bHasInformationChanged = true;
-            }
-
-            // Category group id is defined
-            if (info.CategoryGroupId != topic.CategoryGroupId)
-            {
-                topic.CategoryGroupId = info.CategoryGroupId;
-                bHasInformationChanged = true;
-            }
-
-            // Title is defined
-            if (info.Title != null && info.Title != topic.Title)
-            {
-                topic.Title = info.Title;
-                bHasInformationChanged = true;
-            }
-
-            // Body is defined
-            if (info.Body != null && info.Body != topic.Body)
-            {
-                topic.Body = info.Body;
-                bHasInformationChanged = true;
-            }
-
-            // Status is defined.
-            if (info.Status != topic.Status)
-            {
-                topic.Status = info.Status;
-                bHasInformationChanged = true;
-            }
-
-            if (bHasInformationChanged)
-            {
-                topic.LastModifiedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-
-                if (topic.Status == ItemStatus.Disabled)
+                var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
+                if (emailTemplate != null)
                 {
-                    var users = UnitOfWork.Accounts.Search();
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
+                        emailTemplate.Subject,
+                        emailTemplate.Content, true, CancellationToken.None);
 
-                    users = users.Where(x => x.Id == topic.OwnerId);
-
-                    var user = await users.FirstOrDefaultAsync();
-
-                    if (user != null)
-                    {
-                        var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
-
-                        if (emailTemplate != null)
-                        {
-                            await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null, emailTemplate.Subject,
-                                emailTemplate.Content, true, CancellationToken.None);
-
-                            _logger.LogInformation($"Sent message to {user.Email} with subject {emailTemplate.Subject}");
-                        }
-                    }
+                    _logger.LogInformation($"Sent message to {user.Email} with subject {emailTemplate.Subject}");
                 }
-
-                // Commit changes to database.
-                await UnitOfWork.CommitAsync();
             }
-
-            #endregion
 
             return Ok(topic);
         }
@@ -274,105 +157,8 @@ namespace Main.Controllers
 
             #endregion
 
-            // Find identity in request.
-            var identity = IdentityService.GetProfile(HttpContext);
-
-            #region Search for information
-
-            // Get all topic
-            var topics = _unitOfWork.Topics.Search();
-
-            // Id have been defined.
-            if (condition.Ids != null && condition.Ids.Count > 0)
-            {
-                condition.Ids = condition.Ids.Where(x => x > 0).ToList();
-                if (condition.Ids != null && condition.Ids.Count > 0)
-                {
-                    topics = topics.Where(x => condition.Ids.Contains(x.Id));
-                }
-            }
-
-            // Category id have been defined
-            if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
-            {
-                condition.CategoryIds = condition.CategoryIds.Where(x => x > 0).ToList();
-                if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
-                {
-                    topics = topics.Where(x => condition.CategoryIds.Contains(x.CategoryId));
-                }
-            }
-
-            // Category group Id have been defined.
-            if (condition.CategoryGroupIds != null && condition.CategoryGroupIds.Count > 0)
-            {
-                condition.CategoryGroupIds = condition.CategoryGroupIds.Where(x => x > 0).ToList();
-                if (condition.CategoryGroupIds != null && condition.CategoryGroupIds.Count > 0)
-                {
-                    topics = topics.Where(x => condition.CategoryGroupIds.Contains(x.CategoryGroupId));
-                }
-            }
-
-            // Owner Id have been defined.
-            if (condition.OwnerIds != null && condition.OwnerIds.Count > 0)
-            {
-                condition.OwnerIds = condition.OwnerIds.Where(x => x > 0).ToList();
-                if (condition.OwnerIds != null && condition.OwnerIds.Count > 0)
-                {
-                    topics = topics.Where(x => condition.OwnerIds.Contains(x.OwnerId));
-                }
-            }
-
-            // Title have been defined.
-            if (condition.Titles != null && condition.Titles.Count > 0)
-            {
-                condition.Titles = condition.Titles.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Titles != null && condition.Titles.Count > 0)
-                {
-                    topics = topics.Where(x => condition.Titles.Any(y => x.Title.Contains(y)));
-                }
-            }
-
-            // Body have been defined.
-            if (condition.Bodies != null && condition.Bodies.Count > 0)
-            {
-                condition.Bodies = condition.Bodies.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Bodies != null && condition.Bodies.Count > 0)
-                {
-                    topics = topics.Where(x => condition.Bodies.Any(y => x.Body.Contains(y)));
-                }
-            }
-
-            // Search conditions which are based on roles.
-
-            if (identity?.Role == UserRole.Admin)
-            {
-                // Statuses have been defined.
-                if (condition.Statuses != null && condition.Statuses.Count > 0)
-                {
-                    condition.Statuses =
-                        condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x)).ToList();
-                    if (condition.Statuses.Count > 0)
-                        topics = topics.Where(x => condition.Statuses.Contains(x.Status));
-                }
-            }
-
-            #endregion
-
-            // Sort by properties.
-            if (condition.Sort != null)
-                topics =
-                    _databaseFunction.Sort(topics, condition.Sort.Direction,
-                        condition.Sort.Property);
-            else
-                topics = _databaseFunction.Sort(topics, SortDirection.Decending,
-                    TopicSort.Title);
-
-            // Result initialization.
-            var result = new SearchResult<IList<Topic>>();
-            result.Total = await topics.CountAsync();
-            result.Records = await _databaseFunction.Paginate(topics, condition.Pagination).ToListAsync();
-
-            return Ok(result);
+            var loadTopicsResult = await _topicService.SearchTopicsAsync(condition, CancellationToken.None);
+            return Ok(loadTopicsResult);
         }
 
         #endregion

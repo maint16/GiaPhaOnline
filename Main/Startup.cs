@@ -17,12 +17,14 @@ using Main.Constants;
 using Main.Extensions;
 using Main.Hubs;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Captcha;
 using Main.Models.ExternalAuthentication;
 using Main.Models.PushNotification;
 using Main.Services;
+using Main.Services.Businesses;
 using Main.Services.RealTime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -325,6 +327,11 @@ namespace Main
             // Requirement handler.
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
+
+            services.AddScoped<ITopicService, TopicService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryGroupService, CategoryGroupService>();
+            services.AddScoped<ITopicReportService, TopicReportService>();
 
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache")
