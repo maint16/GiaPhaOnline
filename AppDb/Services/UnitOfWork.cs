@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
@@ -86,9 +87,9 @@ namespace AppDb.Services
         ///     Save changes into database asynchronously.
         /// </summary>
         /// <returns></returns>
-        public async Task<int> CommitAsync()
+        public async Task<int> CommitAsync(CancellationToken cancellationToken = default (CancellationToken))
         {
-            return await _dbContext.SaveChangesAsync();
+            return await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>

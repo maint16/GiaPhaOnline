@@ -13,27 +13,27 @@ namespace Main.ViewModels.CategoryGroup
         /// <summary>
         /// List of category group id
         /// </summary>
-        public List<int> Ids { get; set; }
+        public HashSet<int> Ids { get; set; }
 
         /// <summary>
         /// List of creator id
         /// </summary>
-        public List<int> CreatorIds { get; set; }
+        public HashSet<int> CreatorIds { get; set; }
 
         /// <summary>
         /// List of category group name
         /// </summary>
-        public List<string> Names { get; set; }
+        public HashSet<string> Names { get; set; }
 
         /// <summary>
         /// List of category group description
         /// </summary>
-        public List<string> Descriptions { get; set; }
+        public HashSet<string> Descriptions { get; set; }
 
         /// <summary>
         /// List of category group status
         /// </summary>
-        public List<ItemStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
 
         /// <summary>
         /// Pagination

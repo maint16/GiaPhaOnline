@@ -42,3 +42,5 @@
 /micro-services/RealTimeMicroService/bin
 /Main/Main.csproj.user
 /Main/Main.csproj.user
+/micro-services/authentication-service/AuthenticationMicroService/obj
+/micro-services/authentication-service/AuthenticationMicroService/bin

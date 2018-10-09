@@ -345,6 +345,7 @@ namespace Main.Controllers
         /// <param name="id">Id of user. 0 for the request sender profile.</param>
         /// <returns></returns>
         [HttpGet("personal-profile/{id}")]
+        [HttpGet("{id}")]
         [ByPassAuthorization]
         public async Task<IActionResult> FindProfile([FromRoute] int? id)
         {

@@ -14,37 +14,37 @@ namespace Main.ViewModels.Reply
         /// <summary>
         /// List of reply id
         /// </summary>
-        public List<int> Ids { get; set; }
+        public HashSet<int> Ids { get; set; }
 
         /// <summary>
         /// List of topic id
         /// </summary>
-        public List<int> TopicIds { get; set; }
+        public HashSet<int> TopicIds { get; set; }
 
         /// <summary>
         /// List of category id
         /// </summary>
-        public List<int> CategoryIds { get; set; }
+        public HashSet<int> CategoryIds { get; set; }
 
         /// <summary>
         /// List of category group id
         /// </summary>
-        public List<int> CategoryGroupIds { get; set; }
+        public HashSet<int> CategoryGroupIds { get; set; }
 
         /// <summary>
         /// List of owner id
         /// </summary>
-        public List<int> OwnerIds { get; set; }
+        public HashSet<int> OwnerIds { get; set; }
 
         /// <summary>
         /// List of reply content
         /// </summary>
-        public List<string> Contents { get; set; }
+        public HashSet<string> Contents { get; set; }
 
         /// <summary>
         /// List of category status
         /// </summary>
-        public List<ItemStatus> Statuses { get; set; }
+        public HashSet<ItemStatus> Statuses { get; set; }
 
         /// <summary>
         /// Pagination
