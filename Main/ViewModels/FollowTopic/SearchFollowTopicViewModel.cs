@@ -13,17 +13,17 @@ namespace Main.ViewModels.FollowTopic
         /// <summary>
         /// List of follower id
         /// </summary>
-        public List<int> FollowerIds { get; set; }
+        public HashSet<int> FollowerIds { get; set; }
 
         /// <summary>
         /// List of topic id
         /// </summary>
-        public List<int> TopicIds { get; set; }
+        public HashSet<int> TopicIds { get; set; }
 
         /// <summary>
         /// List of follow category status
         /// </summary>
-        public List<FollowStatus> Statuses { get; set; }
+        public HashSet<FollowStatus> Statuses { get; set; }
 
         /// <summary>
         /// Created date.

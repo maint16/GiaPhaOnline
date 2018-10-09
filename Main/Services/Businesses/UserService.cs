@@ -346,17 +346,14 @@ namespace Main.Services.Businesses
 
             // Get requester profile.
             var profile = _identityService.GetProfile(_httpContext);
-
-            // Get all users
-            var accounts = _unitOfWork.Accounts.Search();
-
+            
             // Id have been defined.
             var ids = condition.Ids;
             if (ids != null && ids.Count > 0)
             {
                 ids = ids.Where(x => x > 0).ToHashSet();
                 if (ids != null && ids.Count > 0)
-                    accounts = accounts.Where(x => condition.Ids.Contains(x.Id));
+                    users = users.Where(x => condition.Ids.Contains(x.Id));
             }
 
             // Email have been defined.
@@ -365,7 +362,7 @@ namespace Main.Services.Businesses
             {
                 emails = emails.Where(x => !string.IsNullOrEmpty(x)).ToHashSet();
                 if (emails != null && emails.Count > 0)
-                    accounts = accounts.Where(x => condition.Emails.Any(y => x.Email.Contains(y)));
+                    users = users.Where(x => condition.Emails.Any(y => x.Email.Contains(y)));
             }
 
             // Search conditions which are based on roles.
@@ -379,7 +376,7 @@ namespace Main.Services.Businesses
                     statuses =
                         statuses.Where(x => Enum.IsDefined(typeof(UserStatus), x)).ToHashSet();
                     if (statuses.Count > 0)
-                        accounts = accounts.Where(x => condition.Statuses.Contains(x.Status));
+                        users = users.Where(x => condition.Statuses.Contains(x.Status));
                 }
 
                 // Roles have been defined.
@@ -389,7 +386,7 @@ namespace Main.Services.Businesses
                     roles =
                        roles.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();
                     if (roles.Count > 0)
-                        accounts = accounts.Where(x => roles.Contains(x.Role));
+                        users = users.Where(x => roles.Contains(x.Role));
                 }
             }
             return users;
