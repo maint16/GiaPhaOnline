@@ -332,6 +332,8 @@ namespace Main
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICategoryGroupService, CategoryGroupService>();
             services.AddScoped<ITopicReportService, TopicReportService>();
+            services.AddScoped<IReplyService, ReplyService>();
+
 
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache")
