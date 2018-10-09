@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
-using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
 using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
-using AppModel.Models;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
@@ -34,9 +30,7 @@ using Microsoft.Extensions.Options;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
-using SkiaSharp;
 using VgySdk.Interfaces;
-using VgySdk.Models;
 
 namespace Main.Controllers
 {
@@ -82,21 +76,18 @@ namespace Main.Controllers
             ILogger<UserController> logger,
             IVgyService vgyService,
             IValueCacheService<int, User> profileCacheService,
-            ICaptchaService captchaService, IRealTimeService realTimeService, IUserService userService) : base(unitOfWork, mapper, timeService,
+            ICaptchaService captchaService, IRealTimeService realTimeService, IUserService userService) : base(
+            unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _encryptionService = encryptionService;
             _jwtConfiguration = jwtConfigurationOptions.Value;
             _applicationSettings = applicationSettings.Value;
             _logger = logger;
-            _externalAuthenticationService = externalAuthenticationService;
             _unitOfWork = unitOfWork;
-            _databaseFunction = relationalDbService;
             _identityService = identityService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
-            _systemTimeService = systemTimeService;
-            _vgyService = vgyService;
             _profileCacheService = profileCacheService;
             _captchaService = captchaService;
             _realTimeService = realTimeService;
@@ -133,9 +124,10 @@ namespace Main.Controllers
             #endregion
 
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             var user = await _userService.LoginAsync(model);
 
@@ -145,7 +137,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Use specific conditions to login into Google authentication system.
+        ///     Use specific conditions to login into Google authentication system.
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
@@ -170,7 +162,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Use specific information to sign into system using facebook account.
+        ///     Use specific information to sign into system using facebook account.
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
@@ -217,13 +209,11 @@ namespace Main.Controllers
             loadUserCondition.Ids = new HashSet<int>();
 
             if (id == null || id < 1)
-            {
                 if (profile != null)
                     loadUserCondition.Ids.Add(profile.Id);
                 else
 
                     return NotFound();
-            }
             else
                 loadUserCondition.Ids.Add(id.Value);
 
@@ -260,9 +250,10 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             var basicRegisterResult = await _userService.BasicRegisterAsync(model);
 
@@ -272,7 +263,8 @@ namespace Main.Controllers
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
             if (emailTemplate != null)
             {
-                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> { basicRegisterResult.Email }, null, null,
+                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> {basicRegisterResult.Email}, null,
+                    null,
                     emailTemplate.Subject, emailTemplate.Content, emailTemplate.IsHtmlContent, CancellationToken.None);
                 backgroundTasks.Add(pSendMailTask);
             }
@@ -302,23 +294,26 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             // Submit password change request.
             var forgotPasswordResult = await _userService.RequestPasswordResetAsync(model);
-            
+
             #region Email broadcast
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ForgotPasswordRequest);
 
             if (emailTemplate != null)
             {
-                await _sendMailService.SendAsync(new HashSet<string> { forgotPasswordResult.Email }, null, null, emailTemplate.Subject,
+                await _sendMailService.SendAsync(new HashSet<string> {forgotPasswordResult.Email}, null, null,
+                    emailTemplate.Subject,
                     emailTemplate.Content, true, CancellationToken.None);
 
-                _logger.LogInformation($"Sent message to {forgotPasswordResult.Email} with subject {emailTemplate.Subject}");
+                _logger.LogInformation(
+                    $"Sent message to {forgotPasswordResult.Email} with subject {emailTemplate.Subject}");
             }
 
             #endregion
@@ -347,7 +342,7 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
 
             //#region Information search
 
@@ -405,7 +400,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Using information submitted by user to change account password.
+        ///     Using information submitted by user to change account password.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="info"></param>
@@ -439,7 +434,8 @@ namespace Main.Controllers
             {
                 // Check current password.
                 if (profile.Password != hashedCurrentPassword)
-                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.CurrentPasswordIsInvalid));
+                    return StatusCode(StatusCodes.Status403Forbidden,
+                        new ApiResponse(HttpMessages.CurrentPasswordIsInvalid));
 
                 profile.Password = _encryptionService.Md5Hash(info.Password);
             }
@@ -464,7 +460,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Change user status by searching for user id.
+        ///     Change user status by searching for user id.
         /// </summary>
         /// <param name="info"></param>
         /// <param name="id"></param>
@@ -478,7 +474,7 @@ namespace Main.Controllers
 
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
             if (profile.Id == id)
-                return StatusCode((int)HttpStatusCode.Forbidden,
+                return StatusCode((int) HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotChangeOwnProfileStatus));
 
             // Find user by using index.
@@ -497,7 +493,6 @@ namespace Main.Controllers
 
             // Status has been defined.
             if (info.Status != user.Status)
-            {
                 if (info.Status == UserStatus.Pending)
                 {
                     user.Status = UserStatus.Disabled;
@@ -508,8 +503,6 @@ namespace Main.Controllers
                     user.Status = info.Status;
                     bHasInformationChanged = true;
                 }
-
-            }
 
             //todo: Reason
 
@@ -523,7 +516,8 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditUserStatus, user, CancellationToken.None);
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditUserStatus, user,
+                CancellationToken.None);
 
             // Send push notification to all admin.
             var collapseKey = Guid.NewGuid().ToString("D");
@@ -533,11 +527,12 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = user;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
             #endregion
+
             return Ok();
         }
 
@@ -557,7 +552,7 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             var loadUsersResult = await _userService.SearchUsersAsync(condition);
             return Ok(loadUsersResult);
         }
@@ -637,7 +632,7 @@ namespace Main.Controllers
         //        }
 
         /// <summary>
-        ///  Request service to send another email to obtain new account activation code.
+        ///     Request service to send another email to obtain new account activation code.
         /// </summary>
         /// <returns></returns>
         [HttpPost("resend-activation-code")]
@@ -660,7 +655,8 @@ namespace Main.Controllers
             #region Search for account
 
             var accounts = _unitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Email.Equals(info.Email) && x.Status == UserStatus.Pending && x.Type == UserKind.Basic);
+            accounts = accounts.Where(x =>
+                x.Email.Equals(info.Email) && x.Status == UserStatus.Pending && x.Type == UserKind.Basic);
 
             // Find the first matched account.
             var account = await accounts.FirstOrDefaultAsync();
@@ -681,7 +677,9 @@ namespace Main.Controllers
             var token = await tokens.FirstOrDefaultAsync();
 
             if (token != null)
+            {
                 _unitOfWork.AccessTokens.Remove(token);
+            }
             else
             {
                 // Find current system time.
@@ -708,7 +706,8 @@ namespace Main.Controllers
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ResendAccountActivationCode);
 
             if (emailTemplate != null)
-                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+                await _sendMailService.SendAsync(new HashSet<string> {account.Email}, null, null, emailTemplate.Subject,
+                    emailTemplate.Content, false, CancellationToken.None);
 
             #endregion
 
@@ -716,7 +715,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Initialize account access token.
+        ///     Initialize account access token.
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
@@ -748,7 +747,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Initialize user claim.
+        ///     Initialize user claim.
         /// </summary>
         /// <param name="account"></param>
         /// <returns></returns>
@@ -787,22 +786,12 @@ namespace Main.Controllers
         ///     Logging instance.
         /// </summary>
         private readonly ILogger _logger;
-
-        /// <summary>
-        ///     Service which is for handling external authentication service.
-        /// </summary>
-        private readonly IExternalAuthenticationService _externalAuthenticationService;
-
+        
         /// <summary>
         ///     Instance for accessing database.
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
-
+        
         /// <summary>
         ///     Instance which is for accessing identity attached in request.
         /// </summary>
@@ -817,17 +806,7 @@ namespace Main.Controllers
         ///     Email cache service.
         /// </summary>
         private readonly IEmailCacheService _emailCacheService;
-
-        /// <summary>
-        ///     System time service
-        /// </summary>
-        private readonly ITimeService _systemTimeService;
-
-        /// <summary>
-        ///     Service which is for handling file upload to vgy.me hosting.
-        /// </summary>
-        private readonly IVgyService _vgyService;
-
+        
         /// <summary>
         ///     Service which is for handling profile caching.
         /// </summary>
@@ -841,7 +820,6 @@ namespace Main.Controllers
         private readonly IRealTimeService _realTimeService;
 
         private readonly IUserService _userService;
-
 
         #endregion
     }
