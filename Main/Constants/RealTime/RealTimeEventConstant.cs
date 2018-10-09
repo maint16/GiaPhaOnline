@@ -13,7 +13,7 @@
 
         public const string AddCategoryGroup = "event-add_category_group";
 
-        public const string EditCategoryGroup = "event-edit_category-group";
+        public const string EditCategoryGroup = "event-edit_category_group";
 
         // category
 
