@@ -1,5 +1,6 @@
 ﻿using AppDb.Models.Entities;
 using AutoMapper;
+using Main.ViewModels.Users;
 
 namespace Main.Models
 {
@@ -14,6 +15,7 @@ namespace Main.Models
         {
             // Post mapping.
             //CreateMap<AddPostViewModel, Post>();
+            CreateMap<LoginViewModel, LoginViewModel>();
         }
 
         #endregion

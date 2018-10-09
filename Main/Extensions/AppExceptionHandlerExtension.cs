@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using AppModel.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -34,6 +35,11 @@ namespace Main.Extensions
                         // Initialize response asynchronously.
                         var apiResponse = new ApiResponse(exceptionHandlerFeature.Error.Message);
                         var szApiResponse = JsonConvert.SerializeObject(apiResponse);
+                        if (exceptionHandlerFeature.Error is ApiException)
+                        {
+                            var apiException = exceptionHandlerFeature.Error as ApiException;
+                            context.Response.StatusCode = (int) apiException.Status;
+                        }
                         await context.Response.WriteAsync(szApiResponse).ConfigureAwait(false);
                     });
             });

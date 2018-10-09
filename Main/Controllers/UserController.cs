@@ -19,6 +19,7 @@ using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
+using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Jwt;
@@ -64,6 +65,7 @@ namespace Main.Controllers
         /// <param name="profileCacheService"></param>
         /// <param name="captchaService"></param>
         /// <param name="realTimeService"></param>
+        /// <param name="userService"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -80,7 +82,7 @@ namespace Main.Controllers
             ILogger<UserController> logger,
             IVgyService vgyService,
             IValueCacheService<int, User> profileCacheService,
-            ICaptchaService captchaService, IRealTimeService realTimeService) : base(unitOfWork, mapper, timeService,
+            ICaptchaService captchaService, IRealTimeService realTimeService, IUserService userService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _encryptionService = encryptionService;
@@ -98,6 +100,7 @@ namespace Main.Controllers
             _profileCacheService = profileCacheService;
             _captchaService = captchaService;
             _realTimeService = realTimeService;
+            _userService = userService;
         }
 
         #endregion
@@ -108,19 +111,19 @@ namespace Main.Controllers
         ///     Use specific condition to check whether account is available or not.
         ///     If account is valid for logging into system, access token will be provided.
         /// </summary>
-        /// <param name="parameters"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("basic-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel parameters)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             #region Parameters validation
 
             // Parameter hasn't been initialized.
-            if (parameters == null)
+            if (model == null)
             {
-                parameters = new LoginViewModel();
-                TryValidateModel(parameters);
+                model = new LoginViewModel();
+                TryValidateModel(model);
             }
 
             // Invalid modelstate.
@@ -129,53 +132,15 @@ namespace Main.Controllers
 
             #endregion
 
-#if !DISABLE_CAPTCHA_VALIDATION
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(parameters.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
                 return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
-#endif
 
-#if !ALLOW_ANONYMOUS
-
-            #region Search account
-
-            // Hash the password first.
-            var hashedPassword = _encryptionService.Md5Hash(parameters.Password);
-
-            // Search for account which is active and information is correct.
-            var accounts = UnitOfWork.Accounts.Search();
-            accounts = accounts.Where(x =>
-                x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == UserKind.Basic);
-
-            // Find the first account in database.
-            var account = await accounts.FirstOrDefaultAsync();
-            if (account == null)
-                return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
-
-            #endregion
-
-            #region Account state validation
-
-            switch (account.Status)
-            {
-                case UserStatus.Pending:
-                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
-                case UserStatus.Disabled:
-                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.AccountIsDisabled));
-            }
-
-            #endregion
-
-#else
-            var account = new Account();
-            account.Email = "redplane_dt@yahoo.com.vn";
-            account.Nickname = "Linh Nguyen";
-#endif
+            var user = await _userService.LoginAsync(model);
 
             // Initialize jwt token.
-            var jwt = InitializeAccountToken(account);
+            var jwt = InitializeAccountToken(user);
             return Ok(jwt);
         }
 
@@ -188,8 +153,6 @@ namespace Main.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
         {
-            #region Parameters validation
-
             if (info == null)
             {
                 info = new GoogleLoginViewModel();
@@ -199,63 +162,10 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            #endregion
-
-            #region Authentication request
-            
-            // Get the profile information.
-            var profile = await _externalAuthenticationService.GetGoogleBasicProfileAsync(info.IdToken);
-            if (profile == null)
-                return StatusCode((int)HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
-
-            #endregion
-
-            #region Account availability check
-
-            // Find accounts by searching for email address.
-            var accounts = UnitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Email.Equals(profile.Email));
-
-            // Get the first matched account.
-            var account = await accounts.FirstOrDefaultAsync();
-
-            // Account is available in the system. Check its status.
-            if (account != null)
-            {
-                // Prevent account from logging into system because it is pending.
-                if (account.Status == UserStatus.Pending)
-                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
-
-                // Prevent account from logging into system because it is deleted.
-                if (account.Status == UserStatus.Disabled)
-                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
-            }
-            else
-            {
-                // Initialize account instance.
-                account = new User();
-
-#if USE_IN_MEMORY
-                account.Id = UnitOfWork.Accounts.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
-                                 .FirstOrDefault() + 1;
-#endif
-                account.Email = profile.Email;
-                account.Nickname = profile.Name;
-                account.Role = UserRole.User;
-                account.Photo = profile.Picture;
-                account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                account.Type = UserKind.Google;
-                account.Status = UserStatus.Available;
-
-                // Add account to database.
-                UnitOfWork.Accounts.Insert(account);
-                await UnitOfWork.CommitAsync();
-            }
-
-            #endregion
+            var user = await _userService.GoogleLoginAsync(info);
 
             // Initialize access token.
-            var jwt = InitializeAccountToken(account);
+            var jwt = InitializeAccountToken(user);
             return Ok(jwt);
         }
 
@@ -282,61 +192,12 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Authentication request
-
-            // Find token information.
-            var tokenInfo = await _externalAuthenticationService.GetFacebookTokenInfoAsync(info.AccessToken);
-            if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.AccessToken))
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.FacebookCodeIsInvalid));
-
-            // Get the profile information.
-            var profile = await _externalAuthenticationService.GetFacebookBasicProfileAsync(tokenInfo.AccessToken);
-            if (profile == null)
-                return StatusCode((int)HttpStatusCode.Forbidden, HttpMessages.GoogleCodeIsInvalid);
-
-            #endregion
-
-            #region Account availability check
-
-            // Find accounts by searching for email address.
-            var accounts = UnitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Email.Equals(profile.Email));
-
-            // Get the first matched account.
-            var account = await accounts.FirstOrDefaultAsync();
-
-            // Account is available in the system. Check its status.
-            if (account != null)
-            {
-                // Prevent account from logging into system because it is pending.
-                if (account.Status == UserStatus.Pending)
-                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
-
-                // Prevent account from logging into system because it is deleted.
-                if (account.Status == UserStatus.Disabled)
-                    return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.AccountIsPending));
-            }
-            else
-            {
-                // Initialize account instance.
-                account = new User();
-                account.Email = profile.Email;
-                account.Nickname = profile.FullName;
-                account.Role = UserRole.User;
-                account.JoinedTime = TimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                account.Type = UserKind.Facebook;
-
-                // Add account to database.
-                UnitOfWork.Accounts.Insert(account);
-                await UnitOfWork.CommitAsync();
-            }
-
-            #endregion
+            // Do facebook login.
+            var user = await _userService.FacebookLoginAsync(info);
 
             // Initialize access token.
-            var jwt = InitializeAccountToken(account);
+            var jwt = InitializeAccountToken(user);
             return Ok(jwt);
-
         }
 
         /// <summary>
@@ -352,28 +213,31 @@ namespace Main.Controllers
             // Get requester identity.
             var profile = IdentityService.GetProfile(HttpContext);
 
-            // Search for accounts.
-            var accounts = UnitOfWork.Accounts.Search();
+            var loadUserCondition = new SearchUserViewModel();
+            loadUserCondition.Ids = new HashSet<int>();
 
             if (id == null || id < 1)
             {
                 if (profile != null)
-                    accounts = accounts.Where(x => x.Id == profile.Id);
+                    loadUserCondition.Ids.Add(profile.Id);
                 else
-                    
+
                     return NotFound();
             }
             else
-                accounts = accounts.Where(x => x.Id == id);
+                loadUserCondition.Ids.Add(id.Value);
 
             // Only search for active account.
             // Admin can see deactivated account.
             if (profile != null && profile.Role != UserRole.Admin)
-                accounts = accounts.Where(x => x.Status == UserStatus.Available);
+            {
+                loadUserCondition.Statuses = new HashSet<UserStatus>();
+                loadUserCondition.Statuses.Add(UserStatus.Available);
+            }
 
             // Find the first account in system.
-            var account = await accounts.FirstOrDefaultAsync();
-            return Ok(account);
+            var user = await _userService.SearchUserAsync(loadUserCondition);
+            return Ok(user);
         }
 
         /// <summary>
@@ -382,81 +246,25 @@ namespace Main.Controllers
         /// <returns></returns>
         [Route("basic-register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterAccountViewModel parameters)
+        public async Task<IActionResult> Register([FromBody] RegisterAccountViewModel model)
         {
-            #region Parameters validation
-
             // Parameters haven't been initialized. Initialize 'em.
-            if (parameters == null)
+            if (model == null)
             {
-                parameters = new RegisterAccountViewModel();
-                TryValidateModel(parameters);
+                model = new RegisterAccountViewModel();
+                TryValidateModel(model);
             }
 
             // Parameters are invalid. Send errors back to client.
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            #endregion
-
-#if !DISABLE_CAPTCHA_VALIDATION
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(parameters.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
                 return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
-#endif
 
-            #region Search for duplicate accounts.
-
-            // Search for duplicated accounts.
-            var accounts = UnitOfWork.Accounts.Search();
-            accounts = accounts.Where(
-                x => x.Email.Equals(parameters.Email, StringComparison.InvariantCultureIgnoreCase));
-
-            // Find the first matched account.
-            var account = await accounts.FirstOrDefaultAsync();
-
-            // Account exists in system.
-            if (account != null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.Conflict;
-                return Json(new ApiResponse(HttpMessages.AccountIsInUse));
-            }
-
-            #endregion
-
-            #region Add user & user activation code
-
-            using (var transactionScope = UnitOfWork.BeginTransactionScope())
-            {
-                // Initiate account with specific information.
-                account = new User();
-                account.Email = parameters.Email;
-                account.Password = _encryptionService.Md5Hash(parameters.Password);
-                account.Nickname = parameters.Nickname;
-
-                // Add account into database.
-                UnitOfWork.Accounts.Insert(account);
-
-                var activationToken = new ActivationToken();
-                activationToken.OwnerId = account.Id;
-                activationToken.Code = Guid.NewGuid().ToString("D");
-                activationToken.IssuedTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                activationToken.ExpiredTime = activationToken.IssuedTime + 3600;
-                UnitOfWork.ActivationTokens.Insert(activationToken);
-
-                // Get available groups that user can take part in.
-                
-
-                // Commit the transaction.
-                _unitOfWork.Commit();
-                transactionScope.Commit();
-            }
-             
-            #endregion
-
-
-            #region Background tasks execution
+            var basicRegisterResult = await _userService.BasicRegisterAsync(model);
 
             // Initialize background tasks.
             var backgroundTasks = new List<Task>();
@@ -464,15 +272,13 @@ namespace Main.Controllers
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
             if (emailTemplate != null)
             {
-                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> {account.Email}, null, null,
+                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> { basicRegisterResult.Email }, null, null,
                     emailTemplate.Subject, emailTemplate.Content, emailTemplate.IsHtmlContent, CancellationToken.None);
                 backgroundTasks.Add(pSendMailTask);
             }
 
             // TODO: Implement notification service which notifies administrators about the registration.
-            
-            //var pSendRealTimeNotificationTask = _pusherService.SendAsync()
-            #endregion
+
 
             return Ok();
         }
@@ -480,81 +286,39 @@ namespace Main.Controllers
         /// <summary>
         ///     Request service to send an instruction email to help user to reset his/her password.
         /// </summary>
-        /// <param name="parameter"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [Route("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel parameter)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
-            #region Model validation
-
             // Parameter hasn't been initialized.
-            if (parameter == null)
+            if (model == null)
             {
-                parameter = new ForgotPasswordViewModel();
-                TryValidateModel(parameter);
+                model = new ForgotPasswordViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            #endregion
-
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(parameter.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
                 return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
-            #region Email search
-
-            // Initiate search conditions.
-            //            var conditions = new RequestPasswordViewModel();
-            //            conditions.Email = new TextSearch(TextSearchMode.EndsWithIgnoreCase, parameter.Email);
-            //            conditions.Statuses = new[] { UserStatus.Available };
-
-            // Search user in database.
-            var accounts = UnitOfWork.Accounts.Search();
-            accounts = accounts.Where(x =>
-                x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Status == UserStatus.Available);
-
-            // Find the first matched account.
-            var account = await accounts.FirstOrDefaultAsync();
-
-            // User is not found.
-            if (account == null)
-                return NotFound(HttpMessages.AccountIsNotFound);
-
-            #endregion
-
-            #region Information initialization
-
-            // Find current system time.
-            var systemTime = DateTime.UtcNow;
-            var expiration = systemTime.AddSeconds(_applicationSettings.PasswordResetTokenLifeTime);
-
-            // Initiate token.
-            var token = new AccessToken();
-            token.OwnerId = account.Id;
-            //token.Type = TokenType.AccountReactiveCode;
-            token.Code = Guid.NewGuid().ToString("D");
-            token.IssuedTime = TimeService.DateTimeUtcToUnix(systemTime);
-            token.ExpiredTime = TimeService.DateTimeUtcToUnix(expiration);
-
-            // Save token into database.
-            UnitOfWork.AccessTokens.Insert(token);
-
-            #endregion
-
+            // Submit password change request.
+            var forgotPasswordResult = await _userService.RequestPasswordResetAsync(model);
+            
             #region Email broadcast
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ForgotPasswordRequest);
 
             if (emailTemplate != null)
             {
-                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject,
+                await _sendMailService.SendAsync(new HashSet<string> { forgotPasswordResult.Email }, null, null, emailTemplate.Subject,
                     emailTemplate.Content, true, CancellationToken.None);
 
-                _logger.LogInformation($"Sent message to {account.Email} with subject {emailTemplate.Subject}");
+                _logger.LogInformation($"Sent message to {forgotPasswordResult.Email} with subject {emailTemplate.Subject}");
             }
 
             #endregion
@@ -575,8 +339,6 @@ namespace Main.Controllers
                 ErrorMessageResourceName = "InformationIsRequired")] string code,
             [FromBody] SubmitPasswordResetViewModel parameter)
         {
-            #region Model validation
-
             if (parameter == null)
             {
                 parameter = new SubmitPasswordResetViewModel();
@@ -585,8 +347,7 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            #endregion
+            
 
             //#region Information search
 
@@ -779,7 +540,7 @@ namespace Main.Controllers
             #endregion
             return Ok();
         }
-        
+
         /// <summary>
         ///     Load accounts by using specific conditions.
         /// </summary>
@@ -788,8 +549,6 @@ namespace Main.Controllers
         [HttpPost("search")]
         public async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
         {
-            #region Parameters validation
-
             if (condition == null)
             {
                 condition = new SearchUserViewModel();
@@ -798,77 +557,9 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            #endregion
-
-            // Find identity in request.
-            var identity = _identityService.GetProfile(HttpContext);
-
-            #region Search for information
-
-            // Get all users
-            var accounts = _unitOfWork.Accounts.Search();
-
-            // Id have been defined.
-            if (condition.Ids != null && condition.Ids.Count > 0)
-            {
-                condition.Ids = condition.Ids.Where(x => x > 0).ToList();
-                if (condition.Ids != null && condition.Ids.Count > 0)
-                {
-                    accounts = accounts.Where(x => condition.Ids.Contains(x.Id));
-                }
-            }
-
-            // Email have been defined.
-            if (condition.Emails != null && condition.Emails.Count > 0)
-            {
-                condition.Emails = condition.Emails.Where(x => !string.IsNullOrEmpty(x)).ToList();
-                if (condition.Emails != null && condition.Emails.Count > 0)
-                {
-                    accounts = accounts.Where(x => condition.Emails.Any(y => x.Email.Contains(y)));
-                }
-            }
-
-            // Search conditions which are based on roles.
-
-            if (identity?.Role == UserRole.Admin)
-            {
-                // Statuses have been defined.
-                if (condition.Statuses != null && condition.Statuses.Count > 0)
-                {
-                    condition.Statuses =
-                        condition.Statuses.Where(x => Enum.IsDefined(typeof(UserStatus), x)).ToList();
-                    if (condition.Statuses.Count > 0)
-                        accounts = accounts.Where(x => condition.Statuses.Contains(x.Status));
-                }
-
-                // Roles have been defined.
-                if (condition.Roles != null && condition.Roles.Count > 0)
-                {
-                    condition.Roles =
-                        condition.Roles.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToList();
-                    if (condition.Roles.Count > 0)
-                        accounts = accounts.Where(x => condition.Roles.Contains(x.Role));
-                }
-            }
-
-            #endregion
-
-            // Sort by properties.
-            if (condition.Sort != null)
-                accounts =
-                    _databaseFunction.Sort(accounts, condition.Sort.Direction,
-                        condition.Sort.Property);
-            else
-                accounts = _databaseFunction.Sort(accounts, SortDirection.Decending,
-                    AccountSort.JoinedTime);
-
-            // Result initialization.
-            var result = new SearchResult<IList<User>>();
-            result.Total = await accounts.CountAsync();
-            result.Records = await _databaseFunction.Paginate(accounts, condition.Pagination).ToListAsync();
-
-            return Ok(result);
+            
+            var loadUsersResult = await _userService.SearchUsersAsync(condition);
+            return Ok(loadUsersResult);
         }
 
         //        /// <summary>
@@ -1023,7 +714,7 @@ namespace Main.Controllers
 
             return Ok();
         }
-        
+
         /// <summary>
         /// Initialize account access token.
         /// </summary>
@@ -1072,7 +763,7 @@ namespace Main.Controllers
 
             return claims;
         }
-        
+
         #endregion
 
         #region Properties
@@ -1148,6 +839,8 @@ namespace Main.Controllers
         private readonly ICaptchaService _captchaService;
 
         private readonly IRealTimeService _realTimeService;
+
+        private readonly IUserService _userService;
 
 
         #endregion

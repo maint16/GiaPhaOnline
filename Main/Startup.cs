@@ -36,7 +36,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -93,7 +92,6 @@ namespace Main
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            
             // Add services DI to app.
             AddServices(services);
 
@@ -145,14 +143,15 @@ namespace Main
 
                 o.TokenValidationParameters = tokenValidationParameters;
 
-                o.Events = new JwtBearerEvents()
+                o.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        if (context.Request.Path.ToString().StartsWith("/HUB/", StringComparison.InvariantCultureIgnoreCase))
+                        if (context.Request.Path.ToString()
+                            .StartsWith("/HUB/", StringComparison.InvariantCultureIgnoreCase))
                             context.Token = context.Request.Query["access_token"];
                         return Task.CompletedTask;
-                    },
+                    }
                 };
             });
 
@@ -245,19 +244,16 @@ namespace Main
 
             // Enable cors.
             app.UseCors("AllowAll");
-            
+
             // Use signalr connection.
-            app.UseSignalR(x =>
-            {
-                x.MapHub<NotificationHub>("/hub/notification");
-            });
+            app.UseSignalR(x => { x.MapHub<NotificationHub>("/hub/notification"); });
 
             // Enable MVC features.
             app.UseMvc();
         }
 
         /// <summary>
-        /// Add dependency injection of services to app.
+        ///     Add dependency injection of services to app.
         /// </summary>
         private void AddServices(IServiceCollection services)
         {
@@ -333,16 +329,17 @@ namespace Main
             services.AddScoped<ICategoryGroupService, CategoryGroupService>();
             services.AddScoped<ITopicReportService, TopicReportService>();
             services.AddScoped<IReplyService, ReplyService>();
-
+            services.AddScoped<IUserService, UserService>();
 
             // Get email cache option.
-            var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache")
+            var emailCacheOption = (Dictionary<string, EmailCacheOption>) Configuration.GetSection("emailCache")
                 .Get(typeof(Dictionary<string, EmailCacheOption>));
             var emailCacheService = new EmailCacheService();
             emailCacheService.HostingEnvironment = HostingEnvironment;
             emailCacheService.ReadConfiguration(emailCacheOption);
             services.AddSingleton<IEmailCacheService>(emailCacheService);
         }
+
         #endregion
     }
 }
