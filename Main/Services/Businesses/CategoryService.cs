@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppDb.Services;
 using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AppModel.Exceptions;
@@ -18,29 +17,15 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
-using Shared.Services;
 
 namespace Main.Services.Businesses
 {
     public class CategoryService : ICategoryService
     {
-        #region Properties
-
-        private readonly IUnitOfWork _unitOfWork;
-
-        private readonly IRelationalDbService _relationalDbService;
-
-        private readonly ITimeService _timeService;
-
-        private readonly IIdentityService _identityService;
-        
-        private readonly HttpContext _httpContext;
-
-        #endregion
-
         #region Constructor
 
-        public CategoryService(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService, ITimeService timeService, IIdentityService identityService, IHttpContextAccessor httpContextAccessor)
+        public CategoryService(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
+            ITimeService timeService, IIdentityService identityService, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
@@ -54,12 +39,13 @@ namespace Main.Services.Businesses
         #region Methods
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<Category> AddCategoryAsync(AddCategoryViewModel model, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<Category> AddCategoryAsync(AddCategoryViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find category.
             var categories = _unitOfWork.Categories.Search();
@@ -71,7 +57,7 @@ namespace Main.Services.Businesses
                 throw new ApiException(HttpMessages.CategoryCannotConflict, HttpStatusCode.Conflict);
 
             #endregion
-            
+
             // Find identity from request.
             var profile = _identityService.GetProfile(_httpContext);
 
@@ -97,13 +83,13 @@ namespace Main.Services.Businesses
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public  virtual async Task<Category> EditCategoryAsync(int id, EditCategoryViewModel model,
+        public virtual async Task<Category> EditCategoryAsync(int id, EditCategoryViewModel model,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
@@ -118,10 +104,6 @@ namespace Main.Services.Businesses
             var category = await categories.FirstOrDefaultAsync(cancellationToken);
             if (category == null)
                 throw new ApiException(HttpMessages.CategoryNotFound, HttpStatusCode.NotFound);
-
-            #endregion
-
-            #region Update category information
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
@@ -166,12 +148,13 @@ namespace Main.Services.Businesses
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<SearchResult<IList<Category>>> SearchCategoriesAsync(SearchCategoryViewModel condition,
+        public virtual async Task<SearchResult<IList<Category>>> SearchCategoriesAsync(
+            SearchCategoryViewModel condition,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var categories = GetCategories(condition);
@@ -188,12 +171,13 @@ namespace Main.Services.Businesses
             // Result initialization.
             var loadCategoriesResult = new SearchResult<IList<Category>>();
             loadCategoriesResult.Total = await categories.CountAsync(cancellationToken);
-            loadCategoriesResult.Records = await _relationalDbService.Paginate(categories, condition.Pagination).ToListAsync(cancellationToken);
+            loadCategoriesResult.Records = await _relationalDbService.Paginate(categories, condition.Pagination)
+                .ToListAsync(cancellationToken);
             return loadCategoriesResult;
         }
 
         /// <summary>
-        /// Get categories using specific conditions.
+        ///     Get categories using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -268,7 +252,21 @@ namespace Main.Services.Businesses
 
             return categories;
         }
-        
+
+        #endregion
+
+        #region Properties
+
+        private readonly IUnitOfWork _unitOfWork;
+
+        private readonly IRelationalDbService _relationalDbService;
+
+        private readonly ITimeService _timeService;
+
+        private readonly IIdentityService _identityService;
+
+        private readonly HttpContext _httpContext;
+
         #endregion
     }
 }

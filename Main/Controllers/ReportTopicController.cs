@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
 using AppModel.Exceptions;
 using AutoMapper;
 using Main.Interfaces.Services;
 using Main.Services.Businesses;
-using Main.ViewModels.Reply;
 using Main.ViewModels.ReportTopic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
-using Shared.Models;
-using Shared.Resources;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,16 +17,6 @@ namespace Main.Controllers
     public class ReportTopicController : ApiBaseController
     {
         #region Properties
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
 
         private readonly ITopicReportService _topicReportService;
 
@@ -49,11 +30,10 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService, ITopicReportService topicReportService) : base(unitOfWork, mapper, timeService,
+            IIdentityService identityService, ITopicReportService topicReportService) : base(unitOfWork, mapper,
+            timeService,
             relationalDbService, identityService)
         {
-            _unitOfWork = unitOfWork;
-            _databaseFunction = relationalDbService;
             _topicReportService = topicReportService;
         }
 
@@ -77,19 +57,20 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             var topicReport = await _topicReportService.AddTopicReportAsync(model);
             return Ok(topicReport);
         }
 
         /// <summary>
-        /// Edit reply by using specific information.
+        ///     Edit reply by using specific information.
         /// </summary>
         /// <param name="topicId"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{topicId}")]
-        public async Task<IActionResult> EditTopicReport([FromRoute] int topicId, [FromBody] EditReportTopicViewModel model)
+        public async Task<IActionResult> EditTopicReport([FromRoute] int topicId,
+            [FromBody] EditReportTopicViewModel model)
         {
             if (model == null)
             {
@@ -99,7 +80,7 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             try
             {
                 var topicReport = await _topicReportService.EditTopicReportAsync(topicId, model);
