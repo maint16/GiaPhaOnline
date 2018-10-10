@@ -5,6 +5,7 @@ using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Exceptions;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -164,6 +165,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public async Task<IActionResult> LoadCategoryGroups([FromBody] SearchCategoryGroupViewModel condition)
         {
             #region Parameters validation

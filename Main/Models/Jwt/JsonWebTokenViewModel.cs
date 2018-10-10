@@ -7,7 +7,7 @@
         /// <summary>
         /// Access code which is used for accessing into system.
         /// </summary>
-        public string Code { get; set; }
+        public string AccessToken { get; set; }
 
         /// <summary>
         /// Life-time of 

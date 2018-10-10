@@ -66,19 +66,25 @@ namespace Main.Services.Businesses
             topics = topics.Where(x => x.Id == model.TopicId && x.Status == ItemStatus.Active);
 
             // Check whether topic exists or not.
-            var bIsTopicAvailable = await topics.AnyAsync();
-            if (!bIsTopicAvailable)
+            var topic = await topics.FirstOrDefaultAsync(cancellationToken);
+            if (topic == null)
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var identity = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile(_httpContext);
 
             // Reply intialization.
             var reply = new Reply();
-            reply.OwnerId = identity.Id;
-            reply.TopicId = model.TopicId;
-            reply.CategoryId = model.CategoryId;
-            reply.CategoryGroupId = model.CategoryGroupId;
+
+#if USE_IN_MEMORY
+            var replies = _unitOfWork.Replies.Search();
+            var iMaxReplyId = await replies.OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            reply.Id = iMaxReplyId + 1;
+#endif
+            reply.OwnerId = profile.Id;
+            reply.TopicId = topic.Id;
+            reply.CategoryId = topic.CategoryId;
+            reply.CategoryGroupId = topic.CategoryGroupId;
             reply.Content = model.Content;
             reply.Status = ItemStatus.Active;
             reply.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);

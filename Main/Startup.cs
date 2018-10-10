@@ -269,12 +269,10 @@ namespace Main
             services.AddDbContext<RelationalDatabaseContext>(
                 options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
 #elif USE_IN_MEMORY
-            services.AddOptions<DbSeedOption>();
             services.AddDbContext<InMemoryRelationalDbContext>(
                 options => options.UseInMemoryDatabase("iConfess")
                     .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
-
-            services.AddMockingRecords(HostingEnvironment);
+            
             var bDbCreated = false;
             services.AddScoped<DbContext>(context =>
             {

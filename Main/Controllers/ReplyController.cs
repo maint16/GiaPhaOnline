@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppModel.Exceptions;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.Businesses;
@@ -33,7 +34,7 @@ namespace Main.Controllers
             IIdentityService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger logger, IReplyService replyService) : base(unitOfWork, mapper, timeService,
+            ILogger<ReplyController> logger, IReplyService replyService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _sendMailService = sendMailService;
@@ -153,6 +154,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public async Task<IActionResult> LoadReplies([FromBody] SearchReplyViewModel condition)
         {
             #region Parameters validation

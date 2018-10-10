@@ -23,7 +23,7 @@ namespace Main.Migrations
 
             modelBuilder.Entity("AppDb.Models.Entities.AccessToken", b =>
                 {
-                    b.Property<string>("Code");
+                    b.Property<string>("AccessToken");
 
                     b.Property<int>("OwnerId");
 
@@ -31,7 +31,7 @@ namespace Main.Migrations
 
                     b.Property<double>("IssuedTime");
 
-                    b.HasKey("Code", "OwnerId");
+                    b.HasKey("AccessToken", "OwnerId");
 
                     b.HasIndex("OwnerId");
 
@@ -40,7 +40,7 @@ namespace Main.Migrations
 
             modelBuilder.Entity("AppDb.Models.Entities.ActivationToken", b =>
                 {
-                    b.Property<string>("Code");
+                    b.Property<string>("AccessToken");
 
                     b.Property<int>("OwnerId");
 
@@ -48,7 +48,7 @@ namespace Main.Migrations
 
                     b.Property<double>("IssuedTime");
 
-                    b.HasKey("Code", "OwnerId");
+                    b.HasKey("AccessToken", "OwnerId");
 
                     b.HasIndex("OwnerId")
                         .IsUnique();

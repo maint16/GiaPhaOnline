@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Shared.Models;
 using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json.Serialization;
 
 namespace Main.Extensions
 {
@@ -28,17 +29,19 @@ namespace Main.Extensions
                         if (exceptionHandlerFeature == null || exceptionHandlerFeature.Error == null)
                             return;
 
-                        // Current environment is not development.
-                        if (!env.IsDevelopment())
-                            return;
-
                         // Initialize response asynchronously.
                         var apiResponse = new ApiResponse(exceptionHandlerFeature.Error.Message);
-                        var szApiResponse = JsonConvert.SerializeObject(apiResponse);
+                        var contractResolver = new DefaultContractResolver();
+                        contractResolver.NamingStrategy = new CamelCaseNamingStrategy();
+
+                        var jsonSerializerSettings = new JsonSerializerSettings();
+                        jsonSerializerSettings.ContractResolver = contractResolver;
+
+                        var szApiResponse = JsonConvert.SerializeObject(apiResponse, jsonSerializerSettings);
                         if (exceptionHandlerFeature.Error is ApiException)
                         {
                             var apiException = exceptionHandlerFeature.Error as ApiException;
-                            context.Response.StatusCode = (int) apiException.Status;
+                            context.Response.StatusCode = (int)apiException.Status;
                         }
                         await context.Response.WriteAsync(szApiResponse).ConfigureAwait(false);
                     });

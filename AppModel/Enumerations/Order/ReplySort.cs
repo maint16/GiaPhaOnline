@@ -2,6 +2,8 @@
 {
     public enum ReplySort
     {
-        Id
+        Id,
+        CreatedTime,
+        LastModifiedTime
     }
 }

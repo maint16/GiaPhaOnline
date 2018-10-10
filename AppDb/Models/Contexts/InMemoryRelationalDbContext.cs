@@ -12,11 +12,6 @@ namespace AppDb.Models.Contexts
 {
     public class InMemoryRelationalDbContext : RelationalDbContext
     {
-        #region Properties
-
-        private readonly DbSeedOption _dbSeedOption;
-
-        #endregion
 
         #region Constructor
 
@@ -24,10 +19,8 @@ namespace AppDb.Models.Contexts
         /// Initialize in-memory relational database context with injectors.
         /// </summary>
         /// <param name="dbContextOptions"></param>
-        /// <param name="dbSeedOptions"></param>
-        public InMemoryRelationalDbContext(DbContextOptions dbContextOptions, DbSeedOption dbSeedOptions) : base(dbContextOptions)
+        public InMemoryRelationalDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
-            _dbSeedOption = dbSeedOptions;
         }
 
         #endregion
@@ -76,9 +69,11 @@ namespace AppDb.Models.Contexts
         private void AddUsers(ModelBuilder modelBuilder)
         {
 
+            // Password: abcde12345-
             var users = new List<User>();
-            users.Add(new User(1, "admin@gmail.com", "Admin", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Basic, UserStatus.Available, UserRole.Admin, "https://via.placeholder.com/512x512", "Hello admin", 0, null));
-            users.Add(new User(2, "user@gmail.com", "Admin", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Basic, UserStatus.Available, UserRole.User, "https://via.placeholder.com/512x512", "Hello user", 0, null));
+            users.Add(new User(1, "admin@gmail.com", "Linh Nguyen", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Basic, UserStatus.Available, UserRole.Admin, "https://via.placeholder.com/512x512", "Hello admin", 0, null));
+            users.Add(new User(2, "user@gmail.com", "Linh Tran", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Basic, UserStatus.Available, UserRole.User, "https://via.placeholder.com/512x512", "Hello user", 0, null));
+            users.Add(new User(3, "lightalakanzam@gmail.com", "Admin", "5773961b8fb0e85fa14aec3681647c7d", UserKind.Google, UserStatus.Available, UserRole.User, "https://via.placeholder.com/512x512", "Hello user", 0, null));
 
             modelBuilder.Entity<User>()
                 .HasData(users.ToArray());
@@ -118,8 +113,8 @@ namespace AppDb.Models.Contexts
         private void AddTopics(ModelBuilder modelBuilder)
         {
             var topics = new List<Topic>();
-            topics.Add(new Topic(1, 1, 1, 1, "Có nên mua mibook air ko các bác", "Mấy con 12.5 13.3 của nó ngon ko", 0, 0, 0, null));
-            topics.Add(new Topic(2, 2, 1, 1, "Mifit ray sale còn 10$ ", "Mua 10 cái còn 35$", 0, 0, 0, null));
+            topics.Add(new Topic(1, 1, 1, 1, "Có nên mua mibook air ko các bác", "Mấy con 12.5 13.3 của nó ngon ko", 0, ItemStatus.Active, 0, null));
+            topics.Add(new Topic(2, 2, 1, 1, "Mifit ray sale còn 10$ ", "Mua 10 cái còn 35$", 0, ItemStatus.Active, 0, null));
 
             modelBuilder.Entity<Topic>().HasData(topics.ToArray());
         }
@@ -131,8 +126,8 @@ namespace AppDb.Models.Contexts
         private void AddReplies(ModelBuilder modelBuilder)
         {
             var replies = new List<Reply>();
-            replies.Add(new Reply(1, 1, 1, 1, 1, "hôm trước ra mi store thấy rồi, build khá tốt đó, văn phòng web này nọ thì đượ", 0, 0, null));
-            replies.Add(new Reply(2, 2, 1, 1, 1, "cho em ké với thím", 0, 0, null));
+            replies.Add(new Reply(1, 1, 1, 1, 1, "hôm trước ra mi store thấy rồi, build khá tốt đó, văn phòng web này nọ thì đượ", ItemStatus.Active, 0, null));
+            replies.Add(new Reply(2, 2, 1, 1, 1, "cho em ké với thím", ItemStatus.Disabled, 0, null));
 
             modelBuilder.Entity<Reply>().HasData(replies.ToArray());
         }

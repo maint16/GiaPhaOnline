@@ -34,22 +34,21 @@ namespace Main.Services.Businesses
     {
         #region Constructors
 
-        public UserService(IEncryptionService encryptionService, IIdentityService identityService,
+        public UserService(IEncryptionService encryptionService,
             IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor,
             IExternalAuthenticationService externalAuthenticationService,
             IValueCacheService<int, User> profileCacheService,
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IVgyService vgyService,
-            ApplicationSetting applicationSettings,
+            IOptions<ApplicationSetting> applicationSettingOptions,
             IOptions<JwtConfiguration> jwtConfigurationOptions)
         {
             _encryptionService = encryptionService;
             _unitOfWork = unitOfWork;
             _externalAuthenticationService = externalAuthenticationService;
             _timeService = timeService;
-            _applicationSettings = applicationSettings;
+            _applicationSettings = applicationSettingOptions.Value;
             _relationalDbService = relationalDbService;
             _jwtConfiguration = jwtConfigurationOptions.Value;
             _profileCacheService = profileCacheService;
@@ -605,7 +604,7 @@ namespace Main.Services.Businesses
 
             // Initialize jwt response.
             var jwt = new JsonWebTokenViewModel();
-            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+            jwt.AccessToken = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
             jwt.LifeTime = _jwtConfiguration.LifeTime;
             jwt.Expiration = _timeService.DateTimeUtcToUnix(jwtExpiration);
 
