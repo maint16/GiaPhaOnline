@@ -106,6 +106,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ACTIVATION_CODE_NOT_FOUND.
+        /// </summary>
+        public static string ActivationCodeNotFound {
+            get {
+                return ResourceManager.GetString("ActivationCodeNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CANNOT_ACCESS_TO_PRIVATE_CHANNEL.
         /// </summary>
         public static string CannotAccessToPrivateChannel {

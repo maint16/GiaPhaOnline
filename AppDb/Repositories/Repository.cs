@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using AppDb.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +17,7 @@ namespace AppDb.Repositories
         ///     Database set.
         /// </summary>
         private readonly DbSet<T> _dbSet;
-        
+
         #endregion
 
         #region Constructors
@@ -32,12 +36,33 @@ namespace AppDb.Repositories
         #region Methods
 
         /// <summary>
-        ///     Search all data from the specific table.
+        ///    <inheritdoc />
         /// </summary>
         /// <returns></returns>
         public IQueryable<T> Search()
         {
             return _dbSet;
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public IQueryable<T> Search(Expression<Func<T, bool>> condition)
+        {
+            return _dbSet.Where(condition);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _dbSet.FirstOrDefaultAsync(condition, cancellationToken);
         }
 
         /// <summary>

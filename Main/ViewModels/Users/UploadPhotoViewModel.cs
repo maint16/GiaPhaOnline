@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace Main.ViewModels.Users
 {
-    public class ResendActivationCodeViewModel
+    public class UploadPhotoViewModel
     {
         #region Properties
 
         /// <summary>
-        /// email of account
+        /// User photo
         /// </summary>
         [Required]
-        public string Email { get; set; }
+        public FormFile Photo { get; set; }
 
         #endregion
     }

@@ -134,6 +134,9 @@
   <data name="AccountIsPending" xml:space="preserve">
     <value>ACCOUNT_IS_PENDING</value>
   </data>
+  <data name="ActivationCodeNotFound" xml:space="preserve">
+    <value>ACTIVATION_CODE_NOT_FOUND</value>
+  </data>
   <data name="CannotAccessToPrivateChannel" xml:space="preserve">
     <value>CANNOT_ACCESS_TO_PRIVATE_CHANNEL</value>
   </data>

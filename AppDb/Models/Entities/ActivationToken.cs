@@ -37,5 +37,21 @@ namespace AppDb.Models.Entities
         public virtual User Owner { get; set; }
 
         #endregion
+
+        #region Constructors
+
+        public ActivationToken()
+        {
+        }
+
+        public ActivationToken(string code, int ownerId, double issuedTime, double expiredTime)
+        {
+            Code = code;
+            OwnerId = ownerId;
+            IssuedTime = issuedTime;
+            ExpiredTime = expiredTime;
+        }
+
+        #endregion
     }
 }

@@ -1,13 +1,11 @@
 ﻿namespace Main.Models
 {
-    public class ForgotPasswordResultModel
+    public class SubmitPasswordResetResultModel
     {
         #region Properties
 
-        public string Email { get; set; }
-        
         public string Token { get; set; }
-
+        
         #endregion
     }
 }

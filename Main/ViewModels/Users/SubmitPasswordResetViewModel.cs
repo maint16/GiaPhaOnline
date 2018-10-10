@@ -18,6 +18,12 @@ namespace Main.ViewModels.Users
         [Required]
         public string Password { get; set; }
 
+        /// <summary>
+        /// Activation code.
+        /// </summary>
+        [Required]
+        public string ActivationCode { get; set; }
+
         #endregion
     }
 }

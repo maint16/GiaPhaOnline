@@ -332,6 +332,8 @@ namespace Main
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IFollowTopicService, FollowTopicService>();
             services.AddScoped<IFollowCategoryService, FollowCategoryService>();
+            services.AddScoped<IUserService, UserService>();
+            
 
 
             // Get email cache option.

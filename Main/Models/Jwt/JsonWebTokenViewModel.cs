@@ -1,7 +1,9 @@
 ﻿namespace Main.Models.Jwt
 {
-    public class JwtResponse
+    public class JsonWebTokenViewModel
     {
+        #region Properties
+
         /// <summary>
         /// Access code which is used for accessing into system.
         /// </summary>
@@ -16,5 +18,7 @@
         /// When token should be expired.
         /// </summary>
         public double Expiration { get; set; }
+
+        #endregion
     }
 }
