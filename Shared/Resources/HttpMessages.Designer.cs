@@ -286,6 +286,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HAS_NO_PERMISSION_CHANGE_USER_PROFILE_PHOTO.
+        /// </summary>
+        public static string HasNoPermissionChangeUserProfilePhoto {
+            get {
+                return ResourceManager.GetString("HasNoPermissionChangeUserProfilePhoto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IMAGE_IS_INVALID.
         /// </summary>
         public static string ImageIsInvalid {

@@ -9,6 +9,11 @@ namespace Main.ViewModels.Users
         #region Properties
 
         /// <summary>
+        /// Id of user whose avatar will be updated.
+        /// </summary>
+        public int? UserId { get; set; }
+
+        /// <summary>
         /// User photo
         /// </summary>
         [Required]

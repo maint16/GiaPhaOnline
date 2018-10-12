@@ -194,6 +194,9 @@
   <data name="GoogleCodeIsInvalid" xml:space="preserve">
     <value>GOOGLE_CODE_IS_INVALID</value>
   </data>
+  <data name="HasNoPermissionChangeUserProfilePhoto" xml:space="preserve">
+    <value>HAS_NO_PERMISSION_CHANGE_USER_PROFILE_PHOTO</value>
+  </data>
   <data name="ImageIsInvalid" xml:space="preserve">
     <value>IMAGE_IS_INVALID</value>
   </data>

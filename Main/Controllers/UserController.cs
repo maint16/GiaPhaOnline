@@ -226,7 +226,7 @@ namespace Main.Controllers
 
             if (id == null || id < 1)
                 if (profile != null)
-                    loadUserCondition.Ids.Add(profile.Id);
+                    return Ok(profile);
                 else
                     return NotFound();
             else
@@ -543,6 +543,12 @@ namespace Main.Controllers
 
             // Get requester profile.
             var profile = IdentityService.GetProfile(HttpContext);
+            if (model.UserId == null)
+                model.UserId = profile.Id;
+
+            if (model.UserId != profile.Id && profile.Role != UserRole.Admin)
+                return StatusCode((int) HttpStatusCode.Forbidden,
+                    new ApiResponse(HttpMessages.HasNoPermissionChangeUserProfilePhoto));
 
             // Reflect image variable.
             var image = model.Photo;
