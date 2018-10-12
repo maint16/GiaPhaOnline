@@ -85,6 +85,10 @@ namespace Main.Services.Businesses
 
             // Topic intialization.
             var topic = new Topic();
+
+#if USE_IN_MEMORY
+            topic.Id = await _unitOfWork.Topics.Search().OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken) + 1;
+#endif
             topic.OwnerId = profile.Id;
             topic.CategoryId = model.CategoryId;
             topic.CategoryGroupId = model.CategoryGroupId;

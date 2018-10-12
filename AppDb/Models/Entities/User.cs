@@ -79,6 +79,7 @@ namespace AppDb.Models.Entities
         /// <summary>
         /// Token for user to access the system.
         /// </summary>
+        [JsonIgnore]
         public virtual ICollection<AccessToken> AccessTokens { get; set; }
 
         /// <summary>
@@ -134,10 +135,11 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<NotificationMessage> NotificationMessages { get; set; }
-        
+
         /// <summary>
         /// Token of devices that are used for sending notification.
         /// </summary>
+        [JsonIgnore]
         public virtual ICollection<UserDeviceToken> DeviceTokens { get; set; }
 
         #endregion

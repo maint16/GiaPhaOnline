@@ -39,6 +39,14 @@ namespace Main.Interfaces.Services.Businesses
         Task<SearchResult<IList<Category>>> SearchCategoriesAsync(SearchCategoryViewModel condition,
             CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Search category using id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<Category> GetCategoryUsingIdAsync(int id, CancellationToken cancellationToken = default(CancellationToken));
+
         #endregion
     }
 }

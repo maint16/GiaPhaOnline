@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Enumerations;
+using AppModel.Models;
 using AutoMapper;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -91,7 +93,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.AddCategory, category,
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategory, category,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -102,7 +104,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = category;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -140,7 +142,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditCategory, category,
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditCategory, category,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -151,7 +153,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = category;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -183,6 +185,25 @@ namespace Main.Controllers
 
             var loadCategoriesResult = await _categoryService.SearchCategoriesAsync(condition, CancellationToken.None);
             return Ok(loadCategoriesResult);
+        }
+
+        /// <summary>
+        /// Load category using specific id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> LoadCategoryUsingId([FromRoute] int id)
+        {
+            var loadCategoryCondition = new SearchCategoryViewModel();
+            loadCategoryCondition.Ids = new HashSet<int> { id };
+            loadCategoryCondition.Pagination = new Pagination(1, 1);
+
+            var category = await _categoryService.GetCategoryUsingIdAsync(id, CancellationToken.None);
+            if (category == null)
+                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
+
+            return Ok(category);
         }
 
         #endregion

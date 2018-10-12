@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 
 namespace Main.ViewModels.Users
@@ -11,7 +12,7 @@ namespace Main.ViewModels.Users
         /// User photo
         /// </summary>
         [Required]
-        public FormFile Photo { get; set; }
+        public IFormFile Photo { get; set; }
 
         #endregion
     }

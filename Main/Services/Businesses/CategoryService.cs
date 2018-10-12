@@ -9,6 +9,7 @@ using AppDb.Models.Entities;
 using AppModel.Enumerations;
 using AppModel.Enumerations.Order;
 using AppModel.Exceptions;
+using AppModel.Models;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.Businesses;
 using Main.ViewModels.Category;
@@ -177,6 +178,21 @@ namespace Main.Services.Businesses
         }
 
         /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<Category> GetCategoryUsingIdAsync(int id, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var loadCategoryCondition = new SearchCategoryViewModel();
+            loadCategoryCondition.Ids = new HashSet<int> { id };
+            loadCategoryCondition.Pagination = new Pagination(1, 1);
+
+            return await GetCategories(loadCategoryCondition).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <summary>
         ///     Get categories using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
@@ -184,7 +200,7 @@ namespace Main.Services.Businesses
         protected virtual IQueryable<Category> GetCategories(SearchCategoryViewModel condition)
         {
             // Find identity in request.
-            var identity = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile(_httpContext);
 
             #region Search for information
 
@@ -238,7 +254,7 @@ namespace Main.Services.Businesses
 
             // Search conditions which are based on roles.
 
-            if (identity?.Role == UserRole.Admin)
+            if (profile != null && profile.Role == UserRole.Admin)
             {
                 var statuses = condition.Statuses;
                 if (statuses != null && statuses.Count > 0)
@@ -248,6 +264,10 @@ namespace Main.Services.Businesses
                     if (statuses.Count > 0)
                         categories = categories.Where(x => condition.Statuses.Contains(x.Status));
                 }
+            }
+            else
+            {
+                categories = categories.Where(x => x.Status == ItemStatus.Active);
             }
 
             return categories;

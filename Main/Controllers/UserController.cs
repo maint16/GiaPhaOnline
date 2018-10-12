@@ -126,7 +126,7 @@ namespace Main.Controllers
             var bIsCaptchaValid =
                 await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             #endregion
 
@@ -273,7 +273,7 @@ namespace Main.Controllers
             var bIsCaptchaValid =
                 await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             #endregion
 
@@ -287,7 +287,7 @@ namespace Main.Controllers
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
             if (emailTemplate != null)
             {
-                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> { basicRegisterResult.Email }, null,
+                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> {basicRegisterResult.Email}, null,
                     null,
                     emailTemplate.Subject, emailTemplate.Content, emailTemplate.IsHtmlContent, CancellationToken.None);
                 backgroundTasks.Add(pSendMailTask);
@@ -299,7 +299,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.UserRegistration, basicRegisterResult,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.UserRegistration, basicRegisterResult,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -310,7 +310,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = basicRegisterResult;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -347,7 +347,7 @@ namespace Main.Controllers
             var bIsCaptchaValid =
                 await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             #endregion
 
@@ -364,7 +364,7 @@ namespace Main.Controllers
 
             if (emailTemplate != null)
             {
-                await _sendMailService.SendAsync(new HashSet<string> { forgotPasswordResult.Email }, null, null,
+                await _sendMailService.SendAsync(new HashSet<string> {forgotPasswordResult.Email}, null, null,
                     emailTemplate.Subject,
                     emailTemplate.Content, true, CancellationToken.None);
 
@@ -402,13 +402,14 @@ namespace Main.Controllers
 
             // Submit password reset.
             var submitPasswordResetResult = await _userService.SubmitPasswordResetAsync(model);
-            
+
             #region Send email
-            
+
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordReset);
 
             if (emailTemplate != null)
-                await _sendMailService.SendAsync(new HashSet<string> { model.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+                await _sendMailService.SendAsync(new HashSet<string> {model.Email}, null, null, emailTemplate.Subject,
+                    emailTemplate.Content, false, CancellationToken.None);
 
             #endregion
 
@@ -452,14 +453,15 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPut("status/{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id, [FromBody] ChangeUserStatusViewModel model)
+        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id,
+            [FromBody] ChangeUserStatusViewModel model)
         {
             // Find requester profile.
             var profile = IdentityService.GetProfile(HttpContext);
 
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
             if (profile.Id == id)
-                return StatusCode((int)HttpStatusCode.Forbidden,
+                return StatusCode((int) HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotChangeOwnProfileStatus));
 
             var user = await _userService.ChangeUserStatus(id, model);
@@ -468,7 +470,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditUserStatus, user,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditUserStatus, user,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -479,7 +481,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = user;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -509,7 +511,7 @@ namespace Main.Controllers
             var profile = _identityService.GetProfile(HttpContext);
 
             if (profile == null || profile.Role != UserRole.Admin)
-                condition.Statuses = new HashSet<UserStatus> { UserStatus.Available };
+                condition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
 
             var loadUsersResult = await _userService.SearchUsersAsync(condition);
             return Ok(loadUsersResult);
@@ -521,7 +523,7 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("upload-avatar")]
-        [Consumes("multipart/form-data")]
+        //[Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel model)
         {
             #region Request parameters validation
