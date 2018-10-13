@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppModel.Models.ExternalAuthentication;
 using Main.Constants;
 using Main.Interfaces.Services;
-using Main.Models.ExternalAuthentication;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 

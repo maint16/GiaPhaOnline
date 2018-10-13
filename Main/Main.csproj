@@ -65,7 +65,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Jwt\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

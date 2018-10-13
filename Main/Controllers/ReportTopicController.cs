@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppModel.Exceptions;
 using AutoMapper;

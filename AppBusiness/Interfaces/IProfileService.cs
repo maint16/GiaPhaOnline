@@ -4,7 +4,7 @@ using AppModel.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace Main.Interfaces.Services
+namespace AppBusiness.Interfaces
 {
     /// <summary>
     ///     Service which handles identity businesses.

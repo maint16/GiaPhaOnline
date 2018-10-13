@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Main.Models.ExternalAuthentication
+namespace AppModel.Models.ExternalAuthentication
 {
     public class FacebookProfile
     {

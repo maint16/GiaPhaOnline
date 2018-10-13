@@ -3,40 +3,41 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
 using Shared.Models;
-using Shared.ViewModels.FollowTopic;
+using Shared.ViewModels.Topic;
 
-namespace AppBusiness.Interfaces
+namespace AppBusiness.Interfaces.Domains
 {
-    public interface IFollowTopicDomain
+    public interface ITopicDomain
     {
         #region Methods
 
         /// <summary>
-        ///     Start following topic.
+        ///     Add topic asynchronously into system.
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<FollowTopic> AddFollowTopicAsync(AddFollowTopicViewModel model,
+        Task<Topic> AddTopicAsync(AddTopicViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     Stop following topic.
+        ///     Edit topic asynchronously using specific condition & information.
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task DeleteFollowTopicAsync(DeleteFollowTopicViewModel model,
+        Task<Topic> EditTopicAsync(int id, EditTopicViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     Get follow topics asynchronously.
+        ///     Search for topics asynchronously.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<SearchResult<IList<FollowTopic>>> SearchFollowTopicsAsync(SearchFollowTopicViewModel condition,
-            CancellationToken cancellationToken = default(CancellationToken));
+        Task<SearchResult<IList<Topic>>> SearchTopicsAsync(SearchTopicViewModel condition,
+            CancellationToken cancellationToken);
 
         #endregion
     }

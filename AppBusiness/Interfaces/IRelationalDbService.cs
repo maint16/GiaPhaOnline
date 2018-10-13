@@ -3,7 +3,7 @@ using System.Linq;
 using Shared.Enumerations;
 using Shared.Models;
 
-namespace Main.Interfaces.Services
+namespace AppBusiness.Interfaces
 {
     public interface IRelationalDbService
     {

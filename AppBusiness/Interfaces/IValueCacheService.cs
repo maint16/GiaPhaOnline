@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Main.Interfaces.Services
+namespace AppBusiness.Interfaces
 {
     public interface IValueCacheService<TKey, TValue>
     {

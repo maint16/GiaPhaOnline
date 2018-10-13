@@ -5,7 +5,7 @@ using AppDb.Models.Entities;
 using Shared.Models;
 using Shared.ViewModels.Reply;
 
-namespace AppBusiness.Interfaces
+namespace AppBusiness.Interfaces.Domains
 {
     public interface IReplyDomain
     {

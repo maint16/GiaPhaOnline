@@ -8,7 +8,6 @@ using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Exceptions;
-using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.Enumerations;
@@ -18,7 +17,7 @@ using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.Category;
 
-namespace Main.Services.Businesses
+namespace AppBusiness.Domain
 {
     public class CategoryDomain : ICategoryDomain
     {

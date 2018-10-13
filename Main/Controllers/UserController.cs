@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.Users;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;

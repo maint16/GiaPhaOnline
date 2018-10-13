@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AppBusiness.Domain;
 using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
+using AppBusiness.Services;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
 using AppDb.Models.Contexts;
@@ -9,6 +12,7 @@ using AppDb.Models.Entities;
 using AppDb.Repositories;
 using AppDb.Services;
 using AppModel.Models;
+using AppModel.Models.ExternalAuthentication;
 using AutoMapper;
 using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
@@ -20,10 +24,8 @@ using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Captcha;
-using Main.Models.ExternalAuthentication;
 using Main.Models.PushNotification;
 using Main.Services;
-using Main.Services.Businesses;
 using Main.Services.RealTime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -309,7 +311,6 @@ namespace Main
 
             // Store user information in cache
             services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
-            services.AddSingleton<IValueCacheService<int, Category>, CategoryCacheService>();
             services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
 
             // Initialize real-time notification service as single instance.

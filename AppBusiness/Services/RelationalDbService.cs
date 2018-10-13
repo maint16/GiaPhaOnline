@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Main.Interfaces.Services;
+using AppBusiness.Interfaces;
 using Shared.Enumerations;
 using Shared.Models;
 
-namespace Main.Services
+namespace AppBusiness.Services
 {
     public class RelationalDbService : IRelationalDbService
     {

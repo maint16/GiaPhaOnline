@@ -5,10 +5,10 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Exceptions;
-using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.Enumerations;
@@ -18,7 +18,7 @@ using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.FollowTopic;
 
-namespace Main.Services.Businesses
+namespace AppBusiness.Domain
 {
     public class FollowTopicDomain : IFollowTopicDomain
     {

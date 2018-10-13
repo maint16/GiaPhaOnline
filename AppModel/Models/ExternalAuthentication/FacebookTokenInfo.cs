@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 
-namespace Main.Models.ExternalAuthentication
+namespace AppModel.Models.ExternalAuthentication
 {
-    public class GoogleTokenInfo
+    public class FacebookTokenInfo
     {
         #region Properties
 
         /// <summary>
-        ///     Access token from google api.
+        ///     Access token.
         /// </summary>
         [JsonProperty("access_token")]
         public string AccessToken { get; set; }
@@ -19,16 +19,10 @@ namespace Main.Models.ExternalAuthentication
         public string TokenType { get; set; }
 
         /// <summary>
-        ///     How many seconds that token lives.
+        ///     Token life time.
         /// </summary>
         [JsonProperty("expires_in")]
         public int LifeTime { get; set; }
-
-        /// <summary>
-        ///     Token id of google.
-        /// </summary>
-        [JsonProperty("id_token")]
-        public string Id { get; set; }
 
         #endregion
     }

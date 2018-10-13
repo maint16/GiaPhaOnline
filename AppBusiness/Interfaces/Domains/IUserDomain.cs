@@ -8,7 +8,7 @@ using Shared.ViewModels.Jwt;
 using Shared.ViewModels.Users;
 using SkiaSharp;
 
-namespace AppBusiness.Interfaces
+namespace AppBusiness.Interfaces.Domains
 {
     public interface IUserDomain
     {

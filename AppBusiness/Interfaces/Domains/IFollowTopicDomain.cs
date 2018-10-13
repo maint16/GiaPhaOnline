@@ -3,40 +3,39 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
 using Shared.Models;
-using Shared.ViewModels.CategoryGroup;
+using Shared.ViewModels.FollowTopic;
 
-namespace AppBusiness.Interfaces
+namespace AppBusiness.Interfaces.Domains
 {
-    public interface ICategoryGroupDomain
+    public interface IFollowTopicDomain
     {
         #region Methods
 
         /// <summary>
-        ///     Add category group asynchronously.
+        ///     Start following topic.
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CategoryGroup> AddCategoryGroup(AddCategoryGroupViewModel model,
+        Task<FollowTopic> AddFollowTopicAsync(AddFollowTopicViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     Edit category group asynchronously.
+        ///     Stop following topic.
         /// </summary>
-        /// <param name="id"></param>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<CategoryGroup> EditCategoryGroup(int id, EditCategoryGroupViewModel model,
+        Task DeleteFollowTopicAsync(DeleteFollowTopicViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        ///     Search for category groups using specific conditions.
+        ///     Get follow topics asynchronously.
         /// </summary>
-        /// <param name="conditions"></param>
+        /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<SearchResult<IList<CategoryGroup>>> SearchCategoryGroupsAsync(SearchCategoryGroupViewModel conditions,
+        Task<SearchResult<IList<FollowTopic>>> SearchFollowTopicsAsync(SearchFollowTopicViewModel condition,
             CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion

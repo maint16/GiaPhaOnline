@@ -8,13 +8,12 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.Users;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Exceptions;
 using AppModel.Models;
-using Main.Interfaces.Services;
-using Main.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Shared.Enumerations;
@@ -28,7 +27,7 @@ using SkiaSharp;
 using VgySdk.Interfaces;
 using VgySdk.Models;
 
-namespace Main.Services.Businesses
+namespace AppBusiness.Domain
 {
     public class UserDomain : IUserDomain
     {

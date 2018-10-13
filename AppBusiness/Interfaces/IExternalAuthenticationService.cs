@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Main.Models.ExternalAuthentication;
+using AppModel.Models.ExternalAuthentication;
 
-namespace Main.Interfaces.Services
+namespace AppBusiness.Interfaces
 {
     public interface IExternalAuthenticationService
     {
