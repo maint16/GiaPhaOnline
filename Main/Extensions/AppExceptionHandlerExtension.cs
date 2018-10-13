@@ -2,11 +2,11 @@
 using AppModel.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Shared.Models;
-using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Serialization;
+using Shared.Models;
 
 namespace Main.Extensions
 {
@@ -21,7 +21,7 @@ namespace Main.Extensions
                     async context =>
                     {
                         // Mark the response status as 500.
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
                         context.Response.ContentType = "application/json";
                         var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
 
@@ -41,7 +41,7 @@ namespace Main.Extensions
                         if (exceptionHandlerFeature.Error is ApiException)
                         {
                             var apiException = exceptionHandlerFeature.Error as ApiException;
-                            context.Response.StatusCode = (int)apiException.Status;
+                            context.Response.StatusCode = (int) apiException.Status;
                         }
                         await context.Response.WriteAsync(szApiResponse).ConfigureAwait(false);
                     });

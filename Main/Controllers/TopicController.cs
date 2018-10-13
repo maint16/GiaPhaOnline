@@ -2,17 +2,17 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
-using AppModel.Enumerations;
 using AutoMapper;
 using Main.Constants;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
-using Main.ViewModels.Topic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared.Enumerations;
 using Shared.Interfaces.Services;
+using Shared.ViewModels.Topic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,16 +29,16 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService,
+            IProfileService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger<TopicController> logger, ITopicService topicService) : base(unitOfWork, mapper, timeService,
+            ILogger<TopicController> logger, ITopicDomain topicDomain) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _logger = logger;
-            _topicService = topicService;
+            _topicDomain = topicDomain;
         }
 
         #endregion
@@ -60,7 +60,7 @@ namespace Main.Controllers
         /// </summary>
         private readonly ILogger _logger;
 
-        private readonly ITopicService _topicService;
+        private readonly ITopicDomain _topicDomain;
 
         #endregion
 
@@ -83,7 +83,7 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var topic = await _topicService.AddTopicAsync(model, CancellationToken.None);
+            var topic = await _topicDomain.AddTopicAsync(model, CancellationToken.None);
 
             return Ok(topic);
         }
@@ -111,7 +111,7 @@ namespace Main.Controllers
             #endregion
 
             // Update topic information.
-            var topic = await _topicService.EditTopicAsync(id, model);
+            var topic = await _topicDomain.EditTopicAsync(id, model);
 
             if (topic.Status != ItemStatus.Disabled)
                 return Ok(topic);
@@ -157,7 +157,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var loadTopicsResult = await _topicService.SearchTopicsAsync(condition, CancellationToken.None);
+            var loadTopicsResult = await _topicDomain.SearchTopicsAsync(condition, CancellationToken.None);
             return Ok(loadTopicsResult);
         }
 

@@ -1,36 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppBusiness.Models.Users;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
+using AppModel.Models;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.RealTime;
-using Main.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels.Users;
 using SkiaSharp;
 using VgySdk.Interfaces;
-using VgySdk.Models;
 
 namespace Main.Controllers
 {
@@ -59,26 +56,26 @@ namespace Main.Controllers
         /// <param name="profileCacheService"></param>
         /// <param name="captchaService"></param>
         /// <param name="realTimeService"></param>
-        /// <param name="userService"></param>
+        /// <param name="userDomain"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService,
+            IProfileService identityService,
             ITimeService systemTimeService,
             IExternalAuthenticationService externalAuthenticationService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            IOptions<JwtConfiguration> jwtConfigurationOptions,
+            IOptions<AppJwtModel> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<UserController> logger,
             IVgyService vgyService,
             IValueCacheService<int, User> profileCacheService,
             ICaptchaService captchaService,
             IRealTimeService realTimeService,
-            IUserService userService) : base(
+            IUserDomain userDomain) : base(
             unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
@@ -88,7 +85,7 @@ namespace Main.Controllers
             _emailCacheService = emailCacheService;
             _captchaService = captchaService;
             _realTimeService = realTimeService;
-            _userService = userService;
+            _userDomain = userDomain;
         }
 
         #endregion
@@ -132,8 +129,8 @@ namespace Main.Controllers
 
             #region Login & token generation
 
-            var user = await _userService.LoginAsync(model);
-            var jsonWebToken = _userService.GenerateUserAccessToken(user);
+            var user = await _userDomain.LoginAsync(model);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
 
             #endregion
 
@@ -164,8 +161,8 @@ namespace Main.Controllers
 
             #region Google login
 
-            var user = await _userService.GoogleLoginAsync(info);
-            var jsonWebToken = _userService.GenerateUserAccessToken(user);
+            var user = await _userDomain.GoogleLoginAsync(info);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
 
             #endregion
 
@@ -198,10 +195,10 @@ namespace Main.Controllers
             #region Facebook login & token generate
 
             // Do facebook login.
-            var user = await _userService.FacebookLoginAsync(info);
+            var user = await _userDomain.FacebookLoginAsync(info);
 
             // Initialize access token.
-            var jsonWebToken = _userService.GenerateUserAccessToken(user);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
 
             #endregion
 
@@ -229,8 +226,7 @@ namespace Main.Controllers
                     return Ok(profile);
                 else
                     return NotFound();
-            else
-                loadUserCondition.Ids.Add(id.Value);
+            loadUserCondition.Ids.Add(id.Value);
 
             // Only search for active account if user is normal user.
             if (profile != null && profile.Role != UserRole.Admin)
@@ -240,7 +236,7 @@ namespace Main.Controllers
             }
 
             // Find the first account in system.
-            var user = await _userService.SearchUserAsync(loadUserCondition);
+            var user = await _userDomain.SearchUserAsync(loadUserCondition);
             return Ok(user);
         }
 
@@ -279,7 +275,7 @@ namespace Main.Controllers
 
             #region Basic register
 
-            var basicRegisterResult = await _userService.BasicRegisterAsync(model);
+            var basicRegisterResult = await _userDomain.BasicRegisterAsync(model);
 
             // Initialize background tasks.
             var backgroundTasks = new List<Task>();
@@ -354,7 +350,7 @@ namespace Main.Controllers
             #region Business handle
 
             // Submit password change request.
-            var forgotPasswordResult = await _userService.RequestPasswordResetAsync(model);
+            var forgotPasswordResult = await _userDomain.RequestPasswordResetAsync(model);
 
             #endregion
 
@@ -386,7 +382,6 @@ namespace Main.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> SubmitPasswordReset([FromBody] SubmitPasswordResetViewModel model)
         {
-
             #region Request parameters validation
 
             if (model == null)
@@ -401,7 +396,7 @@ namespace Main.Controllers
             #endregion
 
             // Submit password reset.
-            var submitPasswordResetResult = await _userService.SubmitPasswordResetAsync(model);
+            var submitPasswordResetResult = await _userDomain.SubmitPasswordResetAsync(model);
 
             #region Send email
 
@@ -439,8 +434,8 @@ namespace Main.Controllers
             #endregion
 
             var profile = _identityService.GetProfile(HttpContext);
-            var userId = (id < 0) ? profile.Id : id;
-            await _userService.ChangePasswordAsync(userId, model);
+            var userId = id < 0 ? profile.Id : id;
+            await _userDomain.ChangePasswordAsync(userId, model);
 
             return Ok();
         }
@@ -464,7 +459,7 @@ namespace Main.Controllers
                 return StatusCode((int) HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotChangeOwnProfileStatus));
 
-            var user = await _userService.ChangeUserStatus(id, model);
+            var user = await _userDomain.ChangeUserStatus(id, model);
 
             #region Real-time message broadcast
 
@@ -513,12 +508,12 @@ namespace Main.Controllers
             if (profile == null || profile.Role != UserRole.Admin)
                 condition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
 
-            var loadUsersResult = await _userService.SearchUsersAsync(condition);
+            var loadUsersResult = await _userDomain.SearchUsersAsync(condition);
             return Ok(loadUsersResult);
         }
 
         /// <summary>
-        /// Upload Avatar
+        ///     Upload Avatar
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -559,7 +554,7 @@ namespace Main.Controllers
 
                 try
                 {
-                    var user = await _userService.UploadUserProfileImageAsync(profile.Id, skBitmap);
+                    var user = await _userDomain.UploadUserProfileImageAsync(profile.Id, skBitmap);
                     return Ok(user);
                 }
                 catch (Exception exception)
@@ -578,7 +573,8 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("resend-activation-code")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResendAccountActivationCode([FromBody] RequestUserActivationCodeViewModel model)
+        public async Task<IActionResult> ResendAccountActivationCode(
+            [FromBody] RequestUserActivationCodeViewModel model)
         {
             #region Request parameters validation
 
@@ -594,14 +590,15 @@ namespace Main.Controllers
             #endregion
 
             // Generate user activation token.
-            var addUserActivationTokenResult = await _userService.RequestUserActivationTokenAsync(model);
+            var addUserActivationTokenResult = await _userDomain.RequestUserActivationTokenAsync(model);
 
             #region Send email
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ResendAccountActivationCode);
 
             if (emailTemplate != null)
-                await _sendMailService.SendAsync(new HashSet<string> { addUserActivationTokenResult.Email }, null, null, emailTemplate.Subject,
+                await _sendMailService.SendAsync(new HashSet<string> {addUserActivationTokenResult.Email}, null, null,
+                    emailTemplate.Subject,
                     emailTemplate.Content, false, CancellationToken.None);
 
             #endregion
@@ -612,16 +609,16 @@ namespace Main.Controllers
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         ///     Logging instance.
         /// </summary>
         private readonly ILogger _logger;
-        
+
         /// <summary>
         ///     Instance which is for accessing identity attached in request.
         /// </summary>
-        private readonly IIdentityService _identityService;
+        private readonly IProfileService _identityService;
 
         /// <summary>
         ///     Send email service
@@ -632,7 +629,7 @@ namespace Main.Controllers
         ///     Email cache service.
         /// </summary>
         private readonly IEmailCacheService _emailCacheService;
-        
+
         /// <summary>
         ///     Service which is for checking captcha.
         /// </summary>
@@ -640,8 +637,8 @@ namespace Main.Controllers
 
         private readonly IRealTimeService _realTimeService;
 
-        private readonly IUserService _userService;
-        
+        private readonly IUserDomain _userDomain;
+
         #endregion
     }
 }

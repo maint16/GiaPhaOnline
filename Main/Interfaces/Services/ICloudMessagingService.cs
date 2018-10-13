@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
-using Main.ViewModels.RealTime;
+using Shared.ViewModels.RealTime;
 
 namespace Main.Interfaces.Services
 {
@@ -14,55 +13,59 @@ namespace Main.Interfaces.Services
         #region Methods
 
         /// <summary>
-        /// Get device group notification key by using notification key name.
+        ///     Get device group notification key by using notification key name.
         /// </summary>
         /// <param name="notificationKeyName"></param>
         /// <returns></returns>
         Task<string> GetDeviceGroupNotificationKey(string notificationKeyName);
 
         /// <summary>
-        /// Add device to group.
+        ///     Add device to group.
         /// </summary>
         /// <param name="deviceIds"></param>
         /// <param name="group"></param>
         /// <param name="cancellationToken"></param>
-        Task<HttpResponseMessage> AddDevicesToGroupAsync(string[] deviceIds, string group, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> AddDevicesToGroupAsync(string[] deviceIds, string group,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Add device to group.
+        ///     Add device to group.
         /// </summary>
         /// <param name="deviceIds"></param>
         /// <param name="groups"></param>
         /// <param name="cancellationToken"></param>
-        Task<IList<HttpResponseMessage>> AddDevicesToGroupsAsync(string[] deviceIds, IList<string> groups, CancellationToken cancellationToken);
+        Task<IList<HttpResponseMessage>> AddDevicesToGroupsAsync(string[] deviceIds, IList<string> groups,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Delete device from a specific group.
+        ///     Delete device from a specific group.
         /// </summary>
         /// <param name="deviceId"></param>
         /// <param name="group"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<HttpResponseMessage> DeleteDeviceFromGroupAsync(string deviceId, string group, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> DeleteDeviceFromGroupAsync(string deviceId, string group,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Delete device from a specific group.
+        ///     Delete device from a specific group.
         /// </summary>
         /// <param name="deviceIds"></param>
         /// <param name="groups"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IList<HttpResponseMessage>> DeleteDevicesFromGroupsAsync(IList<string> deviceIds, IList<string> groups, CancellationToken cancellationToken);
+        Task<IList<HttpResponseMessage>> DeleteDevicesFromGroupsAsync(IList<string> deviceIds, IList<string> groups,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Send push notification to a specific device.
+        ///     Send push notification to a specific device.
         /// </summary>
         /// <param name="fcmMessage"></param>
         /// <param name="cancellationToken"></param>
         Task<HttpResponseMessage> SendAsync<T>(FcmMessage<T> fcmMessage, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Send notification to 
+        ///     Send notification to
         /// </summary>
         /// <param name="recipientIds"></param>
         /// <param name="notification"></param>
@@ -71,11 +74,11 @@ namespace Main.Interfaces.Services
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<HttpResponseMessage> SendAsync<T>(List<string> recipientIds,
-           FcmBaseNotification notification, string collapseKey, T data,
-           CancellationToken cancellationToken);
+            FcmBaseNotification notification, string collapseKey, T data,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Get cloud messaging token information from client registration id.
+        ///     Get cloud messaging token information from client registration id.
         /// </summary>
         /// <param name="idToken"></param>
         /// <param name="cancellationToken"></param>

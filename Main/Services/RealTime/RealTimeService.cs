@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
 using Main.Constants.RealTime;
 using Main.Hubs;
 using Main.Interfaces.Services;
@@ -14,10 +13,10 @@ using Main.Interfaces.Services.RealTime;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
 using Main.Models.RealTime;
-using Main.ViewModels.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+using Shared.Enumerations;
+using Shared.ViewModels.RealTime;
 
 namespace Main.Services.RealTime
 {
@@ -55,7 +54,7 @@ namespace Main.Services.RealTime
         ///     Unit of work.
         /// </summary>
         private readonly IUnitOfWork _unitOfWork;
-        
+
         #endregion
 
         #region Methods
@@ -105,11 +104,12 @@ namespace Main.Services.RealTime
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, RealTimeMessage<T> message,
+        public async Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey,
+            RealTimeMessage<T> message,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // No group is defined.
@@ -144,7 +144,7 @@ namespace Main.Services.RealTime
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -159,13 +159,14 @@ namespace Main.Services.RealTime
         }
 
         /// <summary>
-        /// Base on the response from FCM service to decide what device should be deleted.
+        ///     Base on the response from FCM service to decide what device should be deleted.
         /// </summary>
         /// <param name="httpResponseMessage"></param>
         /// <param name="originalDeviceIds"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task DeleteFailedDeviceAsync(HttpResponseMessage httpResponseMessage, List<string> originalDeviceIds, CancellationToken cancellationToken)
+        private async Task DeleteFailedDeviceAsync(HttpResponseMessage httpResponseMessage,
+            List<string> originalDeviceIds, CancellationToken cancellationToken)
         {
             if (httpResponseMessage == null)
                 return;
@@ -180,15 +181,18 @@ namespace Main.Services.RealTime
                 return;
 
             var messageResults = pushResponse.Results;
-            var failedMessages = new[]{FcmErrorMessageConstant.DeviceNotRegistered,
-                FcmErrorMessageConstant.InvalidRegistrationToken};
+            var failedMessages = new[]
+            {
+                FcmErrorMessageConstant.DeviceNotRegistered,
+                FcmErrorMessageConstant.InvalidRegistrationToken
+            };
 
-            var failedIndexes = messageResults.Select((c, i) => new { MessageResult = c, Index = i })
+            var failedIndexes = messageResults.Select((c, i) => new {MessageResult = c, Index = i})
                 .Where(x => failedMessages.Contains(x.MessageResult.Error))
                 .Select(x => x.Index);
 
             // Enlist of devices that must be removed.
-            var deletedDeviceId = originalDeviceIds.Select((d, i) => new { DeviceId = d, Index = i })
+            var deletedDeviceId = originalDeviceIds.Select((d, i) => new {DeviceId = d, Index = i})
                 .Where(x => failedIndexes.Contains(x.Index))
                 .Select(x => x.DeviceId);
 
@@ -197,7 +201,6 @@ namespace Main.Services.RealTime
             _unitOfWork.UserDeviceTokens.Remove(deviceIds);
             await _unitOfWork.CommitAsync();
         }
-        
 
         #endregion
     }

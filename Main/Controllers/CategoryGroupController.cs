@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Exceptions;
@@ -9,14 +10,13 @@ using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
-using Main.ViewModels.CategoryGroup;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Interfaces.Services;
 using Shared.Resources;
+using Shared.ViewModels.CategoryGroup;
 
 namespace Main.Controllers
 {
@@ -31,8 +31,8 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService, IRealTimeService realTimeService,
-            ICategoryGroupService categoryGroupService) : base(unitOfWork, mapper, timeService,
+            IProfileService identityService, IRealTimeService realTimeService,
+            ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _realTimeService = realTimeService;
@@ -42,10 +42,10 @@ namespace Main.Controllers
         #endregion
 
         #region Properties
-        
+
         private readonly IRealTimeService _realTimeService;
 
-        private readonly ICategoryGroupService _categoryGroupService;
+        private readonly ICategoryGroupDomain _categoryGroupService;
 
         #endregion
 

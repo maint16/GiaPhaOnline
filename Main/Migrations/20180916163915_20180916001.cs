@@ -9,38 +9,33 @@ namespace Main.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "SignalrConnection",
-                columns: table => new
+                "SignalrConnection",
+                table => new
                 {
                     ClientId = table.Column<string>(nullable: false),
                     UserId = table.Column<int>(nullable: false),
                     LastActivityTime = table.Column<double>(nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SignalrConnection", x => x.ClientId);
-                });
+                constraints: table => { table.PrimaryKey("PK_SignalrConnection", x => x.ClientId); });
 
             migrationBuilder.CreateTable(
-                name: "SignalrConnectionGroup",
-                columns: table => new
+                "SignalrConnectionGroup",
+                table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     ClientId = table.Column<string>(nullable: true),
                     Group = table.Column<string>(nullable: true),
                     UserId = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SignalrConnectionGroup", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_SignalrConnectionGroup", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
+                "User",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     Email = table.Column<string>(nullable: false),
                     Nickname = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: true),
@@ -52,14 +47,11 @@ namespace Main.Migrations
                     JoinedTime = table.Column<double>(nullable: false),
                     LastModifiedTime = table.Column<double>(nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_User", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "AccessToken",
-                columns: table => new
+                "AccessToken",
+                table => new
                 {
                     Code = table.Column<string>(nullable: false),
                     OwnerId = table.Column<int>(nullable: false),
@@ -68,18 +60,18 @@ namespace Main.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AccessToken", x => new { x.Code, x.OwnerId });
+                    table.PrimaryKey("PK_AccessToken", x => new {x.Code, x.OwnerId});
                     table.ForeignKey(
-                        name: "FK_AccessToken_User_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_AccessToken_User_OwnerId",
+                        x => x.OwnerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActivationToken",
-                columns: table => new
+                "ActivationToken",
+                table => new
                 {
                     Code = table.Column<string>(nullable: false),
                     OwnerId = table.Column<int>(nullable: false),
@@ -88,21 +80,22 @@ namespace Main.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActivationToken", x => new { x.Code, x.OwnerId });
+                    table.PrimaryKey("PK_ActivationToken", x => new {x.Code, x.OwnerId});
                     table.ForeignKey(
-                        name: "FK_ActivationToken_User_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_ActivationToken_User_OwnerId",
+                        x => x.OwnerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CategoryGroup",
-                columns: table => new
+                "CategoryGroup",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatorId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: false),
@@ -114,16 +107,16 @@ namespace Main.Migrations
                 {
                     table.PrimaryKey("PK_CategoryGroup", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CategoryGroup_User_CreatorId",
-                        column: x => x.CreatorId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_CategoryGroup_User_CreatorId",
+                        x => x.CreatorId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "NotificationMessage",
-                columns: table => new
+                "NotificationMessage",
+                table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     OwnerId = table.Column<int>(nullable: false),
@@ -137,19 +130,20 @@ namespace Main.Migrations
                 {
                     table.PrimaryKey("PK_NotificationMessage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NotificationMessage_User_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_NotificationMessage_User_OwnerId",
+                        x => x.OwnerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Category",
-                columns: table => new
+                "Category",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     CreatorId = table.Column<int>(nullable: false),
                     CategoryGroupId = table.Column<int>(nullable: false),
                     Photo = table.Column<string>(nullable: true),
@@ -163,22 +157,22 @@ namespace Main.Migrations
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Category_CategoryGroup_CategoryGroupId",
-                        column: x => x.CategoryGroupId,
-                        principalTable: "CategoryGroup",
-                        principalColumn: "Id",
+                        "FK_Category_CategoryGroup_CategoryGroupId",
+                        x => x.CategoryGroupId,
+                        "CategoryGroup",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Category_User_CreatorId",
-                        column: x => x.CreatorId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_Category_User_CreatorId",
+                        x => x.CreatorId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "FollowCategory",
-                columns: table => new
+                "FollowCategory",
+                table => new
                 {
                     FollowerId = table.Column<int>(nullable: false),
                     CategoryId = table.Column<int>(nullable: false),
@@ -187,27 +181,28 @@ namespace Main.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FollowCategory", x => new { x.FollowerId, x.CategoryId });
+                    table.PrimaryKey("PK_FollowCategory", x => new {x.FollowerId, x.CategoryId});
                     table.ForeignKey(
-                        name: "FK_FollowCategory_Category_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Category",
-                        principalColumn: "Id",
+                        "FK_FollowCategory_Category_CategoryId",
+                        x => x.CategoryId,
+                        "Category",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FollowCategory_User_FollowerId",
-                        column: x => x.FollowerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_FollowCategory_User_FollowerId",
+                        x => x.FollowerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Topic",
-                columns: table => new
+                "Topic",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     OwnerId = table.Column<int>(nullable: false),
                     CategoryId = table.Column<int>(nullable: false),
                     CategoryGroupId = table.Column<int>(nullable: false),
@@ -222,28 +217,28 @@ namespace Main.Migrations
                 {
                     table.PrimaryKey("PK_Topic", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Topic_CategoryGroup_CategoryGroupId",
-                        column: x => x.CategoryGroupId,
-                        principalTable: "CategoryGroup",
-                        principalColumn: "Id",
+                        "FK_Topic_CategoryGroup_CategoryGroupId",
+                        x => x.CategoryGroupId,
+                        "CategoryGroup",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Topic_Category_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Category",
-                        principalColumn: "Id",
+                        "FK_Topic_Category_CategoryId",
+                        x => x.CategoryId,
+                        "Category",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Topic_User_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_Topic_User_OwnerId",
+                        x => x.OwnerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "FollowTopic",
-                columns: table => new
+                "FollowTopic",
+                table => new
                 {
                     FollowerId = table.Column<int>(nullable: false),
                     TopicId = table.Column<int>(nullable: false),
@@ -252,27 +247,28 @@ namespace Main.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FollowTopic", x => new { x.FollowerId, x.TopicId });
+                    table.PrimaryKey("PK_FollowTopic", x => new {x.FollowerId, x.TopicId});
                     table.ForeignKey(
-                        name: "FK_FollowTopic_User_FollowerId",
-                        column: x => x.FollowerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_FollowTopic_User_FollowerId",
+                        x => x.FollowerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_FollowTopic_Topic_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topic",
-                        principalColumn: "Id",
+                        "FK_FollowTopic_Topic_TopicId",
+                        x => x.TopicId,
+                        "Topic",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Reply",
-                columns: table => new
+                "Reply",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("SqlServer:ValueGenerationStrategy",
+                            SqlServerValueGenerationStrategy.IdentityColumn),
                     OwnerId = table.Column<int>(nullable: false),
                     TopicId = table.Column<int>(nullable: false),
                     CategoryId = table.Column<int>(nullable: false),
@@ -286,22 +282,22 @@ namespace Main.Migrations
                 {
                     table.PrimaryKey("PK_Reply", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Reply_User_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_Reply_User_OwnerId",
+                        x => x.OwnerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reply_Topic_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topic",
-                        principalColumn: "Id",
+                        "FK_Reply_Topic_TopicId",
+                        x => x.TopicId,
+                        "Topic",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReportTopic",
-                columns: table => new
+                "ReportTopic",
+                table => new
                 {
                     TopicId = table.Column<int>(nullable: false),
                     ReporterId = table.Column<int>(nullable: false),
@@ -313,144 +309,144 @@ namespace Main.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReportTopic", x => new { x.TopicId, x.ReporterId });
+                    table.PrimaryKey("PK_ReportTopic", x => new {x.TopicId, x.ReporterId});
                     table.ForeignKey(
-                        name: "FK_ReportTopic_User_OwnerId",
-                        column: x => x.OwnerId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_ReportTopic_User_OwnerId",
+                        x => x.OwnerId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ReportTopic_User_ReporterId",
-                        column: x => x.ReporterId,
-                        principalTable: "User",
-                        principalColumn: "Id",
+                        "FK_ReportTopic_User_ReporterId",
+                        x => x.ReporterId,
+                        "User",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ReportTopic_Topic_TopicId",
-                        column: x => x.TopicId,
-                        principalTable: "Topic",
-                        principalColumn: "Id",
+                        "FK_ReportTopic_Topic_TopicId",
+                        x => x.TopicId,
+                        "Topic",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccessToken_OwnerId",
-                table: "AccessToken",
-                column: "OwnerId");
+                "IX_AccessToken_OwnerId",
+                "AccessToken",
+                "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ActivationToken_OwnerId",
-                table: "ActivationToken",
-                column: "OwnerId",
+                "IX_ActivationToken_OwnerId",
+                "ActivationToken",
+                "OwnerId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Category_CategoryGroupId",
-                table: "Category",
-                column: "CategoryGroupId");
+                "IX_Category_CategoryGroupId",
+                "Category",
+                "CategoryGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Category_CreatorId",
-                table: "Category",
-                column: "CreatorId");
+                "IX_Category_CreatorId",
+                "Category",
+                "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CategoryGroup_CreatorId",
-                table: "CategoryGroup",
-                column: "CreatorId");
+                "IX_CategoryGroup_CreatorId",
+                "CategoryGroup",
+                "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FollowCategory_CategoryId",
-                table: "FollowCategory",
-                column: "CategoryId");
+                "IX_FollowCategory_CategoryId",
+                "FollowCategory",
+                "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FollowTopic_TopicId",
-                table: "FollowTopic",
-                column: "TopicId");
+                "IX_FollowTopic_TopicId",
+                "FollowTopic",
+                "TopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NotificationMessage_OwnerId",
-                table: "NotificationMessage",
-                column: "OwnerId");
+                "IX_NotificationMessage_OwnerId",
+                "NotificationMessage",
+                "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reply_OwnerId",
-                table: "Reply",
-                column: "OwnerId");
+                "IX_Reply_OwnerId",
+                "Reply",
+                "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reply_TopicId",
-                table: "Reply",
-                column: "TopicId");
+                "IX_Reply_TopicId",
+                "Reply",
+                "TopicId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportTopic_OwnerId",
-                table: "ReportTopic",
-                column: "OwnerId");
+                "IX_ReportTopic_OwnerId",
+                "ReportTopic",
+                "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportTopic_ReporterId",
-                table: "ReportTopic",
-                column: "ReporterId");
+                "IX_ReportTopic_ReporterId",
+                "ReportTopic",
+                "ReporterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Topic_CategoryGroupId",
-                table: "Topic",
-                column: "CategoryGroupId");
+                "IX_Topic_CategoryGroupId",
+                "Topic",
+                "CategoryGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Topic_CategoryId",
-                table: "Topic",
-                column: "CategoryId");
+                "IX_Topic_CategoryId",
+                "Topic",
+                "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Topic_OwnerId",
-                table: "Topic",
-                column: "OwnerId");
+                "IX_Topic_OwnerId",
+                "Topic",
+                "OwnerId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AccessToken");
+                "AccessToken");
 
             migrationBuilder.DropTable(
-                name: "ActivationToken");
+                "ActivationToken");
 
             migrationBuilder.DropTable(
-                name: "FollowCategory");
+                "FollowCategory");
 
             migrationBuilder.DropTable(
-                name: "FollowTopic");
+                "FollowTopic");
 
             migrationBuilder.DropTable(
-                name: "NotificationMessage");
+                "NotificationMessage");
 
             migrationBuilder.DropTable(
-                name: "Reply");
+                "Reply");
 
             migrationBuilder.DropTable(
-                name: "ReportTopic");
+                "ReportTopic");
 
             migrationBuilder.DropTable(
-                name: "SignalrConnection");
+                "SignalrConnection");
 
             migrationBuilder.DropTable(
-                name: "SignalrConnectionGroup");
+                "SignalrConnectionGroup");
 
             migrationBuilder.DropTable(
-                name: "Topic");
+                "Topic");
 
             migrationBuilder.DropTable(
-                name: "Category");
+                "Category");
 
             migrationBuilder.DropTable(
-                name: "CategoryGroup");
+                "CategoryGroup");
 
             migrationBuilder.DropTable(
-                name: "User");
+                "User");
         }
     }
 }

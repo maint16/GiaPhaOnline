@@ -5,12 +5,12 @@
         #region Properties
 
         /// <summary>
-        /// Id of category.
+        ///     Id of category.
         /// </summary>
         public int CategoryId { get; set; }
 
         /// <summary>
-        /// Total posts number of the current category.
+        ///     Total posts number of the current category.
         /// </summary>
         public int TotalPosts { get; set; }
 

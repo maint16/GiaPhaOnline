@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using AppModel.Enumerations;
-using AppModel.Models;
+using Shared.Enumerations;
 using Shared.Models;
 
 namespace Main.Interfaces.Services
@@ -11,7 +10,7 @@ namespace Main.Interfaces.Services
         #region Methods
 
         /// <summary>
-        /// Search numeric property.
+        ///     Search numeric property.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="property"></param>
@@ -22,7 +21,7 @@ namespace Main.Interfaces.Services
             NumericComparision comparision);
 
         /// <summary>
-        /// Search numeric property.
+        ///     Search numeric property.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="property"></param>
@@ -33,7 +32,7 @@ namespace Main.Interfaces.Services
             NumericComparision comparision);
 
         /// <summary>
-        /// Search numeric property.
+        ///     Search numeric property.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="property"></param>

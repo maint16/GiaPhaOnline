@@ -7,9 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
 using Main.Constants;
-using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Microsoft.AspNetCore.Authorization;
@@ -21,33 +19,17 @@ namespace Main.Hubs
     [Authorize(PolicyConstant.DefaultSignalRPolicyName)]
     public class NotificationHub : Hub
     {
-        #region Properties
-
-        /// <summary>
-        /// Unit of work.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        private readonly IIdentityService _identityService;
-
-        private readonly ITimeService _timeService;
-
-        private readonly IRealTimeService _realTimeService;
-
-        private static readonly ConcurrentDictionary<string, List<string>> UserGroups = new ConcurrentDictionary<string, List<string>>();
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Initialize hub with injectors.
+        ///     Initialize hub with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
         /// <param name="realTimeService"></param>
-        public NotificationHub(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService, IRealTimeService realTimeService)
+        public NotificationHub(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+            IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
@@ -57,10 +39,28 @@ namespace Main.Hubs
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Unit of work.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        private readonly IProfileService _identityService;
+
+        private readonly ITimeService _timeService;
+
+        private readonly IRealTimeService _realTimeService;
+
+        private static readonly ConcurrentDictionary<string, List<string>> UserGroups =
+            new ConcurrentDictionary<string, List<string>>();
+
+        #endregion
+
         #region Methods
 
         /// <summary>
-        /// Called when a client connects to hub.
+        ///     Called when a client connects to hub.
         /// </summary>
         /// <returns></returns>
         public override Task OnConnectedAsync()
@@ -68,6 +68,7 @@ namespace Main.Hubs
             // Get connection id.
             var connectionId = Context.ConnectionId;
             Debug.WriteLine($"Client {connectionId} has connected to {nameof(NotificationHub)}");
+
             #region Save connection id to database
 
             // Get profle
@@ -86,7 +87,9 @@ namespace Main.Hubs
                 _unitOfWork.SignalrConnections.Insert(signalrConnection);
             }
             else
+            {
                 signalrConnection.UserId = profile.Id;
+            }
 
             _unitOfWork.Commit();
 
@@ -104,7 +107,7 @@ namespace Main.Hubs
                 var addClientToGroupTask = Groups.AddToGroupAsync(Context.ConnectionId, group);
                 addClientToGroupTasks.Add(addClientToGroupTask);
             }
-            
+
             Task.WhenAll(addClientToGroupTasks.ToArray());
             UserGroups.TryAdd(connectionId, availableGroups);
 
@@ -114,7 +117,7 @@ namespace Main.Hubs
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="exception"></param>
         /// <returns></returns>
@@ -130,7 +133,7 @@ namespace Main.Hubs
             signalrConnections = signalrConnections.Where(x => x.ClientId == connectionId);
             _unitOfWork.SignalrConnections.Remove(signalrConnections);
             _unitOfWork.Commit();
-            
+
             // Get all groups that client takes part in.
             var groups = new List<string>();
             UserGroups.TryGetValue(connectionId, out groups);
@@ -139,7 +142,8 @@ namespace Main.Hubs
                 var deleteGroupTasks = new List<Task>();
                 foreach (var group in groups)
                 {
-                   var deleteGroupTask = Groups.RemoveFromGroupAsync(Context.ConnectionId, group, CancellationToken.None);
+                    var deleteGroupTask =
+                        Groups.RemoveFromGroupAsync(Context.ConnectionId, group, CancellationToken.None);
                     deleteGroupTasks.Add(deleteGroupTask);
                 }
 

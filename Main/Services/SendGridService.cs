@@ -14,33 +14,15 @@ namespace Main.Services
 {
     public class SendGridService : ISendMailService
     {
-        #region Properties
-
-        /// <summary>
-        /// Sendgrid client to make request to SendGrid service.
-        /// </summary>
-        private readonly SendGridClient _sendGridClient;
-
-        /// <summary>
-        /// Settings of sendgrid service.
-        /// </summary>
-        private readonly SendGridSetting _sendGridSetting;
-
-        /// <summary>
-        /// Sendgrid client logger.
-        /// </summary>
-        private readonly ILogger<SendGridService> _sendGridServiceLogger;
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Initialize service with injectors.
+        ///     Initialize service with injectors.
         /// </summary>
         /// <param name="sendGridSettingOptions">SendGrid configuration.</param>
         /// <param name="sendGridServiceLogger"></param>
-        public SendGridService(IOptions<SendGridSetting> sendGridSettingOptions, ILogger<SendGridService> sendGridServiceLogger)
+        public SendGridService(IOptions<SendGridSetting> sendGridSettingOptions,
+            ILogger<SendGridService> sendGridServiceLogger)
         {
             var sendGridSetting = sendGridSettingOptions.Value;
             _sendGridClient = new SendGridClient(sendGridSetting.ApiKey);
@@ -53,7 +35,7 @@ namespace Main.Services
         #region Methods
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="recipients"></param>
         /// <param name="carbonCopies"></param>
@@ -63,7 +45,9 @@ namespace Main.Services
         /// <param name="bIsHtmlContent"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task SendAsync(HashSet<string> recipients, HashSet<string> carbonCopies, HashSet<string> blindCarbonCopies, string subject, string content, bool bIsHtmlContent, CancellationToken cancellationToken)
+        public async Task SendAsync(HashSet<string> recipients, HashSet<string> carbonCopies,
+            HashSet<string> blindCarbonCopies, string subject, string content, bool bIsHtmlContent,
+            CancellationToken cancellationToken)
         {
             // No recipient has been found.
             if (recipients == null || recipients.Count < 1)
@@ -76,7 +60,7 @@ namespace Main.Services
             // Content is empty.
             if (string.IsNullOrWhiteSpace(content))
                 throw new Exception("Content is empty");
-            
+
             // Initialize SendGridMessage.
             var sendGridMessage = new SendGridMessage();
 
@@ -102,11 +86,31 @@ namespace Main.Services
 
             // Debug log.
 #if DEBUG
-            _sendGridServiceLogger.LogDebug($"Sent mail to {recipients.ToList()} with subject {subject} and content {content}");
+            _sendGridServiceLogger.LogDebug(
+                $"Sent mail to {recipients.ToList()} with subject {subject} and content {content}");
 #endif
             // Send mail asynchronously.
             await _sendGridClient.SendEmailAsync(sendGridMessage, cancellationToken);
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Sendgrid client to make request to SendGrid service.
+        /// </summary>
+        private readonly SendGridClient _sendGridClient;
+
+        /// <summary>
+        ///     Settings of sendgrid service.
+        /// </summary>
+        private readonly SendGridSetting _sendGridSetting;
+
+        /// <summary>
+        ///     Sendgrid client logger.
+        /// </summary>
+        private readonly ILogger<SendGridService> _sendGridServiceLogger;
 
         #endregion
     }

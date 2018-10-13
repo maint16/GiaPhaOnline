@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using AppModel.Enumerations;
-using AppModel.Models;
 using Main.Interfaces.Services;
+using Shared.Enumerations;
 using Shared.Models;
 
 namespace Main.Services

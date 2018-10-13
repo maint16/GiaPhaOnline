@@ -28,8 +28,6 @@
     <Compile Remove="Models\RealTimeNotification.cs" />
     <Compile Remove="Services\RealTime\PusherService.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
-    <Compile Remove="ViewModels\RealtimeConnection\AuthorizePusherViewModel.cs" />
-    <Compile Remove="ViewModels\RealtimeConnection\SendPusherMessageViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AppBusiness\AppBusiness.csproj" />
     <ProjectReference Include="..\AppDb\AppDb.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
@@ -66,6 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Jwt\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
 using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -22,7 +21,7 @@ namespace AppDb.Models.Entities
         public int TopicId { get; set; }
 
         /// <summary>
-        /// Status of follow post.
+        ///     Status of follow post.
         /// </summary>
         public FollowStatus Status { get; set; }
 

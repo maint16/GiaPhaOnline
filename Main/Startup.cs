@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
-using AppDb.Models;
 using AppDb.Models.Contexts;
 using AppDb.Models.Entities;
 using AppDb.Repositories;
 using AppDb.Services;
-using AppModel.Enumerations;
+using AppModel.Models;
 using AutoMapper;
 using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
@@ -17,7 +17,6 @@ using Main.Constants;
 using Main.Extensions;
 using Main.Hubs;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
 using Main.Models.Captcha;
@@ -43,6 +42,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Serilog;
+using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Services;
 using VgySdk.Interfaces;
@@ -96,18 +96,18 @@ namespace Main
             AddServices(services);
 
             // Load jwt configuration from setting files.
-            services.Configure<JwtConfiguration>(Configuration.GetSection(nameof(JwtConfiguration)));
+            services.Configure<AppJwtModel>(Configuration.GetSection(AppConfigKeyConstant.AppJwt));
             services.Configure<ApplicationSetting>(Configuration.GetSection(nameof(ApplicationSetting)));
-            services.Configure<GoogleCredential>(Configuration.GetSection(nameof(GoogleCredential)));
-            services.Configure<FacebookCredential>(Configuration.GetSection(nameof(FacebookCredential)));
-            services.Configure<FcmOption>(Configuration.GetSection(nameof(FcmOption)));
-            services.Configure<SendGridSetting>(Configuration.GetSection(nameof(SendGridSetting)));
+            services.Configure<GoogleCredential>(Configuration.GetSection(AppConfigKeyConstant.GoogleCredential));
+            services.Configure<FacebookCredential>(Configuration.GetSection(AppConfigKeyConstant.FacebookCredential));
+            services.Configure<FcmOption>(Configuration.GetSection(AppConfigKeyConstant.AppFirebase));
+            services.Configure<SendGridSetting>(Configuration.GetSection(AppConfigKeyConstant.AppSendGrid));
             //services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
             services.Configure<CaptchaSetting>(Configuration.GetSection(nameof(CaptchaSetting)));
 
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
-            var jwtBearerSettings = servicesProvider.GetService<IOptions<JwtConfiguration>>().Value;
+            var jwtBearerSettings = servicesProvider.GetService<IOptions<AppJwtModel>>().Value;
             var fcmOption = servicesProvider.GetService<IOptions<FcmOption>>().Value;
 
             // Cors configuration.
@@ -272,7 +272,7 @@ namespace Main
             services.AddDbContext<InMemoryRelationalDbContext>(
                 options => options.UseInMemoryDatabase("iConfess")
                     .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
-            
+
             var bDbCreated = false;
             services.AddScoped<DbContext>(context =>
             {
@@ -296,7 +296,7 @@ namespace Main
             services.AddScoped<IRelationalDbService, RelationalDbService>();
 
             services.AddScoped<IEncryptionService, EncryptionService>();
-            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<ITimeService, TimeService>();
             services.AddScoped<ICloudMessagingService, FcmService>();
             //            services.AddScoped<INotifyService, NotifyService>();
@@ -322,16 +322,15 @@ namespace Main
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
 
-            services.AddScoped<ITopicService, TopicService>();
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<ICategoryGroupService, CategoryGroupService>();
-            services.AddScoped<ITopicReportService, TopicReportService>();
-            services.AddScoped<IReplyService, ReplyService>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IFollowTopicService, FollowTopicService>();
-            services.AddScoped<IFollowCategoryService, FollowCategoryService>();
-            services.AddScoped<IUserService, UserService>();
-            
+            services.AddScoped<ITopicDomain, TopicDomain>();
+            services.AddScoped<ICategoryDomain, CategoryDomain>();
+            services.AddScoped<ICategoryGroupDomain, CategoryGroupDomain>();
+            services.AddScoped<ITopicReportDomain, TopicReportDomain>();
+            services.AddScoped<IReplyDomain, TopicReplyDomain>();
+            services.AddScoped<IUserDomain, UserDomain>();
+            services.AddScoped<IFollowTopicDomain, FollowTopicDomain>();
+            services.AddScoped<IFollowCategoryDomain, FollowCategoryDomain>();
+            services.AddScoped<IUserDomain, UserDomain>();
 
 
             // Get email cache option.

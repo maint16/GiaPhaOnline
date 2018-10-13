@@ -1,7 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -30,7 +28,7 @@ namespace AppDb.Models.Entities
         public string Reason { get; set; }
 
         /// <summary>
-        /// Status of topic report.
+        ///     Status of topic report.
         /// </summary>
         public ItemStatus Status { get; set; }
 
@@ -40,7 +38,7 @@ namespace AppDb.Models.Entities
         public double CreatedTime { get; set; }
 
         /// <summary>
-        /// When the report was lastly modified.
+        ///     When the report was lastly modified.
         /// </summary>
         public double? LastModifiedTime { get; set; }
 

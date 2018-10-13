@@ -5,12 +5,12 @@
         #region Properties
 
         /// <summary>
-        /// DeviceId which is used for submitting request to FCM server.
+        ///     DeviceId which is used for submitting request to FCM server.
         /// </summary>
         public string ServerKey { get; set; }
-        
+
         /// <summary>
-        /// Id of project.
+        ///     Id of project.
         /// </summary>
         public string SenderId { get; set; }
 

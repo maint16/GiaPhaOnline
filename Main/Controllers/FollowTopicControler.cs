@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AutoMapper;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
-using Main.ViewModels.FollowTopic;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Interfaces.Services;
+using Shared.ViewModels.FollowTopic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,7 +16,7 @@ namespace Main.Controllers
     {
         #region Properties
 
-        private readonly IFollowTopicService _followTopicService;
+        private readonly IFollowTopicDomain _followTopicDomain;
 
         #endregion
 
@@ -30,11 +30,11 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
-        /// <param name="followTopicService"></param>
-        public FollowTopicControler(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction, IFollowTopicService followTopicService)
+        /// <param name="followTopicDomain"></param>
+        public FollowTopicControler(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
+            ITimeService timeService, IRelationalDbService databaseFunction, IFollowTopicDomain followTopicDomain)
         {
-            _followTopicService = followTopicService;
+            _followTopicDomain = followTopicDomain;
         }
 
         #endregion
@@ -51,7 +51,7 @@ namespace Main.Controllers
         {
             var addFollowTopic = new AddFollowTopicViewModel();
             addFollowTopic.TopicId = topicId;
-            var followTopic = await _followTopicService.AddFollowTopicAsync(addFollowTopic);
+            var followTopic = await _followTopicDomain.AddFollowTopicAsync(addFollowTopic);
 
             return Ok(followTopic);
         }
@@ -66,7 +66,7 @@ namespace Main.Controllers
         {
             var deleteFollowTopicModel = new DeleteFollowTopicViewModel();
             deleteFollowTopicModel.TopicId = topicId;
-            await _followTopicService.DeleteFollowTopicAsync(deleteFollowTopicModel);
+            await _followTopicDomain.DeleteFollowTopicAsync(deleteFollowTopicModel);
             return Ok();
         }
 
@@ -87,7 +87,7 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var loadFollowTopicsResult = await _followTopicService.SearchFollowTopicsAsync(condition);
+            var loadFollowTopicsResult = await _followTopicDomain.SearchFollowTopicsAsync(condition);
             return Ok(loadFollowTopicsResult);
         }
 

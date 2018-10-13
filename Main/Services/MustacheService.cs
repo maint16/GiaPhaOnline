@@ -1,5 +1,4 @@
-﻿using System;
-using Main.Interfaces.Services;
+﻿using Main.Interfaces.Services;
 using Mustache;
 
 namespace Main.Services
@@ -8,7 +7,7 @@ namespace Main.Services
     {
         #region Methods
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public string Compile(string szTemplate, object data)
         {
             var formatCompiler = new FormatCompiler();

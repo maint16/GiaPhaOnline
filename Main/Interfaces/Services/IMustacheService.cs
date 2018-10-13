@@ -5,7 +5,7 @@
         #region Methods
 
         /// <summary>
-        /// Compile template with data to a string.
+        ///     Compile template with data to a string.
         /// </summary>
         /// <param name="szTemplate"></param>
         /// <param name="data"></param>

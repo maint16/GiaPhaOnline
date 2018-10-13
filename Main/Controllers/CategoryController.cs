@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppModel.Models;
 using AutoMapper;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
-using Main.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels.Category;
 
 namespace Main.Controllers
 {
@@ -33,8 +32,8 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService,
-            IRealTimeService realTimeService, ICategoryService categoryService) : base(unitOfWork, mapper, timeService,
+            IProfileService identityService,
+            IRealTimeService realTimeService, ICategoryDomain categoryService) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _realTimeService = realTimeService;
@@ -47,7 +46,7 @@ namespace Main.Controllers
 
         private readonly IRealTimeService _realTimeService;
 
-        private readonly ICategoryService _categoryService;
+        private readonly ICategoryDomain _categoryService;
 
         #endregion
 
@@ -93,7 +92,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.AddCategory, category,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.AddCategory, category,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -104,7 +103,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = category;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -142,7 +141,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditCategory, category,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditCategory, category,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -153,7 +152,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = category;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -188,7 +187,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Load category using specific id.
+        ///     Load category using specific id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -196,7 +195,7 @@ namespace Main.Controllers
         public async Task<IActionResult> LoadCategoryUsingId([FromRoute] int id)
         {
             var loadCategoryCondition = new SearchCategoryViewModel();
-            loadCategoryCondition.Ids = new HashSet<int> { id };
+            loadCategoryCondition.Ids = new HashSet<int> {id};
             loadCategoryCondition.Pagination = new Pagination(1, 1);
 
             var category = await _categoryService.GetCategoryUsingIdAsync(id, CancellationToken.None);

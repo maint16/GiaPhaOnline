@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using Main.Models.PushNotification;
 using Main.Models.RealTime;
 
 namespace Main.Interfaces.Services.RealTime
@@ -9,19 +8,20 @@ namespace Main.Interfaces.Services.RealTime
     public interface IRealTimeService
     {
         #region Methods
-        
+
         /// <summary>
-        /// Send real-time notification to specific clients.
+        ///     Send real-time notification to specific clients.
         /// </summary>
         /// <param name="clientIds"></param>
         /// <param name="eventName"></param>
         /// <param name="message"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SendRealTimeMessageToClientsAsync<T>(string[] clientIds, string eventName, T message, CancellationToken cancellationToken);
+        Task SendRealTimeMessageToClientsAsync<T>(string[] clientIds, string eventName, T message,
+            CancellationToken cancellationToken);
 
         /// <summary>
-        /// Send real-time notification to specific group.
+        ///     Send real-time notification to specific group.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="groups"></param>
@@ -33,14 +33,14 @@ namespace Main.Interfaces.Services.RealTime
             T message, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Send push message to specific groups of users.
+        ///     Send push message to specific groups of users.
         /// </summary>
         /// <returns></returns>
         Task SendPushMessageToGroupsAsync<T>(string[] groups, string collapseKey, RealTimeMessage<T> message,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Get user available groups.
+        ///     Get user available groups.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>

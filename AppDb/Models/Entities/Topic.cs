@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
 using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -103,7 +102,8 @@ namespace AppDb.Models.Entities
         {
         }
 
-        public Topic(int id, int ownerId, int categoryId, int categoryGroupId, string title, string body, TopicType type, ItemStatus status, double createdTime, double? lastModifiedTime)
+        public Topic(int id, int ownerId, int categoryId, int categoryGroupId, string title, string body,
+            TopicType type, ItemStatus status, double createdTime, double? lastModifiedTime)
         {
             Id = id;
             OwnerId = ownerId;

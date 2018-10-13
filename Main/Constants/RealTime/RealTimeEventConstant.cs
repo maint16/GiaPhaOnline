@@ -5,7 +5,7 @@
         #region Properties
 
         /// <summary>
-        /// Event which is raised when user is registered.
+        ///     Event which is raised when user is registered.
         /// </summary>
         public const string UserRegistration = "event-user_register";
 
@@ -22,6 +22,7 @@
         public const string EditCategory = "event-edit_category";
 
         public const string EditUserStatus = "event-edit_user_status";
+
         #endregion
     }
 }

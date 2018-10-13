@@ -15,7 +15,7 @@ namespace Main.Authentications.Handlers
         #region Properties
 
         /// <summary>
-        /// Accessor which is used for accessing into HttpContext.
+        ///     Accessor which is used for accessing into HttpContext.
         /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -24,7 +24,7 @@ namespace Main.Authentications.Handlers
         #region Constructor
 
         /// <summary>
-        /// Initialize role requirement handler with injector.
+        ///     Initialize role requirement handler with injector.
         /// </summary>
         /// <param name="httpContextAccessor"></param>
         public RoleRequirementHandler(IHttpContextAccessor httpContextAccessor)
@@ -37,7 +37,7 @@ namespace Main.Authentications.Handlers
         #region Methods
 
         /// <summary>
-        /// Handle requirement asynchronously.
+        ///     Handle requirement asynchronously.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="requirement"></param>
@@ -45,7 +45,7 @@ namespace Main.Authentications.Handlers
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RoleRequirement requirement)
         {
             // Convert authorization filter context into authorization filter context.
-            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
+            var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
 
             // Check context solidity.
             if (_httpContextAccessor == null || _httpContextAccessor.HttpContext == null)
@@ -72,7 +72,7 @@ namespace Main.Authentications.Handlers
             }
 
             // Find account validity.
-            var account = (User)httpContext.Items[ClaimTypes.Actor];
+            var account = (User) httpContext.Items[ClaimTypes.Actor];
             if (account == null || !requirement.Roles.Contains(account.Role))
             {
                 // Controller or method allow by pass information analyze.
@@ -83,7 +83,8 @@ namespace Main.Authentications.Handlers
                 }
 
                 context.Fail();
-                return Task.CompletedTask; ;
+                return Task.CompletedTask;
+                ;
             }
 
             context.Succeed(requirement);
@@ -91,7 +92,7 @@ namespace Main.Authentications.Handlers
         }
 
         /// <summary>
-        /// Whether controller or method can be by passed.
+        ///     Whether controller or method can be by passed.
         /// </summary>
         /// <param name="authorizationFilterContext"></param>
         /// <returns></returns>

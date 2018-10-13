@@ -11,9 +11,9 @@ namespace AppDb.Models.Entities
         public string Group { get; set; }
 
         public int UserId { get; set; }
-        
+
         public double CreatedTime { get; set; }
-        
+
         #endregion
 
         #region Constructor

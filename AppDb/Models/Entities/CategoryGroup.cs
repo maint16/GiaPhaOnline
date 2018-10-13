@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
 using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
     public class CategoryGroup
     {
-
         #region Properties
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace AppDb.Models.Entities
         public virtual ICollection<Category> Categories { get; set; }
 
         /// <summary>
-        /// Topics which this category group contains.
+        ///     Topics which this category group contains.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<Topic> Topics { get; set; }
@@ -81,10 +80,10 @@ namespace AppDb.Models.Entities
 
         public CategoryGroup()
         {
-
         }
 
-        public CategoryGroup(int id, int creatorId, string name, string description, ItemStatus status, double createdTime, double? lastModifiedTime)
+        public CategoryGroup(int id, int creatorId, string name, string description, ItemStatus status,
+            double createdTime, double? lastModifiedTime)
         {
             Id = id;
             CreatorId = creatorId;

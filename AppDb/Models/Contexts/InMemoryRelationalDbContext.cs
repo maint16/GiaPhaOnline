@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Contexts
 {
@@ -90,8 +90,10 @@ namespace AppDb.Models.Contexts
         protected virtual void AddCategories(ModelBuilder modelBuilder)
         {
             var categories = new List<Category>();
-            categories.Add(new Category(1, 1, 1, "https://via.placeholder.com/512x512", "18+", ItemStatus.Active, "18+", 0, null));
-            categories.Add(new Category(2, 1, 1, "https://via.placeholder.com/512x512", "16+", ItemStatus.Active, "18+", 0, null));
+            categories.Add(new Category(1, 1, 1, "https://via.placeholder.com/512x512", "18+", ItemStatus.Active, "18+",
+                0, null));
+            categories.Add(new Category(2, 1, 1, "https://via.placeholder.com/512x512", "16+", ItemStatus.Active, "18+",
+                0, null));
 
             modelBuilder.Entity<Category>().HasData(categories.ToArray());
         }
@@ -103,7 +105,8 @@ namespace AppDb.Models.Contexts
         protected virtual void AddTopics(ModelBuilder modelBuilder)
         {
             var topics = new List<Topic>();
-            topics.Add(new Topic(1, 1, 1, 1, "Có nên mua mibook air ko các bác", "Mấy con 12.5 13.3 của nó ngon ko", 0,
+            topics.Add(new Topic(1, 1, 1, 1, "Có nên mua mibook air ko các bác", "Mấy con 12.5 13.3 của nó ngon ko",
+                TopicType.Public,
                 ItemStatus.Active, 0, null));
             topics.Add(new Topic(2, 2, 1, 1, "Mifit ray sale còn 10$ ", "Mua 10 cái còn 35$", 0, ItemStatus.Active, 0,
                 null));

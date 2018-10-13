@@ -18,19 +18,20 @@ namespace AppDb.Interfaces.Repositories
         IQueryable<T> Search();
 
         /// <summary>
-        /// Search data from specific entities set with specific conditions.
+        ///     Search data from specific entities set with specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         IQueryable<T> Search(Expression<Func<T, bool>> condition);
 
-            /// <summary>
-        /// Get first result.
+        /// <summary>
+        ///     Get first result.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>>  condition, CancellationToken cancellationToken = default(CancellationToken));
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Insert a record into data table.

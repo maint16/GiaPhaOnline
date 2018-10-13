@@ -10,9 +10,9 @@ using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
-using Main.ViewModels.RealTime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Shared.ViewModels.RealTime;
 
 namespace Main.Services.RealTime
 {
@@ -82,10 +82,10 @@ namespace Main.Services.RealTime
         private const string UrlDeleteDevicesFromTopic = "https://iid.googleapis.com/iid/v1:batchRemove";
 
         /// <summary>
-        /// Url to get token information.
+        ///     Url to get token information.
         /// </summary>
         private const string UrlGetCloudMessagingTokenInformation =
-                "https://iid.googleapis.com/iid/info/{0}";
+            "https://iid.googleapis.com/iid/info/{0}";
 
         /// <summary>
         ///     Url to find device group notification key.
@@ -261,14 +261,14 @@ namespace Main.Services.RealTime
             var szHttpContent = JsonConvert.SerializeObject(fcmMessage, _snakeCaseSerializerSettings);
             var httpContent = new StringContent(szHttpContent, Encoding.UTF8, "application/json");
 
-#if !DEBUG
-            // Make a request to notification server.
+#if !DEBUG // Make a request to notification server.
             var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
             return await httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
 #else
             // Make a request to notification server.
             var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
-            var httpResponseMessage = await httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
+            var httpResponseMessage =
+                await httpClient.PostAsync(new Uri(UrlSendFcmNotification), httpContent, cancellationToken);
             return httpResponseMessage;
 #endif
         }
@@ -295,12 +295,13 @@ namespace Main.Services.RealTime
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="idToken"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<CloudMessagingTokenInfoViewModel> GetCloudMessagingTokenInformationAsync(string idToken, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<CloudMessagingTokenInfoViewModel> GetCloudMessagingTokenInformationAsync(string idToken,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = _httpClientFactory.CreateClient(HttpClientGroupConstant.FcmService);
             var url = string.Format(UrlGetCloudMessagingTokenInformation, idToken);
@@ -381,6 +382,6 @@ namespace Main.Services.RealTime
             return await DeleteDevicesFromTopicsAsync(deviceIds, groups, cancellationToken);
         }
 
-#endregion
+        #endregion
     }
 }

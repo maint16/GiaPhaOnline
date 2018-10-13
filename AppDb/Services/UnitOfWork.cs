@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
-using AppDb.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -18,7 +17,13 @@ namespace AppDb.Services
         /// <summary>
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
-        public UnitOfWork(DbContext dbContext, IRepository<User> accounts, IRepository<CategoryGroup> categoryGroups, IRepository<Category> categories, IRepository<FollowCategory> followingCategories, IRepository<Reply> replies, IRepository<Topic> topics, IRepository<FollowTopic> followingTopics, IRepository<ReportTopic> reportTopics, IRepository<NotificationMessage> notificationMessages, IRepository<ActivationToken> activationTokens, IRepository<AccessToken> accessTokens, IRepository<SignalrConnection> signalrConnections, IRepository<UserRealTimeGroup> userRealTimeGroups, IRepository<UserDeviceToken> userDeviceTokens)
+        public UnitOfWork(DbContext dbContext, IRepository<User> accounts, IRepository<CategoryGroup> categoryGroups,
+            IRepository<Category> categories, IRepository<FollowCategory> followingCategories,
+            IRepository<Reply> replies, IRepository<Topic> topics, IRepository<FollowTopic> followingTopics,
+            IRepository<ReportTopic> reportTopics, IRepository<NotificationMessage> notificationMessages,
+            IRepository<ActivationToken> activationTokens, IRepository<AccessToken> accessTokens,
+            IRepository<SignalrConnection> signalrConnections, IRepository<UserRealTimeGroup> userRealTimeGroups,
+            IRepository<UserDeviceToken> userDeviceTokens)
         {
             _dbContext = dbContext;
             Accounts = accounts;
@@ -87,13 +92,13 @@ namespace AppDb.Services
         ///     Save changes into database asynchronously.
         /// </summary>
         /// <returns></returns>
-        public async Task<int> CommitAsync(CancellationToken cancellationToken = default (CancellationToken))
+        public async Task<int> CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <returns></returns>
         public IDbContextTransaction BeginTransactionScope()
@@ -102,7 +107,7 @@ namespace AppDb.Services
         }
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <param name="isolationLevel"></param>
         /// <returns></returns>

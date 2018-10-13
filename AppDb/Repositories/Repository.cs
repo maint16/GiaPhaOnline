@@ -36,7 +36,7 @@ namespace AppDb.Repositories
         #region Methods
 
         /// <summary>
-        ///    <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <returns></returns>
         public IQueryable<T> Search()
@@ -45,7 +45,7 @@ namespace AppDb.Repositories
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -55,12 +55,13 @@ namespace AppDb.Repositories
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return _dbSet.FirstOrDefaultAsync(condition, cancellationToken);
         }

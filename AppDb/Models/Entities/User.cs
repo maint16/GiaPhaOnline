@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
 using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
     public class User
     {
         #region Properties
-        
+
         /// <summary>
         ///     Id of account (Auto incremented)
         /// </summary>
@@ -52,7 +50,7 @@ namespace AppDb.Models.Entities
         public string Photo { get; set; }
 
         /// <summary>
-        /// Signature of user.
+        ///     Signature of user.
         /// </summary>
         public string Signature { get; set; }
 
@@ -71,13 +69,13 @@ namespace AppDb.Models.Entities
         #region Relationships
 
         /// <summary>
-        /// Activation token which belongs to user.
+        ///     Activation token which belongs to user.
         /// </summary>
         [JsonIgnore]
         public virtual ActivationToken ActivationToken { get; set; }
 
         /// <summary>
-        /// Token for user to access the system.
+        ///     Token for user to access the system.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<AccessToken> AccessTokens { get; set; }
@@ -137,7 +135,7 @@ namespace AppDb.Models.Entities
         public virtual ICollection<NotificationMessage> NotificationMessages { get; set; }
 
         /// <summary>
-        /// Token of devices that are used for sending notification.
+        ///     Token of devices that are used for sending notification.
         /// </summary>
         [JsonIgnore]
         public virtual ICollection<UserDeviceToken> DeviceTokens { get; set; }
@@ -148,10 +146,10 @@ namespace AppDb.Models.Entities
 
         public User()
         {
-            
         }
 
-        public User(int id, string email, string nickname, string password, UserKind type, UserStatus status, UserRole role, string photo, string signature, double joinedTime, double? lastModifiedTime)
+        public User(int id, string email, string nickname, string password, UserKind type, UserStatus status,
+            UserRole role, string photo, string signature, double joinedTime, double? lastModifiedTime)
         {
             Id = id;
             Email = email;

@@ -6,7 +6,7 @@ namespace AppDb.Models.Entities
     {
         [Required]
         public string ClientId { get; set; }
-        
+
         public int UserId { get; set; }
 
         public double? LastActivityTime { get; set; }

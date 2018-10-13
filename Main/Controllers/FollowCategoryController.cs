@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
 using AutoMapper;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
-using Main.ViewModels.FollowCategory;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
-using Shared.Models;
-using Shared.Resources;
+using Shared.ViewModels.FollowCategory;
 
 namespace Main.Controllers
 {
     [Route("api/follow-category")]
     public class FollowCategoryController : Controller
     {
+        #region Properties
+
+        private readonly IFollowCategoryDomain _followCategoryDomain;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -31,25 +28,19 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
-        /// <param name="followCategoryService"></param>
-        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction, IFollowCategoryService followCategoryService)
+        /// <param name="followCategoryDomain"></param>
+        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
+            ITimeService timeService, IRelationalDbService databaseFunction, IFollowCategoryDomain followCategoryDomain)
         {
-            _followCategoryService = followCategoryService;
+            _followCategoryDomain = followCategoryDomain;
         }
-
-        #endregion
-
-        #region Properties
-        
-        private readonly IFollowCategoryService _followCategoryService;
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Start following a category.
+        ///     Start following a category.
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
@@ -58,12 +49,12 @@ namespace Main.Controllers
         {
             var addFollowCategoryModel = new AddFollowCategoryViewModel();
             addFollowCategoryModel.CategoryId = categoryId;
-            var followCategory = await _followCategoryService.AddFollowCategoryAsync(addFollowCategoryModel);
+            var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(addFollowCategoryModel);
             return Ok(followCategory);
         }
 
         /// <summary>
-        /// Stop following a category.
+        ///     Stop following a category.
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
@@ -73,17 +64,18 @@ namespace Main.Controllers
             var deleteFollowingCategoryModel = new DeleteFollowCategoryViewModel();
             deleteFollowingCategoryModel.CategoryId = categoryId;
 
-            await _followCategoryService.DeleteFollowCategoryAsync(deleteFollowingCategoryModel);
+            await _followCategoryDomain.DeleteFollowCategoryAsync(deleteFollowingCategoryModel);
             return Ok();
         }
 
         /// <summary>
-        /// Search for following category by using specific conditions.
+        ///     Search for following category by using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> SearchForFollowingCategories([FromBody] SearchFollowCategoryViewModel condition)
+        public async Task<IActionResult> SearchForFollowingCategories(
+            [FromBody] SearchFollowCategoryViewModel condition)
         {
             if (condition == null)
             {
@@ -93,8 +85,8 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
-            var loadFollowCategoriesResult = await _followCategoryService.SearchFollowCategoriesAsync(condition);
+
+            var loadFollowCategoriesResult = await _followCategoryDomain.SearchFollowCategoriesAsync(condition);
             return Ok(loadFollowCategoriesResult);
         }
 
