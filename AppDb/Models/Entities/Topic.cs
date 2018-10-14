@@ -94,6 +94,12 @@ namespace AppDb.Models.Entities
         [JsonIgnore]
         public ICollection<ReportTopic> ReportTopics { get; set; }
 
+        [JsonIgnore]
+        public virtual CategorySummary CategorySummary { get; set; }
+
+        [JsonIgnore]
+        public virtual TopicSummary TopicSummary { get; set; }
+
         #endregion
 
         #region Constructors

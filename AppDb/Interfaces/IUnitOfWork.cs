@@ -81,6 +81,10 @@ namespace AppDb.Interfaces
         /// </summary>
         IRepository<UserDeviceToken> UserDeviceTokens { get; }
 
+        IRepository<CategorySummary> CategorySummaries { get; }
+
+        IRepository<TopicSummary> TopicSummaries { get; }
+
         #endregion
 
         #region Methods

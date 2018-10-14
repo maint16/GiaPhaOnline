@@ -5,7 +5,7 @@ using AppDb.Models.Entities;
 using Shared.Models;
 using Shared.ViewModels.Category;
 
-namespace AppBusiness.Interfaces
+namespace AppBusiness.Interfaces.Domains
 {
     public interface ICategoryDomain
     {
@@ -47,6 +47,14 @@ namespace AppBusiness.Interfaces
         /// <returns></returns>
         Task<Category> GetCategoryUsingIdAsync(int id,
             CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Search for category summaries asynchronously.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(SearchCategorySummaryViewModel condition, CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion
     }

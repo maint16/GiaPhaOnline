@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Exceptions;
@@ -60,6 +61,8 @@ namespace AppBusiness.Domain
             // Find identity from request.
             var profile = _identityService.GetProfile(_httpContext);
 
+            #region Add category
+
             // Category intialization.
             var category = new Category();
 #if USE_IN_MEMORY
@@ -76,6 +79,9 @@ namespace AppBusiness.Domain
 
             // Insert category into system.
             _unitOfWork.Categories.Insert(category);
+
+            #endregion
+
 
             await _unitOfWork.CommitAsync(cancellationToken);
             return category;
@@ -185,10 +191,29 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadCategoryCondition = new SearchCategoryViewModel();
-            loadCategoryCondition.Ids = new HashSet<int> {id};
+            loadCategoryCondition.Ids = new HashSet<int> { id };
             loadCategoryCondition.Pagination = new Pagination(1, 1);
 
             return await GetCategories(loadCategoryCondition).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(SearchCategorySummaryViewModel condition,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var categorySummaries = GetCategorySummaries(condition);
+            var loadCategorySummariesResult = new SearchResult<IList<CategorySummary>>();
+            loadCategorySummariesResult.Total = await categorySummaries.CountAsync(cancellationToken);
+
+            // Do pagination.
+            categorySummaries = _relationalDbService.Paginate(categorySummaries, condition.Pagination);
+            loadCategorySummariesResult.Records = await categorySummaries.ToListAsync(cancellationToken);
+            return loadCategorySummariesResult;
         }
 
         /// <summary>
@@ -269,10 +294,31 @@ namespace AppBusiness.Domain
                 categories = categories.Where(x => x.Status == ItemStatus.Active);
             }
 
+            #endregion
+
             return categories;
         }
 
-        #endregion
+        /// <summary>
+        /// Get category summaries using specific condition.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        protected virtual IQueryable<CategorySummary> GetCategorySummaries(SearchCategorySummaryViewModel condition)
+        {
+            // Get list of category summaries.
+            var categorySummaries = _unitOfWork.CategorySummaries.Search();
+
+            var categoryIds = condition.CategoryIds;
+            if (categoryIds != null && categoryIds.Count > 0)
+            {
+                categoryIds = categoryIds.Where(x => x > 0).ToHashSet();
+                if (categoryIds != null && categoryIds.Count > 0)
+                    categorySummaries = categorySummaries.Where(x => categoryIds.Contains(x.CategoryId));
+            }
+
+            return categorySummaries;
+        }
 
         #region Properties
 

@@ -39,6 +39,15 @@ namespace AppBusiness.Interfaces.Domains
         Task<SearchResult<IList<Topic>>> SearchTopicsAsync(SearchTopicViewModel condition,
             CancellationToken cancellationToken);
 
+        /// <summary>
+        /// Search for topic summaries.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<SearchResult<IList<TopicSummary>>> SearchTopicSummaries(SearchTopicSummaryViewModel condition,
+            CancellationToken cancellationToken);
+
         #endregion
     }
 }

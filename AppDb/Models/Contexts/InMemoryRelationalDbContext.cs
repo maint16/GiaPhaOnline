@@ -43,8 +43,14 @@ namespace AppDb.Models.Contexts
             // Add topic moking data.
             AddTopics(modelBuilder);
 
-            // Add reply moking data.
+            // Add reply mocking data.
             AddReplies(modelBuilder);
+
+            // Add category summary mocking data.
+            AddCategorySummary(modelBuilder);
+
+            // Add topic summary.
+            AddTopicSummary(modelBuilder);
 
             AddUserRealTimeGroup(modelBuilder);
         }
@@ -138,6 +144,30 @@ namespace AppDb.Models.Contexts
             var userRealTimeGroups = new List<UserRealTimeGroup>();
             userRealTimeGroups.Add(new UserRealTimeGroup(Guid.NewGuid(), "Admin", 1, 0));
             modelBuilder.Entity<UserRealTimeGroup>().HasData(userRealTimeGroups.ToArray());
+        }
+
+        /// <summary>
+        /// Add category summary.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected virtual void AddCategorySummary(ModelBuilder modelBuilder)
+        {
+            var categorySummaries = new List<CategorySummary>();
+            categorySummaries.Add(new CategorySummary(1, 2, 0, 2, "Mifit ray sale còn 10$", 0));
+
+            modelBuilder.Entity<CategorySummary>().HasData(categorySummaries.ToArray());
+        }
+
+        /// <summary>
+        /// Add topic summary.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected virtual void AddTopicSummary(ModelBuilder modelBuilder)
+        {
+            var topicSummaries = new List<TopicSummary>();
+            topicSummaries.Add(new TopicSummary(1, 0, 2));
+
+            modelBuilder.Entity<TopicSummary>().HasData(topicSummaries.ToArray());
         }
 
         #endregion

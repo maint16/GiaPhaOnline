@@ -101,11 +101,10 @@ namespace AppBusiness.Domain
             // Insert topic into system.
             _unitOfWork.Topics.Insert(topic);
 
-            await _unitOfWork.CommitAsync(cancellationToken);
-
             #endregion
 
             return topic;
+
         }
 
         /// <summary>
@@ -208,6 +207,21 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<SearchResult<IList<TopicSummary>>> SearchTopicSummaries(SearchTopicSummaryViewModel condition, CancellationToken cancellationToken)
+        {
+            var topicSummaries = GetTopicSummaries(condition);
+            var loadTopicSummariesResult = new SearchResult<IList<TopicSummary>>();
+            loadTopicSummariesResult.Total = await topicSummaries.CountAsync(cancellationToken);
+            loadTopicSummariesResult.Records = await _relationalDbService.Paginate(topicSummaries, condition.Pagination).ToListAsync(cancellationToken);
+            return loadTopicSummariesResult;
+        }
+
+        /// <summary>
         ///     Get topics using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
@@ -268,6 +282,27 @@ namespace AppBusiness.Domain
             }
 
             return topics;
+        }
+
+        /// <summary>
+        /// Get topic summaries using specific condition.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        protected virtual IQueryable<TopicSummary> GetTopicSummaries(SearchTopicSummaryViewModel condition)
+        {
+            // Get list of category summaries.
+            var topicSummaries = _unitOfWork.TopicSummaries.Search();
+
+            var topicIds = condition.TopicIds;
+            if (topicIds != null && topicIds.Count > 0)
+            {
+                topicIds = topicIds.Where(x => x > 0).ToHashSet();
+                if (topicIds != null && topicIds.Count > 0)
+                    topicSummaries = topicSummaries.Where(x => topicIds.Contains(x.TopicId));
+            }
+
+            return topicSummaries;
         }
 
         #endregion
