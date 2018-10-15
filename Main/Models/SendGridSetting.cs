@@ -7,12 +7,12 @@ namespace Main.Models
         #region Properties
 
         /// <summary>
-        /// Api key.
+        ///     Api key.
         /// </summary>
         public string ApiKey { get; set; }
 
         /// <summary>
-        /// Email address which mail is sent from.
+        ///     Email address which mail is sent from.
         /// </summary>
         public EmailAddress From { get; set; }
 

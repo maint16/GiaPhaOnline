@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppModel.Exceptions;
 using AutoMapper;
+using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
-using Main.ViewModels.Reply;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Interfaces.Services;
+using Shared.ViewModels.Reply;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -30,22 +32,22 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService,
+            IProfileService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger logger, IReplyService replyService) : base(unitOfWork, mapper, timeService,
+            ILogger<ReplyController> logger, IReplyDomain replyDomain) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _logger = logger;
-            _replyService = replyService;
+            _replyDomain = replyDomain;
         }
 
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         ///     Send email service
         /// </summary>
@@ -61,7 +63,7 @@ namespace Main.Controllers
         /// </summary>
         private readonly ILogger _logger;
 
-        private readonly IReplyService _replyService;
+        private readonly IReplyDomain _replyDomain;
 
         #endregion
 
@@ -88,7 +90,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var topicReply = await _replyService.AddReplyAsync(model);
+            var topicReply = await _replyDomain.AddReplyAsync(model);
             return Ok(topicReply);
         }
 
@@ -117,7 +119,7 @@ namespace Main.Controllers
             try
             {
                 // Update reply information.
-                var reply = await _replyService.EditReplyAsync(id, info);
+                var reply = await _replyDomain.EditReplyAsync(id, info);
 
                 var users = UnitOfWork.Accounts.Search();
                 users = users.Where(x => x.Id == reply.OwnerId);
@@ -153,6 +155,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public async Task<IActionResult> LoadReplies([FromBody] SearchReplyViewModel condition)
         {
             #region Parameters validation
@@ -168,7 +171,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var loadTopicRepliesResult = await _replyService.SearchRepliesAsync(condition);
+            var loadTopicRepliesResult = await _replyDomain.SearchRepliesAsync(condition);
             return Ok(loadTopicRepliesResult);
         }
 

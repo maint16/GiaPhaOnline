@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Main.Interfaces.Services;
 using Main.Models.Captcha;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 
 namespace Main.Services
 {

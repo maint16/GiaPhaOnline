@@ -28,8 +28,6 @@
     <Compile Remove="Models\RealTimeNotification.cs" />
     <Compile Remove="Services\RealTime\PusherService.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
-    <Compile Remove="ViewModels\RealtimeConnection\AuthorizePusherViewModel.cs" />
-    <Compile Remove="ViewModels\RealtimeConnection\SendPusherMessageViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +53,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AppBusiness\AppBusiness.csproj" />
     <ProjectReference Include="..\AppDb\AppDb.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
@@ -63,6 +62,10 @@
     <None Update="Cache\Email\SubmitPasswordRequest.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

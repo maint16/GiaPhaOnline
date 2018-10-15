@@ -1,17 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AppDb.Interfaces.Repositories
 {
-    public interface IRepository<T> 
+    public interface IRepository<T>
     {
         #region Methods
-        
-            /// <summary>
+
+        /// <summary>
         ///     Search all data from the specific table.
         /// </summary>
         /// <returns></returns>
         IQueryable<T> Search();
+
+        /// <summary>
+        ///     Search data from specific entities set with specific conditions.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        IQueryable<T> Search(Expression<Func<T, bool>> condition);
+
+        /// <summary>
+        ///     Get first result.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Insert a record into data table.
@@ -32,7 +52,7 @@ namespace AppDb.Interfaces.Repositories
         /// <param name="entity"></param>
         /// <returns></returns>
         void Remove(T entity);
-        
+
         #endregion
     }
 }

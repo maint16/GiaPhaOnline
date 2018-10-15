@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
-using Newtonsoft.Json;
+﻿using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -41,7 +37,7 @@ namespace AppDb.Models.Entities
         public string Content { get; set; }
 
         /// <summary>
-        /// Status of comment.
+        ///     Status of comment.
         /// </summary>
         public ItemStatus Status { get; set; }
 
@@ -77,7 +73,8 @@ namespace AppDb.Models.Entities
         {
         }
 
-        public Reply(int id, int ownerId, int topicId, int categoryId, int categoryGroupId, string content, ItemStatus status, double createdTime, double? lastModifiedTime)
+        public Reply(int id, int ownerId, int topicId, int categoryId, int categoryGroupId, string content,
+            ItemStatus status, double createdTime, double? lastModifiedTime)
         {
             Id = id;
             OwnerId = ownerId;

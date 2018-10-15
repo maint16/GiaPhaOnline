@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Main.Interfaces.Services;
 using Main.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -8,14 +7,14 @@ using Microsoft.AspNetCore.Hosting;
 namespace Main.Services
 {
     /// <summary>
-    /// Service for email caching.
+    ///     Service for email caching.
     /// </summary>
     public class EmailCacheService : ValueCacheBaseService<string, EmailCacheOption>, IEmailCacheService
     {
         #region Properties
 
         /// <summary>
-        /// Hosting environment.
+        ///     Hosting environment.
         /// </summary>
         public IHostingEnvironment HostingEnvironment { get; set; }
 
@@ -24,7 +23,7 @@ namespace Main.Services
         #region Methods
 
         /// <summary>
-        /// Read configuration from cache options.
+        ///     Read configuration from cache options.
         /// </summary>
         /// <param name="cacheOptions"></param>
         public void ReadConfiguration(IDictionary<string, EmailCacheOption> cacheOptions)
@@ -43,7 +42,7 @@ namespace Main.Services
                     fullPath = option.FileName;
                 else
                     fullPath = Path.Combine(HostingEnvironment.ContentRootPath, option.FileName);
-                
+
                 // File doesn't exist.
                 if (string.IsNullOrWhiteSpace(fullPath) || !File.Exists(fullPath))
                     continue;
@@ -58,7 +57,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Override find key method.
+        ///     Override find key method.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>

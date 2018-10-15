@@ -134,6 +134,9 @@
   <data name="AccountIsPending" xml:space="preserve">
     <value>ACCOUNT_IS_PENDING</value>
   </data>
+  <data name="ActivationCodeNotFound" xml:space="preserve">
+    <value>ACTIVATION_CODE_NOT_FOUND</value>
+  </data>
   <data name="CannotAccessToPrivateChannel" xml:space="preserve">
     <value>CANNOT_ACCESS_TO_PRIVATE_CHANNEL</value>
   </data>
@@ -190,6 +193,9 @@
   </data>
   <data name="GoogleCodeIsInvalid" xml:space="preserve">
     <value>GOOGLE_CODE_IS_INVALID</value>
+  </data>
+  <data name="HasNoPermissionChangeUserProfilePhoto" xml:space="preserve">
+    <value>HAS_NO_PERMISSION_CHANGE_USER_PROFILE_PHOTO</value>
   </data>
   <data name="ImageIsInvalid" xml:space="preserve">
     <value>IMAGE_IS_INVALID</value>

@@ -50,7 +50,7 @@ namespace AppDb.Interfaces
         ///     Provides functions to access topic reports database.
         /// </summary>
         IRepository<ReportTopic> ReportTopics { get; }
-        
+
         /// <summary>
         ///     Provides functions to notification message database.
         /// </summary>
@@ -62,24 +62,28 @@ namespace AppDb.Interfaces
         IRepository<ActivationToken> ActivationTokens { get; }
 
         /// <summary>
-        /// Access tokens list.
+        ///     Access tokens list.
         /// </summary>
         IRepository<AccessToken> AccessTokens { get; }
 
-            /// <summary>
+        /// <summary>
         ///     Provides functions to access signalr connections database.
         /// </summary>
         IRepository<SignalrConnection> SignalrConnections { get; }
 
         /// <summary>
-        /// Real time groups that user belongs.
+        ///     Real time groups that user belongs.
         /// </summary>
         IRepository<UserRealTimeGroup> UserRealTimeGroups { get; }
 
         /// <summary>
-        /// Cloud messaging device group.
+        ///     Cloud messaging device group.
         /// </summary>
         IRepository<UserDeviceToken> UserDeviceTokens { get; }
+
+        IRepository<CategorySummary> CategorySummaries { get; }
+
+        IRepository<TopicSummary> TopicSummaries { get; }
 
         #endregion
 
@@ -95,16 +99,16 @@ namespace AppDb.Interfaces
         ///     Save changes into database asynchronously.
         /// </summary>
         /// <returns></returns>
-        Task<int> CommitAsync(CancellationToken cancellationToken = default (CancellationToken));
+        Task<int> CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <returns></returns>
         IDbContextTransaction BeginTransactionScope();
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <param name="isolationLevel"></param>
         /// <returns></returns>

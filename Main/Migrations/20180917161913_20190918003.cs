@@ -8,24 +8,21 @@ namespace Main.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SignalrConnectionGroup");
+                "SignalrConnectionGroup");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "SignalrConnectionGroup",
-                columns: table => new
+                "SignalrConnectionGroup",
+                table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     ClientId = table.Column<string>(nullable: true),
                     Group = table.Column<string>(nullable: true),
                     UserId = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SignalrConnectionGroup", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_SignalrConnectionGroup", x => x.Id); });
         }
     }
 }

@@ -36,17 +36,17 @@ namespace AppDb.Models.Contexts
         ///     List of categories in database.
         /// </summary>
         public virtual DbSet<Category> Categories { get; set; }
-        
+
         /// <summary>
         ///     List of relationships between followers and categories. (many - many)
         /// </summary>
         public virtual DbSet<FollowCategory> FollowCategories { get; set; }
-        
+
         /// <summary>
         ///     List of relationships between followers and posts (many - many).
         /// </summary>
         public virtual DbSet<FollowTopic> FollowTopics { get; set; }
-        
+
         /// <summary>
         ///     List of posts.
         /// </summary>
@@ -63,24 +63,29 @@ namespace AppDb.Models.Contexts
         public virtual DbSet<NotificationMessage> NotificationMessages { get; set; }
 
         /// <summary>
-        /// Topic replies.
+        ///     Topic replies.
         /// </summary>
         public virtual DbSet<Reply> Replies { get; set; }
-        
+
         /// <summary>
-        /// Signalr connection.
+        ///     Signalr connection.
         /// </summary>
         public virtual DbSet<SignalrConnection> SignalrConnections { get; set; }
-        
+
         /// <summary>
-        /// User real time groups.
+        ///     User real time groups.
         /// </summary>
         public virtual DbSet<UserRealTimeGroup> UserRealTimeGroups { get; set; }
-        
+
         /// <summary>
-        /// List of device groups.
+        ///     List of device groups.
         /// </summary>
         public virtual DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
+
+        /// <summary>
+        /// Category summaries.
+        /// </summary>
+        public virtual DbSet<CategorySummary> CategorySummaries { get; set; }
 
         #endregion
 
@@ -136,7 +141,7 @@ namespace AppDb.Models.Contexts
 
             // Follow topic table.
             AddFollowTopicTable(modelBuilder);
-            
+
             // Report topic table.
             AddReportTopicTable(modelBuilder);
 
@@ -146,9 +151,16 @@ namespace AppDb.Models.Contexts
             // Add signalr connection group table.
             AddUserDeviceGroupTable(modelBuilder);
 
+            // Add notification message table.
             AddNotificationMessageTable(modelBuilder);
 
+            // Add cloud messaging device group table.
             AddCloudMessagingDeviceGroupTable(modelBuilder);
+
+            // Add category summary table.
+            AddCategorySummaryTable(modelBuilder);
+
+            AddTopicSummaryTable(modelBuilder);
 
             // Use model builder to specify composite primary keys.
             // Composite primary keys configuration
@@ -160,16 +172,15 @@ namespace AppDb.Models.Contexts
             // Disable cascade delete.
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            
         }
 
         #region Tables initialization
 
         /// <summary>
-        /// Initialize account table.
+        ///     Initialize account table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddUserTable(ModelBuilder modelBuilder)
+        protected virtual void AddUserTable(ModelBuilder modelBuilder)
         {
             var user = modelBuilder.Entity<User>();
 
@@ -182,10 +193,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize category table.
+        ///     Initialize category table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddCategoryGroupTable(ModelBuilder modelBuilder)
+        protected virtual void AddCategoryGroupTable(ModelBuilder modelBuilder)
         {
             var categoryGroup = modelBuilder.Entity<CategoryGroup>();
 
@@ -198,10 +209,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize category table.
+        ///     Initialize category table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddCategoryTable(ModelBuilder modelBuilder)
+        protected virtual void AddCategoryTable(ModelBuilder modelBuilder)
         {
             var category = modelBuilder.Entity<Category>();
 
@@ -217,10 +228,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize topic table.
+        ///     Initialize topic table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddTopicTable(ModelBuilder modelBuilder)
+        protected virtual void AddTopicTable(ModelBuilder modelBuilder)
         {
             // Find topic instance.
             var topic = modelBuilder.Entity<Topic>();
@@ -237,10 +248,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize reply table.
+        ///     Initialize reply table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddReplyTable(ModelBuilder modelBuilder)
+        protected virtual void AddReplyTable(ModelBuilder modelBuilder)
         {
             var reply = modelBuilder.Entity<Reply>();
 
@@ -256,10 +267,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize activation token table.
+        ///     Initialize activation token table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddActivationTokenTable(ModelBuilder modelBuilder)
+        protected virtual void AddActivationTokenTable(ModelBuilder modelBuilder)
         {
             var activationToken = modelBuilder.Entity<ActivationToken>();
 
@@ -273,10 +284,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add access token table.
+        ///     Add access token table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddAccessTokenTable(ModelBuilder modelBuilder)
+        protected virtual void AddAccessTokenTable(ModelBuilder modelBuilder)
         {
             var accessToken = modelBuilder.Entity<AccessToken>();
             accessToken.HasKey(x => new {x.Code, x.OwnerId});
@@ -285,17 +296,17 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize follow category table.
+        ///     Initialize follow category table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddFollowCategoryTable(ModelBuilder modelBuilder)
+        protected virtual void AddFollowCategoryTable(ModelBuilder modelBuilder)
         {
             // Find follow category instance.
             var followCategory = modelBuilder.Entity<FollowCategory>();
 
             // Primary key initialization.
             followCategory.HasKey(x => new {x.FollowerId, x.CategoryId});
-            
+
             // Relationship between follow category and account.
             followCategory.HasOne(x => x.Follower).WithMany(x => x.FollowCategories).HasForeignKey(x => x.FollowerId);
 
@@ -304,10 +315,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize follow post table.
+        ///     Initialize follow post table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddFollowTopicTable(ModelBuilder modelBuilder)
+        protected virtual void AddFollowTopicTable(ModelBuilder modelBuilder)
         {
             // Find follow topic instance.
             var followTopic = modelBuilder.Entity<FollowTopic>();
@@ -321,12 +332,12 @@ namespace AppDb.Models.Contexts
             // Relationship between follower & user..
             followTopic.HasOne(x => x.Follower).WithMany(x => x.FollowTopics).HasForeignKey(x => x.FollowerId);
         }
-        
+
         /// <summary>
-        /// Initialize post report table.
+        ///     Initialize post report table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddReportTopicTable(ModelBuilder modelBuilder)
+        protected virtual void AddReportTopicTable(ModelBuilder modelBuilder)
         {
             // Find post report instance.
             var topicReport = modelBuilder.Entity<ReportTopic>();
@@ -341,15 +352,13 @@ namespace AppDb.Models.Contexts
             // Relationship between topic report and account.
             topicReport.HasOne(x => x.TopicOwner).WithMany(x => x.OwnedTopicReports).HasForeignKey(x => x.OwnerId);
             topicReport.HasOne(x => x.TopicReporter).WithMany(x => x.ReportedPosts).HasForeignKey(x => x.ReporterId);
-            
-
         }
 
         /// <summary>
-        /// Add signalr connection table.
+        ///     Add signalr connection table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddSignalrConnectionTable(ModelBuilder modelBuilder)
+        protected virtual void AddSignalrConnectionTable(ModelBuilder modelBuilder)
         {
             var signalrConnection = modelBuilder.Entity<SignalrConnection>();
             signalrConnection.HasKey(x => x.ClientId);
@@ -358,10 +367,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Initialize notification message table.
+        ///     Initialize notification message table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddNotificationMessageTable(ModelBuilder modelBuilder)
+        protected virtual void AddNotificationMessageTable(ModelBuilder modelBuilder)
         {
             // Find notification message.
             var notificationMessage = modelBuilder.Entity<NotificationMessage>();
@@ -375,10 +384,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add signalrl connection group table.
+        ///     Add signalrl connection group table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddUserDeviceGroupTable(ModelBuilder modelBuilder)
+        protected virtual void AddUserDeviceGroupTable(ModelBuilder modelBuilder)
         {
             //var signalrConnectionGroup = modelBuilder.Entity<SignalrConnectionGroup>();
             //signalrConnectionGroup.HasKey(x => x.Id);
@@ -388,10 +397,10 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add cloud messaging device group table.
+        ///     Add cloud messaging device group table.
         /// </summary>
         /// <param name="modelBuilder"></param>
-        private void AddCloudMessagingDeviceGroupTable(ModelBuilder modelBuilder)
+        protected virtual void AddCloudMessagingDeviceGroupTable(ModelBuilder modelBuilder)
         {
             var userDeviceToken = modelBuilder.Entity<UserDeviceToken>();
             userDeviceToken.HasKey(x => x.DeviceId);
@@ -400,8 +409,36 @@ namespace AppDb.Models.Contexts
             userDeviceToken.HasOne(x => x.User).WithMany(x => x.DeviceTokens).HasForeignKey(x => x.UserId);
         }
 
-#endregion
+        /// <summary>
+        /// Add category summary table.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected virtual void AddCategorySummaryTable(ModelBuilder modelBuilder)
+        {
+            var categorySummary = modelBuilder.Entity<CategorySummary>();
+            categorySummary.HasKey(x => x.CategoryId);
 
-#endregion
+            categorySummary.HasOne(x => x.Category).WithOne(x => x.CategorySummary)
+                .HasForeignKey<CategorySummary>(x => x.CategoryId);
+
+            categorySummary.HasOne(x => x.LastTopic).WithOne(x => x.CategorySummary)
+                .HasForeignKey<CategorySummary>(x => x.LastTopicId);
+        }
+
+        /// <summary>
+        /// Add topic summary table.
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected virtual void AddTopicSummaryTable(ModelBuilder modelBuilder)
+        {
+            var topicSummary = modelBuilder.Entity<TopicSummary>();
+            topicSummary.HasKey(x => x.TopicId);
+
+            topicSummary.HasOne(x => x.Topic).WithOne(x => x.TopicSummary).HasForeignKey<TopicSummary>(x => x.TopicId);
+        }
+
+        #endregion
+
+        #endregion
     }
 }

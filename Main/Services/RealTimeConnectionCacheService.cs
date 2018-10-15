@@ -1,5 +1,4 @@
 ﻿using AppDb.Models.Entities;
-using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 
 namespace Main.Services
@@ -9,7 +8,7 @@ namespace Main.Services
         #region Methods
 
         /// <summary>
-        /// All keys should be lower cased.
+        ///     All keys should be lower cased.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>

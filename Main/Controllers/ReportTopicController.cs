@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppModel.Exceptions;
 using AutoMapper;
 using Main.Interfaces.Services;
-using Main.Services.Businesses;
-using Main.ViewModels.ReportTopic;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Interfaces.Services;
+using Shared.ViewModels.ReportTopic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,7 +19,7 @@ namespace Main.Controllers
     {
         #region Properties
 
-        private readonly ITopicReportService _topicReportService;
+        private readonly ITopicReportDomain _topicReportDomain;
 
         #endregion
 
@@ -30,11 +31,11 @@ namespace Main.Controllers
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService, ITopicReportService topicReportService) : base(unitOfWork, mapper,
+            IProfileService identityService, ITopicReportDomain topicReportDomain) : base(unitOfWork, mapper,
             timeService,
             relationalDbService, identityService)
         {
-            _topicReportService = topicReportService;
+            _topicReportDomain = topicReportDomain;
         }
 
         #endregion
@@ -58,7 +59,7 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var topicReport = await _topicReportService.AddTopicReportAsync(model);
+            var topicReport = await _topicReportDomain.AddTopicReportAsync(model);
             return Ok(topicReport);
         }
 
@@ -83,7 +84,7 @@ namespace Main.Controllers
 
             try
             {
-                var topicReport = await _topicReportService.EditTopicReportAsync(topicId, model);
+                var topicReport = await _topicReportDomain.EditTopicReportAsync(topicId, model);
                 return Ok(topicReport);
             }
             catch (Exception exception)
@@ -116,7 +117,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var loadTopicReportsResult = await _topicReportService.SearchTopicReportsAsync(condition);
+            var loadTopicReportsResult = await _topicReportDomain.SearchTopicReportsAsync(condition);
             return Ok(loadTopicReportsResult);
         }
 

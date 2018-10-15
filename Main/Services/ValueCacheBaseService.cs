@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using AppBusiness.Interfaces;
 using Main.Interfaces.Services;
 
 namespace Main.Services
@@ -11,7 +12,7 @@ namespace Main.Services
         #region Properties
 
         /// <summary>
-        /// List of key-value pairs.
+        ///     List of key-value pairs.
         /// </summary>
         private readonly IDictionary<TKey, KeyValuePair<TValue, DateTime?>> _pairs;
 
@@ -20,7 +21,7 @@ namespace Main.Services
         #region Constructors
 
         /// <summary>
-        /// Initialize service with specific settings.
+        ///     Initialize service with specific settings.
         /// </summary>
         public ValueCacheBaseService()
         {
@@ -32,7 +33,7 @@ namespace Main.Services
         #region Methods
 
         /// <summary>
-        /// Add value to dictionary by using specific key. Override the key if it exists.
+        ///     Add value to dictionary by using specific key. Override the key if it exists.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -50,7 +51,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
@@ -67,7 +68,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Get value by search for specific key.
+        ///     Get value by search for specific key.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -97,7 +98,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Get value by search for specific key.
+        ///     Get value by search for specific key.
         /// </summary>
         /// <returns></returns>
         public IList<TValue> ReadValues()
@@ -109,7 +110,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Remove value from dictionary.
+        ///     Remove value from dictionary.
         /// </summary>
         /// <param name="key"></param>
         public void Remove(TKey key)
@@ -120,7 +121,7 @@ namespace Main.Services
 
 
         /// <summary>
-        /// Find key in dictionary.
+        ///     Find key in dictionary.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>

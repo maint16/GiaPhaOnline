@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
 using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Main.Constants;
@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Shared.Enumerations;
 
 namespace Main.Authentications.Handlers
 {
@@ -28,7 +29,7 @@ namespace Main.Authentications.Handlers
         /// <param name="profileCacheService"></param>
         public SolidAccountRequirementHandler(
             IUnitOfWork unitOfWork,
-            IIdentityService identityService, IHttpContextAccessor httpContextAccessor,
+            IProfileService identityService, IHttpContextAccessor httpContextAccessor,
             IValueCacheService<int, User> profileCacheService)
         {
             _unitOfWork = unitOfWork;
@@ -51,13 +52,13 @@ namespace Main.Authentications.Handlers
             SolidAccountRequirement requirement)
         {
             // Convert authorization filter context into authorization filter context.
-            var authorizationFilterContext = (AuthorizationFilterContext)context.Resource;
+            var authorizationFilterContext = (AuthorizationFilterContext) context.Resource;
 
             //var httpContext = authorizationFilterContext.HttpContext;
             var httpContext = _httpContextAccessor.HttpContext;
 
             // Find claim identity attached to principal.
-            var claimIdentity = (ClaimsIdentity)httpContext.User.Identity;
+            var claimIdentity = (ClaimsIdentity) httpContext.User.Identity;
 
             // Find id from claims list.
             var id = claimIdentity.Claims.Where(x => x.Type.Equals("Id"))
@@ -137,7 +138,7 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Provides functions to access service which handles identity businesses.
         /// </summary>
-        private readonly IIdentityService _identityService;
+        private readonly IProfileService _identityService;
 
         /// <summary>
         ///     Context accessor.

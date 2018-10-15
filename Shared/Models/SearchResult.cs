@@ -5,12 +5,12 @@
         #region Properties
 
         /// <summary>
-        /// List of searched records.
+        ///     List of searched records.
         /// </summary>
         public T Records { get; set; }
 
         /// <summary>
-        /// Total record which meet the conditions.
+        ///     Total record which meet the conditions.
         /// </summary>
         public int Total { get; set; }
 
@@ -19,15 +19,14 @@
         #region Constructors
 
         /// <summary>
-        /// Non-parameterized constructor.
+        ///     Non-parameterized constructor.
         /// </summary>
         public SearchResult()
         {
-
         }
 
         /// <summary>
-        /// Parameterized constructor.
+        ///     Parameterized constructor.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="total"></param>
@@ -36,6 +35,7 @@
             Records = records;
             Total = total;
         }
+
         #endregion
     }
 }

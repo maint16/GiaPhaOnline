@@ -1,42 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.Users;
 using AppDb.Interfaces;
-using AppDb.Interfaces.Repositories;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
 using AppModel.Models;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
-using Main.Interfaces.Services.Businesses;
 using Main.Interfaces.Services.RealTime;
 using Main.Models;
-using Main.Models.Jwt;
 using Main.Models.RealTime;
-using Main.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
+using Shared.ViewModels.Users;
 using SkiaSharp;
 using VgySdk.Interfaces;
-using VgySdk.Models;
 
 namespace Main.Controllers
 {
@@ -65,42 +57,36 @@ namespace Main.Controllers
         /// <param name="profileCacheService"></param>
         /// <param name="captchaService"></param>
         /// <param name="realTimeService"></param>
-        /// <param name="userService"></param>
+        /// <param name="userDomain"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IIdentityService identityService,
+            IProfileService identityService,
             ITimeService systemTimeService,
             IExternalAuthenticationService externalAuthenticationService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            IOptions<JwtConfiguration> jwtConfigurationOptions,
+            IOptions<AppJwtModel> jwtConfigurationOptions,
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<UserController> logger,
             IVgyService vgyService,
             IValueCacheService<int, User> profileCacheService,
-            ICaptchaService captchaService, IRealTimeService realTimeService, IUserService userService) : base(unitOfWork, mapper, timeService,
+            ICaptchaService captchaService,
+            IRealTimeService realTimeService,
+            IUserDomain userDomain) : base(
+            unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
-            _encryptionService = encryptionService;
-            _jwtConfiguration = jwtConfigurationOptions.Value;
-            _applicationSettings = applicationSettings.Value;
             _logger = logger;
-            _externalAuthenticationService = externalAuthenticationService;
-            _unitOfWork = unitOfWork;
-            _databaseFunction = relationalDbService;
             _identityService = identityService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
-            _systemTimeService = systemTimeService;
-            _vgyService = vgyService;
-            _profileCacheService = profileCacheService;
             _captchaService = captchaService;
             _realTimeService = realTimeService;
-            _userService = userService;
+            _userDomain = userDomain;
         }
 
         #endregion
@@ -117,7 +103,7 @@ namespace Main.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
-            #region Parameters validation
+            #region Request param validation
 
             // Parameter hasn't been initialized.
             if (model == null)
@@ -132,20 +118,28 @@ namespace Main.Controllers
 
             #endregion
 
+            #region Captcha validation
+
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
-            var user = await _userService.LoginAsync(model);
+            #endregion
 
-            // Initialize jwt token.
-            var jwt = InitializeAccountToken(user);
-            return Ok(jwt);
+            #region Login & token generation
+
+            var user = await _userDomain.LoginAsync(model);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
+
+            #endregion
+
+            return Ok(jsonWebToken);
         }
 
         /// <summary>
-        /// Use specific conditions to login into Google authentication system.
+        ///     Use specific conditions to login into Google authentication system.
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
@@ -153,6 +147,8 @@ namespace Main.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
         {
+            #region Request params validation
+
             if (info == null)
             {
                 info = new GoogleLoginViewModel();
@@ -162,15 +158,20 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.GoogleLoginAsync(info);
+            #endregion
 
-            // Initialize access token.
-            var jwt = InitializeAccountToken(user);
-            return Ok(jwt);
+            #region Google login
+
+            var user = await _userDomain.GoogleLoginAsync(info);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
+
+            #endregion
+
+            return Ok(jsonWebToken);
         }
 
         /// <summary>
-        /// Use specific information to sign into system using facebook account.
+        ///     Use specific information to sign into system using facebook account.
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>
@@ -178,7 +179,7 @@ namespace Main.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
         {
-            #region Parameters validation
+            #region Request parameters validation
 
             // Information hasn't been initialized.
             if (info == null)
@@ -192,12 +193,17 @@ namespace Main.Controllers
 
             #endregion
 
+            #region Facebook login & token generate
+
             // Do facebook login.
-            var user = await _userService.FacebookLoginAsync(info);
+            var user = await _userDomain.FacebookLoginAsync(info);
 
             // Initialize access token.
-            var jwt = InitializeAccountToken(user);
-            return Ok(jwt);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
+
+            #endregion
+
+            return Ok(jsonWebToken);
         }
 
         /// <summary>
@@ -217,18 +223,13 @@ namespace Main.Controllers
             loadUserCondition.Ids = new HashSet<int>();
 
             if (id == null || id < 1)
-            {
                 if (profile != null)
-                    loadUserCondition.Ids.Add(profile.Id);
+                    return Ok(profile);
                 else
-
                     return NotFound();
-            }
-            else
-                loadUserCondition.Ids.Add(id.Value);
+            loadUserCondition.Ids.Add(id.Value);
 
-            // Only search for active account.
-            // Admin can see deactivated account.
+            // Only search for active account if user is normal user.
             if (profile != null && profile.Role != UserRole.Admin)
             {
                 loadUserCondition.Statuses = new HashSet<UserStatus>();
@@ -236,7 +237,7 @@ namespace Main.Controllers
             }
 
             // Find the first account in system.
-            var user = await _userService.SearchUserAsync(loadUserCondition);
+            var user = await _userDomain.SearchUserAsync(loadUserCondition);
             return Ok(user);
         }
 
@@ -246,8 +247,10 @@ namespace Main.Controllers
         /// <returns></returns>
         [Route("basic-register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterAccountViewModel model)
+        public async Task<IActionResult> BasicRegister([FromBody] RegisterAccountViewModel model)
         {
+            #region Request parameters validation
+
             // Parameters haven't been initialized. Initialize 'em.
             if (model == null)
             {
@@ -259,12 +262,21 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
-            if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+            #endregion
 
-            var basicRegisterResult = await _userService.BasicRegisterAsync(model);
+            #region Captcha validation
+
+            // Verify the captcha.
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            if (!bIsCaptchaValid)
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+
+            #endregion
+
+            #region Basic register
+
+            var basicRegisterResult = await _userDomain.BasicRegisterAsync(model);
 
             // Initialize background tasks.
             var backgroundTasks = new List<Task>();
@@ -272,13 +284,34 @@ namespace Main.Controllers
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.RegisterBasicAccount);
             if (emailTemplate != null)
             {
-                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> { basicRegisterResult.Email }, null, null,
+                var pSendMailTask = _sendMailService.SendAsync(new HashSet<string> {basicRegisterResult.Email}, null,
+                    null,
                     emailTemplate.Subject, emailTemplate.Content, emailTemplate.IsHtmlContent, CancellationToken.None);
                 backgroundTasks.Add(pSendMailTask);
             }
 
-            // TODO: Implement notification service which notifies administrators about the registration.
+            #endregion
 
+            #region Send messages to admin
+
+            // Send real-time message to all admins.
+            var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.UserRegistration, basicRegisterResult,
+                CancellationToken.None);
+
+            // Send push notification to all admin.
+            var collapseKey = Guid.NewGuid().ToString("D");
+            var realTimeMessage = new RealTimeMessage<BasicRegisterResultModel>();
+            realTimeMessage.Title = RealTimeMessages.AddNewCategoryGroupTitle;
+            realTimeMessage.Body = RealTimeMessages.AddNewCategoryGroupContent;
+            realTimeMessage.AdditionalInfo = basicRegisterResult;
+
+            var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
+
+            await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+            #endregion
 
             return Ok();
         }
@@ -291,6 +324,8 @@ namespace Main.Controllers
         [Route("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
+            #region Request parameters validation
+
             // Parameter hasn't been initialized.
             if (model == null)
             {
@@ -301,24 +336,37 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            #endregion
+
+            #region Captcha validation
+
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+
+            #endregion
+
+            #region Business handle
 
             // Submit password change request.
-            var forgotPasswordResult = await _userService.RequestPasswordResetAsync(model);
-            
+            var forgotPasswordResult = await _userDomain.RequestPasswordResetAsync(model);
+
+            #endregion
+
             #region Email broadcast
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ForgotPasswordRequest);
 
             if (emailTemplate != null)
             {
-                await _sendMailService.SendAsync(new HashSet<string> { forgotPasswordResult.Email }, null, null, emailTemplate.Subject,
+                await _sendMailService.SendAsync(new HashSet<string> {forgotPasswordResult.Email}, null, null,
+                    emailTemplate.Subject,
                     emailTemplate.Content, true, CancellationToken.None);
 
-                _logger.LogInformation($"Sent message to {forgotPasswordResult.Email} with subject {emailTemplate.Subject}");
+                _logger.LogInformation(
+                    $"Sent message to {forgotPasswordResult.Email} with subject {emailTemplate.Subject}");
             }
 
             #endregion
@@ -329,96 +377,56 @@ namespace Main.Controllers
         /// <summary>
         ///     Submit password by using forgot password token.
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="parameter"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("submit-password-reset")]
         [AllowAnonymous]
-        public async Task<IActionResult> SubmitPassword(
-            [FromQuery] [Required(ErrorMessageResourceType = typeof(HttpValidationMessages),
-                ErrorMessageResourceName = "InformationIsRequired")] string code,
-            [FromBody] SubmitPasswordResetViewModel parameter)
+        public async Task<IActionResult> SubmitPasswordReset([FromBody] SubmitPasswordResetViewModel model)
         {
-            if (parameter == null)
+            #region Request parameters validation
+
+            if (model == null)
             {
-                parameter = new SubmitPasswordResetViewModel();
-                TryValidateModel(parameter);
+                model = new SubmitPasswordResetViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
 
-            //#region Information search
+            #endregion
 
-            //// Find active accounts.
-            //var accounts = _unitOfWork.Accounts.Search();
-            //accounts = accounts.Where(x => x.Email.Equals(parameter.Email, StringComparison.InvariantCultureIgnoreCase) && x.Status == UserStatus.Available);
+            // Submit password reset.
+            var submitPasswordResetResult = await _userDomain.SubmitPasswordResetAsync(model);
 
-            //// Find active token.
-            //var epochSystemTime = _systemTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            //var tokens = _unitOfWork.AccessTokens.Search();
+            #region Send email
 
-            //// Find token.
-            //var result = from account in accounts
-            //             from token in tokens
-            //             where account.Id == token.OwnerId && token.ExpiredTime < epochSystemTime
-            //             select new SearchAccountTokenResult
-            //             {
-            //                 Token = token,
-            //                 Account = account
-            //             };
+            var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordReset);
 
-            //// No active token is found.
-            //if (!await result.AnyAsync())
-            //    return NotFound(HttpMessages.InformationNotFound);
+            if (emailTemplate != null)
+                await _sendMailService.SendAsync(new HashSet<string> {model.Email}, null, null, emailTemplate.Subject,
+                    emailTemplate.Content, false, CancellationToken.None);
 
-            //#endregion
+            #endregion
 
-            //#region Information change
-
-            //// Hash the password.
-            //var password = _encryptionService.Md5Hash(parameter.Password);
-
-            //// Delete all found tokens.
-            //_unitOfWork.AccessTokens.Remove(result.Select(x => x.Token));
-            //await result.ForEachAsync(x => x.Account.Password = password);
-
-            //// Commit changes.
-            //await _unitOfWork.CommitAsync();
-
-            //#endregion
-
-            //#region Send email
-
-            //// Find the first matched account.
-            //var accountSendMail = await accounts.FirstOrDefaultAsync();
-
-            //var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.SubmitPasswordReset);
-
-            //if (emailTemplate != null)
-            //    await _sendMailService.SendAsync(new HashSet<string> { accountSendMail.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
-
-            //#endregion
-            throw new NotImplementedException();
             return Ok();
         }
 
         /// <summary>
-        /// Using information submitted by user to change account password.
+        ///     Using information submitted by user to change account password.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="info"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("change-password/{id}")]
-        public async Task<IActionResult> ChangePassword([FromRoute] int id, [FromBody] ChangePasswordViewModel info)
+        public async Task<IActionResult> ChangePassword([FromRoute] int id, [FromBody] ChangePasswordViewModel model)
         {
-            #region Parmeters validation
+            #region Request parameters validation
 
-            if (info == null)
+            if (model == null)
             {
-                info = new ChangePasswordViewModel();
-                TryValidateModel(info);
+                model = new ChangePasswordViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
@@ -426,104 +434,40 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Find account
-
-            // Hash the curent password.
-            var hashedCurrentPassword = _encryptionService.Md5Hash(info.OriginalPassword);
-
-            // Get user profile.
             var profile = _identityService.GetProfile(HttpContext);
-
-            // Invalid index. That means current user wants to change his/her account password.
-            if (id < 1 || profile.Id == id)
-            {
-                // Check current password.
-                if (profile.Password != hashedCurrentPassword)
-                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.CurrentPasswordIsInvalid));
-
-                profile.Password = _encryptionService.Md5Hash(info.Password);
-            }
-            else
-            {
-                var accounts = _unitOfWork.Accounts.Search();
-                accounts = accounts.Where(x => x.Id == id && x.Status == UserStatus.Available);
-
-                // Get the first matched account
-                var account = await accounts.FirstOrDefaultAsync();
-                if (account == null)
-                    return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
-
-                account.Password = _encryptionService.Md5Hash(info.Password);
-            }
-
-            await UnitOfWork.CommitAsync();
-
-            #endregion
+            var userId = id < 0 ? profile.Id : id;
+            await _userDomain.ChangePasswordAsync(userId, model);
 
             return Ok();
         }
 
         /// <summary>
-        /// Change user status by searching for user id.
+        ///     Change user status by searching for user id.
         /// </summary>
-        /// <param name="info"></param>
+        /// <param name="model"></param>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut("status/{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id, [FromBody] ChangeUserStatusViewModel info)
+        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id,
+            [FromBody] ChangeUserStatusViewModel model)
         {
             // Find requester profile.
             var profile = IdentityService.GetProfile(HttpContext);
 
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
             if (profile.Id == id)
-                return StatusCode((int)HttpStatusCode.Forbidden,
+                return StatusCode((int) HttpStatusCode.Forbidden,
                     new ApiResponse(HttpMessages.CannotChangeOwnProfileStatus));
 
-            // Find user by using index.
-            var users = _unitOfWork.Accounts.Search();
-            users = users.Where(x => x.Id == id);
-
-            // Find the first record in database.
-            var user = await users.FirstOrDefaultAsync();
-            if (user == null)
-                return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
-
-            #region Information update
-
-            // Whether information has been changed or not.
-            var bHasInformationChanged = false;
-
-            // Status has been defined.
-            if (info.Status != user.Status)
-            {
-                if (info.Status == UserStatus.Pending)
-                {
-                    user.Status = UserStatus.Disabled;
-                    bHasInformationChanged = true;
-                }
-                else
-                {
-                    user.Status = info.Status;
-                    bHasInformationChanged = true;
-                }
-
-            }
-
-            //todo: Reason
-
-            // Information has been changed.
-            if (bHasInformationChanged)
-                await _unitOfWork.CommitAsync();
-
-            #endregion
+            var user = await _userDomain.ChangeUserStatus(id, model);
 
             #region Real-time message broadcast
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.EditUserStatus, user, CancellationToken.None);
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditUserStatus, user,
+                CancellationToken.None);
 
             // Send push notification to all admin.
             var collapseKey = Guid.NewGuid().ToString("D");
@@ -533,11 +477,12 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = user;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
             #endregion
+
             return Ok();
         }
 
@@ -557,99 +502,32 @@ namespace Main.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
-            var loadUsersResult = await _userService.SearchUsersAsync(condition);
+
+            // Get request profile.
+            var profile = _identityService.GetProfile(HttpContext);
+
+            if (profile == null || profile.Role != UserRole.Admin)
+                condition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
+
+            var loadUsersResult = await _userDomain.SearchUsersAsync(condition);
             return Ok(loadUsersResult);
         }
 
-        //        /// <summary>
-        //        /// Upload Avatar
-        //        /// </summary>
-        //        /// <param name="info"></param>
-        //        /// <returns></returns>
-        //        [HttpPost("upload-avatar")]
-        //        [Consumes("multipart/form-data")]
-        //        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel info)
-        //        {
-        //            #region Parameters Validation
-        //
-        //            if (info == null)
-        //            {
-        //                info = new UploadPhotoViewModel();
-        //                TryValidateModel(info);
-        //            }
-        //
-        //            if (!ModelState.IsValid)
-        //                return BadRequest(ModelState);
-        //
-        //            #endregion
-        //
-        //            // Get requester profile.
-        //            var profile = IdentityService.GetProfile(HttpContext);
-        //
-        //            #region Image proccessing
-        //
-        //            // Reflect image variable.
-        //            var image = info.Image;
-        //
-        //            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
-        //            {
-        //                var skBitmap = SKBitmap.Decode(skManagedStream);
-        //
-        //                try
-        //                {
-        //                    // Resize image to 512x512 size.
-        //                    var resizedSkBitmap = skBitmap.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
-        //
-        //                    // Initialize file name.
-        //                    var fileName = $"{Guid.NewGuid():D}.png";
-        //
-        //                    using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
-        //                    using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
-        //                    using (var memoryStream = new MemoryStream())
-        //                    {
-        //                        skData.SaveTo(memoryStream);
-        //                        var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(memoryStream.ToArray(),
-        //                            image.ContentType, fileName,
-        //                            CancellationToken.None);
-        //
-        //                        // Response is empty.
-        //                        if (vgySuccessRespone == null || vgySuccessRespone.IsError)
-        //                            return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
-        //
-        //                        profile.PhotoRelativeUrl = vgySuccessRespone.ImageUrl;
-        //                        profile.PhotoAbsoluteUrl = vgySuccessRespone.ImageDeleteUrl;
-        //                    }
-        //
-        //                    // Save changes into database.
-        //                    await _unitOfWork.CommitAsync();
-        //
-        //                    return Ok(profile);
-        //                }
-        //                catch (Exception exception)
-        //                {
-        //                    _logger.LogError(exception.Message, exception);
-        //                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
-        //                }
-        //
-        //                #endregion
-        //            }
-        //        }
-
         /// <summary>
-        ///  Request service to send another email to obtain new account activation code.
+        ///     Upload Avatar
         /// </summary>
+        /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("resend-activation-code")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResendAccountActivationCode([FromBody] ResendActivationCodeViewModel info)
+        [HttpPost("upload-avatar")]
+        //[Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel model)
         {
-            #region Parameters validation
+            #region Request parameters validation
 
-            if (info == null)
+            if (model == null)
             {
-                info = new ResendActivationCodeViewModel();
-                TryValidateModel(info);
+                model = new UploadPhotoViewModel();
+                TryValidateModel(model);
             }
 
             if (!ModelState.IsValid)
@@ -657,111 +535,76 @@ namespace Main.Controllers
 
             #endregion
 
-            #region Search for account
+            #region Change user profile photo
 
-            var accounts = _unitOfWork.Accounts.Search();
-            accounts = accounts.Where(x => x.Email.Equals(info.Email) && x.Status == UserStatus.Pending && x.Type == UserKind.Basic);
+            // Get requester profile.
+            var profile = IdentityService.GetProfile(HttpContext);
+            if (model.UserId == null)
+                model.UserId = profile.Id;
 
-            // Find the first matched account.
-            var account = await accounts.FirstOrDefaultAsync();
+            if (model.UserId != profile.Id && profile.Role != UserRole.Admin)
+                return StatusCode((int) HttpStatusCode.Forbidden,
+                    new ApiResponse(HttpMessages.HasNoPermissionChangeUserProfilePhoto));
 
-            // User is not found.
-            if (account == null)
-                return NotFound(new ApiResponse(HttpMessages.AccountIsNotFound));
+            // Reflect image variable.
+            var image = model.Photo;
 
-            #endregion
-
-            #region Token generation
-
-            // Find the existing token.
-            var tokens = _unitOfWork.AccessTokens.Search();
-            tokens = tokens.Where(x => x.OwnerId == account.Id);
-
-            // Find the first matched token.
-            var token = await tokens.FirstOrDefaultAsync();
-
-            if (token != null)
-                _unitOfWork.AccessTokens.Remove(token);
-            else
+            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
             {
-                // Find current system time.
-                var systemTime = DateTime.UtcNow;
-                var expiration = systemTime.AddSeconds(_applicationSettings.PasswordResetTokenLifeTime);
+                var skBitmap = SKBitmap.Decode(skManagedStream);
 
-                token = new AccessToken();
-                token.Code = Guid.NewGuid().ToString("D");
-                token.OwnerId = account.Id;
-                token.IssuedTime = TimeService.DateTimeUtcToUnix(systemTime);
-                token.ExpiredTime = TimeService.DateTimeUtcToUnix(expiration);
-
-                // Add token into database
-                _unitOfWork.AccessTokens.Insert(token);
+                try
+                {
+                    var user = await _userDomain.UploadUserProfileImageAsync(profile.Id, skBitmap);
+                    return Ok(user);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception.Message, exception);
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+                }
             }
 
-            // Save changes asychronously.
-            await UnitOfWork.CommitAsync();
+            #endregion
+        }
+
+        /// <summary>
+        ///     Request service to send another email to obtain new account activation code.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("resend-activation-code")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResendAccountActivationCode(
+            [FromBody] RequestUserActivationCodeViewModel model)
+        {
+            #region Request parameters validation
+
+            if (model == null)
+            {
+                model = new RequestUserActivationCodeViewModel();
+                TryValidateModel(model);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             #endregion
+
+            // Generate user activation token.
+            var addUserActivationTokenResult = await _userDomain.RequestUserActivationTokenAsync(model);
 
             #region Send email
 
             var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.ResendAccountActivationCode);
 
             if (emailTemplate != null)
-                await _sendMailService.SendAsync(new HashSet<string> { account.Email }, null, null, emailTemplate.Subject, emailTemplate.Content, false, CancellationToken.None);
+                await _sendMailService.SendAsync(new HashSet<string> {addUserActivationTokenResult.Email}, null, null,
+                    emailTemplate.Subject,
+                    emailTemplate.Content, false, CancellationToken.None);
 
             #endregion
 
             return Ok();
-        }
-
-        /// <summary>
-        /// Initialize account access token.
-        /// </summary>
-        /// <param name="account"></param>
-        /// <returns></returns>
-        private JwtResponse InitializeAccountToken(User account)
-        {
-            // Find current time on the system.
-            var systemTime = DateTime.Now;
-            var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
-
-            // Claims initalization.
-            var claims = InitUserClaim(account);
-
-            // Write a security token.
-            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
-                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
-
-            // Initiate token handler which is for generating token code.
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-
-            // Initialize jwt response.
-            var jwt = new JwtResponse();
-            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-            jwt.LifeTime = _jwtConfiguration.LifeTime;
-            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
-
-            _profileCacheService.Add(account.Id, account, LifeTimeConstant.JwtLifeTime);
-            return jwt;
-        }
-
-        /// <summary>
-        /// Initialize user claim.
-        /// </summary>
-        /// <param name="account"></param>
-        /// <returns></returns>
-        private IList<Claim> InitUserClaim(User account)
-        {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
-            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
-            claims.Add(new Claim(nameof(account.Id), account.Id.ToString()));
-
-            return claims;
         }
 
         #endregion
@@ -769,44 +612,14 @@ namespace Main.Controllers
         #region Properties
 
         /// <summary>
-        ///     Provides functions to encrypt/decrypt data.
-        /// </summary>
-        private readonly IEncryptionService _encryptionService;
-
-        /// <summary>
-        ///     Configuration information of JWT.
-        /// </summary>
-        private readonly JwtConfiguration _jwtConfiguration;
-
-        /// <summary>
-        ///     Collection of settings in application.
-        /// </summary>
-        private readonly ApplicationSetting _applicationSettings;
-
-        /// <summary>
         ///     Logging instance.
         /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
-        ///     Service which is for handling external authentication service.
-        /// </summary>
-        private readonly IExternalAuthenticationService _externalAuthenticationService;
-
-        /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
-
-        /// <summary>
         ///     Instance which is for accessing identity attached in request.
         /// </summary>
-        private readonly IIdentityService _identityService;
+        private readonly IProfileService _identityService;
 
         /// <summary>
         ///     Send email service
@@ -819,29 +632,13 @@ namespace Main.Controllers
         private readonly IEmailCacheService _emailCacheService;
 
         /// <summary>
-        ///     System time service
-        /// </summary>
-        private readonly ITimeService _systemTimeService;
-
-        /// <summary>
-        ///     Service which is for handling file upload to vgy.me hosting.
-        /// </summary>
-        private readonly IVgyService _vgyService;
-
-        /// <summary>
-        ///     Service which is for handling profile caching.
-        /// </summary>
-        private readonly IValueCacheService<int, User> _profileCacheService;
-
-        /// <summary>
         ///     Service which is for checking captcha.
         /// </summary>
         private readonly ICaptchaService _captchaService;
 
         private readonly IRealTimeService _realTimeService;
 
-        private readonly IUserService _userService;
-
+        private readonly IUserDomain _userDomain;
 
         #endregion
     }

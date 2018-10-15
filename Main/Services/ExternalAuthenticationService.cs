@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppModel.Models.ExternalAuthentication;
 using Main.Constants;
 using Main.Interfaces.Services;
-using Main.Models.ExternalAuthentication;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -14,28 +14,15 @@ namespace Main.Services
 {
     public class ExternalAuthenticationService : IExternalAuthenticationService
     {
-        #region Properties
-
-        /// <summary>
-        /// Google authentication configs.
-        /// </summary>
-        private readonly GoogleCredential _googleCredential;
-
-        /// <summary>
-        /// Facebook credential configs.
-        /// </summary>
-        private readonly FacebookCredential _facebookCredential;
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Initialize service with injectors.
+        ///     Initialize service with injectors.
         /// </summary>
         /// <param name="googleCredentialConfigOptions"></param>
         /// <param name="facebookCredentialOptions"></param>
-        public ExternalAuthenticationService(IOptions<GoogleCredential> googleCredentialConfigOptions, IOptions<FacebookCredential> facebookCredentialOptions)
+        public ExternalAuthenticationService(IOptions<GoogleCredential> googleCredentialConfigOptions,
+            IOptions<FacebookCredential> facebookCredentialOptions)
         {
             _googleCredential = googleCredentialConfigOptions.Value;
             _facebookCredential = facebookCredentialOptions.Value;
@@ -43,10 +30,24 @@ namespace Main.Services
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Google authentication configs.
+        /// </summary>
+        private readonly GoogleCredential _googleCredential;
+
+        /// <summary>
+        ///     Facebook credential configs.
+        /// </summary>
+        private readonly FacebookCredential _facebookCredential;
+
+        #endregion
+
         #region Methods
 
         /// <summary>
-        /// Get token information.
+        ///     Get token information.
         /// </summary>
         /// <param name="code"></param>
         /// <returns></returns>
@@ -56,13 +57,15 @@ namespace Main.Services
             var formUrlEncodedParameters = new List<KeyValuePair<string, string>>();
             formUrlEncodedParameters.Add(new KeyValuePair<string, string>("code", code));
             formUrlEncodedParameters.Add(new KeyValuePair<string, string>("client_id", _googleCredential.ClientId));
-            formUrlEncodedParameters.Add(new KeyValuePair<string, string>("client_secret", _googleCredential.ClientSecret));
-            formUrlEncodedParameters.Add(new KeyValuePair<string, string>("redirect_uri", _googleCredential.RedirectUri));
+            formUrlEncodedParameters.Add(
+                new KeyValuePair<string, string>("client_secret", _googleCredential.ClientSecret));
+            formUrlEncodedParameters.Add(
+                new KeyValuePair<string, string>("redirect_uri", _googleCredential.RedirectUri));
             formUrlEncodedParameters.Add(new KeyValuePair<string, string>("grant_type", "authorization_code"));
 
             // Construct form url encoded.
             var formUrlEncodedContent = new FormUrlEncodedContent(formUrlEncodedParameters);
-            
+
             // Initialize http client to make download request.
             var httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri(GoogleUrlConstant.GetAccessTokenUrl);
@@ -71,7 +74,7 @@ namespace Main.Services
             var httpResponseMessage = await httpClient.PostAsync("", formUrlEncodedContent);
             if (!httpResponseMessage.IsSuccessStatusCode)
                 return null;
-            
+
             // Find http content.
             var httpContent = httpResponseMessage.Content;
             if (httpContent == null)
@@ -79,15 +82,15 @@ namespace Main.Services
 
             // Get content body.
             var szContent = await httpContent.ReadAsStringAsync();
-            
+
             // Invalid content.
             if (string.IsNullOrWhiteSpace(szContent))
                 return null;
 
             return JsonConvert.DeserializeObject<GoogleTokenInfo>(szContent);
         }
-        
-        /// <inheritdoc/>
+
+        /// <inheritdoc />
         /// <param name="code"></param>
         /// <returns></returns>
         public async Task<FacebookTokenInfo> GetFacebookTokenInfoAsync(string code)
@@ -129,7 +132,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Get Google basic information.
+        ///     Get Google basic information.
         /// </summary>
         /// <param name="idToken"></param>
         /// <returns></returns>
@@ -156,7 +159,7 @@ namespace Main.Services
         }
 
         /// <summary>
-        /// Exchange access token returned from facebook api service for profile.
+        ///     Exchange access token returned from facebook api service for profile.
         /// </summary>
         /// <param name="accessToken"></param>
         /// <returns></returns>

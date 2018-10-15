@@ -1,5 +1,5 @@
-﻿using AppModel.Enumerations;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Shared.Enumerations;
 
 namespace Main.Authentications.Requirements
 {

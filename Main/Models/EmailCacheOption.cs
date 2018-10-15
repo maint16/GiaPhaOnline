@@ -7,28 +7,28 @@ namespace Main.Models
         #region Properties
 
         /// <summary>
-        /// Name of file.
+        ///     Name of file.
         /// </summary>
         public string FileName { get; set; }
-        
+
         /// <summary>
-        /// Whether path is absolute or not.
+        ///     Whether path is absolute or not.
         /// </summary>
         public bool IsAbsolutePath { get; set; }
 
         /// <summary>
-        /// Email subject.
+        ///     Email subject.
         /// </summary>
         public string Subject { get; set; }
-        
+
         /// <summary>
-        /// Content of cache.
+        ///     Content of cache.
         /// </summary>
         [JsonIgnore]
         public string Content { get; set; }
 
         /// <summary>
-        /// Whether content is html or not.
+        ///     Whether content is html or not.
         /// </summary>
         public bool IsHtmlContent { get; set; }
 

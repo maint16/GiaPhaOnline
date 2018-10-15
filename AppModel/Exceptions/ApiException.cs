@@ -31,6 +31,5 @@ namespace AppModel.Exceptions
         }
 
         #endregion
-
     }
 }

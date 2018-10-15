@@ -3,50 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
 using Main.Authentications.ActionFilters;
-using Main.Constants.RealTime;
-using Main.Hubs;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.PushNotification;
-using Main.ViewModels.RealTime;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
 using Shared.Resources;
+using Shared.ViewModels.RealTime;
 
 namespace Main.Controllers
 {
     [Route("api/real-time")]
     public class RealTimeController : Controller
     {
-        #region Properties
-
-        /// <summary>
-        /// Instance to manage database connection.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// Instance to manage identity
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        private readonly ITimeService _timeService;
-
-        private readonly IRealTimeService _realTimeService;
-
-        private readonly ICloudMessagingService _cloudMessagingService;
-
-        #endregion
-
         #region Constructor
 
-        public RealTimeController(IUnitOfWork unitOfWork, IIdentityService identityService, ITimeService timeService, IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
+        public RealTimeController(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+            IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
@@ -57,10 +35,30 @@ namespace Main.Controllers
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        ///     Instance to manage database connection.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        ///     Instance to manage identity
+        /// </summary>
+        private readonly IProfileService _identityService;
+
+        private readonly ITimeService _timeService;
+
+        private readonly IRealTimeService _realTimeService;
+
+        private readonly ICloudMessagingService _cloudMessagingService;
+
+        #endregion
+
         #region Methods
 
         /// <summary>
-        /// Asssign user to push channel which attached to him/her before.
+        ///     Asssign user to push channel which attached to him/her before.
         /// </summary>
         /// <returns></returns>
         [HttpPost("register-device-token")]
@@ -114,13 +112,14 @@ namespace Main.Controllers
 #if DEBUG
 
         /// <summary>
-        /// Send to client.
+        ///     Send to client.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("send-to-clients")]
         [ByPassAuthorization]
-        public async Task<IActionResult> SendMessageToSignalrClients([FromBody] SendMessageToSignalrClientViewModel model)
+        public async Task<IActionResult> SendMessageToSignalrClients(
+            [FromBody] SendMessageToSignalrClientViewModel model)
         {
             if (model == null)
             {
@@ -131,7 +130,8 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _realTimeService.SendRealTimeMessageToClientsAsync(model.ClientIds, model.EventName, model.Message, CancellationToken.None);
+            await _realTimeService.SendRealTimeMessageToClientsAsync(model.ClientIds, model.EventName, model.Message,
+                CancellationToken.None);
             return Ok();
         }
 
@@ -153,7 +153,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Send to group.
+        ///     Send to group.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -170,12 +170,13 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _realTimeService.SendRealTimeMessageToGroupsAsync(model.Groups, model.EventName, model.Message, CancellationToken.None);
+            await _realTimeService.SendRealTimeMessageToGroupsAsync(model.Groups, model.EventName, model.Message,
+                CancellationToken.None);
             return Ok();
         }
 
         /// <summary>
-        /// Get all registered device token.
+        ///     Get all registered device token.
         /// </summary>
         /// <returns></returns>
         [HttpGet("device-tokens")]
@@ -188,7 +189,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Add device to specific group.
+        ///     Add device to specific group.
         /// </summary>
         /// <returns></returns>
         [HttpPost("add-device-to-group")]
@@ -208,7 +209,7 @@ namespace Main.Controllers
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
                 var userDevices = _unitOfWork.UserDeviceTokens.Search();
-                userDevices = userDevices.Where(x => x.DeviceId == model.DeviceId & x.UserId == profile.Id);
+                userDevices = userDevices.Where(x => (x.DeviceId == model.DeviceId) & (x.UserId == profile.Id));
                 _unitOfWork.UserDeviceTokens.Remove(userDevices);
 
                 var userRealTimeGroups = _unitOfWork.UserRealTimeGroups.Search();

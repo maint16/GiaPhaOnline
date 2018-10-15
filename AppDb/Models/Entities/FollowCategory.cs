@@ -1,7 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -20,7 +18,7 @@ namespace AppDb.Models.Entities
         public int CategoryId { get; set; }
 
         /// <summary>
-        /// Status of follow category.
+        ///     Status of follow category.
         /// </summary>
         public FollowStatus Status { get; set; }
 
@@ -28,7 +26,7 @@ namespace AppDb.Models.Entities
         ///     When the relationship was lastly created.
         /// </summary>
         public double CreatedTime { get; set; }
-        
+
         #endregion
 
         #region Relationships

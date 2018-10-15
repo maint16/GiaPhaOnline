@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AppModel.Enumerations;
 using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -92,6 +92,12 @@ namespace AppDb.Models.Entities
         [JsonIgnore]
         public virtual ICollection<Topic> Topics { get; set; }
 
+        /// <summary>
+        /// Category summary.
+        /// </summary>
+        [JsonIgnore]
+        public virtual CategorySummary CategorySummary { get; set; }
+
         #endregion
 
         #region Constructors
@@ -100,7 +106,8 @@ namespace AppDb.Models.Entities
         {
         }
 
-        public Category(int id, int creatorId, int categoryGroupId, string photo, string description, ItemStatus status, string name, double createdTime, double? lastModifiedTime)
+        public Category(int id, int creatorId, int categoryGroupId, string photo, string description, ItemStatus status,
+            string name, double createdTime, double? lastModifiedTime)
         {
             Id = id;
             CreatorId = creatorId;

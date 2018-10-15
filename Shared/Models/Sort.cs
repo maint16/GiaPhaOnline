@@ -5,12 +5,12 @@
         #region Properties
 
         /// <summary>
-        /// Sort property.
+        ///     Sort property.
         /// </summary>
         public T Property { get; set; }
 
         /// <summary>
-        /// Direction of sorting.
+        ///     Direction of sorting.
         /// </summary>
         public SortDirection Direction { get; set; }
 

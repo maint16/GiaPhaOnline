@@ -4,6 +4,5 @@ namespace Main.Authentications.Requirements
 {
     public class SolidAccountRequirement : IAuthorizationRequirement
     {
-        
     }
 }

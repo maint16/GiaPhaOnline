@@ -1,15 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using AppModel.Enumerations;
 using Newtonsoft.Json;
+using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
     public class NotificationMessage
     {
+        #region Relationships
+
+        /// <summary>
+        ///     One notification can only be initiated by one account.
+        /// </summary>
+        [JsonIgnore]
+        [ForeignKey(nameof(OwnerId))]
+        public User Owner { get; set; }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -50,17 +59,6 @@ namespace AppDb.Models.Entities
         /// </summary>
         [Required]
         public string Message { get; set; }
-
-        #endregion
-
-        #region Relationships
-
-        /// <summary>
-        ///     One notification can only be initiated by one account.
-        /// </summary>
-        [JsonIgnore]
-        [ForeignKey(nameof(OwnerId))]
-        public User Owner { get; set; }
 
         #endregion
     }

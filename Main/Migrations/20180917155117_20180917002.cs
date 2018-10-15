@@ -8,37 +8,37 @@ namespace Main.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "KeyName",
-                table: "UserDeviceToken");
+                "KeyName",
+                "UserDeviceToken");
 
             migrationBuilder.AlterColumn<string>(
-                name: "DeviceId",
-                table: "UserDeviceToken",
+                "DeviceId",
+                "UserDeviceToken",
                 nullable: false,
                 oldClrType: typeof(Guid));
 
             migrationBuilder.AddColumn<double>(
-                name: "CreatedTime",
-                table: "UserDeviceToken",
+                "CreatedTime",
+                "UserDeviceToken",
                 nullable: false,
                 defaultValue: 0.0);
 
             migrationBuilder.AddColumn<int>(
-                name: "UserId",
-                table: "UserDeviceToken",
+                "UserId",
+                "UserDeviceToken",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserDeviceToken_UserId",
-                table: "UserDeviceToken",
-                column: "UserId");
+                "IX_UserDeviceToken_UserId",
+                "UserDeviceToken",
+                "UserId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_UserDeviceToken_User_UserId",
-                table: "UserDeviceToken",
-                column: "UserId",
-                principalTable: "User",
+                "FK_UserDeviceToken_User_UserId",
+                "UserDeviceToken",
+                "UserId",
+                "User",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -46,30 +46,30 @@ namespace Main.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_UserDeviceToken_User_UserId",
-                table: "UserDeviceToken");
+                "FK_UserDeviceToken_User_UserId",
+                "UserDeviceToken");
 
             migrationBuilder.DropIndex(
-                name: "IX_UserDeviceToken_UserId",
-                table: "UserDeviceToken");
+                "IX_UserDeviceToken_UserId",
+                "UserDeviceToken");
 
             migrationBuilder.DropColumn(
-                name: "CreatedTime",
-                table: "UserDeviceToken");
+                "CreatedTime",
+                "UserDeviceToken");
 
             migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "UserDeviceToken");
+                "UserId",
+                "UserDeviceToken");
 
             migrationBuilder.AlterColumn<Guid>(
-                name: "DeviceId",
-                table: "UserDeviceToken",
+                "DeviceId",
+                "UserDeviceToken",
                 nullable: false,
                 oldClrType: typeof(string));
 
             migrationBuilder.AddColumn<string>(
-                name: "KeyName",
-                table: "UserDeviceToken",
+                "KeyName",
+                "UserDeviceToken",
                 nullable: false,
                 defaultValue: "");
         }

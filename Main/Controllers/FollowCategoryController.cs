@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using AppBusiness.Interfaces;
+using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppModel.Enumerations.Order;
 using AutoMapper;
 using Main.Interfaces.Services;
-using Main.ViewModels.FollowCategory;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Shared.Interfaces.Services;
-using Shared.Models;
-using Shared.Resources;
+using Shared.ViewModels.FollowCategory;
 
 namespace Main.Controllers
 {
     [Route("api/follow-category")]
     public class FollowCategoryController : Controller
     {
+        #region Properties
+
+        private readonly IFollowCategoryDomain _followCategoryDomain;
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -30,147 +29,55 @@ namespace Main.Controllers
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
-        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IIdentityService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction)
+        /// <param name="followCategoryDomain"></param>
+        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
+            ITimeService timeService, IRelationalDbService databaseFunction, IFollowCategoryDomain followCategoryDomain)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _identityService = identityService;
-            _timeService = timeService;
-            _databaseFunction = databaseFunction;
+            _followCategoryDomain = followCategoryDomain;
         }
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        ///     Instance which is for accessing to database.
-        /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     Instance which is for accessing automapper.
-        /// </summary>
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        ///     Instance which is for accessing identity attached in request.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
-        ///     Service which is for time calculation.
-        /// </summary>
-        private readonly ITimeService _timeService;
-
-        /// <summary>
-        ///     Instance to access generic database function.
-        /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Start following a category.
+        ///     Start following a category.
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
         [HttpPost("")]
         public async Task<IActionResult> FollowCategory([FromQuery] int categoryId)
         {
-            #region Find category
-
-            // Find categories.
-            var categories = _unitOfWork.Categories.Search();
-            categories = categories.Where(x => x.Id == categoryId && x.Status == ItemStatus.Active);
-
-            // Find the first matched result.
-            var category = await categories.FirstOrDefaultAsync();
-            if (category == null)
-                return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
-
-            #endregion
-
-            #region Check whether user already followed category or not
-
-            // Find request identity.
-            var identity = _identityService.GetProfile(HttpContext);
-
-            // Find follow categories.
-            var followCategories = _unitOfWork.FollowingCategories.Search();
-            followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
-            var followCategory = await followCategories.FirstOrDefaultAsync();
-
-            #endregion
-
-            #region Follow category initalization
-
-            // Already followed the category.
-            if (followCategory != null)
-                followCategory.Status = FollowStatus.Following;
-            else
-            {
-                // Initialize follow category.
-                followCategory = new FollowCategory();
-                followCategory.FollowerId = identity.Id;
-                followCategory.CategoryId = categoryId;
-                followCategory.Status = FollowStatus.Following;
-                followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-
-                // Insert to system.
-                _unitOfWork.FollowingCategories.Insert(followCategory);
-            }
-
-            // Commit changes.
-            await _unitOfWork.CommitAsync();
-
-            #endregion
-
+            var addFollowCategoryModel = new AddFollowCategoryViewModel();
+            addFollowCategoryModel.CategoryId = categoryId;
+            var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(addFollowCategoryModel);
             return Ok(followCategory);
         }
 
         /// <summary>
-        /// Stop following a category.
+        ///     Stop following a category.
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
         [HttpDelete("")]
         public async Task<IActionResult> StopFollowingCategory([FromRoute] int categoryId)
         {
-            // Find request identity.
-            var identity = _identityService.GetProfile(HttpContext);
+            var deleteFollowingCategoryModel = new DeleteFollowCategoryViewModel();
+            deleteFollowingCategoryModel.CategoryId = categoryId;
 
-            // Find categories by using specific conditions.
-            var followCategories = _unitOfWork.FollowingCategories.Search();
-            followCategories = followCategories.Where(x => x.CategoryId == categoryId && x.FollowerId == identity.Id);
-
-            // Find the first matched category.
-            var followCategory = await followCategories.FirstOrDefaultAsync();
-            if (followCategory == null)
-                return NotFound(new ApiResponse(HttpMessages.FollowCategoryNotFound));
-
-            // Stop following category.
-            followCategory.Status = FollowStatus.Ignore;
-
-            // Save changes.
-            await _unitOfWork.CommitAsync();
-
+            await _followCategoryDomain.DeleteFollowCategoryAsync(deleteFollowingCategoryModel);
             return Ok();
         }
 
         /// <summary>
-        /// Search for following category by using specific conditions.
+        ///     Search for following category by using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> SearchForFollowingCategories([FromBody] SearchFollowCategoryViewModel condition)
+        public async Task<IActionResult> SearchForFollowingCategories(
+            [FromBody] SearchFollowCategoryViewModel condition)
         {
-            #region Parameters validation
-
             if (condition == null)
             {
                 condition = new SearchFollowCategoryViewModel();
@@ -180,80 +87,8 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            #endregion
-
-            #region Search for information
-
-            // Find identity in request.
-            var identity = _identityService.GetProfile(HttpContext);
-
-            // Search for posts.
-            var followCategories = _unitOfWork.FollowingCategories.Search();
-
-            // Category id is defined.
-            if (condition.CategoryIds != null && condition.CategoryIds.Count > 0)
-            {
-                var categoryIds = condition.CategoryIds.Where(x => x > 0).ToList();
-                if (categoryIds.Count > 0)
-                    followCategories = followCategories.Where(x => condition.CategoryIds.Contains(x.CategoryId));
-            }
-
-            // Search conditions which are based on roles.
-            if (identity.Role == UserRole.Admin)
-            {
-                // Follower id is defined.
-                if (condition.FollowerIds != null && condition.FollowerIds.Count > 0)
-                {
-                    var followerIds = condition.FollowerIds.Where(x => x > 0).ToList();
-                    if (followerIds.Count > 0)
-                        followCategories = followCategories.Where(x => condition.FollowerIds.Contains(x.FollowerId));
-                }
-
-                // Statuses have been defined.
-                if (condition.Statuses != null && condition.Statuses.Count > 0)
-                {
-                    condition.Statuses =
-                      condition.Statuses.Where(x => Enum.IsDefined(typeof(ItemStatus), x)).ToList();
-                    if (condition.Statuses.Count > 0)
-                        followCategories = followCategories.Where(x => condition.Statuses.Contains(x.Status));
-                }
-            }
-            else
-            {
-                // Normal users can his/her followed categories.
-                followCategories = followCategories.Where(x => x.FollowerId == identity.Id);
-            }
-
-            // Created time has been defined.
-            var createdTime = condition.CreatedTime;
-            if (createdTime != null)
-            {
-                var from = createdTime.From;
-                var to = createdTime.To;
-
-                if (from != null)
-                    followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, from.Value,
-                        NumericComparision.GreaterEqual);
-
-                if (to != null)
-                    followCategories = _databaseFunction.SearchNumericProperty(followCategories, x => x.CreatedTime, to.Value,
-                        NumericComparision.LowerEqual);
-            }
-
-            // Sort property & direction.
-            var sort = condition.Sort;
-            if (sort != null)
-                followCategories = _databaseFunction.Sort(followCategories, sort.Direction, sort.Property);
-            else
-                followCategories = _databaseFunction.Sort(followCategories, SortDirection.Decending, FollowCategorySort.CreatedTime);
-
-            var result = new SearchResult<IList<FollowCategory>>();
-            result.Total = await followCategories.CountAsync();
-            result.Records = await _databaseFunction.Paginate(followCategories, condition.Pagination).ToListAsync();
-
-            #endregion
-
-            return Ok(result);
+            var loadFollowCategoriesResult = await _followCategoryDomain.SearchFollowCategoriesAsync(condition);
+            return Ok(loadFollowCategoriesResult);
         }
 
         #endregion
