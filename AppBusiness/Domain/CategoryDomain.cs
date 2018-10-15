@@ -117,14 +117,7 @@ namespace AppBusiness.Domain
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
-
-            // Category group id is defined
-            if (model.CategoryGroupId != category.CategoryGroupId)
-            {
-                category.CategoryGroupId = model.CategoryGroupId;
-                bHasInformationChanged = true;
-            }
-
+            
             // Name is defined
             if (model.Name != null && model.Name != category.Name)
             {
@@ -138,14 +131,7 @@ namespace AppBusiness.Domain
                 category.Description = model.Description;
                 bHasInformationChanged = true;
             }
-
-            // Status is defined.
-            if (model.Status != category.Status)
-            {
-                category.Status = model.Status;
-                bHasInformationChanged = true;
-            }
-
+            
             if (bHasInformationChanged)
             {
                 category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
@@ -262,6 +248,15 @@ namespace AppBusiness.Domain
             // Save changes into database.
             await _unitOfWork.CommitAsync(cancellationToken);
             return user;
+        }
+
+        /// <summary>
+        /// Summarize category information asynchronously.
+        /// </summary>
+        /// <returns></returns>
+        public Task SummarizeCategory()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

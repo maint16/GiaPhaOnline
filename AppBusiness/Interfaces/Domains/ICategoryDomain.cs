@@ -64,6 +64,12 @@ namespace AppBusiness.Interfaces.Domains
         Task<Category> UploadCategoryPhotoAsync(int categoryId, SKBitmap photo,
             CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Summarize category information.
+        /// </summary>
+        /// <returns></returns>
+        Task SummarizeCategory();
+
         #endregion
     }
 }
