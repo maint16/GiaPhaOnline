@@ -5,13 +5,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\AuthenticationDb\AuthenticationDb.csproj" />
+    <ProjectReference Include="..\AuthenticationModel\AuthenticationModel.csproj" />
+    <ProjectReference Include="..\AuthenticationShared\AuthenticationShared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AutoMapper">
+      <HintPath>C:\Users\Public.LPP00090147A\.nuget\packages\automapper\7.0.1\lib\netcoreapp2.0\AutoMapper.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

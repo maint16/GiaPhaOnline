@@ -44,3 +44,9 @@
 /Main/Main.csproj.user
 /micro-services/authentication-service/AuthenticationMicroService/obj
 /micro-services/authentication-service/AuthenticationMicroService/bin
+/micro-services/authentication-service/AuthenticationDb/obj
+/micro-services/authentication-service/AuthenticationDb/bin
+/micro-services/authentication-service/AuthenticationModel/bin
+/micro-services/authentication-service/AuthenticationModel/obj
+/micro-services/authentication-service/AuthenticationShared/bin
+/micro-services/authentication-service/AuthenticationShared/obj
