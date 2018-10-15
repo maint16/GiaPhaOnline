@@ -56,10 +56,7 @@ namespace Main.HostedServices
         /// <returns></returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            using (var serviceScope = _serviceProvider.CreateScope())
-            {
-                serviceScope.ServiceProvider.GetRequiredService<ICategoryDomain>();
-            }
+            return Task.CompletedTask;
         }
 
         protected virtual void SummarizeCategory(object state)

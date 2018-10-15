@@ -132,21 +132,7 @@ namespace AppBusiness.Domain
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
-
-            // Category id is defined
-            if (model.CategoryId != topic.CategoryId)
-            {
-                topic.CategoryId = model.CategoryId;
-                bHasInformationChanged = true;
-            }
-
-            // Category group id is defined
-            if (model.CategoryGroupId != topic.CategoryGroupId)
-            {
-                topic.CategoryGroupId = model.CategoryGroupId;
-                bHasInformationChanged = true;
-            }
-
+            
             // Title is defined
             if (model.Title != null && model.Title != topic.Title)
             {
@@ -160,14 +146,7 @@ namespace AppBusiness.Domain
                 topic.Body = model.Body;
                 bHasInformationChanged = true;
             }
-
-            // Status is defined.
-            if (model.Status != topic.Status)
-            {
-                topic.Status = model.Status;
-                bHasInformationChanged = true;
-            }
-
+            
             if (!bHasInformationChanged)
                 return topic;
 
