@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AppDb.Models.Entities;
 using Shared.Models;
 using Shared.ViewModels.Category;
+using SkiaSharp;
 
 namespace AppBusiness.Interfaces.Domains
 {
@@ -55,6 +56,13 @@ namespace AppBusiness.Interfaces.Domains
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(SearchCategorySummaryViewModel condition, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Upload category photo asynchronously.
+        /// </summary>
+        /// <returns></returns>
+        Task<Category> UploadCategoryPhotoAsync(int categoryId, SKBitmap photo,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion
     }

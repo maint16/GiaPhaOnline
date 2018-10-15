@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -17,6 +18,9 @@ using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.Category;
+using SkiaSharp;
+using VgySdk.Interfaces;
+using VgySdk.Models;
 
 namespace AppBusiness.Domain
 {
@@ -25,13 +29,14 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public CategoryDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
-            ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor)
+            ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor, IVgyService vgyService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _timeService = timeService;
             _identityService = identityService;
             _httpContext = httpContextAccessor.HttpContext;
+            _vgyService = vgyService;
         }
 
         #endregion
@@ -215,6 +220,49 @@ namespace AppBusiness.Domain
             loadCategorySummariesResult.Records = await categorySummaries.ToListAsync(cancellationToken);
             return loadCategorySummariesResult;
         }
+        
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="photo"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<Category> UploadCategoryPhotoAsync(int categoryId, SKBitmap photo,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Find user.
+            var user = await _unitOfWork.Categories.FirstOrDefaultAsync(
+                x => x.Id == categoryId && x.Status == ItemStatus.Active, cancellationToken);
+            if (user == null)
+                throw new ApiException(HttpMessages.AccountIsNotFound, HttpStatusCode.NotFound);
+
+            // Resize image to 512x512 size.
+            var resizedSkBitmap = photo.Resize(new SKImageInfo(512, 512), SKBitmapResizeMethod.Lanczos3);
+
+            // Initialize file name.
+            var fileName = $"{Guid.NewGuid():D}.png";
+
+            using (var skImage = SKImage.FromBitmap(resizedSkBitmap))
+            using (var skData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+            using (var memoryStream = new MemoryStream())
+            {
+                skData.SaveTo(memoryStream);
+                var vgySuccessRespone = await _vgyService.UploadAsync<VgySuccessResponse>(memoryStream.ToArray(),
+                    "image/png", fileName,
+                    CancellationToken.None);
+
+                // Response is empty.
+                if (vgySuccessRespone == null || vgySuccessRespone.IsError)
+                    throw new ApiException(HttpMessages.ImageIsInvalid, HttpStatusCode.Forbidden);
+
+                user.Photo = vgySuccessRespone.ImageUrl;
+            }
+
+            // Save changes into database.
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return user;
+        }
 
         /// <summary>
         ///     Get categories using specific conditions.
@@ -331,6 +379,8 @@ namespace AppBusiness.Domain
         private readonly IProfileService _identityService;
 
         private readonly HttpContext _httpContext;
+
+        private readonly IVgyService _vgyService;
 
         #endregion
     }

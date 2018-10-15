@@ -8,17 +8,23 @@ using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AutoMapper;
+using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
+using Main.ViewModels.Category;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Shared.Enumerations;
 using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.Category;
+using SkiaSharp;
 
 namespace Main.Controllers
 {
@@ -34,11 +40,12 @@ namespace Main.Controllers
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
-            IRealTimeService realTimeService, ICategoryDomain categoryService) : base(unitOfWork, mapper, timeService,
+            IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) : base(unitOfWork, mapper, timeService,
             relationalDbService, identityService)
         {
             _realTimeService = realTimeService;
-            _categoryService = categoryService;
+            _categoryDomain = categoryDomain;
+            _logger = logger;
         }
 
         #endregion
@@ -47,7 +54,9 @@ namespace Main.Controllers
 
         private readonly IRealTimeService _realTimeService;
 
-        private readonly ICategoryDomain _categoryService;
+        private readonly ICategoryDomain _categoryDomain;
+
+        private readonly ILogger _logger;
 
         #endregion
 
@@ -59,7 +68,8 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> AddCategory([FromBody] AddCategoryViewModel model)
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
+        public virtual async Task<IActionResult> AddCategory([FromBody] AddCategoryViewModel model)
         {
             #region Parameters validation
 
@@ -87,7 +97,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var category = await _categoryService.AddCategoryAsync(model);
+            var category = await _categoryDomain.AddCategoryAsync(model);
 
             #region Real-time message broadcast
 
@@ -120,7 +130,8 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCategory([FromRoute] int id, [FromBody] EditCategoryViewModel model)
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
+        public virtual async Task<IActionResult> EditCategory([FromRoute] int id, [FromBody] EditCategoryViewModel model)
         {
             #region Parameters validation
 
@@ -136,7 +147,7 @@ namespace Main.Controllers
             #endregion
 
             // Edit category asynchronously.
-            var category = await _categoryService.EditCategoryAsync(id, model);
+            var category = await _categoryDomain.EditCategoryAsync(id, model);
 
             #region Real-time message broadcast
 
@@ -168,7 +179,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> LoadCategories([FromBody] SearchCategoryViewModel condition)
+        public virtual async Task<IActionResult> LoadCategories([FromBody] SearchCategoryViewModel condition)
         {
             #region Parameters validation
 
@@ -183,7 +194,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var loadCategoriesResult = await _categoryService.SearchCategoriesAsync(condition, CancellationToken.None);
+            var loadCategoriesResult = await _categoryDomain.SearchCategoriesAsync(condition, CancellationToken.None);
             return Ok(loadCategoriesResult);
         }
 
@@ -193,17 +204,55 @@ namespace Main.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> LoadCategoryUsingId([FromRoute] int id)
+        public virtual async Task<IActionResult> LoadCategoryUsingId([FromRoute] int id)
         {
             var loadCategoryCondition = new SearchCategoryViewModel();
             loadCategoryCondition.Ids = new HashSet<int> {id};
             loadCategoryCondition.Pagination = new Pagination(1, 1);
 
-            var category = await _categoryService.GetCategoryUsingIdAsync(id, CancellationToken.None);
+            var category = await _categoryDomain.GetCategoryUsingIdAsync(id, CancellationToken.None);
             if (category == null)
                 return NotFound(new ApiResponse(HttpMessages.CategoryNotFound));
 
             return Ok(category);
+        }
+
+        /// <summary>
+        /// Upload category using specific information.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("photo")]
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
+        public virtual async Task<IActionResult> UploadCategoryPhoto(UploadCategoryPhotoViewModel model)
+        {
+            if (model == null)
+            {
+                model = new UploadCategoryPhotoViewModel();
+                TryValidateModel(model);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Reflect image variable.
+            var image = model.Photo;
+
+            using (var skManagedStream = new SKManagedStream(image.OpenReadStream()))
+            {
+                var skBitmap = SKBitmap.Decode(skManagedStream);
+
+                try
+                {
+                    var user = await _categoryDomain.UploadCategoryPhotoAsync(model.CategoryId, skBitmap);
+                    return Ok(user);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception.Message, exception);
+                    return StatusCode(StatusCodes.Status403Forbidden, new ApiResponse(HttpMessages.ImageIsInvalid));
+                }
+            }
         }
 
         #endregion
