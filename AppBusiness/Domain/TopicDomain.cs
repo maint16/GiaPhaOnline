@@ -77,10 +77,11 @@ namespace AppBusiness.Domain
 
             #endregion
 
-            #region Topic initialization
-
             // Find identity from request.
             var profile = _identityService.GetProfile(_httpContextAccessor.HttpContext);
+
+
+            #region Add topic
 
             // Topic intialization.
             var topic = new Topic();
@@ -103,8 +104,16 @@ namespace AppBusiness.Domain
 
             #endregion
 
-            return topic;
+            #region Add topic summary
 
+            var topicSummary = new TopicSummary(topic.Id, 0, 0);
+            _unitOfWork.TopicSummaries.Insert(topicSummary);
+
+            #endregion
+
+            await _unitOfWork.CommitAsync(cancellationToken);
+
+            return topic;
         }
 
         /// <summary>
@@ -132,7 +141,7 @@ namespace AppBusiness.Domain
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
-            
+
             // Title is defined
             if (model.Title != null && model.Title != topic.Title)
             {
@@ -146,7 +155,7 @@ namespace AppBusiness.Domain
                 topic.Body = model.Body;
                 bHasInformationChanged = true;
             }
-            
+
             if (!bHasInformationChanged)
                 return topic;
 

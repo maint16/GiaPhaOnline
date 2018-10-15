@@ -30,14 +30,8 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     Owner of notification
         /// </summary>
-        [Required]
         public int OwnerId { get; set; }
-
-        /// <summary>
-        ///     Type of notification
-        /// </summary>
-        public NotificationKinds Type { get; set; }
-
+        
         /// <summary>
         ///     Status of notification
         /// </summary>
@@ -46,18 +40,16 @@ namespace AppDb.Models.Entities
         /// <summary>
         ///     When the notification message was created.
         /// </summary>
-        [Required]
         public double CreatedTime { get; set; }
 
         /// <summary>
-        ///     Information of notification
+        ///     Serialized information of notification
         /// </summary>
         public string ExtraInfo { get; set; }
 
         /// <summary>
         ///     Message of notification
         /// </summary>
-        [Required]
         public string Message { get; set; }
 
         #endregion

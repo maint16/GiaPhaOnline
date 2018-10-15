@@ -10,16 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Main.Migrations
 {
     [DbContext(typeof(RelationalDbContext))]
-    [Migration("20180917060839_20180917001")]
-    partial class _20180917001
+    [Migration("20181015093839_InitialCommit")]
+    partial class InitialCommit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024");
 
             modelBuilder.Entity("AppDb.Models.Entities.AccessToken", b =>
                 {
@@ -116,17 +114,26 @@ namespace Main.Migrations
                     b.ToTable("CategoryGroup");
                 });
 
-            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+            modelBuilder.Entity("AppDb.Models.Entities.CategorySummary", b =>
                 {
-                    b.Property<Guid>("DeviceId")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("CategoryId");
 
-                    b.Property<string>("KeyName")
-                        .IsRequired();
+                    b.Property<double>("LastTopicCreatedTime");
 
-                    b.HasKey("DeviceId");
+                    b.Property<int>("LastTopicId");
 
-                    b.ToTable("UserDeviceToken");
+                    b.Property<string>("LastTopicTitle");
+
+                    b.Property<int>("TotalFollower");
+
+                    b.Property<int>("TotalPost");
+
+                    b.HasKey("CategoryId");
+
+                    b.HasIndex("LastTopicId")
+                        .IsUnique();
+
+                    b.ToTable("CategorySummary");
                 });
 
             modelBuilder.Entity("AppDb.Models.Entities.FollowCategory", b =>
@@ -178,8 +185,6 @@ namespace Main.Migrations
                     b.Property<int>("OwnerId");
 
                     b.Property<int>("Status");
-
-                    b.Property<int>("Type");
 
                     b.HasKey("Id");
 
@@ -259,22 +264,6 @@ namespace Main.Migrations
                     b.ToTable("SignalrConnection");
                 });
 
-            modelBuilder.Entity("AppDb.Models.Entities.SignalrConnectionGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ClientId");
-
-                    b.Property<string>("Group");
-
-                    b.Property<int>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SignalrConnectionGroup");
-                });
-
             modelBuilder.Entity("AppDb.Models.Entities.Topic", b =>
                 {
                     b.Property<int>("Id")
@@ -310,6 +299,19 @@ namespace Main.Migrations
                     b.ToTable("Topic");
                 });
 
+            modelBuilder.Entity("AppDb.Models.Entities.TopicSummary", b =>
+                {
+                    b.Property<int>("TopicId");
+
+                    b.Property<int>("TotalFollower");
+
+                    b.Property<int>("TotalReply");
+
+                    b.HasKey("TopicId");
+
+                    b.ToTable("TopicSummary");
+                });
+
             modelBuilder.Entity("AppDb.Models.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -341,6 +343,39 @@ namespace Main.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.Property<string>("DeviceId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("CreatedTime");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("DeviceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserDeviceToken");
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserRealTimeGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("CreatedTime");
+
+                    b.Property<string>("Group")
+                        .IsRequired();
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserRealTimeGroup");
                 });
 
             modelBuilder.Entity("AppDb.Models.Entities.AccessToken", b =>
@@ -380,15 +415,28 @@ namespace Main.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
+            modelBuilder.Entity("AppDb.Models.Entities.CategorySummary", b =>
+                {
+                    b.HasOne("AppDb.Models.Entities.Category", "Category")
+                        .WithOne("CategorySummary")
+                        .HasForeignKey("AppDb.Models.Entities.CategorySummary", "CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AppDb.Models.Entities.Topic", "LastTopic")
+                        .WithOne("CategorySummary")
+                        .HasForeignKey("AppDb.Models.Entities.CategorySummary", "LastTopicId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("AppDb.Models.Entities.FollowCategory", b =>
                 {
                     b.HasOne("AppDb.Models.Entities.Category", "Category")
-                        .WithMany("FollowingCategories")
+                        .WithMany("FollowCategories")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppDb.Models.Entities.User", "Follower")
-                        .WithMany("FollowingCategories")
+                        .WithMany("FollowCategories")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
@@ -396,12 +444,12 @@ namespace Main.Migrations
             modelBuilder.Entity("AppDb.Models.Entities.FollowTopic", b =>
                 {
                     b.HasOne("AppDb.Models.Entities.User", "Follower")
-                        .WithMany("FollowingTopics")
+                        .WithMany("FollowTopics")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppDb.Models.Entities.Topic", "Topic")
-                        .WithMany("FollowingTopics")
+                        .WithMany("FollowTopics")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
@@ -460,6 +508,22 @@ namespace Main.Migrations
                     b.HasOne("AppDb.Models.Entities.User", "Owner")
                         .WithMany("Topics")
                         .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.TopicSummary", b =>
+                {
+                    b.HasOne("AppDb.Models.Entities.Topic", "Topic")
+                        .WithOne("TopicSummary")
+                        .HasForeignKey("AppDb.Models.Entities.TopicSummary", "TopicId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AppDb.Models.Entities.UserDeviceToken", b =>
+                {
+                    b.HasOne("AppDb.Models.Entities.User", "User")
+                        .WithMany("DeviceTokens")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618

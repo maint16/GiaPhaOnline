@@ -73,8 +73,14 @@ namespace AppBusiness.Domain
             // Find identity from request.
             var profile = _identityService.GetProfile(_httpContext);
 
-            // Reply intialization.
-            var reply = new Reply();
+            using (var transaction = _unitOfWork.BeginTransactionScope())
+            {
+                try
+                {
+                    #region Add reply
+
+                    // Reply intialization.
+                    var reply = new Reply();
 
 #if USE_IN_MEMORY
             var replies = _unitOfWork.Replies.Search();
@@ -82,20 +88,45 @@ namespace AppBusiness.Domain
                 .FirstOrDefaultAsync(cancellationToken);
             reply.Id = iMaxReplyId + 1;
 #endif
-            reply.OwnerId = profile.Id;
-            reply.TopicId = topic.Id;
-            reply.CategoryId = topic.CategoryId;
-            reply.CategoryGroupId = topic.CategoryGroupId;
-            reply.Content = model.Content;
-            reply.Status = ItemStatus.Active;
-            reply.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            reply.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    reply.OwnerId = profile.Id;
+                    reply.TopicId = topic.Id;
+                    reply.CategoryId = topic.CategoryId;
+                    reply.CategoryGroupId = topic.CategoryGroupId;
+                    reply.Content = model.Content;
+                    reply.Status = ItemStatus.Active;
+                    reply.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    reply.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-            // Insert reply into system.
-            _unitOfWork.Replies.Insert(reply);
+                    // Insert reply into system.
+                    _unitOfWork.Replies.Insert(reply);
 
-            await _unitOfWork.CommitAsync(cancellationToken);
-            return reply;
+                    #endregion
+
+                    #region Update topic summary
+
+                    var topicSummary = await _unitOfWork.TopicSummaries.Search(x => x.TopicId == reply.TopicId).FirstOrDefaultAsync(cancellationToken);
+                    if (topicSummary == null)
+                    {
+                        topicSummary = new TopicSummary(reply.TopicId, 0, 1);
+                        _unitOfWork.TopicSummaries.Insert(topicSummary);
+                    }
+                    else
+                    {
+                        topicSummary.TotalReply++;
+                    }
+
+                    #endregion
+
+                    await _unitOfWork.CommitAsync(cancellationToken);
+                    transaction.Commit();
+                    return reply;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -130,14 +161,7 @@ namespace AppBusiness.Domain
                 reply.Content = model.Content;
                 bHasInformationChanged = true;
             }
-
-            // Status is defined.
-            if (model.Status != reply.Status)
-            {
-                reply.Status = model.Status;
-                bHasInformationChanged = true;
-            }
-
+            
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 

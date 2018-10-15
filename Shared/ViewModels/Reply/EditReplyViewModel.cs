@@ -12,12 +12,7 @@ namespace Shared.ViewModels.Reply
         /// </summary>
         [Required]
         public string Content { get; set; }
-
-        /// <summary>
-        ///     Status of reply.
-        /// </summary>
-        public ItemStatus Status { get; set; }
-
+        
         #endregion
     }
 }
