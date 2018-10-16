@@ -23,6 +23,21 @@ namespace AppBusiness.Domain
 {
     public class NotificationMessageDomain : INotificationMessageDomain
     {
+        #region Constructor
+
+        public NotificationMessageDomain(ITimeService timeService, IUnitOfWork unitOfWork,
+            IRelationalDbService relationalDbService, IProfileService profileService,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            _timeService = timeService;
+            _unitOfWork = unitOfWork;
+            _relationalDbService = relationalDbService;
+            _profileService = profileService;
+            _httpContext = httpContextAccessor.HttpContext;
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly ITimeService _timeService;
@@ -37,23 +52,10 @@ namespace AppBusiness.Domain
 
         #endregion
 
-        #region Constructor
-
-        public NotificationMessageDomain(ITimeService timeService, IUnitOfWork unitOfWork, IRelationalDbService relationalDbService, IProfileService profileService, IHttpContextAccessor httpContextAccessor)
-        {
-            _timeService = timeService;
-            _unitOfWork = unitOfWork;
-            _relationalDbService = relationalDbService;
-            _profileService = profileService;
-            _httpContext = httpContextAccessor.HttpContext;
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
@@ -67,6 +69,7 @@ namespace AppBusiness.Domain
             notificationMessage.OwnerId = model.OwnerId;
             notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
             notificationMessage.Message = model.Message;
+            notificationMessage.Status = NotificationStatus.Unseen;
             notificationMessage.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             _unitOfWork.NotificationMessages.Insert(notificationMessage);
@@ -76,12 +79,13 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<NotificationMessage> GetNotificationMessageUsingId(string id, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task<NotificationMessage> GetNotificationMessageUsingId(Guid id,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get profile information.
             var profile = _profileService.GetProfile(_httpContext);
@@ -89,24 +93,43 @@ namespace AppBusiness.Domain
                 return null;
 
             var notificationMessages = _unitOfWork.NotificationMessages.Search();
-            var gId = Guid.Parse(id);
-
-            notificationMessages = notificationMessages.Where(x => x.Id == gId && x.OwnerId == profile.Id);
+            notificationMessages = notificationMessages.Where(x => x.Id == id && x.OwnerId == profile.Id);
             return notificationMessages.FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
-        /// <inheritdoc />
+        /// Get 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<NotificationMessage> MarkNotificationMessageAsSeen(Guid id, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var notificationMessage = await GetNotificationMessageUsingId(id, cancellationToken);
+            if (notificationMessage == null)
+                throw new ApiException(HttpStatusCode.NotFound, HttpMessages.NotificationMessageNotFound);
+
+            if (notificationMessage.Status == NotificationStatus.Seen)
+                return notificationMessage;
+
+            notificationMessage.Status = NotificationStatus.Seen;
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return notificationMessage;
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<SearchResult<IList<NotificationMessage>>> SearchNotificationMessagesAsync(SearchNotificationMessageViewModel condition,
+        public virtual async Task<SearchResult<IList<NotificationMessage>>> SearchNotificationMessagesAsync(
+            SearchNotificationMessageViewModel condition,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var notificationmessages = GetNotificationMessages(condition);
             var loadNotificationMessagesResult = new SearchResult<IList<NotificationMessage>>();
-            loadNotificationMessagesResult.Total =  await notificationmessages.CountAsync(cancellationToken);
+            loadNotificationMessagesResult.Total = await notificationmessages.CountAsync(cancellationToken);
             loadNotificationMessagesResult.Records = await _relationalDbService
                 .Paginate(notificationmessages, condition.Pagination).ToListAsync(cancellationToken);
 
@@ -114,7 +137,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Search for notification messages using specific conditions.
+        ///     Search for notification messages using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -143,6 +166,7 @@ namespace AppBusiness.Domain
 
             return notificationMessages;
         }
+
         #endregion
     }
 }

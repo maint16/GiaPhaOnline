@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,16 @@ namespace AppBusiness.Interfaces.Domains
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<NotificationMessage> GetNotificationMessageUsingId(string id,
+        Task<NotificationMessage> GetNotificationMessageUsingId(Guid id,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Mark notification as seen message using id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<NotificationMessage> MarkNotificationMessageAsSeen(Guid id,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>

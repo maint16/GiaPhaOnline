@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServiceShared.Interfaces.Services;
+using ServiceShared.Models;
 using Shared.Enumerations;
 using Shared.Models;
 using Shared.Resources;

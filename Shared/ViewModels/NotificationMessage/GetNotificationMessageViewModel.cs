@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shared.ViewModels.NotificationMessage
 {
@@ -7,8 +8,7 @@ namespace Shared.ViewModels.NotificationMessage
         #region Properties
 
         [Required]
-        [RegularExpression(@"^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$")]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         #endregion
     }
