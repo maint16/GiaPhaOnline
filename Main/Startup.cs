@@ -332,6 +332,7 @@ namespace Main
             services.AddScoped<IFollowTopicDomain, FollowTopicDomain>();
             services.AddScoped<IFollowCategoryDomain, FollowCategoryDomain>();
             services.AddScoped<IUserDomain, UserDomain>();
+            services.AddScoped<INotificationMessageDomain, NotificationMessageDomain>();
 
 
             // Get email cache option.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AppModel.Exceptions
+namespace ServiceShared.Exceptions
 {
     public class NotModifiedException : Exception
     {

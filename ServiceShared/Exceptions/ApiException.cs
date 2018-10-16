@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace AuthenticationModel.Exceptions
+namespace ServiceShared.Exceptions
 {
     public class ApiException : Exception
     {
@@ -26,6 +26,11 @@ namespace AuthenticationModel.Exceptions
         }
 
         public ApiException(string message, HttpStatusCode status) : base(message)
+        {
+            Status = status;
+        }
+
+        public ApiException(HttpStatusCode status, string message) : base(message)
         {
             Status = status;
         }

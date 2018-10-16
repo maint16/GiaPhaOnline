@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
-using AppModel.Exceptions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 using Shared.ViewModels.ReportTopic;
 

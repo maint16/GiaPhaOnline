@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
-using AppModel.Exceptions;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
@@ -14,6 +13,7 @@ using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 using Shared.ViewModels.Reply;
 
