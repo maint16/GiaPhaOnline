@@ -4,7 +4,7 @@ using AuthenticationModel.Enumerations;
 using AuthenticationModel.Models;
 using AuthenticationShared.Models;
 
-namespace AuthenticationMicroService.Interfaces.Services
+namespace AuthenticationBusiness.Interfaces
 {
     public interface IRelationalDbService
     {

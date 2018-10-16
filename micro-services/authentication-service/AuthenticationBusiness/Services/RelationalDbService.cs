@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using AuthenticationMicroService.Interfaces.Services;
+using AuthenticationBusiness.Interfaces;
 using AuthenticationModel.Enumerations;
 using AuthenticationModel.Models;
 using AuthenticationShared.Models;
 
-namespace AuthenticationMicroService.Services
+namespace AuthenticationBusiness.Services
 {
     public class RelationalDbService : IRelationalDbService
     {

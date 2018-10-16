@@ -95,5 +95,23 @@ namespace AuthenticationShared.Resources {
                 return ResourceManager.GetString("CaptchaInvalid", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FACEBOOK_CODE_IS_INVALID.
+        /// </summary>
+        public static string FacebookCodeIsInvalid {
+            get {
+                return ResourceManager.GetString("FacebookCodeIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GOOGLE_CODE_IS_INVALID.
+        /// </summary>
+        public static string GoogleCodeIsInvalid {
+            get {
+                return ResourceManager.GetString("GoogleCodeIsInvalid", resourceCulture);
+            }
+        }
     }
 }

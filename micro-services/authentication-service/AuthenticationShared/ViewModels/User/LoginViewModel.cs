@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AuthenticationMicroService.ViewModels.User
+namespace AuthenticationShared.ViewModels.User
 {
     public class LoginViewModel
     {
