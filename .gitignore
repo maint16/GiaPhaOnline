@@ -55,3 +55,5 @@
 /AppBusiness/obj
 /AppBusiness/bin
 >>>>>>> dfacd47b7c43b5182e873b2251ca7ef2c825a6e6
+/micro-services/authentication-service/AuthenticationBusiness/obj
+/micro-services/authentication-service/AuthenticationBusiness/bin

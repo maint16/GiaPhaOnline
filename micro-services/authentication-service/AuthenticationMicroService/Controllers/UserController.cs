@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
+﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using AuthenticationBusiness.Interfaces;
+using AuthenticationBusiness.Interfaces.Domains;
 using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Entities;
-using AuthenticationMicroService.Constants;
 using AuthenticationMicroService.Interfaces.Services;
-using AuthenticationMicroService.Interfaces.Services.Businesses;
 using AuthenticationMicroService.Models.Jwt;
-using AuthenticationMicroService.ViewModels.User;
 using AuthenticationShared.Interfaces.Services;
 using AuthenticationShared.Models;
 using AuthenticationShared.Resources;
+using AuthenticationShared.ViewModels.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +63,7 @@ namespace AuthenticationMicroService.Controllers
         /// <summary>
         ///     Service which is for handling user.
         /// </summary>
-        private readonly IUserService _userService;
+        private readonly IUserDomain _userDomain;
 
         #endregion
 
@@ -84,7 +80,7 @@ namespace AuthenticationMicroService.Controllers
         /// <param name="captchaService"></param>
         /// <param name="jwtConfigurationOptions"></param>
         /// <param name="profileCacheService"></param>
-        /// <param name="userService"></param>
+        /// <param name="userDomain"></param>
         public UserController(
             IUnitOfWork unitOfWork,
             IMapper mapper,
@@ -94,7 +90,7 @@ namespace AuthenticationMicroService.Controllers
             ICaptchaService captchaService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
             IValueCacheService<int, User> profileCacheService,
-            IUserService userService) : base(unitOfWork, mapper, timeService, relationalDbService, identityService)
+            IUserDomain userDomain) : base(unitOfWork, mapper, timeService, relationalDbService, identityService)
         {
             _unitOfWork = unitOfWork;
             _systemTimeService = timeService;
@@ -103,7 +99,7 @@ namespace AuthenticationMicroService.Controllers
             _captchaService = captchaService;
             _jwtConfiguration = jwtConfigurationOptions.Value;
             _profileCacheService = profileCacheService;
-            _userService = userService;
+            _userDomain = userDomain;
         }
 
         #endregion
@@ -138,62 +134,83 @@ namespace AuthenticationMicroService.Controllers
             // Verify the captcha.
             var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse());
+                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
-            var user = await _userService.LoginAsync(model);
+            var user = await _userDomain.LoginAsync(model);
 
             // Initialize jwt token.
-            var jwt = InitializeAccountToken(user);
-            return Ok(jwt);
+            var jsonWebToken = _userDomain.GenerateJwt(user);
+
+            return Ok(jsonWebToken);
         }
 
         /// <summary>
-        /// Initialize account access token.
+        ///     Use specific conditions to login into Google authentication system.
         /// </summary>
-        /// <param name="account"></param>
+        /// <param name="info"></param>
         /// <returns></returns>
-        private JwtResponse InitializeAccountToken(User account)
+        [HttpPost("google-login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
         {
-            // Find current time on the system.
-            var systemTime = DateTime.Now;
-            var jwtExpiration = systemTime.AddSeconds(_jwtConfiguration.LifeTime);
+            #region Request params validation
 
-            // Claims initalization.
-            var claims = InitUserClaim(account);
+            if (info == null)
+            {
+                info = new GoogleLoginViewModel();
+                TryValidateModel(info);
+            }
 
-            // Write a security token.
-            var jwtSecurityToken = new JwtSecurityToken(_jwtConfiguration.Issuer, _jwtConfiguration.Audience, claims,
-                null, jwtExpiration, _jwtConfiguration.SigningCredentials);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            // Initiate token handler which is for generating token code.
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
+            #endregion
 
-            // Initialize jwt response.
-            var jwt = new JwtResponse();
-            jwt.Code = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
-            jwt.LifeTime = _jwtConfiguration.LifeTime;
-            jwt.Expiration = TimeService.DateTimeUtcToUnix(jwtExpiration);
+            #region Google login
 
-            _profileCacheService.Add(account.Id, account, LifeTimeConstant.JwtLifeTime);
-            return jwt;
+            var user = await _userDomain.GoogleLoginAsync(info);
+
+            var jsonWebToken = _userDomain.GenerateJwt(user);
+
+            #endregion
+
+            return Ok(jsonWebToken);
         }
 
         /// <summary>
-        /// Initialize user claim.
+        ///     Use specific information to sign into system using facebook account.
         /// </summary>
-        /// <param name="account"></param>
+        /// <param name="info"></param>
         /// <returns></returns>
-        private IList<Claim> InitUserClaim(User account)
+        [HttpPost("facebook-login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
         {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _jwtConfiguration.Audience));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _jwtConfiguration.Issuer));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, account.Email));
-            claims.Add(new Claim(nameof(account.Nickname), account.Nickname));
-            claims.Add(new Claim(nameof(account.Id), account.Id.ToString()));
+            #region Request parameters validation
 
-            return claims;
+            // Information hasn't been initialized.
+            if (info == null)
+            {
+                info = new FacebookLoginViewModel();
+                TryValidateModel(info);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            #endregion
+
+            #region Facebook login & token generate
+
+            // Do facebook login.
+            var user = await _userDomain.FacebookLoginAsync(info);
+
+            // Initialize access token.
+            var jsonWebToken = _userDomain.GenerateJwt(user);
+
+            #endregion
+
+            return Ok(jsonWebToken);
         }
 
         #endregion

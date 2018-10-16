@@ -129,4 +129,10 @@
   <data name="CaptchaInvalid" xml:space="preserve">
     <value>CAPTCHA_INVALID</value>
   </data>
+  <data name="FacebookCodeIsInvalid" xml:space="preserve">
+    <value>FACEBOOK_CODE_IS_INVALID</value>
+  </data>
+  <data name="GoogleCodeIsInvalid" xml:space="preserve">
+    <value>GOOGLE_CODE_IS_INVALID</value>
+  </data>
 </root>
