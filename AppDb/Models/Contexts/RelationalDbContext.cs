@@ -377,7 +377,8 @@ namespace AppDb.Models.Contexts
 
             // Primary key initialization.
             notificationMessage.HasKey(x => x.Id);
-            notificationMessage.Property(x => x.Id);
+            notificationMessage.Property(x => x.Id).ValueGeneratedOnAdd();
+            notificationMessage.Property(x => x.Message).IsRequired();
 
             // Relationship between notification message and account.
             notificationMessage.HasOne(x => x.Owner).WithMany(x => x.NotificationMessages);

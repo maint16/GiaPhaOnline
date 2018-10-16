@@ -263,9 +263,10 @@ namespace Main
             var sqlConnection = "";
 
 #if USE_SQLITE
-            sqlConnection = Configuration.GetConnectionString("sqliteConnectionString");
-            services.AddDbContext<RelationalDatabaseContext>(
+            sqlConnection = Configuration.GetConnectionString(AppConfigKeyConstant.SqliteConnectionString);
+            services.AddDbContext<RelationalDbContext>(
                 options => options.UseSqlite(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+            services.AddScoped<DbContext, RelationalDbContext>();
 #elif USE_AZURE_SQL
             sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(

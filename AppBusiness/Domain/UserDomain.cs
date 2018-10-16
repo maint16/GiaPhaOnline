@@ -184,13 +184,13 @@ namespace AppBusiness.Domain
         public virtual async Task<User> FacebookLoginAsync(FacebookLoginViewModel model,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Find token information.
-            var tokenInfo = await _externalAuthenticationService.GetFacebookTokenInfoAsync(model.AccessToken);
-            if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.AccessToken))
-                throw new ApiException(HttpMessages.FacebookCodeIsInvalid, HttpStatusCode.Forbidden);
+            //// Find token information.
+            //var tokenInfo = await _externalAuthenticationService.GetFacebookTokenInfoAsync(model.AccessToken);
+            //if (tokenInfo == null || string.IsNullOrWhiteSpace(tokenInfo.AccessToken))
+            //    throw new ApiException(HttpMessages.FacebookCodeIsInvalid, HttpStatusCode.Forbidden);
 
             // Get the profile information.
-            var profile = await _externalAuthenticationService.GetFacebookBasicProfileAsync(tokenInfo.AccessToken);
+            var profile = await _externalAuthenticationService.GetFacebookBasicProfileAsync(model.AccessToken);
             if (profile == null)
                 throw new ApiException(HttpMessages.GoogleCodeIsInvalid, HttpStatusCode.Forbidden);
 
@@ -200,35 +200,36 @@ namespace AppBusiness.Domain
             accounts = accounts.Where(x => x.Email.Equals(profile.Email));
 
             // Get the first matched account.
-            var account = await accounts.FirstOrDefaultAsync(cancellationToken);
+            var user = await accounts.FirstOrDefaultAsync(cancellationToken);
 
             // Account is available in the system. Check its status.
-            if (account != null)
+            if (user != null)
             {
                 // Prevent account from logging into system because it is pending.
-                if (account.Status == UserStatus.Pending)
+                if (user.Status == UserStatus.Pending)
                     throw new ApiException(HttpMessages.AccountIsPending, HttpStatusCode.Forbidden);
 
                 // Prevent account from logging into system because it is deleted.
-                if (account.Status == UserStatus.Disabled)
+                if (user.Status == UserStatus.Disabled)
                     throw new ApiException(HttpMessages.AccountIsPending, HttpStatusCode.Forbidden);
             }
             else
             {
                 // Initialize account instance.
-                account = new User();
-                account.Email = profile.Email;
-                account.Nickname = profile.FullName;
-                account.Role = UserRole.User;
-                account.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                account.Type = UserKind.Facebook;
+                user = new User();
+                user.Email = profile.Email;
+                user.Nickname = profile.FullName;
+                user.Role = UserRole.User;
+                user.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                user.Type = UserKind.Facebook;
+                user.Status = UserStatus.Available;
 
                 // Add account to database.
-                _unitOfWork.Accounts.Insert(account);
+                _unitOfWork.Accounts.Insert(user);
                 await _unitOfWork.CommitAsync(cancellationToken);
             }
 
-            return account;
+            return user;
         }
 
         /// <summary>

@@ -29,6 +29,10 @@
         /// </summary>
         public const string AppSendGrid = "appSendGrid";
 
+        public const string SqliteConnectionString = "sqliteConnectionString";
+
+        public const string SqlConnectionString = "sqlConnectionString";
+
         #endregion
     }
 }

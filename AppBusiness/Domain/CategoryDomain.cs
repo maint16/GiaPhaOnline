@@ -61,7 +61,6 @@ namespace AppBusiness.Domain
             if (bIsCategoryAvailable)
                 throw new ApiException(HttpMessages.CategoryCannotConflict, HttpStatusCode.Conflict);
 
-            #endregion
 
             // Find identity from request.
             var profile = _identityService.GetProfile(_httpContext);
@@ -117,7 +116,7 @@ namespace AppBusiness.Domain
 
             // Check whether information has been updated or not.
             var bHasInformationChanged = false;
-            
+
             // Name is defined
             if (model.Name != null && model.Name != category.Name)
             {
@@ -131,7 +130,7 @@ namespace AppBusiness.Domain
                 category.Description = model.Description;
                 bHasInformationChanged = true;
             }
-            
+
             if (bHasInformationChanged)
             {
                 category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
@@ -206,7 +205,7 @@ namespace AppBusiness.Domain
             loadCategorySummariesResult.Records = await categorySummaries.ToListAsync(cancellationToken);
             return loadCategorySummariesResult;
         }
-        
+
         /// <summary>
         /// <inheritdoc />
         /// </summary>
@@ -362,6 +361,8 @@ namespace AppBusiness.Domain
 
             return categorySummaries;
         }
+
+        #endregion
 
         #region Properties
 
