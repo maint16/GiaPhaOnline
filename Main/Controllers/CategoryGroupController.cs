@@ -10,12 +10,11 @@ using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
-using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 using Shared.Resources;
 using Shared.ViewModels.CategoryGroup;
 

@@ -7,14 +7,14 @@ using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Entities;
 using AuthenticationMicroService.Interfaces.Services;
 using AuthenticationMicroService.Models.Jwt;
-using AuthenticationShared.Interfaces.Services;
-using AuthenticationShared.Models;
 using AuthenticationShared.Resources;
 using AuthenticationShared.ViewModels.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using ServiceShared.Interfaces.Services;
+using ServiceShared.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +23,43 @@ namespace AuthenticationMicroService.Controllers
     [Route("api/[controller]")]
     public class UserController : ApiBaseController
     {
+        #region Constructors
+
+        /// <summary>
+        ///     Initiate controller with injectors.
+        /// </summary>
+        /// <param name="unitOfWork"></param>
+        /// <param name="mapper"></param>
+        /// <param name="timeService"></param>
+        /// <param name="relationalDbService"></param>
+        /// <param name="identityService"></param>
+        /// <param name="captchaService"></param>
+        /// <param name="jwtConfigurationOptions"></param>
+        /// <param name="profileCacheService"></param>
+        /// <param name="userDomain"></param>
+        public UserController(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            ITimeService timeService,
+            IRelationalDbService relationalDbService,
+            IIdentityService identityService,
+            ICaptchaService captchaService,
+            IOptions<JwtConfiguration> jwtConfigurationOptions,
+            IValueCacheService<int, User> profileCacheService,
+            IUserDomain userDomain) : base(unitOfWork, mapper, timeService, relationalDbService, identityService)
+        {
+            _unitOfWork = unitOfWork;
+            _systemTimeService = timeService;
+            _databaseFunction = relationalDbService;
+            _identityService = identityService;
+            _captchaService = captchaService;
+            _jwtConfiguration = jwtConfigurationOptions.Value;
+            _profileCacheService = profileCacheService;
+            _userDomain = userDomain;
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -67,43 +104,6 @@ namespace AuthenticationMicroService.Controllers
 
         #endregion
 
-        #region Constructors
-
-        /// <summary>
-        /// Initiate controller with injectors.
-        /// </summary>
-        /// <param name="unitOfWork"></param>
-        /// <param name="mapper"></param>
-        /// <param name="timeService"></param>
-        /// <param name="relationalDbService"></param>
-        /// <param name="identityService"></param>
-        /// <param name="captchaService"></param>
-        /// <param name="jwtConfigurationOptions"></param>
-        /// <param name="profileCacheService"></param>
-        /// <param name="userDomain"></param>
-        public UserController(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
-            IIdentityService identityService,
-            ICaptchaService captchaService,
-            IOptions<JwtConfiguration> jwtConfigurationOptions,
-            IValueCacheService<int, User> profileCacheService,
-            IUserDomain userDomain) : base(unitOfWork, mapper, timeService, relationalDbService, identityService)
-        {
-            _unitOfWork = unitOfWork;
-            _systemTimeService = timeService;
-            _databaseFunction = relationalDbService;
-            _identityService = identityService;
-            _captchaService = captchaService;
-            _jwtConfiguration = jwtConfigurationOptions.Value;
-            _profileCacheService = profileCacheService;
-            _userDomain = userDomain;
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
@@ -132,9 +132,10 @@ namespace AuthenticationMicroService.Controllers
             #endregion
 
             // Verify the captcha.
-            var bIsCaptchaValid = await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
+            var bIsCaptchaValid =
+                await _captchaService.IsCaptchaValidAsync(model.CaptchaCode, null, CancellationToken.None);
             if (!bIsCaptchaValid)
-                return StatusCode((int)HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
+                return StatusCode((int) HttpStatusCode.Forbidden, new ApiResponse(HttpMessages.CaptchaInvalid));
 
             var user = await _userDomain.LoginAsync(model);
 
@@ -214,6 +215,5 @@ namespace AuthenticationMicroService.Controllers
         }
 
         #endregion
-
     }
 }

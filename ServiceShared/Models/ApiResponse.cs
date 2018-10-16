@@ -1,4 +1,4 @@
-﻿namespace AuthenticationShared.Models
+﻿namespace ServiceShared.Models
 {
     public class ApiResponse
     {

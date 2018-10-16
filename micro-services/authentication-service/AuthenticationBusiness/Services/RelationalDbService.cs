@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using AuthenticationBusiness.Interfaces;
 using AuthenticationModel.Enumerations;
 using AuthenticationModel.Models;
-using AuthenticationShared.Models;
+using ServiceShared.Models;
 
 namespace AuthenticationBusiness.Services
 {
@@ -173,7 +173,7 @@ namespace AuthenticationBusiness.Services
             var methodCallExpression = Expression.Call(
                 typeof(Queryable),
                 sortMethod,
-                new[] { list.ElementType, memberExpression.Type },
+                new[] {list.ElementType, memberExpression.Type},
                 list.Expression,
                 Expression.Quote(lamdaExpression));
 

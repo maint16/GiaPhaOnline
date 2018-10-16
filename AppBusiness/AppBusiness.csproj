@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AppDb\AppDb.csproj" />
     <ProjectReference Include="..\AppModel\AppModel.csproj" />
+    <ProjectReference Include="..\ServiceShared\ServiceShared.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 

@@ -14,7 +14,7 @@ using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Shared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 using Shared.ViewModels.Reply;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
