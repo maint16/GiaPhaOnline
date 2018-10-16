@@ -11,13 +11,7 @@ namespace Shared.ViewModels.Topic
         /// </summary>
         [Required]
         public int CategoryId { get; set; }
-
-        /// <summary>
-        ///     Category group that category belongs to.
-        /// </summary>
-        [Required]
-        public int CategoryGroupId { get; set; }
-
+        
         /// <summary>
         ///     Title of topic
         /// </summary>

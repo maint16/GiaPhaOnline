@@ -71,8 +71,8 @@ namespace AppBusiness.Domain
             categories = categories.Where(x => x.Id == model.CategoryId && x.Status == ItemStatus.Active);
 
             // Check whether category exists or not.
-            var bIsCategoryAvailable = await categories.AnyAsync(cancellationToken);
-            if (!bIsCategoryAvailable)
+            var category = await categories.FirstOrDefaultAsync(cancellationToken);
+            if (category == null)
                 throw new ApiException(HttpMessages.CategoryNotFound, HttpStatusCode.NotFound);
 
             #endregion
@@ -91,8 +91,8 @@ namespace AppBusiness.Domain
                            .FirstOrDefaultAsync(cancellationToken) + 1;
 #endif
             topic.OwnerId = profile.Id;
-            topic.CategoryId = model.CategoryId;
-            topic.CategoryGroupId = model.CategoryGroupId;
+            topic.CategoryId = category.Id;
+            topic.CategoryGroupId = category.CategoryGroupId;
             topic.Title = model.Title;
             topic.Body = model.Body;
             topic.Status = ItemStatus.Active;
