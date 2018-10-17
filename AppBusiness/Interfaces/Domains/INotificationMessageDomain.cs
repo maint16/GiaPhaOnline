@@ -20,8 +20,12 @@ namespace AppBusiness.Interfaces.Domains
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
+        /// <param name="bIsExpressionSupressed"></param>
         /// <returns></returns>
-        Task<NotificationMessage> AddNotificationMessageAsync<T>(AddNotificationMessageModel<T> model, CancellationToken cancellationToken = default (CancellationToken));
+        Task<NotificationMessage> AddNotificationMessageAsync<T>(
+            AddNotificationMessageModel<T> model,
+            CancellationToken cancellationToken = default(CancellationToken),
+            bool bIsExpressionSupressed = default(bool));
 
         /// <summary>
         /// Get notification message using id.

@@ -53,5 +53,22 @@ namespace AppDb.Models.Entities
         public string Message { get; set; }
 
         #endregion
+
+        #region Constructor
+
+        public NotificationMessage()
+        {
+        }
+
+        public NotificationMessage(int ownerId, NotificationStatus status, double createdTime, string extraInfo, string message)
+        {
+            OwnerId = ownerId;
+            Status = status;
+            CreatedTime = createdTime;
+            ExtraInfo = extraInfo;
+            Message = message;
+        }
+
+        #endregion
     }
 }

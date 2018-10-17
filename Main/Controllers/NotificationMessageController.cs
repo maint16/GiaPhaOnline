@@ -1,7 +1,9 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Models;
 using Shared.Resources;
@@ -32,6 +34,35 @@ namespace Main.Controllers
         #endregion
 
         #region Methods
+
+#if DEBUG
+
+        [HttpPost("")]
+        public virtual async Task<IActionResult> AddNotificationMessage([FromBody] AddNotificationMessageModel<Dictionary<string, object>> model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", "REQUEST_BODY_EMTPY");
+                return BadRequest(ModelState);
+            }
+
+            if (model.OwnerId < 1)
+            {
+                ModelState.AddModelError($"{nameof(model.OwnerId)}", "OWNER_ID_REQUIRED");
+                return BadRequest(ModelState);
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Message))
+            {
+                ModelState.AddModelError($"{nameof(model.Message)}", "MESSAGE_CANNOT_EMPTY");
+                return BadRequest(ModelState);
+            }
+
+            var notification = await _notificationMessageDomain.AddNotificationMessageAsync(model);
+            return Ok(notification);
+        }
+
+#endif
 
         /// <summary>
         /// Get notification message using specific condition.

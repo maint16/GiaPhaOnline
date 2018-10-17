@@ -80,40 +80,51 @@ namespace AppBusiness.Domain
             // Find identity from request.
             var profile = _identityService.GetProfile(_httpContextAccessor.HttpContext);
 
+            using (var transaction = _unitOfWork.BeginTransactionScope())
+            {
 
-            #region Add topic
+                try
+                {
+                    #region Add topic
 
-            // Topic intialization.
-            var topic = new Topic();
+                    // Topic intialization.
+                    var topic = new Topic();
 
 #if USE_IN_MEMORY
             topic.Id = await _unitOfWork.Topics.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
                            .FirstOrDefaultAsync(cancellationToken) + 1;
 #endif
-            topic.OwnerId = profile.Id;
-            topic.CategoryId = category.Id;
-            topic.CategoryGroupId = category.CategoryGroupId;
-            topic.Title = model.Title;
-            topic.Body = model.Body;
-            topic.Status = ItemStatus.Active;
-            topic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            topic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    topic.OwnerId = profile.Id;
+                    topic.CategoryId = category.Id;
+                    topic.CategoryGroupId = category.CategoryGroupId;
+                    topic.Title = model.Title;
+                    topic.Body = model.Body;
+                    topic.Status = ItemStatus.Active;
+                    topic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    topic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-            // Insert topic into system.
-            _unitOfWork.Topics.Insert(topic);
+                    // Insert topic into system.
+                    _unitOfWork.Topics.Insert(topic);
 
-            #endregion
+                    #endregion
 
-            #region Add topic summary
+                    #region Add topic summary
 
-            var topicSummary = new TopicSummary(topic.Id, 0, 0);
-            _unitOfWork.TopicSummaries.Insert(topicSummary);
+                    var topicSummary = new TopicSummary(topic.Id, 0, 0);
+                    _unitOfWork.TopicSummaries.Insert(topicSummary);
 
-            #endregion
-
-            await _unitOfWork.CommitAsync(cancellationToken);
-
-            return topic;
+                    #endregion
+                    
+                    await _unitOfWork.CommitAsync(cancellationToken);
+                    transaction.Commit();
+                    return topic;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
 
         /// <summary>

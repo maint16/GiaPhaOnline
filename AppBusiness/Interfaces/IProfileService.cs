@@ -17,14 +17,13 @@ namespace AppBusiness.Interfaces
         ///     Initiate identity claim from user information.
         /// </summary>
         /// <returns></returns>
-        void SetProfile(HttpContext httpContext, User account);
+        void SetProfile(User account);
 
         /// <summary>
         ///     Get identity attached in request.
         /// </summary>
-        /// <param name="httpContext"></param>
         /// <returns></returns>
-        User GetProfile(HttpContext httpContext);
+        User GetProfile( );
 
         /// <summary>
         ///     Initiate jwt from identity.

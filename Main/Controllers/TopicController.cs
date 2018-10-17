@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
+using AppDb.Models.Entities;
+using AppDb.Services;
 using AutoMapper;
 using Main.Constants;
 using Main.Interfaces.Services;
@@ -13,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServiceShared.Interfaces.Services;
 using Shared.Enumerations;
+using Shared.Resources;
 using Shared.ViewModels.Topic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,26 +24,26 @@ using Shared.ViewModels.Topic;
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class TopicController : ApiBaseController
+    public class TopicController: Controller
     {
         #region Constructors
 
         public TopicController(
-            IUnitOfWork unitOfWork,
-            IMapper mapper,
             ITimeService timeService,
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger<TopicController> logger, ITopicDomain topicDomain) : base(unitOfWork, mapper, timeService,
-            relationalDbService, identityService)
+            ILogger<TopicController> logger, ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper, IUnitOfWork unitOfWork) 
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _logger = logger;
             _topicDomain = topicDomain;
+            _notificationMessageDomain = notificationMessageDomain;
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         #endregion
@@ -61,7 +65,13 @@ namespace Main.Controllers
         /// </summary>
         private readonly ILogger _logger;
 
+        private readonly IMapper _mapper;
+
         private readonly ITopicDomain _topicDomain;
+
+        private readonly INotificationMessageDomain _notificationMessageDomain;
+
+        private readonly IUnitOfWork _unitOfWork;
 
         #endregion
 
@@ -84,8 +94,17 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // Add topic.
             var topic = await _topicDomain.AddTopicAsync(model, CancellationToken.None);
 
+            // Add notification
+            var clonedTopic = _mapper.Map<Topic>(topic);
+            clonedTopic.Title = null;
+            clonedTopic.Body = null;
+
+            await _notificationMessageDomain.AddNotificationMessageAsync(
+                new AddNotificationMessageModel<Topic>(clonedTopic.OwnerId, clonedTopic,
+                    NotificationMessages.SomeoneCommentedTopic));
             return Ok(topic);
         }
 
@@ -117,7 +136,7 @@ namespace Main.Controllers
             if (topic.Status != ItemStatus.Disabled)
                 return Ok(topic);
 
-            var users = UnitOfWork.Accounts.Search();
+            var users = _unitOfWork.Accounts.Search();
             users = users.Where(x => x.Id == topic.OwnerId);
             var user = await users.FirstOrDefaultAsync();
 

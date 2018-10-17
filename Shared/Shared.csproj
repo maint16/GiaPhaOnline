@@ -28,6 +28,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>HttpMessages.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\NotificationMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NotificationMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\RealTimeMessages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -54,6 +59,10 @@
     <EmbeddedResource Update="Resources\HttpValidationMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>HttpValidationMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\NotificationMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>NotificationMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\RealTimeMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

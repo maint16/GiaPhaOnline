@@ -60,22 +60,33 @@ namespace AppBusiness.Domain
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
+        /// <param name="bIsExpressionSupressed"></param>
         /// <returns></returns>
         public virtual async Task<NotificationMessage> AddNotificationMessageAsync<T>(
             AddNotificationMessageModel<T> model,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default(CancellationToken), bool bIsExpressionSupressed = default (bool))
         {
-            var notificationMessage = new NotificationMessage();
-            notificationMessage.OwnerId = model.OwnerId;
-            notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
-            notificationMessage.Message = model.Message;
-            notificationMessage.Status = NotificationStatus.Unseen;
-            notificationMessage.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            try
+            {
+                var notificationMessage = new NotificationMessage();
+                notificationMessage.OwnerId = model.OwnerId;
+                notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
+                notificationMessage.Message = model.Message;
+                notificationMessage.Status = NotificationStatus.Unseen;
+                notificationMessage.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-            _unitOfWork.NotificationMessages.Insert(notificationMessage);
-            await _unitOfWork.CommitAsync(cancellationToken);
+                _unitOfWork.NotificationMessages.Insert(notificationMessage);
+                await _unitOfWork.CommitAsync(cancellationToken);
 
-            return notificationMessage;
+                return notificationMessage;
+            }
+            catch
+            {
+                if (bIsExpressionSupressed)
+                    return null;
+
+                throw;
+            }
         }
 
         /// <summary>

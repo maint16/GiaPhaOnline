@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AppDb.Models.Entities;
+using AutoMapper;
 using Shared.ViewModels.Users;
 
 namespace Main.Models
@@ -15,6 +16,7 @@ namespace Main.Models
             // Post mapping.
             //CreateMap<AddPostViewModel, Post>();
             CreateMap<LoginViewModel, LoginViewModel>();
+            CreateMap<Topic, Topic>();
         }
 
         #endregion
