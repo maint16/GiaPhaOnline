@@ -176,6 +176,25 @@ namespace Main.Controllers
         }
 
         /// <summary>
+        ///     Delete a category.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("")]
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
+        public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+        {
+            var deleteCategoryViewModel = new DeleteCategoryViewModel
+            {
+                Id = id
+            };
+
+            await _categoryDomain.DeleteCategoryAsync(deleteCategoryViewModel);
+
+            return Ok();
+        }
+
+        /// <summary>
         ///     Load category by using specific conditions.
         /// </summary>
         /// <param name="condition"></param>

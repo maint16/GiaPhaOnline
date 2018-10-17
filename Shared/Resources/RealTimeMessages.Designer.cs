@@ -61,6 +61,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MSG_ADD_NEW_CATEGORY.
+        /// </summary>
+        public static string AddNewCategoryContent {
+            get {
+                return ResourceManager.GetString("AddNewCategoryContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MSG_ADD_NEW_CATEGORY_GROUP.
         /// </summary>
         public static string AddNewCategoryGroupContent {
@@ -75,6 +84,42 @@ namespace Shared.Resources {
         public static string AddNewCategoryGroupTitle {
             get {
                 return ResourceManager.GetString("AddNewCategoryGroupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TITLE_NEW_CATEGORY.
+        /// </summary>
+        public static string AddNewCategoryTitle {
+            get {
+                return ResourceManager.GetString("AddNewCategoryTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_DELETE_TOPIC.
+        /// </summary>
+        public static string DeleteTopicContent {
+            get {
+                return ResourceManager.GetString("DeleteTopicContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TITLE_DELETE_TOPIC.
+        /// </summary>
+        public static string DeleteTopicTitle {
+            get {
+                return ResourceManager.GetString("DeleteTopicTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_EDIT_CATEGORY.
+        /// </summary>
+        public static string EditCategoryContent {
+            get {
+                return ResourceManager.GetString("EditCategoryContent", resourceCulture);
             }
         }
         
@@ -95,71 +140,14 @@ namespace Shared.Resources {
                 return ResourceManager.GetString("EditCategoryGroupTitle", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to MSG_ADD_NEW_CATEGORY.
-        /// </summary>
-        public static string AddNewCategoryContent
-        {
-            get
-            {
-                return ResourceManager.GetString("AddNewCategoryContent", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to TITLE_NEW_CATEGORY.
-        /// </summary>
-        public static string AddNewCategoryTitle
-        {
-            get
-            {
-                return ResourceManager.GetString("AddNewCategoryTitle", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to MSG_EDIT_CATEGORY.
-        /// </summary>
-        public static string EditCategoryContent
-        {
-            get
-            {
-                return ResourceManager.GetString("EditCategoryContent", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to TITLE_EDIT_CATEGORY.
         /// </summary>
-        public static string EditCategoryTitle
-        {
-            get
-            {
+        public static string EditCategoryTitle {
+            get {
                 return ResourceManager.GetString("EditCategoryTitle", resourceCulture);
             }
         }
-        /// <summary>
-        ///   Looks up a localized string similar to MSG_EDIT_USER_STATUS.
-        /// </summary>
-        public static string EditUserStatusContent
-        {
-            get
-            {
-                return ResourceManager.GetString("EditUserStatusContent", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to TITLE_EDIT_USER_STATUS.
-        /// </summary>
-        public static string EditUserStatusTitle
-        {
-            get
-            {
-                return ResourceManager.GetString("EditUserStatusTitle", resourceCulture);
-            }
-        }
-
     }
 }

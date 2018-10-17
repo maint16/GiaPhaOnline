@@ -32,6 +32,15 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        ///     Delete category asynchronously.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteCategoryAsync(DeleteCategoryViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         ///     Search categories using specific condition asynchronously.
         /// </summary>
         /// <param name="condition"></param>

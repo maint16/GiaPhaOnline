@@ -10,6 +10,7 @@ using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -147,6 +148,25 @@ namespace Main.Controllers
 
                 return Ok();
             }
+        }
+
+        /// <summary>
+        ///     Delete a category.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("")]
+        [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
+        public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+        {
+            var deleteReplyViewModel = new DeleteReplyViewModel
+            {
+                Id = id
+            };
+
+            await _replyDomain.DeleteReplyAsync(deleteReplyViewModel);
+
+            return Ok();
         }
 
         /// <summary>

@@ -31,6 +31,15 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        ///     Delete reply asynchronously.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteReplyAsync(DeleteReplyViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         ///     Search replies asynchronously.
         /// </summary>
         Task<SearchResult<IList<Reply>>> SearchRepliesAsync(SearchReplyViewModel condition,
