@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using AppDb.Models.Entities;
+using AppShared.Enumerations;
 using Microsoft.EntityFrameworkCore;
-using Shared.Enumerations;
 
 namespace AppDb.Models.Contexts
 {

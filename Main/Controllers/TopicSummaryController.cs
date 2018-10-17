@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces.Domains;
+using AppShared.ViewModels.Topic;
 using Microsoft.AspNetCore.Mvc;
-using Shared.ViewModels.Topic;
 
 namespace Main.Controllers
 {

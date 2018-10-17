@@ -8,15 +8,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Enumerations;
+using AppShared.Enumerations.Order;
+using AppShared.Models;
+using AppShared.Resources;
+using AppShared.ViewModels.ReportTopic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.ReportTopic;
 
 namespace AppBusiness.Domain
 {

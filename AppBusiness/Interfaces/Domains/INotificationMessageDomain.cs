@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Models.Entities;
-using Shared.Models;
-using Shared.ViewModels.NotificationMessage;
+using AppShared.Models;
+using AppShared.ViewModels.NotificationMessage;
 
 namespace AppBusiness.Interfaces.Domains
 {

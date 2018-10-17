@@ -2,10 +2,10 @@
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
+using AppShared.ViewModels.FollowTopic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
-using Shared.ViewModels.FollowTopic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

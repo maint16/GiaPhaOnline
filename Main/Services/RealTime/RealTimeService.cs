@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Enumerations;
+using AppShared.ViewModels.RealTime;
 using Main.Constants.RealTime;
 using Main.Hubs;
 using Main.Interfaces.Services;
@@ -15,8 +17,6 @@ using Main.Models.PushNotification.Notification;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Enumerations;
-using Shared.ViewModels.RealTime;
 
 namespace Main.Services.RealTime
 {

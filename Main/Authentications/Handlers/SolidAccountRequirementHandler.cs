@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Enumerations;
 using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Main.Constants;
@@ -12,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Shared.Enumerations;
 
 namespace Main.Authentications.Handlers
 {

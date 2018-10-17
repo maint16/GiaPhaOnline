@@ -7,6 +7,10 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Enumerations;
+using AppShared.Models;
+using AppShared.Resources;
+using AppShared.ViewModels.Category;
 using AutoMapper;
 using Main.Constants;
 using Main.Constants.RealTime;
@@ -20,10 +24,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
-using Shared.Enumerations;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Category;
 using SkiaSharp;
 
 namespace Main.Controllers

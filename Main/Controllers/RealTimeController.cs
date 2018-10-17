@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.RealTime;
 using Main.Authentications.ActionFilters;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
@@ -13,8 +15,6 @@ using Main.Models.PushNotification;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Interfaces.Services;
-using Shared.Resources;
-using Shared.ViewModels.RealTime;
 
 namespace Main.Controllers
 {

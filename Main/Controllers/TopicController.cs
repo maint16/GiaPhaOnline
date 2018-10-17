@@ -8,6 +8,9 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Enumerations;
+using AppShared.Resources;
+using AppShared.ViewModels.Topic;
 using AutoMapper;
 using Main.Constants;
 using Main.Constants.RealTime;
@@ -20,10 +23,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
-using Shared.Enumerations;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Topic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

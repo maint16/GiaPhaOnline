@@ -2,10 +2,10 @@
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
+using AppShared.ViewModels.FollowCategory;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
-using Shared.ViewModels.FollowCategory;
 
 namespace Main.Controllers
 {

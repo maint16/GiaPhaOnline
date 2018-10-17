@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using Shared.Models;
-using Shared.ViewModels.Category;
+using AppShared.Models;
+using AppShared.ViewModels.Category;
 using SkiaSharp;
 
 namespace AppBusiness.Interfaces.Domains

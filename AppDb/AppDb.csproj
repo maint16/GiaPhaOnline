@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AppModel\AppModel.csproj" />
-    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\AppShared\AppShared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

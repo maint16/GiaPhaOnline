@@ -1,6 +1,6 @@
 ﻿using AppDb.Models.Entities;
+using AppShared.ViewModels.Users;
 using AutoMapper;
-using Shared.ViewModels.Users;
 
 namespace Main.Models
 {

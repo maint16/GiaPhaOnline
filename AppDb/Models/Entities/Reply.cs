@@ -1,4 +1,4 @@
-﻿using Shared.Enumerations;
+﻿using AppShared.Enumerations;
 
 namespace AppDb.Models.Entities
 {

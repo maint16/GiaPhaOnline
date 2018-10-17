@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Models.Users;
 using AppDb.Models.Entities;
-using Shared.Models;
-using Shared.ViewModels.Jwt;
-using Shared.ViewModels.Users;
+using AppShared.Models;
+using AppShared.ViewModels.Jwt;
+using AppShared.ViewModels.Users;
 using SkiaSharp;
 
 namespace AppBusiness.Interfaces.Domains

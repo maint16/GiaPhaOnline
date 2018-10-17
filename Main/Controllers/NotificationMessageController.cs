@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
+using AppShared.Resources;
+using AppShared.ViewModels.NotificationMessage;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Models;
-using Shared.Resources;
-using Shared.ViewModels.NotificationMessage;
 
 namespace Main.Controllers
 {

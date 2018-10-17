@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Shared.Enumerations;
+﻿using AppShared.Enumerations;
+using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities
 {

@@ -5,6 +5,8 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.CategoryGroup;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
@@ -15,8 +17,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Resources;
-using Shared.ViewModels.CategoryGroup;
 
 namespace Main.Controllers
 {

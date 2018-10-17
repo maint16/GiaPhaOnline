@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using AppShared.Enumerations;
 using Newtonsoft.Json;
-using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {

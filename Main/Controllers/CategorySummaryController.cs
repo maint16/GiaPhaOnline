@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AppBusiness.Interfaces.Domains;
+using AppShared.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
-using Shared.ViewModels.Category;
 
 namespace Main.Controllers
 {

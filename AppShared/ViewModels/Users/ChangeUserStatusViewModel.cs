@@ -1,0 +1,16 @@
+﻿using AppShared.Enumerations;
+
+namespace AppShared.ViewModels.Users
+{
+    public class ChangeUserStatusViewModel
+    {
+        #region Properties
+
+        /// <summary>
+        ///     Account status in the system.
+        /// </summary>
+        public UserStatus Status { get; set; }
+
+        #endregion
+    }
+}

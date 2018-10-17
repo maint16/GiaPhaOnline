@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
+using AppShared.ViewModels.RealTime;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -12,7 +13,6 @@ using Main.Models.PushNotification;
 using Main.Models.PushNotification.Notification;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Shared.ViewModels.RealTime;
 
 namespace Main.Services.RealTime
 {

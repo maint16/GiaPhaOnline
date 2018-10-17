@@ -13,6 +13,7 @@ using AppDb.Repositories;
 using AppDb.Services;
 using AppModel.Models;
 using AppModel.Models.ExternalAuthentication;
+using AppShared.Enumerations;
 using AutoMapper;
 using Main.Authentications.Handlers;
 using Main.Authentications.Requirements;
@@ -45,7 +46,6 @@ using Newtonsoft.Json.Serialization;
 using Serilog;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Services;
-using Shared.Enumerations;
 using VgySdk.Interfaces;
 using VgySdk.Service;
 

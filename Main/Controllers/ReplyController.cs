@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
+using AppShared.ViewModels.Reply;
 using AutoMapper;
 using Main.Authentications.ActionFilters;
 using Main.Constants;
@@ -16,7 +17,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.ViewModels.Reply;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

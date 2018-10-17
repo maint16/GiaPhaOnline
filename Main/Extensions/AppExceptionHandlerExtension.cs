@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ServiceShared.Exceptions;
 using ServiceShared.Models;
-using Shared.Models;
 
 namespace Main.Extensions
 {
