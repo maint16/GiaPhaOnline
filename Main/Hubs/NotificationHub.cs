@@ -9,11 +9,10 @@ using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using Main.Constants;
-using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Shared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Hubs
 {

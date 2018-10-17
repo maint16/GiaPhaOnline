@@ -36,7 +36,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,9 +43,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Serilog;
+using ServiceShared.Interfaces.Services;
+using ServiceShared.Services;
 using Shared.Enumerations;
-using Shared.Interfaces.Services;
-using Shared.Services;
 using VgySdk.Interfaces;
 using VgySdk.Service;
 
@@ -333,6 +332,7 @@ namespace Main
             services.AddScoped<IFollowTopicDomain, FollowTopicDomain>();
             services.AddScoped<IFollowCategoryDomain, FollowCategoryDomain>();
             services.AddScoped<IUserDomain, UserDomain>();
+            services.AddScoped<INotificationMessageDomain, NotificationMessageDomain>();
 
 
             // Get email cache option.

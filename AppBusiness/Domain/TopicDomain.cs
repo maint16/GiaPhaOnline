@@ -8,12 +8,12 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using ServiceShared.Exceptions;
+using ServiceShared.Interfaces.Services;
 using Shared.Enumerations;
 using Shared.Enumerations.Order;
-using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.Topic;
@@ -71,8 +71,8 @@ namespace AppBusiness.Domain
             categories = categories.Where(x => x.Id == model.CategoryId && x.Status == ItemStatus.Active);
 
             // Check whether category exists or not.
-            var bIsCategoryAvailable = await categories.AnyAsync(cancellationToken);
-            if (!bIsCategoryAvailable)
+            var category = await categories.FirstOrDefaultAsync(cancellationToken);
+            if (category == null)
                 throw new ApiException(HttpMessages.CategoryNotFound, HttpStatusCode.NotFound);
 
             #endregion
@@ -91,8 +91,8 @@ namespace AppBusiness.Domain
                            .FirstOrDefaultAsync(cancellationToken) + 1;
 #endif
             topic.OwnerId = profile.Id;
-            topic.CategoryId = model.CategoryId;
-            topic.CategoryGroupId = model.CategoryGroupId;
+            topic.CategoryId = category.Id;
+            topic.CategoryGroupId = category.CategoryGroupId;
             topic.Title = model.Title;
             topic.Body = model.Body;
             topic.Status = ItemStatus.Active;

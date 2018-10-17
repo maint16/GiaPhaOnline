@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using AuthenticationShared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 
-namespace AuthenticationShared.Services
+namespace ServiceShared.Services
 {
     public class EncryptionService : IEncryptionService
     {

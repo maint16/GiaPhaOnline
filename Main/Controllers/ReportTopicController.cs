@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
-using AppModel.Exceptions;
 using AutoMapper;
-using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Interfaces.Services;
+using ServiceShared.Exceptions;
+using ServiceShared.Interfaces.Services;
 using Shared.ViewModels.ReportTopic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

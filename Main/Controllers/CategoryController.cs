@@ -10,7 +10,6 @@ using AppDb.Models.Entities;
 using AutoMapper;
 using Main.Constants;
 using Main.Constants.RealTime;
-using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
 using Main.ViewModels.Category;
@@ -19,8 +18,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Interfaces.Services;
+using ServiceShared.Models;
 using Shared.Enumerations;
-using Shared.Interfaces.Services;
 using Shared.Models;
 using Shared.Resources;
 using Shared.ViewModels.Category;
@@ -40,8 +40,9 @@ namespace Main.Controllers
             IRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
-            IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) : base(unitOfWork, mapper, timeService,
-            relationalDbService, identityService)
+            IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) :
+            base(unitOfWork, mapper, timeService,
+                relationalDbService, identityService)
         {
             _realTimeService = realTimeService;
             _categoryDomain = categoryDomain;
@@ -131,7 +132,8 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public virtual async Task<IActionResult> EditCategory([FromRoute] int id, [FromBody] EditCategoryViewModel model)
+        public virtual async Task<IActionResult> EditCategory([FromRoute] int id,
+            [FromBody] EditCategoryViewModel model)
         {
             #region Parameters validation
 
@@ -237,7 +239,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Upload category using specific information.
+        ///     Upload category using specific information.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

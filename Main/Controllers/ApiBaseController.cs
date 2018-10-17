@@ -1,9 +1,8 @@
 ﻿using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AutoMapper;
-using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Controllers
 {

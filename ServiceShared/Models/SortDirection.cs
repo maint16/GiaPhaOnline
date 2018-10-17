@@ -1,4 +1,4 @@
-﻿namespace AuthenticationShared.Models
+﻿namespace ServiceShared.Models
 {
     public enum SortDirection
     {

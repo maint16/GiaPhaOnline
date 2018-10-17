@@ -12,7 +12,7 @@ using Main.Interfaces.Services.RealTime;
 using Main.Models.PushNotification;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 using Shared.Resources;
 using Shared.ViewModels.RealTime;
 

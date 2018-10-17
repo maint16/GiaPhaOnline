@@ -1,7 +1,7 @@
 ﻿using System;
-using Shared.Interfaces.Services;
+using ServiceShared.Interfaces.Services;
 
-namespace Shared.Services
+namespace ServiceShared.Services
 {
     public class TimeService : ITimeService
     {

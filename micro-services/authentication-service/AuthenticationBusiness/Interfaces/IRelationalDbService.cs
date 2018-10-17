@@ -2,7 +2,7 @@
 using System.Linq;
 using AuthenticationModel.Enumerations;
 using AuthenticationModel.Models;
-using AuthenticationShared.Models;
+using ServiceShared.Models;
 
 namespace AuthenticationBusiness.Interfaces
 {
@@ -11,7 +11,7 @@ namespace AuthenticationBusiness.Interfaces
         #region Methods
 
         /// <summary>
-        /// Search numeric property.
+        ///     Search numeric property.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="property"></param>
@@ -22,7 +22,7 @@ namespace AuthenticationBusiness.Interfaces
             NumericComparision comparision);
 
         /// <summary>
-        /// Search numeric property.
+        ///     Search numeric property.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="property"></param>
@@ -33,7 +33,7 @@ namespace AuthenticationBusiness.Interfaces
             NumericComparision comparision);
 
         /// <summary>
-        /// Search numeric property.
+        ///     Search numeric property.
         /// </summary>
         /// <param name="records"></param>
         /// <param name="property"></param>

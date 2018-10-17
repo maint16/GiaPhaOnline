@@ -203,6 +203,9 @@
   <data name="InformationNotFound" xml:space="preserve">
     <value>INFORMATION_NOT_FOUND</value>
   </data>
+  <data name="NotificationMessageNotFound" xml:space="preserve">
+    <value>NOTIFICATION_MESSAGE_NOT_FOUND</value>
+  </data>
   <data name="PostCategorizationNotFound" xml:space="preserve">
     <value>POST_CATEGORIZATION_NOT_FOUND</value>
   </data>

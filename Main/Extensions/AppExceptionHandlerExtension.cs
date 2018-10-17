@@ -1,11 +1,12 @@
 ﻿using System.Net;
-using AppModel.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using ServiceShared.Exceptions;
+using ServiceShared.Models;
 using Shared.Models;
 
 namespace Main.Extensions

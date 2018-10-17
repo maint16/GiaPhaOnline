@@ -313,6 +313,15 @@ namespace Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NOTIFICATION_MESSAGE_NOT_FOUND.
+        /// </summary>
+        public static string NotificationMessageNotFound {
+            get {
+                return ResourceManager.GetString("NotificationMessageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to POST_CATEGORIZATION_NOT_FOUND.
         /// </summary>
         public static string PostCategorizationNotFound {

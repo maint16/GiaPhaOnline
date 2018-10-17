@@ -11,15 +11,15 @@ using AuthenticationBusiness.Interfaces.Domains;
 using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Entities;
 using AuthenticationModel.Enumerations;
-using AuthenticationModel.Exceptions;
 using AuthenticationModel.Models;
-using AuthenticationShared.Interfaces.Services;
 using AuthenticationShared.Resources;
 using AuthenticationShared.ViewModels.Jwt;
 using AuthenticationShared.ViewModels.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using ServiceShared.Exceptions;
+using ServiceShared.Interfaces.Services;
 
 namespace AuthenticationBusiness.Domains
 {

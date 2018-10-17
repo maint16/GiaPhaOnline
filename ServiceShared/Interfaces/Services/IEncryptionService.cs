@@ -1,4 +1,4 @@
-﻿namespace Shared.Interfaces.Services
+﻿namespace ServiceShared.Interfaces.Services
 {
     public interface IEncryptionService
     {
