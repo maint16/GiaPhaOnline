@@ -145,6 +145,34 @@ namespace AppBusiness.Domain
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task DeleteCategoryAsync(DeleteCategoryViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Find request identity.
+            var profile = _identityService.GetProfile(_httpContext);
+
+            // Find categories by using specific conditions.
+            var categories = _unitOfWork.Categories.Search();
+            categories = categories.Where(x => x.Id == model.Id);
+
+            // Find the first matched.
+            var category = await categories.FirstOrDefaultAsync(cancellationToken);
+            if (category == null)
+                throw new ApiException(HttpMessages.CategoryNotFound, HttpStatusCode.NotFound);
+
+            // Soft delete category.
+            category.Status = ItemStatus.Disabled;
+
+            // Save changes.
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
+        /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

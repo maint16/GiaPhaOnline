@@ -175,6 +175,34 @@ namespace AppBusiness.Domain
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task DeleteReplyAsync(DeleteReplyViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Find request identity.
+            var profile = _identityService.GetProfile(_httpContext);
+
+            // Find replies by using specific conditions.
+            var replies = _unitOfWork.Replies.Search();
+            replies = replies.Where(x => x.Id == model.Id);
+
+            // Find the first matched.
+            var reply = await replies.FirstOrDefaultAsync(cancellationToken);
+            if (reply == null)
+                throw new ApiException(HttpMessages.ReplyNotFound, HttpStatusCode.NotFound);
+
+            // Soft delete reply.
+            reply.Status = ItemStatus.Disabled;
+
+            // Save changes.
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
+        /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

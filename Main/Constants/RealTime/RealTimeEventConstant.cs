@@ -23,6 +23,10 @@
 
         public const string EditUserStatus = "event-edit_user_status";
 
+        // topic
+
+        public const string DeleteTopic = "event-delete_topic";
+
         #endregion
     }
 }

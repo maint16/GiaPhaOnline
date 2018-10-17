@@ -169,6 +169,50 @@ namespace AppBusiness.Domain
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task DeleteTopicAsync(DeleteTopicViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Find request identity.
+            var profile = _identityService.GetProfile(_httpContext);
+
+            // Find topics by using specific conditions.
+            var topics = _unitOfWork.Topics.Search();
+            topics = topics.Where(x => x.Id == model.Id);
+
+            // Find the first matched.
+            var topic = await topics.FirstOrDefaultAsync(cancellationToken);
+            if (topic == null)
+                throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
+
+            // Soft delete topic.
+            topic.Status = ItemStatus.Disabled;
+
+            // Save changes.
+            await _unitOfWork.CommitAsync(cancellationToken);
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<Topic> GetTopicUsingIdAsync(int id,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var loadTopicCondition = new SearchTopicViewModel();
+            loadTopicCondition.Ids = new HashSet<int> { id };
+            loadTopicCondition.Pagination = new Pagination(1, 1);
+
+            return await GetTopics(loadTopicCondition).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
+        /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

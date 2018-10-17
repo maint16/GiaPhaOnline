@@ -117,16 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddNewCategoryContent" xml:space="preserve">
+    <value>MSG_ADD_NEW_CATEGORY</value>
+  </data>
   <data name="AddNewCategoryGroupContent" xml:space="preserve">
     <value>MSG_ADD_NEW_CATEGORY_GROUP</value>
   </data>
   <data name="AddNewCategoryGroupTitle" xml:space="preserve">
     <value>TITLE_NEW_CATEGORY_GROUP</value>
   </data>
+  <data name="AddNewCategoryTitle" xml:space="preserve">
+    <value>TITLE_NEW_CATEGORY</value>
+  </data>
+  <data name="DeleteTopicContent" xml:space="preserve">
+    <value>MSG_DELETE_TOPIC</value>
+  </data>
+  <data name="DeleteTopicTitle" xml:space="preserve">
+    <value>TITLE_DELETE_TOPIC</value>
+  </data>
+  <data name="EditCategoryContent" xml:space="preserve">
+    <value>MSG_EDIT_CATEGORY</value>
+  </data>
   <data name="EditCategoryGroupContent" xml:space="preserve">
     <value>MSG_EDIT_CATEGORY_GROUP</value>
   </data>
   <data name="EditCategoryGroupTitle" xml:space="preserve">
     <value>TITLE_EDIT_CATEGORY_GROUP</value>
+  </data>
+  <data name="EditCategoryTitle" xml:space="preserve">
+    <value>TITLE_EDIT_CATEGORY</value>
   </data>
 </root>

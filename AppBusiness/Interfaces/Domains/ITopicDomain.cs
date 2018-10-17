@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
 using Shared.Models;
+using Shared.ViewModels.FollowTopic;
 using Shared.ViewModels.Topic;
 
 namespace AppBusiness.Interfaces.Domains
@@ -28,6 +29,24 @@ namespace AppBusiness.Interfaces.Domains
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<Topic> EditTopicAsync(int id, EditTopicViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     Delete topic asynchronously.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task DeleteTopicAsync(DeleteTopicViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        ///     Search topic using id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<Topic> GetTopicUsingIdAsync(int id,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
