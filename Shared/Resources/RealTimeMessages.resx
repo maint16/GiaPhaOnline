@@ -147,4 +147,10 @@
   <data name="EditCategoryTitle" xml:space="preserve">
     <value>TITLE_EDIT_CATEGORY</value>
   </data>
+  <data name="EditUserStatusContent" xml:space="preserve">
+    <value>MSG_EDIT_USER_STATUS</value>
+  </data>
+  <data name="EditUserStatusTitle" xml:space="preserve">
+    <value>TITLE_EDIT_USER_STATUS</value>
+  </data>
 </root>
