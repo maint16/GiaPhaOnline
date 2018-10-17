@@ -71,7 +71,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
@@ -140,7 +140,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Get all replies in database.
             var replies = _unitOfWork.Replies.Search();
@@ -212,7 +212,7 @@ namespace AppBusiness.Domain
             var replies = _unitOfWork.Replies.Search();
 
             // Get profile of requester.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Id have been defined.
             var ids = condition.Ids;

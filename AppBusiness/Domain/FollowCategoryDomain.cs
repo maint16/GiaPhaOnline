@@ -77,7 +77,7 @@ namespace AppBusiness.Domain
             #region Check whether user already followed category or not
 
             // Find request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Find follow categories.
             var followCategories = _unitOfWork.FollowingCategories.Search();
@@ -120,7 +120,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Find categories by using specific conditions.
             var followCategories = _unitOfWork.FollowingCategories.Search();
@@ -188,7 +188,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<FollowCategory> GetFollowingCategories(SearchFollowCategoryViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Search for posts.
             var followCategories = _unitOfWork.FollowingCategories.Search();

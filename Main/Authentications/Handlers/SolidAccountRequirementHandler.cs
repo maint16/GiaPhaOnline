@@ -93,7 +93,7 @@ namespace Main.Authentications.Handlers
             {
                 //ClaimsIdentity(account);
                 // Update claim identity.
-                _identityService.SetProfile(httpContext, account);
+                _identityService.SetProfile(account);
                 context.Succeed(requirement);
                 return;
             }
@@ -122,7 +122,7 @@ namespace Main.Authentications.Handlers
 
             // Add the newly found account to cache for faster querying.
             _profileCacheService.Add(iId, account, LifeTimeConstant.ProfileCacheLifeTime);
-            _identityService.SetProfile(httpContext, account);
+            _identityService.SetProfile(account);
             context.Succeed(requirement);
         }
 

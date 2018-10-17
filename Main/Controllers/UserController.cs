@@ -217,7 +217,7 @@ namespace Main.Controllers
         public async Task<IActionResult> FindProfile([FromRoute] int? id)
         {
             // Get requester identity.
-            var profile = IdentityService.GetProfile(HttpContext);
+            var profile = IdentityService.GetProfile();
 
             var loadUserCondition = new SearchUserViewModel();
             loadUserCondition.Ids = new HashSet<int>();
@@ -434,7 +434,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var profile = _identityService.GetProfile(HttpContext);
+            var profile = _identityService.GetProfile();
             var userId = id < 0 ? profile.Id : id;
             await _userDomain.ChangePasswordAsync(userId, model);
 
@@ -453,7 +453,7 @@ namespace Main.Controllers
             [FromBody] ChangeUserStatusViewModel model)
         {
             // Find requester profile.
-            var profile = IdentityService.GetProfile(HttpContext);
+            var profile = IdentityService.GetProfile();
 
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
             if (profile.Id == id)
@@ -504,7 +504,7 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             // Get request profile.
-            var profile = _identityService.GetProfile(HttpContext);
+            var profile = _identityService.GetProfile();
 
             if (profile == null || profile.Role != UserRole.Admin)
                 condition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
@@ -538,7 +538,7 @@ namespace Main.Controllers
             #region Change user profile photo
 
             // Get requester profile.
-            var profile = IdentityService.GetProfile(HttpContext);
+            var profile = IdentityService.GetProfile();
             if (model.UserId == null)
                 model.UserId = profile.Id;
 

@@ -42,14 +42,12 @@ namespace Main.Controllers
         /// <summary>
         ///     Start following a category.
         /// </summary>
-        /// <param name="categoryId"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<IActionResult> FollowCategory([FromQuery] int categoryId)
+        public async Task<IActionResult> FollowCategory([FromQuery] AddFollowCategoryViewModel model)
         {
-            var addFollowCategoryModel = new AddFollowCategoryViewModel();
-            addFollowCategoryModel.CategoryId = categoryId;
-            var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(addFollowCategoryModel);
+            var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(model);
             return Ok(followCategory);
         }
 

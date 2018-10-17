@@ -99,7 +99,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get profile information.
-            var profile = _profileService.GetProfile(_httpContext);
+            var profile = _profileService.GetProfile();
             if (profile == null)
                 return null;
 

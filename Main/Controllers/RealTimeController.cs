@@ -86,7 +86,7 @@ namespace Main.Controllers
             #endregion
 
             // Get user identity.
-            var profile = _identityService.GetProfile(HttpContext);
+            var profile = _identityService.GetProfile();
 
             // Find all device token that user has.
             var userDeviceTokens = _unitOfWork.UserDeviceTokens.Search();
@@ -204,7 +204,7 @@ namespace Main.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var profile = _identityService.GetProfile(HttpContext);
+            var profile = _identityService.GetProfile();
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {

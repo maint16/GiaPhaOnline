@@ -73,7 +73,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Report topic intialization.
             var reportTopic = new ReportTopic();
@@ -104,7 +104,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Get all report topic in database.
             var reportTopics = _unitOfWork.ReportTopics.Search();
@@ -180,7 +180,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<ReportTopic> GetTopicReports(SearchReportTopicViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Whether user is admin or not.
             var bIsUserAdmin = profile != null && profile.Role == UserRole.Admin;

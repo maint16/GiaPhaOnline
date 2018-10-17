@@ -72,7 +72,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.CategoryGroupCannotConflict, HttpStatusCode.Conflict);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Category group intialization.
             categoryGroup = new CategoryGroup();
@@ -190,7 +190,7 @@ namespace AppBusiness.Domain
             SearchCategoryGroupViewModel condition)
         {
             // Find identity in request.
-            var identity = _identityService.GetProfile(_httpContext);
+            var identity = _identityService.GetProfile();
 
             // Get all category groups
             var categoryGroups = _unitOfWork.CategoryGroups.Search();

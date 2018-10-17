@@ -78,7 +78,7 @@ namespace AppBusiness.Domain
             #endregion
 
             // Find identity from request.
-            var profile = _identityService.GetProfile(_httpContextAccessor.HttpContext);
+            var profile = _identityService.GetProfile();
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
@@ -138,7 +138,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Get all topics in database.
             var topics = _unitOfWork.Topics.Search();
@@ -267,7 +267,7 @@ namespace AppBusiness.Domain
             }
 
             // Search conditions which are based on roles.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
             if (profile != null && profile.Role == UserRole.Admin)
             {
                 var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();

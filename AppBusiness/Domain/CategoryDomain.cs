@@ -63,7 +63,7 @@ namespace AppBusiness.Domain
 
 
             // Find identity from request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             #region Add category
 
@@ -102,7 +102,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Get all category in database.
             var categories = _unitOfWork.Categories.Search();
@@ -266,7 +266,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<Category> GetCategories(SearchCategoryViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             #region Search for information
 

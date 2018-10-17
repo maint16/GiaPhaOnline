@@ -63,7 +63,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get profile.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Find topics.
             var topics = _unitOfWork.Topics.Search();
@@ -112,7 +112,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Find topics by using specific conditions.
             var followTopics = _unitOfWork.FollowingTopics.Search();
@@ -167,7 +167,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<FollowTopic> GetFollowTopics(SearchFollowTopicViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile(_httpContext);
+            var profile = _identityService.GetProfile();
 
             // Search for follow topics.
             var followTopics = _unitOfWork.FollowingTopics.Search();

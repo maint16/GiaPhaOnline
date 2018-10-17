@@ -21,13 +21,16 @@ namespace Main.Services
 
         private readonly AppJwtModel _appJwt;
 
+        private readonly HttpContext _httpContext;
+
         #endregion
 
         #region Constructors
 
-        public ProfileService(IOptions<AppJwtModel> appJwt)
+        public ProfileService(IOptions<AppJwtModel> appJwt, IHttpContextAccessor httpContextAccessor)
         {
             _appJwt = appJwt.Value;
+            _httpContext = httpContextAccessor.HttpContext;
         }
 
         #endregion
@@ -40,9 +43,9 @@ namespace Main.Services
         /// <param name="httpContext"></param>
         /// <param name="account"></param>
         /// <returns></returns>
-        public virtual void SetProfile(HttpContext httpContext, User account)
+        public virtual void SetProfile(User account)
         {
-            var items = httpContext.Items;
+            var items = _httpContext.Items;
             if (items.ContainsKey(ClaimTypes.Actor))
             {
                 items[ClaimTypes.Actor] = account;
@@ -57,9 +60,9 @@ namespace Main.Services
         /// </summary>
         /// <param name="httpContext"></param>
         /// <returns></returns>
-        public virtual User GetProfile(HttpContext httpContext)
+        public virtual User GetProfile()
         {
-            var profile = httpContext.Items[ClaimTypes.Actor];
+            var profile = _httpContext.Items[ClaimTypes.Actor];
             if (profile == null)
                 return null;
 

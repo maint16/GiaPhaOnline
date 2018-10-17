@@ -72,7 +72,7 @@ namespace Main.Hubs
             #region Save connection id to database
 
             // Get profle
-            var profile = _identityService.GetProfile(Context.GetHttpContext());
+            var profile = _identityService.GetProfile();
 
             // Check whether connection id has been saved to this user.
             var signalrConnections = _unitOfWork.SignalrConnections.Search();
