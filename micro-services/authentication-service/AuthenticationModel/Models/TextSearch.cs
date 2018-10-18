@@ -21,12 +21,14 @@ namespace AuthenticationModel.Models
         #region Constructors
 
         /// <summary>
-        /// Initiate class with default settings.
+        ///     Initiate class with default settings.
         /// </summary>
-        public TextSearch() { }
+        public TextSearch()
+        {
+        }
 
         /// <summary>
-        /// Initiate class with settings.
+        ///     Initiate class with settings.
         /// </summary>
         /// <param name="mode"></param>
         /// <param name="value"></param>

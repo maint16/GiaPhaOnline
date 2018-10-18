@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AppShared.Enumerations;
+using ClientShared.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities

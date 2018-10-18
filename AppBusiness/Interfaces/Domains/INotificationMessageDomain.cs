@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Models.Entities;
-using AppShared.Models;
 using AppShared.ViewModels.NotificationMessage;
+using ClientShared.Models;
 
 namespace AppBusiness.Interfaces.Domains
 {
@@ -15,7 +14,7 @@ namespace AppBusiness.Interfaces.Domains
         #region Methods
 
         /// <summary>
-        /// Add notification message to system.
+        ///     Add notification message to system.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="model"></param>
@@ -28,7 +27,7 @@ namespace AppBusiness.Interfaces.Domains
             bool bIsExpressionSupressed = default(bool));
 
         /// <summary>
-        /// Get notification message using id.
+        ///     Get notification message using id.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
@@ -37,7 +36,7 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Mark notification as seen message using id.
+        ///     Mark notification as seen message using id.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
@@ -46,12 +45,14 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Search for notification messages using specific conditions.
+        ///     Search for notification messages using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<SearchResult<IList<NotificationMessage>>> SearchNotificationMessagesAsync(SearchNotificationMessageViewModel condition, CancellationToken cancellationToken = default (CancellationToken));
+        Task<SearchResult<IList<NotificationMessage>>> SearchNotificationMessagesAsync(
+            SearchNotificationMessageViewModel condition,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion
     }

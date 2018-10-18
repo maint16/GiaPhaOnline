@@ -83,7 +83,7 @@ namespace AppDb.Models.Contexts
         public virtual DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
         /// <summary>
-        /// Category summaries.
+        ///     Category summaries.
         /// </summary>
         public virtual DbSet<CategorySummary> CategorySummaries { get; set; }
 
@@ -411,7 +411,7 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add category summary table.
+        ///     Add category summary table.
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected virtual void AddCategorySummaryTable(ModelBuilder modelBuilder)
@@ -427,7 +427,7 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add topic summary table.
+        ///     Add topic summary table.
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected virtual void AddTopicSummaryTable(ModelBuilder modelBuilder)

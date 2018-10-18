@@ -8,10 +8,10 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppShared.Enumerations;
 using AppShared.Resources;
 using AppShared.ViewModels.Topic;
 using AutoMapper;
+using ClientShared.Enumerations;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -42,7 +42,8 @@ namespace Main.Controllers
             IEmailCacheService emailCacheService,
             IRealTimeService realTimeService,
             ILogger<TopicController> logger,
-            ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper, IUnitOfWork unitOfWork)
+            ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper,
+            IUnitOfWork unitOfWork)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
@@ -79,7 +80,7 @@ namespace Main.Controllers
         private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
-        /// Real time service
+        ///     Real time service
         /// </summary>
         private readonly IRealTimeService _realTimeService;
 
@@ -157,7 +158,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -202,7 +203,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -216,7 +217,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.DeleteTopic, topic,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.DeleteTopic, topic,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -227,7 +228,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = topic;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 

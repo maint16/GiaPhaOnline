@@ -33,13 +33,13 @@ namespace AuthenticationDb.Interfaces
         Task<int> CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <returns></returns>
         IDbContextTransaction BeginTransactionScope();
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <param name="isolationLevel"></param>
         /// <returns></returns>

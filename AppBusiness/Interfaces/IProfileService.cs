@@ -2,7 +2,6 @@
 using AppDb.Models.Entities;
 using AppModel.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 
 namespace AppBusiness.Interfaces
 {
@@ -23,7 +22,7 @@ namespace AppBusiness.Interfaces
         ///     Get identity attached in request.
         /// </summary>
         /// <returns></returns>
-        User GetProfile( );
+        User GetProfile();
 
         /// <summary>
         ///     Initiate jwt from identity.

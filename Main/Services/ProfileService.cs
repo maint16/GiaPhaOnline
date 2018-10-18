@@ -7,7 +7,6 @@ using AppBusiness.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Models;
 using Main.Authentications.ActionFilters;
-using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -17,14 +16,6 @@ namespace Main.Services
 {
     public class ProfileService : IProfileService
     {
-        #region Properties
-
-        private readonly AppJwtModel _appJwt;
-
-        private readonly HttpContext _httpContext;
-
-        #endregion
-
         #region Constructors
 
         public ProfileService(IOptions<AppJwtModel> appJwt, IHttpContextAccessor httpContextAccessor)
@@ -32,6 +23,14 @@ namespace Main.Services
             _appJwt = appJwt.Value;
             _httpContext = httpContextAccessor.HttpContext;
         }
+
+        #endregion
+
+        #region Properties
+
+        private readonly AppJwtModel _appJwt;
+
+        private readonly HttpContext _httpContext;
 
         #endregion
 

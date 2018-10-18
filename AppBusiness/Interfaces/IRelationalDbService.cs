@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using AppShared.Enumerations;
-using AppShared.Models;
+using ClientShared.Enumerations;
+using ClientShared.Models;
 
 namespace AppBusiness.Interfaces
 {

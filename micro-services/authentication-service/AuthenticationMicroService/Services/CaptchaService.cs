@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -80,7 +79,6 @@ namespace AuthenticationMicroService.Services
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        /// 
         /// </summary>
         private readonly IHttpClientFactory _httpClientFactory;
 

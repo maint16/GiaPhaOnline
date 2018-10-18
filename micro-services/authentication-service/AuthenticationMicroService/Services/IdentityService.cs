@@ -46,7 +46,7 @@ namespace AuthenticationMicroService.Services
             if (profile == null)
                 return null;
 
-            return (User)profile;
+            return (User) profile;
         }
 
         /// <summary>
@@ -80,18 +80,19 @@ namespace AuthenticationMicroService.Services
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="authorizationHandlerContext"></param>
         /// <param name="requirement"></param>
         /// <param name="bAnonymousAccessAttributeCheck"></param>
-        public void BypassAuthorizationFilter(AuthorizationHandlerContext authorizationHandlerContext, IAuthorizationRequirement requirement, bool bAnonymousAccessAttributeCheck)
+        public void BypassAuthorizationFilter(AuthorizationHandlerContext authorizationHandlerContext,
+            IAuthorizationRequirement requirement, bool bAnonymousAccessAttributeCheck)
         {
             // Anonymous access attribute must be checked.
             if (bAnonymousAccessAttributeCheck)
             {
                 // Cast AuthorizationHandlerContext to AuthorizationFilterContext.
-                var authorizationFilterContext = (AuthorizationFilterContext)authorizationHandlerContext.Resource;
+                var authorizationFilterContext = (AuthorizationFilterContext) authorizationHandlerContext.Resource;
 
                 // No allow anonymous attribute has been found.
                 if (!authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))

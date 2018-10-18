@@ -11,7 +11,7 @@ namespace AppShared.ViewModels.Reply
         /// </summary>
         [Required]
         public string Content { get; set; }
-        
+
         #endregion
     }
 }

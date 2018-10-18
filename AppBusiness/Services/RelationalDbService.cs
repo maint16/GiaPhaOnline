@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Linq.Expressions;
 using AppBusiness.Interfaces;
-using AppShared.Enumerations;
-using AppShared.Models;
+using ClientShared.Enumerations;
+using ClientShared.Models;
 
 namespace AppBusiness.Services
 {

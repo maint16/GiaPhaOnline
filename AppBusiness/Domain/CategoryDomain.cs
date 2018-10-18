@@ -9,11 +9,11 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppShared.Enumerations;
-using AppShared.Enumerations.Order;
-using AppShared.Models;
 using AppShared.Resources;
 using AppShared.ViewModels.Category;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
@@ -29,7 +29,8 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public CategoryDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
-            ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor, IVgyService vgyService)
+            ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor,
+            IVgyService vgyService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
@@ -209,19 +210,20 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadCategoryCondition = new SearchCategoryViewModel();
-            loadCategoryCondition.Ids = new HashSet<int> { id };
+            loadCategoryCondition.Ids = new HashSet<int> {id};
             loadCategoryCondition.Pagination = new Pagination(1, 1);
 
             return await GetCategories(loadCategoryCondition).FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(SearchCategorySummaryViewModel condition,
+        public virtual async Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(
+            SearchCategorySummaryViewModel condition,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var categorySummaries = GetCategorySummaries(condition);
@@ -235,7 +237,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="categoryId"></param>
         /// <param name="photo"></param>
@@ -278,7 +280,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Summarize category information asynchronously.
+        ///     Summarize category information asynchronously.
         /// </summary>
         /// <returns></returns>
         public Task SummarizeCategory()
@@ -370,7 +372,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Get category summaries using specific condition.
+        ///     Get category summaries using specific condition.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>

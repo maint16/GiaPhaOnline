@@ -9,10 +9,10 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppShared.Enumerations;
-using AppShared.Models;
 using AppShared.Resources;
 using AppShared.ViewModels.NotificationMessage;
+using ClientShared.Enumerations;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -64,7 +64,8 @@ namespace AppBusiness.Domain
         /// <returns></returns>
         public virtual async Task<NotificationMessage> AddNotificationMessageAsync<T>(
             AddNotificationMessageModel<T> model,
-            CancellationToken cancellationToken = default(CancellationToken), bool bIsExpressionSupressed = default (bool))
+            CancellationToken cancellationToken = default(CancellationToken),
+            bool bIsExpressionSupressed = default(bool))
         {
             try
             {
@@ -109,12 +110,13 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Get 
+        ///     Get
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<NotificationMessage> MarkNotificationMessageAsSeen(Guid id, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<NotificationMessage> MarkNotificationMessageAsSeen(Guid id,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var notificationMessage = await GetNotificationMessageUsingId(id, cancellationToken);
             if (notificationMessage == null)

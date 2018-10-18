@@ -8,11 +8,11 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppShared.Enumerations;
-using AppShared.Enumerations.Order;
-using AppShared.Models;
 using AppShared.Resources;
 using AppShared.ViewModels.Reply;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
@@ -104,7 +104,8 @@ namespace AppBusiness.Domain
 
                     #region Update topic summary
 
-                    var topicSummary = await _unitOfWork.TopicSummaries.Search(x => x.TopicId == reply.TopicId).FirstOrDefaultAsync(cancellationToken);
+                    var topicSummary = await _unitOfWork.TopicSummaries.Search(x => x.TopicId == reply.TopicId)
+                        .FirstOrDefaultAsync(cancellationToken);
                     if (topicSummary == null)
                     {
                         topicSummary = new TopicSummary(reply.TopicId, 0, 1);
@@ -161,7 +162,7 @@ namespace AppBusiness.Domain
                 reply.Content = model.Content;
                 bHasInformationChanged = true;
             }
-            
+
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 

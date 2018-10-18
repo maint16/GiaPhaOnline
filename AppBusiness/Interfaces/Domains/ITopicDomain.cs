@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using AppShared.Models;
 using AppShared.ViewModels.Topic;
+using ClientShared.Models;
 
 namespace AppBusiness.Interfaces.Domains
 {
@@ -58,7 +58,7 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken);
 
         /// <summary>
-        /// Search for topic summaries.
+        ///     Search for topic summaries.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>

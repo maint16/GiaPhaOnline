@@ -49,7 +49,7 @@ namespace AuthenticationDb.Models.Entities
         public UserRole Role { get; set; }
 
         /// <summary>
-        /// Signature of user.
+        ///     Signature of user.
         /// </summary>
         public string Signature { get; set; }
 
@@ -69,10 +69,10 @@ namespace AuthenticationDb.Models.Entities
 
         public User()
         {
-
         }
 
-        public User(int id, string email, string nickname, string password, string photo, UserStatus status, UserKind type, UserRole role, string signature, double joinedTime, double? lastModifiedTime)
+        public User(int id, string email, string nickname, string password, string photo, UserStatus status,
+            UserKind type, UserRole role, string signature, double joinedTime, double? lastModifiedTime)
         {
             Id = id;
             Email = email;

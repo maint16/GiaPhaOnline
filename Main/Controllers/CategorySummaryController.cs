@@ -26,12 +26,13 @@ namespace Main.Controllers
         #region Methods
 
         /// <summary>
-        /// Get category summaries using specific conditions.
+        ///     Get category summaries using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public virtual async Task<IActionResult> SearchCategorySummaries([FromBody] SearchCategorySummaryViewModel condition)
+        public virtual async Task<IActionResult> SearchCategorySummaries(
+            [FromBody] SearchCategorySummaryViewModel condition)
         {
             if (condition == null)
             {
@@ -45,8 +46,6 @@ namespace Main.Controllers
             var loadCategorySummariesResult = await _categoryDomain.SearchCategorySummariesAsync(condition);
             return Ok(loadCategorySummariesResult);
         }
-
-
 
         #endregion
     }

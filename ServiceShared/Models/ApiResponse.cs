@@ -5,7 +5,7 @@
         #region Properties
 
         /// <summary>
-        /// Message responded from Http service.
+        ///     Message responded from Http service.
         /// </summary>
         public string Message { get; set; }
 
@@ -14,15 +14,14 @@
         #region Constructor
 
         /// <summary>
-        /// Initiate class with default settings.
+        ///     Initiate class with default settings.
         /// </summary>
         public ApiResponse()
         {
-
         }
 
         /// <summary>
-        /// Initiate class with settings.
+        ///     Initiate class with settings.
         /// </summary>
         /// <param name="message"></param>
         public ApiResponse(string message)

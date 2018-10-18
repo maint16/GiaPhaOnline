@@ -1,4 +1,4 @@
-﻿using AppShared.Enumerations;
+﻿using ClientShared.Enumerations;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Main.Authentications.Requirements

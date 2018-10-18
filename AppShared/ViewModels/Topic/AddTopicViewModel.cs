@@ -11,7 +11,7 @@ namespace AppShared.ViewModels.Topic
         /// </summary>
         [Required]
         public int CategoryId { get; set; }
-        
+
         /// <summary>
         ///     Title of topic
         /// </summary>

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AppShared.Models;
+using ClientShared.Models;
 
 namespace AppShared.ViewModels.Topic
 {
@@ -8,7 +8,7 @@ namespace AppShared.ViewModels.Topic
         #region Properties
 
         public HashSet<int> TopicIds { get; set; }
-        
+
         public Pagination Pagination { get; set; }
 
         #endregion

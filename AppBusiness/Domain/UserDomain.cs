@@ -13,12 +13,12 @@ using AppBusiness.Models.Users;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Models;
-using AppShared.Enumerations;
-using AppShared.Enumerations.Order;
-using AppShared.Models;
 using AppShared.Resources;
 using AppShared.ViewModels.Jwt;
 using AppShared.ViewModels.Users;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ServiceShared.Exceptions;
@@ -297,7 +297,7 @@ namespace AppBusiness.Domain
                         condition.Sort.Property);
             else
                 users = _relationalDbService.Sort(users, SortDirection.Decending,
-                    AccountSort.JoinedTime);
+                    UserSort.JoinedTime);
 
             // Result initialization.
             var loadUsersResult = new SearchResult<IList<User>>();

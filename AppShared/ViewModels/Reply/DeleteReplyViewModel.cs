@@ -5,7 +5,7 @@
         #region Properties
 
         /// <summary>
-        /// Id of reply
+        ///     Id of reply
         /// </summary>
         public int Id { get; set; }
 

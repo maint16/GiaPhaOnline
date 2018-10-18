@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces.Domains;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.Internal.Networking;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +8,18 @@ namespace Main.HostedServices
 {
     public class SummarizeCategoryHostedService : IHostedService
     {
+        #region Constructor
+
+        public SummarizeCategoryHostedService(IServiceProvider serviceProvider,
+            ILogger<SummarizeCategoryHostedService> logger)
+        {
+            _timer = new Timer(SummarizeCategory, null, -1, Timeout.Infinite);
+            _logger = logger;
+            _serviceProvider = serviceProvider;
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly Timer _timer;
@@ -21,23 +30,10 @@ namespace Main.HostedServices
 
         #endregion
 
-        #region Constructor
-
-        public SummarizeCategoryHostedService(IServiceProvider serviceProvider, ILogger<SummarizeCategoryHostedService> logger)
-        {
-            _timer = new Timer(SummarizeCategory, null, -1, Timeout.Infinite);
-            _logger = logger;
-            _serviceProvider = serviceProvider;
-        }
-
-
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -50,7 +46,7 @@ namespace Main.HostedServices
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

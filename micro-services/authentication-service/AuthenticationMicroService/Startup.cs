@@ -102,7 +102,8 @@ namespace AuthenticationMicroService
             });
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
-            services.AddDbContext<RelationalDbContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(AuthenticationMicroService))));
+            services.AddDbContext<RelationalDbContext>(options =>
+                options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(AuthenticationMicroService))));
             services.AddScoped<DbContext, RelationalDbContext>();
 #endif
 
@@ -116,7 +117,5 @@ namespace AuthenticationMicroService
         }
 
         #endregion
-
-
     }
 }

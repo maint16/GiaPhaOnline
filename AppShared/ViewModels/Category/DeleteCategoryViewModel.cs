@@ -5,7 +5,7 @@
         #region Properties
 
         /// <summary>
-        /// Id of category
+        ///     Id of category
         /// </summary>
         public int Id { get; set; }
 

@@ -23,7 +23,8 @@ namespace AppDb.Services
             IRepository<ReportTopic> reportTopics, IRepository<NotificationMessage> notificationMessages,
             IRepository<ActivationToken> activationTokens, IRepository<AccessToken> accessTokens,
             IRepository<SignalrConnection> signalrConnections, IRepository<UserRealTimeGroup> userRealTimeGroups,
-            IRepository<UserDeviceToken> userDeviceTokens, IRepository<CategorySummary> categorySummaries, IRepository<TopicSummary> topicSummaries)
+            IRepository<UserDeviceToken> userDeviceTokens, IRepository<CategorySummary> categorySummaries,
+            IRepository<TopicSummary> topicSummaries)
         {
             _dbContext = dbContext;
             Accounts = accounts;
@@ -78,6 +79,7 @@ namespace AppDb.Services
         public IRepository<UserDeviceToken> UserDeviceTokens { get; }
         public IRepository<CategorySummary> CategorySummaries { get; }
         public IRepository<TopicSummary> TopicSummaries { get; }
+
         #endregion
 
         #region Methods

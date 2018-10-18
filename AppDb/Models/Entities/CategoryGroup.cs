@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AppShared.Enumerations;
+using ClientShared.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities

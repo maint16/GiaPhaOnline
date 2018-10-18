@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using AppShared.Enumerations;
-using AppShared.Enumerations.Order;
-using AppShared.Models;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 
 namespace AppShared.ViewModels.Users
 {
@@ -37,7 +37,7 @@ namespace AppShared.ViewModels.Users
         /// <summary>
         ///     Sort property & direction
         /// </summary>
-        public Sort<AccountSort> Sort { get; set; }
+        public Sort<UserSort> Sort { get; set; }
 
         #endregion
     }

@@ -4,6 +4,13 @@ namespace AppDb.Models.Entities
 {
     public class TopicSummary
     {
+        #region Relationship
+
+        [JsonIgnore]
+        public Topic Topic { get; set; }
+
+        #endregion
+
         #region Properties
 
         public int TopicId { get; set; }
@@ -11,13 +18,6 @@ namespace AppDb.Models.Entities
         public int TotalFollower { get; set; }
 
         public int TotalReply { get; set; }
-
-        #endregion
-
-        #region Relationship
-
-        [JsonIgnore]
-        public Topic Topic { get; set; }
 
         #endregion
 

@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using AppShared.Models;
 using AppShared.ViewModels.Category;
+using ClientShared.Models;
 using SkiaSharp;
 
 namespace AppBusiness.Interfaces.Domains
@@ -59,22 +59,23 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Search for category summaries asynchronously.
+        ///     Search for category summaries asynchronously.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(SearchCategorySummaryViewModel condition, CancellationToken cancellationToken = default(CancellationToken));
+        Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(
+            SearchCategorySummaryViewModel condition, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Upload category photo asynchronously.
+        ///     Upload category photo asynchronously.
         /// </summary>
         /// <returns></returns>
         Task<Category> UploadCategoryPhotoAsync(int categoryId, SKBitmap photo,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Summarize category information.
+        ///     Summarize category information.
         /// </summary>
         /// <returns></returns>
         Task SummarizeCategory();

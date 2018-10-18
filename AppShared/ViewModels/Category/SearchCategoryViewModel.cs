@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using AppShared.Enumerations;
-using AppShared.Enumerations.Order;
-using AppShared.Models;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 
 namespace AppShared.ViewModels.Category
 {

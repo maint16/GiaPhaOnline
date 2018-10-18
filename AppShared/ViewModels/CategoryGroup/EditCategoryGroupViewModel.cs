@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AppShared.Enumerations;
+using ClientShared.Enumerations;
 
 namespace AppShared.ViewModels.CategoryGroup
 {

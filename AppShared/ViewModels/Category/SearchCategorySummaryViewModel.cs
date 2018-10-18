@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AppShared.Models;
+using ClientShared.Models;
 
 namespace AppShared.ViewModels.Category
 {
@@ -8,12 +8,12 @@ namespace AppShared.ViewModels.Category
         #region Properties
 
         /// <summary>
-        /// Category indexes.
+        ///     Category indexes.
         /// </summary>
         public HashSet<int> CategoryIds { get; set; }
-        
+
         /// <summary>
-        /// Pagination.
+        ///     Pagination.
         /// </summary>
         public Pagination Pagination { get; set; }
 
@@ -37,6 +37,5 @@ namespace AppShared.ViewModels.Category
         }
 
         #endregion
-        
     }
 }

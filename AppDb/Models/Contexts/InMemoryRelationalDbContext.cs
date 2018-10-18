@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AppDb.Models.Entities;
-using AppShared.Enumerations;
+using ClientShared.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppDb.Models.Contexts
@@ -147,7 +147,7 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add category summary.
+        ///     Add category summary.
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected virtual void AddCategorySummary(ModelBuilder modelBuilder)
@@ -159,7 +159,7 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add topic summary.
+        ///     Add topic summary.
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected virtual void AddTopicSummary(ModelBuilder modelBuilder)

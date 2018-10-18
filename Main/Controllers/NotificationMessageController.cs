@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppShared.Resources;
@@ -17,11 +16,10 @@ namespace Main.Controllers
         #region Properties
 
         /// <summary>
-        /// Notification message business handler.
+        ///     Notification message business handler.
         /// </summary>
         private readonly INotificationMessageDomain _notificationMessageDomain;
 
-        
         #endregion
 
         #region Constructor
@@ -38,7 +36,8 @@ namespace Main.Controllers
 #if DEBUG
 
         [HttpPost("")]
-        public virtual async Task<IActionResult> AddNotificationMessage([FromBody] AddNotificationMessageModel<Dictionary<string, object>> model)
+        public virtual async Task<IActionResult> AddNotificationMessage(
+            [FromBody] AddNotificationMessageModel<Dictionary<string, object>> model)
         {
             if (model == null)
             {
@@ -65,12 +64,13 @@ namespace Main.Controllers
 #endif
 
         /// <summary>
-        /// Get notification message using specific condition.
+        ///     Get notification message using specific condition.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public virtual async Task<IActionResult> GetNotificationMessage([FromRoute] GetNotificationMessageViewModel model)
+        public virtual async Task<IActionResult> GetNotificationMessage(
+            [FromRoute] GetNotificationMessageViewModel model)
         {
             if (model == null)
             {
@@ -89,7 +89,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Search for notification messages.
+        ///     Search for notification messages.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -113,7 +113,7 @@ namespace Main.Controllers
         }
 
         /// <summary>
-        /// Mark a notification as seen.
+        ///     Mark a notification as seen.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -135,6 +135,7 @@ namespace Main.Controllers
 
             return Ok(notificationMessage);
         }
+
         #endregion
     }
 }

@@ -25,6 +25,12 @@ namespace AuthenticationDb.Services
 
         #endregion
 
+        #region Properties
+
+        public IRepository<User> Accounts { get; }
+
+        #endregion
+
         #region Variables
 
         /// <summary>
@@ -36,12 +42,6 @@ namespace AuthenticationDb.Services
         ///     Provide methods to access confession database.
         /// </summary>
         private readonly DbContext _dbContext;
-
-        #endregion
-
-        #region Properties
-
-        public IRepository<User> Accounts { get; }
 
         #endregion
 
@@ -66,7 +66,7 @@ namespace AuthenticationDb.Services
         }
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <returns></returns>
         public IDbContextTransaction BeginTransactionScope()
@@ -75,7 +75,7 @@ namespace AuthenticationDb.Services
         }
 
         /// <summary>
-        /// Begin transaction scope.
+        ///     Begin transaction scope.
         /// </summary>
         /// <param name="isolationLevel"></param>
         /// <returns></returns>

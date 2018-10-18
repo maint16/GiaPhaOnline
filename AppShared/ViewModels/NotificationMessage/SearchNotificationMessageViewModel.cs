@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using AppShared.Enumerations;
-using AppShared.Models;
+using ClientShared.Enumerations;
+using ClientShared.Models;
 
 namespace AppShared.ViewModels.NotificationMessage
 {
@@ -10,17 +10,17 @@ namespace AppShared.ViewModels.NotificationMessage
         #region Properties
 
         /// <summary>
-        /// Statuses of notification.
+        ///     Statuses of notification.
         /// </summary>
         public HashSet<NotificationStatus> Statuses { get; set; }
 
         /// <summary>
-        /// Range of created time.
+        ///     Range of created time.
         /// </summary>
         public Range<double?, double?> CreatedTime { get; set; }
 
         /// <summary>
-        /// Pagination information.
+        ///     Pagination information.
         /// </summary>
         [Required]
         public Pagination Pagination { get; set; }
@@ -33,7 +33,8 @@ namespace AppShared.ViewModels.NotificationMessage
         {
         }
 
-        public SearchNotificationMessageViewModel(HashSet<NotificationStatus> statuses, Range<double?, double?> createdTime, Pagination pagination)
+        public SearchNotificationMessageViewModel(HashSet<NotificationStatus> statuses,
+            Range<double?, double?> createdTime, Pagination pagination)
         {
             Statuses = statuses;
             CreatedTime = createdTime;

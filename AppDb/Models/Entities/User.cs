@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using AppShared.Enumerations;
+using ClientShared.Enumerations;
 using Newtonsoft.Json;
 
 namespace AppDb.Models.Entities

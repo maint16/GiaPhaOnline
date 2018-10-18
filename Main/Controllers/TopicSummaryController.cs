@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Main.Controllers
 {
     [Route("api/topic-summary")]
-    public class TopicSummaryController: Controller
+    public class TopicSummaryController : Controller
     {
         #region Properties
 
@@ -27,7 +27,7 @@ namespace Main.Controllers
         #region Methods
 
         /// <summary>
-        /// Search for topic summaries using specific conditions.
+        ///     Search for topic summaries using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>

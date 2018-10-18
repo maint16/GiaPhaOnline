@@ -25,6 +25,30 @@ namespace AuthenticationBusiness.Domains
 {
     public class UserDomain : IUserDomain
     {
+        #region Constructors
+
+        public UserDomain(IEncryptionService encryptionService,
+            IUnitOfWork unitOfWork,
+            IHttpContextAccessor httpContextAccessor,
+            IExternalAuthenticationService externalAuthenticationService,
+            ITimeService timeService,
+            IRelationalDbService relationalDbService,
+            IOptions<AppJwtModel> appJwt
+            //ApplicationSetting applicationSettings
+        )
+        {
+            _encryptionService = encryptionService;
+            _unitOfWork = unitOfWork;
+            _httpContext = httpContextAccessor.HttpContext;
+            _externalAuthenticationService = externalAuthenticationService;
+            _timeService = timeService;
+            //_applicationSettings = applicationSettings;
+            _relationalDbService = relationalDbService;
+            _appJwt = appJwt.Value;
+        }
+
+        #endregion
+
         #region Properties
 
         private readonly IEncryptionService _encryptionService;
@@ -45,39 +69,16 @@ namespace AuthenticationBusiness.Domains
 
         #endregion
 
-        #region Constructors
-
-        public UserDomain(IEncryptionService encryptionService,
-            IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor,
-            IExternalAuthenticationService externalAuthenticationService,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
-            IOptions<AppJwtModel> appJwt
-            //ApplicationSetting applicationSettings
-            )
-        {
-            _encryptionService = encryptionService;
-            _unitOfWork = unitOfWork;
-            _httpContext = httpContextAccessor.HttpContext;
-            _externalAuthenticationService = externalAuthenticationService;
-            _timeService = timeService;
-            //_applicationSettings = applicationSettings;
-            _relationalDbService = relationalDbService;
-            _appJwt = appJwt.Value;
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<User> LoginAsync(LoginViewModel model, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<User> LoginAsync(LoginViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // Hash the password first.
             var hashedPassword = _encryptionService.Md5Hash(model.Password);
@@ -86,7 +87,8 @@ namespace AuthenticationBusiness.Domains
             var users = _unitOfWork.Accounts.Search();
             users = users.Where(x =>
                 x.Email.Equals(model.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == UserKind.Basic);
+                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) &&
+                x.Type == UserKind.Basic);
 
             // Find the first account in database.
             var user = await users.FirstOrDefaultAsync(cancellationToken);

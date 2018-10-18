@@ -8,11 +8,11 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppShared.Enumerations;
-using AppShared.Enumerations.Order;
-using AppShared.Models;
 using AppShared.Resources;
 using AppShared.ViewModels.Topic;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
@@ -82,7 +82,6 @@ namespace AppBusiness.Domain
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
-
                 try
                 {
                     #region Add topic
@@ -114,7 +113,7 @@ namespace AppBusiness.Domain
                     _unitOfWork.TopicSummaries.Insert(topicSummary);
 
                     #endregion
-                    
+
                     await _unitOfWork.CommitAsync(cancellationToken);
                     transaction.Commit();
                     return topic;
@@ -215,7 +214,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadTopicCondition = new SearchTopicViewModel();
-            loadTopicCondition.Ids = new HashSet<int> { id };
+            loadTopicCondition.Ids = new HashSet<int> {id};
             loadTopicCondition.Pagination = new Pagination(1, 1);
 
             return await GetTopics(loadTopicCondition).FirstOrDefaultAsync(cancellationToken);
@@ -250,17 +249,19 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<SearchResult<IList<TopicSummary>>> SearchTopicSummaries(SearchTopicSummaryViewModel condition, CancellationToken cancellationToken)
+        public async Task<SearchResult<IList<TopicSummary>>> SearchTopicSummaries(SearchTopicSummaryViewModel condition,
+            CancellationToken cancellationToken)
         {
             var topicSummaries = GetTopicSummaries(condition);
             var loadTopicSummariesResult = new SearchResult<IList<TopicSummary>>();
             loadTopicSummariesResult.Total = await topicSummaries.CountAsync(cancellationToken);
-            loadTopicSummariesResult.Records = await _relationalDbService.Paginate(topicSummaries, condition.Pagination).ToListAsync(cancellationToken);
+            loadTopicSummariesResult.Records = await _relationalDbService.Paginate(topicSummaries, condition.Pagination)
+                .ToListAsync(cancellationToken);
             return loadTopicSummariesResult;
         }
 
@@ -328,7 +329,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Get topic summaries using specific condition.
+        ///     Get topic summaries using specific condition.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
