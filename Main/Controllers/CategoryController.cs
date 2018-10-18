@@ -34,10 +34,10 @@ namespace Main.Controllers
         #region Constructors
 
         public CategoryController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
             IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) :

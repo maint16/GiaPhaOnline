@@ -29,8 +29,9 @@ namespace Main.Controllers
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
         /// <param name="followCategoryDomain"></param>
-        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction, IFollowCategoryDomain followCategoryDomain)
+        public FollowCategoryController(IAppUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
+            ITimeService timeService, IBaseRelationalDbService databaseFunction,
+            IFollowCategoryDomain followCategoryDomain)
         {
             _followCategoryDomain = followCategoryDomain;
         }

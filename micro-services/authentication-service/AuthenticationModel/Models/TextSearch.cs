@@ -1,4 +1,4 @@
-﻿using AuthenticationModel.Enumerations;
+﻿using ClientShared.Enumerations;
 
 namespace AuthenticationModel.Models
 {

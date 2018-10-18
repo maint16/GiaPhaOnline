@@ -24,8 +24,9 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public FollowCategoryDomain(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
-            IHttpContextAccessor httpContextAccessor, IRelationalDbService relationalDbService)
+        public FollowCategoryDomain(IAppUnitOfWork unitOfWork, IProfileService identityService,
+            ITimeService timeService,
+            IHttpContextAccessor httpContextAccessor, IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
@@ -38,7 +39,7 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly HttpContext _httpContext;
 
@@ -46,7 +47,7 @@ namespace AppBusiness.Domain
 
         private readonly ITimeService _timeService;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         #endregion
 

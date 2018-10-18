@@ -10,11 +10,11 @@ using AuthenticationBusiness.Interfaces;
 using AuthenticationBusiness.Interfaces.Domains;
 using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Entities;
-using AuthenticationModel.Enumerations;
 using AuthenticationModel.Models;
 using AuthenticationShared.Resources;
 using AuthenticationShared.ViewModels.Jwt;
 using AuthenticationShared.ViewModels.User;
+using ClientShared.Enumerations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -28,11 +28,11 @@ namespace AuthenticationBusiness.Domains
         #region Constructors
 
         public UserDomain(IEncryptionService encryptionService,
-            IUnitOfWork unitOfWork,
+            IAuthenticationUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
             IExternalAuthenticationService externalAuthenticationService,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IOptions<AppJwtModel> appJwt
             //ApplicationSetting applicationSettings
         )
@@ -57,13 +57,13 @@ namespace AuthenticationBusiness.Domains
 
         private readonly IExternalAuthenticationService _externalAuthenticationService;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAuthenticationUnitOfWork _unitOfWork;
 
         private readonly ITimeService _timeService;
 
         //private readonly ApplicationSetting _applicationSettings;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly AppJwtModel _appJwt;
 
@@ -84,7 +84,7 @@ namespace AuthenticationBusiness.Domains
             var hashedPassword = _encryptionService.Md5Hash(model.Password);
 
             // Search for account which is active and information is correct.
-            var users = _unitOfWork.Accounts.Search();
+            var users = _unitOfWork.Users.Search();
             users = users.Where(x =>
                 x.Email.Equals(model.Email, StringComparison.InvariantCultureIgnoreCase) &&
                 x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) &&
@@ -121,7 +121,7 @@ namespace AuthenticationBusiness.Domains
                 throw new ApiException(HttpMessages.GoogleCodeIsInvalid, HttpStatusCode.Forbidden);
 
             // Find accounts by searching for email address.
-            var users = _unitOfWork.Accounts.Search();
+            var users = _unitOfWork.Users.Search();
             users = users.Where(x => x.Email.Equals(profile.Email));
 
             // Get the first matched account.
@@ -156,7 +156,7 @@ namespace AuthenticationBusiness.Domains
                 user.Status = UserStatus.Available;
 
                 // Add account to database.
-                _unitOfWork.Accounts.Insert(user);
+                _unitOfWork.Users.Insert(user);
                 await _unitOfWork.CommitAsync(cancellationToken);
             }
             return user;
@@ -183,7 +183,7 @@ namespace AuthenticationBusiness.Domains
 
 
             // Find accounts by searching for email address.
-            var accounts = _unitOfWork.Accounts.Search();
+            var accounts = _unitOfWork.Users.Search();
             accounts = accounts.Where(x => x.Email.Equals(profile.Email));
 
             // Get the first matched account.
@@ -211,7 +211,7 @@ namespace AuthenticationBusiness.Domains
                 account.Type = UserKind.Facebook;
 
                 // Add account to database.
-                _unitOfWork.Accounts.Insert(account);
+                _unitOfWork.Users.Insert(account);
                 await _unitOfWork.CommitAsync(cancellationToken);
             }
 

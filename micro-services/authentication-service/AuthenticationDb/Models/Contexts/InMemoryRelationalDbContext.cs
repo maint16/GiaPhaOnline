@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using AuthenticationDb.Models.Entities;
-using AuthenticationModel.Enumerations;
+using ClientShared.Enumerations;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationDb.Models.Contexts

@@ -28,7 +28,7 @@ namespace Main.Hubs
         /// <param name="identityService"></param>
         /// <param name="timeService"></param>
         /// <param name="realTimeService"></param>
-        public NotificationHub(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+        public NotificationHub(IAppUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
             IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;
@@ -44,7 +44,7 @@ namespace Main.Hubs
         /// <summary>
         ///     Unit of work.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly IProfileService _identityService;
 

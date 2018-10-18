@@ -4,12 +4,9 @@ using System.Threading.Tasks;
 using AppBusiness.Domain;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
-using AppBusiness.Services;
 using AppDb.Interfaces;
-using AppDb.Interfaces.Repositories;
 using AppDb.Models.Contexts;
 using AppDb.Models.Entities;
-using AppDb.Repositories;
 using AppDb.Services;
 using AppModel.Models;
 using AppModel.Models.ExternalAuthentication;
@@ -294,8 +291,8 @@ namespace Main
 
             // Injections configuration.
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IRelationalDbService, RelationalDbService>();
+            services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
+            services.AddScoped<IBaseRelationalDbService, BaseRelationalDbService>();
 
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IProfileService, ProfileService>();

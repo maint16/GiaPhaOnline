@@ -25,10 +25,10 @@ namespace Main.Controllers
         #region Constructures
 
         public ReportTopicController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService, ITopicReportDomain topicReportDomain) : base(unitOfWork, mapper,
             timeService,

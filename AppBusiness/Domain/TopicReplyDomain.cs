@@ -24,7 +24,7 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public TopicReplyDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
+        public TopicReplyDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
             IHttpContextAccessor httpContextAccessor, IProfileService identityService, ITimeService timeService)
         {
             _unitOfWork = unitOfWork;
@@ -38,9 +38,9 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly HttpContext _httpContext;
 

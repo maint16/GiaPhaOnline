@@ -31,8 +31,8 @@ namespace Main.Controllers
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
         /// <param name="followTopicDomain"></param>
-        public FollowTopicControler(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction, IFollowTopicDomain followTopicDomain)
+        public FollowTopicControler(IAppUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
+            ITimeService timeService, IBaseRelationalDbService databaseFunction, IFollowTopicDomain followTopicDomain)
         {
             _followTopicDomain = followTopicDomain;
         }

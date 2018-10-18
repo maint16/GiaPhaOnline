@@ -18,8 +18,8 @@ namespace Main.Controllers
         /// <param name="timeService"></param>
         /// <param name="relationalDbService"></param>
         /// <param name="identityService"></param>
-        public ApiBaseController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
-            IRelationalDbService relationalDbService, IProfileService identityService)
+        public ApiBaseController(IAppUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+            IBaseRelationalDbService relationalDbService, IProfileService identityService)
         {
             UnitOfWork = unitOfWork;
             Mapper = mapper;
@@ -35,7 +35,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Provides methods & repositories to access database.
         /// </summary>
-        protected IUnitOfWork UnitOfWork;
+        protected IAppUnitOfWork UnitOfWork;
 
         /// <summary>
         ///     Instance to access auto-mapper functions.
@@ -50,7 +50,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Service which is for using generic database function,
         /// </summary>
-        protected IRelationalDbService RelationalDbService;
+        protected IBaseRelationalDbService RelationalDbService;
 
         /// <summary>
         ///     Service which handles identity get/set.

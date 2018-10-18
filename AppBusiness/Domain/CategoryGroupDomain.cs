@@ -25,7 +25,8 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public CategoryGroupDomain(IProfileService identityService, ITimeService timeService,
-            IRelationalDbService relationalDbService, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+            IBaseRelationalDbService relationalDbService, IAppUnitOfWork unitOfWork,
+            IHttpContextAccessor httpContextAccessor)
         {
             _identityService = identityService;
             _timeService = timeService;
@@ -42,9 +43,9 @@ namespace AppBusiness.Domain
 
         private readonly ITimeService _timeService;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly HttpContext _httpContext;
 

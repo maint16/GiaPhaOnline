@@ -29,7 +29,7 @@ namespace Main.Services.RealTime
         /// </summary>
         public RealTimeService(IHubContext<NotificationHub> notificationHubContext,
             ICloudMessagingService fcmService,
-            IUnitOfWork unitOfWork)
+            IAppUnitOfWork unitOfWork)
         {
             _notificationHubContext = notificationHubContext;
             _cloudMessagingService = fcmService;
@@ -53,7 +53,7 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     Unit of work.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         #endregion
 

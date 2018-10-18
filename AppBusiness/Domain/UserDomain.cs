@@ -34,11 +34,11 @@ namespace AppBusiness.Domain
         #region Constructors
 
         public UserDomain(IEncryptionService encryptionService,
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IExternalAuthenticationService externalAuthenticationService,
             IValueCacheService<int, User> profileCacheService,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IVgyService vgyService,
             IOptions<ApplicationSetting> applicationSettingOptions,
             IOptions<AppJwtModel> appJwt)
@@ -61,7 +61,7 @@ namespace AppBusiness.Domain
         private readonly IEncryptionService _encryptionService;
 
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly IExternalAuthenticationService _externalAuthenticationService;
 
@@ -69,7 +69,7 @@ namespace AppBusiness.Domain
 
         private readonly ApplicationSetting _applicationSettings;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly AppJwtModel _appJwt;
 

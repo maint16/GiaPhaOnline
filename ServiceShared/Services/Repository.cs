@@ -4,10 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using ServiceShared.Interfaces.Services;
 
-namespace AppDb.Repositories
+namespace ServiceShared.Services
 {
     public class Repository<T> : IRepository<T> where T : class
     {

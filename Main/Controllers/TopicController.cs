@@ -35,7 +35,7 @@ namespace Main.Controllers
 
         public TopicController(
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
             ISendMailService sendMailService,
@@ -43,7 +43,7 @@ namespace Main.Controllers
             IRealTimeService realTimeService,
             ILogger<TopicController> logger,
             ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper,
-            IUnitOfWork unitOfWork)
+            IAppUnitOfWork unitOfWork)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
@@ -77,7 +77,7 @@ namespace Main.Controllers
 
         private readonly ITopicDomain _topicDomain;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     Real time service

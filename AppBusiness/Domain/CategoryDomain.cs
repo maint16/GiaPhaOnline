@@ -28,7 +28,7 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public CategoryDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
+        public CategoryDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
             ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor,
             IVgyService vgyService)
         {
@@ -396,9 +396,9 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly ITimeService _timeService;
 

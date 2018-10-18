@@ -1,37 +1,27 @@
 ﻿using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using AuthenticationDb.Interfaces;
-using AuthenticationDb.Interfaces.Repositories;
-using AuthenticationDb.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using ServiceShared.Interfaces.Services;
 
-namespace AuthenticationDb.Services
+namespace ServiceShared.Services
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class BaseUnitOfWork : IBaseUnitOfWork, IDisposable
     {
         #region Constructors
 
         /// <summary>
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
-        public UnitOfWork(DbContext dbContext, IRepository<User> accounts)
+        public BaseUnitOfWork(DbContext dbContext)
         {
             _dbContext = dbContext;
-            Accounts = accounts;
         }
 
         #endregion
 
         #region Properties
-
-        public IRepository<User> Accounts { get; }
-
-        #endregion
-
-        #region Variables
 
         /// <summary>
         ///     Whether the instance has been disposed or not.
@@ -72,16 +62,6 @@ namespace AuthenticationDb.Services
         public IDbContextTransaction BeginTransactionScope()
         {
             return _dbContext.Database.BeginTransaction();
-        }
-
-        /// <summary>
-        ///     Begin transaction scope.
-        /// </summary>
-        /// <param name="isolationLevel"></param>
-        /// <returns></returns>
-        public IDbContextTransaction BeginTransactionScope(IsolationLevel isolationLevel)
-        {
-            return _dbContext.Database.BeginTransaction(isolationLevel);
         }
 
         /// <summary>

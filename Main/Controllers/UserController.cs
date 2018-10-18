@@ -58,10 +58,10 @@ namespace Main.Controllers
         /// <param name="realTimeService"></param>
         /// <param name="userDomain"></param>
         public UserController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
             ITimeService systemTimeService,

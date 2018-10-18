@@ -25,8 +25,8 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public NotificationMessageDomain(ITimeService timeService, IUnitOfWork unitOfWork,
-            IRelationalDbService relationalDbService, IProfileService profileService,
+        public NotificationMessageDomain(ITimeService timeService, IAppUnitOfWork unitOfWork,
+            IBaseRelationalDbService relationalDbService, IProfileService profileService,
             IHttpContextAccessor httpContextAccessor)
         {
             _timeService = timeService;
@@ -42,9 +42,9 @@ namespace AppBusiness.Domain
 
         private readonly ITimeService _timeService;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly IProfileService _profileService;
 

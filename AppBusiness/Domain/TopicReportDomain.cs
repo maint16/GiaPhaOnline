@@ -24,9 +24,9 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public TopicReportDomain(IUnitOfWork unitOfWork, ITimeService timeService,
+        public TopicReportDomain(IAppUnitOfWork unitOfWork, ITimeService timeService,
             IHttpContextAccessor httpContextAccessor, IProfileService identityService,
-            IRelationalDbService relationalDbService)
+            IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
             _timeService = timeService;
@@ -39,7 +39,7 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly ITimeService _timeService;
 
@@ -47,7 +47,7 @@ namespace AppBusiness.Domain
 
         private readonly IProfileService _identityService;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         #endregion
 

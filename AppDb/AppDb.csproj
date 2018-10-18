@@ -23,10 +23,13 @@
   <ItemGroup>
     <ProjectReference Include="..\AppModel\AppModel.csproj" />
     <ProjectReference Include="..\AppShared\AppShared.csproj" />
+    <ProjectReference Include="..\ServiceShared\ServiceShared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Interfaces\Repositories\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

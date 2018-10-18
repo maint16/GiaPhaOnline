@@ -25,7 +25,7 @@ namespace Main.Services.RealTime
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="unitOfWork"></param>
-        public FcmService(IHttpClientFactory httpClientFactory, IUnitOfWork unitOfWork)
+        public FcmService(IHttpClientFactory httpClientFactory, IAppUnitOfWork unitOfWork)
         {
             // Initialize snake case naming convention.
             _snakeCaseSerializerSettings = new JsonSerializerSettings();
@@ -54,7 +54,7 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     Instance to access database and its entities.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     Snake case serializer setting.

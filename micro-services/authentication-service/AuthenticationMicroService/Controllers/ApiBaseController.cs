@@ -1,6 +1,4 @@
-﻿using AuthenticationBusiness.Interfaces;
-using AuthenticationDb.Interfaces;
-using AuthenticationMicroService.Interfaces.Services;
+﻿using AuthenticationMicroService.Interfaces.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
@@ -21,8 +19,8 @@ namespace AuthenticationMicroService.Controllers
         /// <param name="timeService"></param>
         /// <param name="relationalDbService"></param>
         /// <param name="identityService"></param>
-        public ApiBaseController(IUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
-            IRelationalDbService relationalDbService, IIdentityService identityService)
+        public ApiBaseController(IBaseUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+            IBaseRelationalDbService relationalDbService, IIdentityService identityService)
         {
             UnitOfWork = unitOfWork;
             Mapper = mapper;
@@ -38,7 +36,7 @@ namespace AuthenticationMicroService.Controllers
         /// <summary>
         ///     Provides methods & repositories to access database.
         /// </summary>
-        protected IUnitOfWork UnitOfWork;
+        protected IBaseUnitOfWork UnitOfWork;
 
         /// <summary>
         ///     Instance to access auto-mapper functions.
@@ -53,7 +51,7 @@ namespace AuthenticationMicroService.Controllers
         /// <summary>
         ///     Service which is for using generic database function,
         /// </summary>
-        protected IRelationalDbService RelationalDbService;
+        protected IBaseRelationalDbService RelationalDbService;
 
         /// <summary>
         ///     Service which handles identity get/set.

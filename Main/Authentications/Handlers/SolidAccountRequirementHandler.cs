@@ -27,7 +27,7 @@ namespace Main.Authentications.Handlers
         /// <param name="httpContextAccessor"></param>
         /// <param name="profileCacheService"></param>
         public SolidAccountRequirementHandler(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IProfileService identityService, IHttpContextAccessor httpContextAccessor,
             IValueCacheService<int, User> profileCacheService)
         {
@@ -132,7 +132,7 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Provides functions to access to database.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     Provides functions to access service which handles identity businesses.

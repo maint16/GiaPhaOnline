@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using AuthenticationBusiness.Interfaces;
-using AuthenticationModel.Enumerations;
-using AuthenticationModel.Models;
-using ServiceShared.Models;
+using ClientShared.Enumerations;
+using ClientShared.Models;
+using ServiceShared.Interfaces.Services;
 
-namespace AuthenticationBusiness.Services
+namespace ServiceShared.Services
 {
-    public class RelationalDbService : IRelationalDbService
+    public class BaseRelationalDbService : IBaseRelationalDbService
     {
         #region Methods
 

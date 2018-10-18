@@ -28,10 +28,10 @@ namespace Main.Controllers
         #region Constructors
 
         public ReplyController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService,
             ISendMailService sendMailService,

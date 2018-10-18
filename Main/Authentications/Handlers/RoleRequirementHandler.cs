@@ -7,7 +7,6 @@ using Main.Authentications.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Enumerable = System.Linq.Enumerable;
 
 namespace Main.Authentications.Handlers
 {
@@ -99,7 +98,7 @@ namespace Main.Authentications.Handlers
         /// <returns></returns>
         private bool IsAbleToByPass(AuthorizationFilterContext authorizationFilterContext)
         {
-            return Enumerable.Any(authorizationFilterContext.Filters, x => x is ByPassAuthorizationAttribute);
+            return authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute);
         }
 
         #endregion

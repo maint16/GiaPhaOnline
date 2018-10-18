@@ -1,4 +1,4 @@
-﻿using AuthenticationModel.Enumerations;
+﻿using ClientShared.Enumerations;
 using Newtonsoft.Json;
 
 namespace AuthenticationDb.Models.Entities

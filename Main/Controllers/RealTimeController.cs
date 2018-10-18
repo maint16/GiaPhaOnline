@@ -23,7 +23,7 @@ namespace Main.Controllers
     {
         #region Constructor
 
-        public RealTimeController(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+        public RealTimeController(IAppUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
             IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;
@@ -40,7 +40,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Instance to manage database connection.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     Instance to manage identity

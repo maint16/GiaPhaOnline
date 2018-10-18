@@ -26,10 +26,10 @@ namespace Main.Controllers
         #region Constructures
 
         public CategoryGroupController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
             IProfileService identityService, IRealTimeService realTimeService,
             ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, timeService,

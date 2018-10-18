@@ -1,9 +1,7 @@
 ﻿using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AuthenticationBusiness.Interfaces;
 using AuthenticationBusiness.Interfaces.Domains;
-using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Entities;
 using AuthenticationMicroService.Interfaces.Services;
 using AuthenticationMicroService.Models.Jwt;
@@ -38,10 +36,10 @@ namespace AuthenticationMicroService.Controllers
         /// <param name="profileCacheService"></param>
         /// <param name="userDomain"></param>
         public UserController(
-            IUnitOfWork unitOfWork,
+            IBaseUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseRelationalDbService relationalDbService,
             IIdentityService identityService,
             ICaptchaService captchaService,
             IOptions<JwtConfiguration> jwtConfigurationOptions,
@@ -65,7 +63,7 @@ namespace AuthenticationMicroService.Controllers
         /// <summary>
         ///     Instance for accessing database.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IBaseUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     System time service
@@ -75,7 +73,7 @@ namespace AuthenticationMicroService.Controllers
         /// <summary>
         ///     Provide access to generic database functions.
         /// </summary>
-        private readonly IRelationalDbService _databaseFunction;
+        private readonly IBaseRelationalDbService _databaseFunction;
 
         /// <summary>
         ///     Instance which is for accessing identity attached in request.
