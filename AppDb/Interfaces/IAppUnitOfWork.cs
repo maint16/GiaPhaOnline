@@ -7,22 +7,22 @@ namespace AppDb.Interfaces
     {
         #region Properties
 
-        IRepository<User> Accounts { get; }
-        IRepository<CategoryGroup> CategoryGroups { get; }
-        IRepository<Category> Categories { get; }
-        IRepository<FollowCategory> FollowingCategories { get; }
-        IRepository<Reply> Replies { get; }
-        IRepository<Topic> Topics { get; }
-        IRepository<FollowTopic> FollowingTopics { get; }
-        IRepository<ReportTopic> ReportTopics { get; }
-        IRepository<NotificationMessage> NotificationMessages { get; }
-        IRepository<ActivationToken> ActivationTokens { get; }
-        IRepository<AccessToken> AccessTokens { get; }
-        IRepository<SignalrConnection> SignalrConnections { get; }
-        IRepository<UserRealTimeGroup> UserRealTimeGroups { get; }
-        IRepository<UserDeviceToken> UserDeviceTokens { get; }
-        IRepository<CategorySummary> CategorySummaries { get; }
-        IRepository<TopicSummary> TopicSummaries { get; }
+        IBaseRepository<User> Accounts { get; }
+        IBaseRepository<CategoryGroup> CategoryGroups { get; }
+        IBaseRepository<Category> Categories { get; }
+        IBaseRepository<FollowCategory> FollowingCategories { get; }
+        IBaseRepository<Reply> Replies { get; }
+        IBaseRepository<Topic> Topics { get; }
+        IBaseRepository<FollowTopic> FollowingTopics { get; }
+        IBaseRepository<ReportTopic> ReportTopics { get; }
+        IBaseRepository<NotificationMessage> NotificationMessages { get; }
+        IBaseRepository<ActivationToken> ActivationTokens { get; }
+        IBaseRepository<AccessToken> AccessTokens { get; }
+        IBaseRepository<SignalrConnection> SignalrConnections { get; }
+        IBaseRepository<UserRealTimeGroup> UserRealTimeGroups { get; }
+        IBaseRepository<UserDeviceToken> UserDeviceTokens { get; }
+        IBaseRepository<CategorySummary> CategorySummaries { get; }
+        IBaseRepository<TopicSummary> TopicSummaries { get; }
 
         #endregion
     }

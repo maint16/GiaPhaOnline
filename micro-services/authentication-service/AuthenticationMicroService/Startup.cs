@@ -106,7 +106,7 @@ namespace AuthenticationMicroService
 #endif
 
             // Injections configuration.
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IAuthenticationUnitOfWork, AuthenticationUnitOfWork>();
             services.AddScoped<IBaseRelationalDbService, BaseRelationalDbService>();
 

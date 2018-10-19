@@ -1,6 +1,6 @@
 ﻿namespace ServiceShared.Interfaces.Services
 {
-    public interface IEncryptionService
+    public interface IBaseEncryptionService
     {
         /// <summary>
         ///     Hash a string by using md5.

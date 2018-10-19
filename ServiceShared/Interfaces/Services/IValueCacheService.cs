@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AuthenticationMicroService.Interfaces.Services
+namespace ServiceShared.Interfaces.Services
 {
     public interface IValueCacheService<TKey, TValue>
     {

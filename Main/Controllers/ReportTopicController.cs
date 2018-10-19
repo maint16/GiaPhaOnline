@@ -27,11 +27,11 @@ namespace Main.Controllers
         public ReportTopicController(
             IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
+            IBaseEncryptionService encryptionService,
             IAppProfileService profileService, ITopicReportDomain topicReportDomain) : base(unitOfWork, mapper,
-            timeService,
+            baseTimeService,
             relationalDbService, profileService)
         {
             _topicReportDomain = topicReportDomain;

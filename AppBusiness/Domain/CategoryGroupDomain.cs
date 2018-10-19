@@ -24,12 +24,12 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public CategoryGroupDomain(IAppProfileService profileService, ITimeService timeService,
+        public CategoryGroupDomain(IAppProfileService profileService, IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService, IAppUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor)
         {
             _profileService = profileService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _relationalDbService = relationalDbService;
             _unitOfWork = unitOfWork;
             _httpContext = httpContextAccessor.HttpContext;
@@ -41,7 +41,7 @@ namespace AppBusiness.Domain
 
         private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IBaseRelationalDbService _relationalDbService;
 
@@ -87,8 +87,8 @@ namespace AppBusiness.Domain
             categoryGroup.Name = model.Name;
             categoryGroup.Description = model.Description;
             categoryGroup.Status = ItemStatus.Active;
-            categoryGroup.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            categoryGroup.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert category group into system.
             _unitOfWork.CategoryGroups.Insert(categoryGroup);
@@ -148,7 +148,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 
-            categoryGroup.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
             await _unitOfWork.CommitAsync(cancellationToken);
             return categoryGroup;
         }

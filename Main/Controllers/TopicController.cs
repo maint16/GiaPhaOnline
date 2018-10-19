@@ -34,9 +34,9 @@ namespace Main.Controllers
         #region Constructors
 
         public TopicController(
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
+            IBaseEncryptionService encryptionService,
             IAppProfileService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,

@@ -13,7 +13,7 @@ namespace AuthenticationDb.Services
         /// <summary>
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
-        public AuthenticationUnitOfWork(DbContext dbContext, IRepository<User> users) : base(dbContext)
+        public AuthenticationUnitOfWork(DbContext dbContext, IBaseRepository<User> users) : base(dbContext)
         {
             Users = users;
         }
@@ -22,7 +22,7 @@ namespace AuthenticationDb.Services
 
         #region Properties
 
-        public IRepository<User> Users { get; set; }
+        public IBaseRepository<User> Users { get; set; }
 
         #endregion
     }

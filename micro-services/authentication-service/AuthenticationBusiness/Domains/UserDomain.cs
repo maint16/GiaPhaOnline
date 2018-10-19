@@ -27,11 +27,11 @@ namespace AuthenticationBusiness.Domains
     {
         #region Constructors
 
-        public UserDomain(IEncryptionService encryptionService,
+        public UserDomain(IBaseEncryptionService encryptionService,
             IAuthenticationUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
             IExternalAuthenticationService externalAuthenticationService,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
             IOptions<AppJwtModel> appJwt
             //ApplicationSetting applicationSettings
@@ -41,7 +41,7 @@ namespace AuthenticationBusiness.Domains
             _unitOfWork = unitOfWork;
             _httpContext = httpContextAccessor.HttpContext;
             _externalAuthenticationService = externalAuthenticationService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             //_applicationSettings = applicationSettings;
             _relationalDbService = relationalDbService;
             _appJwt = appJwt.Value;
@@ -51,7 +51,7 @@ namespace AuthenticationBusiness.Domains
 
         #region Properties
 
-        private readonly IEncryptionService _encryptionService;
+        private readonly IBaseEncryptionService _encryptionService;
 
         private readonly HttpContext _httpContext;
 
@@ -59,7 +59,7 @@ namespace AuthenticationBusiness.Domains
 
         private readonly IAuthenticationUnitOfWork _unitOfWork;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         //private readonly ApplicationSetting _applicationSettings;
 
@@ -151,7 +151,7 @@ namespace AuthenticationBusiness.Domains
                 user.Nickname = profile.Name;
                 user.Role = UserRole.User;
                 user.Photo = profile.Picture;
-                user.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                user.JoinedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 user.Type = UserKind.Google;
                 user.Status = UserStatus.Available;
 
@@ -207,7 +207,7 @@ namespace AuthenticationBusiness.Domains
                 account.Email = profile.Email;
                 account.Nickname = profile.FullName;
                 account.Role = UserRole.User;
-                account.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                account.JoinedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 account.Type = UserKind.Facebook;
 
                 // Add account to database.
@@ -249,7 +249,7 @@ namespace AuthenticationBusiness.Domains
             var jwt = new JwtViewModel();
             jwt.AccessToken = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
             jwt.LifeTime = _appJwt.LifeTime;
-            jwt.Expiration = _timeService.DateTimeUtcToUnix(jwtExpiration);
+            jwt.Expiration = _baseTimeService.DateTimeUtcToUnix(jwtExpiration);
 
             //_profileCacheService.Add(user.Id, user, LifeTimeConstant.JwtLifeTime);
             return jwt;

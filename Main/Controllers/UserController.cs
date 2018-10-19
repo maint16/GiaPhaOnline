@@ -41,11 +41,11 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
-        /// <param name="timeService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="relationalDbService"></param>
         /// <param name="encryptionService"></param>
         /// <param name="profileService"></param>
-        /// <param name="systemTimeService"></param>
+        /// <param name="systemBaseTimeService"></param>
         /// <param name="externalAuthenticationService"></param>
         /// <param name="sendMailService"></param>
         /// <param name="emailCacheService"></param>
@@ -60,11 +60,11 @@ namespace Main.Controllers
         public UserController(
             IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
+            IBaseEncryptionService encryptionService,
             IAppProfileService profileService,
-            ITimeService systemTimeService,
+            IBaseTimeService systemBaseTimeService,
             IExternalAuthenticationService externalAuthenticationService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
@@ -76,7 +76,7 @@ namespace Main.Controllers
             ICaptchaService captchaService,
             IRealTimeService realTimeService,
             IUserDomain userDomain) : base(
-            unitOfWork, mapper, timeService,
+            unitOfWork, mapper, baseTimeService,
             relationalDbService, profileService)
         {
             _logger = logger;

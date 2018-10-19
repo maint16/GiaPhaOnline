@@ -23,12 +23,12 @@ namespace Main.Controllers
     {
         #region Constructor
 
-        public RealTimeController(IAppUnitOfWork unitOfWork, IAppProfileService identityService, ITimeService timeService,
+        public RealTimeController(IAppUnitOfWork unitOfWork, IAppProfileService identityService, IBaseTimeService baseTimeService,
             IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _realTimeService = realTimeService;
             _cloudMessagingService = cloudMessagingService;
         }
@@ -47,7 +47,7 @@ namespace Main.Controllers
         /// </summary>
         private readonly IAppProfileService _identityService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IRealTimeService _realTimeService;
 
@@ -102,7 +102,7 @@ namespace Main.Controllers
             var userDeviceToken = new UserDeviceToken();
             userDeviceToken.DeviceId = model.DeviceId;
             userDeviceToken.UserId = profile.Id;
-            userDeviceToken.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            userDeviceToken.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             _unitOfWork.UserDeviceTokens.Insert(userDeviceToken);
             await _unitOfWork.CommitAsync();

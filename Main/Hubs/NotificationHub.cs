@@ -26,14 +26,14 @@ namespace Main.Hubs
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="profileService"></param>
-        /// <param name="timeService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="realTimeService"></param>
-        public NotificationHub(IAppUnitOfWork unitOfWork, IAppProfileService profileService, ITimeService timeService,
+        public NotificationHub(IAppUnitOfWork unitOfWork, IAppProfileService profileService, IBaseTimeService baseTimeService,
             IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;
             _profileService = profileService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _realTimeService = realTimeService;
         }
 
@@ -48,7 +48,7 @@ namespace Main.Hubs
 
         private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IRealTimeService _realTimeService;
 
@@ -82,7 +82,7 @@ namespace Main.Hubs
             {
                 signalrConnection = new SignalrConnection();
                 signalrConnection.ClientId = connectionId;
-                signalrConnection.LastActivityTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                signalrConnection.LastActivityTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 signalrConnection.UserId = profile.Id;
                 _unitOfWork.SignalrConnections.Insert(signalrConnection);
             }

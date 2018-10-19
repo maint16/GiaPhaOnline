@@ -1,5 +1,6 @@
 ﻿using AppBusiness.Interfaces;
 using AppDb.Models.Entities;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Interfaces.Services.RealTime
 {

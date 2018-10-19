@@ -9,7 +9,7 @@ using ServiceShared.Interfaces.Services;
 
 namespace AuthenticationDb.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         #region Properties
 
@@ -26,7 +26,7 @@ namespace AuthenticationDb.Repositories
         ///     Initiate repository with database context wrapper.
         /// </summary>
         /// <param name="dbContext"></param>
-        public Repository(DbContext dbContext)
+        public BaseRepository(DbContext dbContext)
         {
             _dbSet = dbContext.Set<T>();
         }

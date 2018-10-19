@@ -15,15 +15,15 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
-        /// <param name="timeService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="relationalDbService"></param>
         /// <param name="profileService"></param>
-        public ApiBaseController(IAppUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
+        public ApiBaseController(IAppUnitOfWork unitOfWork, IMapper mapper, IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService, IAppProfileService profileService)
         {
             UnitOfWork = unitOfWork;
             Mapper = mapper;
-            TimeService = timeService;
+            BaseTimeService = baseTimeService;
             RelationalDbService = relationalDbService;
             ProfileService = profileService;
         }
@@ -45,7 +45,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Service which is for handling time conversion.
         /// </summary>
-        protected ITimeService TimeService;
+        protected IBaseTimeService BaseTimeService;
 
         /// <summary>
         ///     Service which is for using generic database function,

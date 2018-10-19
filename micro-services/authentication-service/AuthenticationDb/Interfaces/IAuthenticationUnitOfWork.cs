@@ -10,7 +10,7 @@ namespace AuthenticationDb.Interfaces
         /// <summary>
         ///     User repository in the system.
         /// </summary>
-        IRepository<User> Users { get; set; }
+        IBaseRepository<User> Users { get; set; }
 
         #endregion
     }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Authentications.ActionFilters;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Authentications.Handlers
 {

@@ -29,12 +29,12 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public CategoryDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            ITimeService timeService, IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
+            IBaseTimeService baseTimeService, IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
             IVgyService vgyService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _profileService = profileService;
             _httpContext = httpContextAccessor.HttpContext;
             _vgyService = vgyService;
@@ -79,8 +79,8 @@ namespace AppBusiness.Domain
             category.Name = model.Name;
             category.Description = model.Description;
             category.Status = ItemStatus.Active;
-            category.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            category.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            category.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert category into system.
             _unitOfWork.Categories.Insert(category);
@@ -134,7 +134,7 @@ namespace AppBusiness.Domain
 
             if (bHasInformationChanged)
             {
-                category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                category.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Commit changes to database.
                 await _unitOfWork.CommitAsync(cancellationToken);
@@ -400,7 +400,7 @@ namespace AppBusiness.Domain
 
         private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IAppProfileService _profileService;
 

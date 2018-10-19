@@ -28,11 +28,11 @@ namespace Main.Controllers
         public CategoryGroupController(
             IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
+            IBaseEncryptionService encryptionService,
             IAppProfileService profileService, IRealTimeService realTimeService,
-            ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, timeService,
+            ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, baseTimeService,
             relationalDbService, profileService)
         {
             _realTimeService = realTimeService;

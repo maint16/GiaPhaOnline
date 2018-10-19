@@ -24,12 +24,12 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public TopicReportDomain(IAppUnitOfWork unitOfWork, ITimeService timeService,
+        public TopicReportDomain(IAppUnitOfWork unitOfWork, IBaseTimeService baseTimeService,
             IHttpContextAccessor httpContextAccessor, IAppProfileService profileService,
             IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _httpContext = httpContextAccessor.HttpContext;
             _profileService = profileService;
             _relationalDbService = relationalDbService;
@@ -41,7 +41,7 @@ namespace AppBusiness.Domain
 
         private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly HttpContext _httpContext;
 
@@ -82,8 +82,8 @@ namespace AppBusiness.Domain
             reportTopic.ReporterId = profile.Id;
             reportTopic.Reason = model.Reason;
             reportTopic.Status = ItemStatus.Active;
-            reportTopic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            reportTopic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reportTopic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reportTopic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert report topic into system.
             _unitOfWork.ReportTopics.Insert(reportTopic);
@@ -135,7 +135,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 
-            reportTopic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reportTopic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
             await _unitOfWork.CommitAsync(cancellationToken);

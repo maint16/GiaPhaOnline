@@ -24,12 +24,12 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public FollowCategoryDomain(IAppUnitOfWork unitOfWork, IAppProfileService profileService,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
             _profileService = profileService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _relationalDbService = relationalDbService;
         }
 
@@ -41,7 +41,7 @@ namespace AppBusiness.Domain
 
         private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IBaseRelationalDbService _relationalDbService;
 
@@ -96,7 +96,7 @@ namespace AppBusiness.Domain
                 followCategory.FollowerId = profile.Id;
                 followCategory.CategoryId = model.CategoryId;
                 followCategory.Status = FollowStatus.Following;
-                followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                followCategory.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
                 _unitOfWork.FollowingCategories.Insert(followCategory);

@@ -292,13 +292,13 @@ namespace Main
 #endif
 
             // Injections configuration.
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IBaseRelationalDbService, BaseRelationalDbService>();
 
-            services.AddScoped<IEncryptionService, EncryptionService>();
+            services.AddScoped<IBaseEncryptionService, EncryptionService>();
             services.AddScoped<IAppProfileService, AppProfileService>();
-            services.AddScoped<ITimeService, TimeService>();
+            services.AddScoped<IBaseTimeService, BaseTimeService>();
             services.AddScoped<ICloudMessagingService, FcmService>();
             //            services.AddScoped<INotifyService, NotifyService>();
             services.AddScoped<ISendMailService, SendGridService>();

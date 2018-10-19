@@ -25,11 +25,11 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public NotificationMessageDomain(ITimeService timeService, IAppUnitOfWork unitOfWork,
+        public NotificationMessageDomain(IBaseTimeService baseTimeService, IAppUnitOfWork unitOfWork,
             IBaseRelationalDbService relationalDbService, IAppProfileService profileService,
             IHttpContextAccessor httpContextAccessor)
         {
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _profileService = profileService;
@@ -40,7 +40,7 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IAppUnitOfWork _unitOfWork;
 
@@ -74,7 +74,7 @@ namespace AppBusiness.Domain
                 notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
                 notificationMessage.Message = model.Message;
                 notificationMessage.Status = NotificationStatus.Unseen;
-                notificationMessage.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                notificationMessage.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 _unitOfWork.NotificationMessages.Insert(notificationMessage);
                 await _unitOfWork.CommitAsync(cancellationToken);

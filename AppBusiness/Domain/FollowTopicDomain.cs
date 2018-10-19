@@ -24,12 +24,12 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public FollowTopicDomain(IAppUnitOfWork unitOfWork, ITimeService timeService,
+        public FollowTopicDomain(IAppUnitOfWork unitOfWork, IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService, IHttpContextAccessor httpContextAccessor,
             IAppProfileService profileService)
         {
             _unitOfWork = unitOfWork;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _relationalDbService = relationalDbService;
             _httpContext = httpContextAccessor.HttpContext;
             _profileService = profileService;
@@ -41,7 +41,7 @@ namespace AppBusiness.Domain
 
         private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IBaseRelationalDbService _relationalDbService;
 
@@ -91,7 +91,7 @@ namespace AppBusiness.Domain
                 followTopic.FollowerId = profile.Id;
                 followTopic.TopicId = model.TopicId;
                 followTopic.Status = FollowStatus.Following;
-                followTopic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                followTopic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
                 _unitOfWork.FollowingTopics.Insert(followTopic);

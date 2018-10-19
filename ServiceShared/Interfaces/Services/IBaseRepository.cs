@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ServiceShared.Interfaces.Services
 {
-    public interface IRepository<T>
+    public interface IBaseRepository<T>
     {
         #region Methods
 

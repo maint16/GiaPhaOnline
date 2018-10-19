@@ -26,11 +26,11 @@ namespace Main.Controllers
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
         /// <param name="identityService"></param>
-        /// <param name="timeService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="databaseFunction"></param>
         /// <param name="followCategoryDomain"></param>
         public FollowCategoryController(IAppUnitOfWork unitOfWork, IMapper mapper, IAppProfileService identityService,
-            ITimeService timeService, IBaseRelationalDbService databaseFunction,
+            IBaseTimeService baseTimeService, IBaseRelationalDbService databaseFunction,
             IFollowCategoryDomain followCategoryDomain)
         {
             _followCategoryDomain = followCategoryDomain;

@@ -25,13 +25,13 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public TopicReplyDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService, ITimeService timeService)
+            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService, IBaseTimeService baseTimeService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _httpContext = httpContextAccessor.HttpContext;
             _profileService = profileService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
         }
 
         #endregion
@@ -46,7 +46,7 @@ namespace AppBusiness.Domain
 
         private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         #endregion
 
@@ -94,8 +94,8 @@ namespace AppBusiness.Domain
                     reply.CategoryGroupId = topic.CategoryGroupId;
                     reply.Content = model.Content;
                     reply.Status = ItemStatus.Active;
-                    reply.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                    reply.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    reply.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    reply.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                     // Insert reply into system.
                     _unitOfWork.Replies.Insert(reply);
@@ -166,7 +166,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 
-            reply.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reply.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
             await _unitOfWork.CommitAsync(cancellationToken);

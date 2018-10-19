@@ -30,7 +30,7 @@ namespace Main.Controllers
         public ReplyController(
             IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IAppProfileService profileService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,

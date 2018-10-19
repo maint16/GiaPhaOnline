@@ -25,12 +25,12 @@ namespace AppBusiness.Domain
         #region Constructors
 
         public TopicDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IAppProfileService profileService, ITimeService timeService, IHttpContextAccessor httpContextAccessor)
+            IAppProfileService profileService, IBaseTimeService baseTimeService, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _profileService = profileService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _httpContextAccessor = httpContextAccessor;
             _httpContext = httpContextAccessor.HttpContext;
         }
@@ -47,7 +47,7 @@ namespace AppBusiness.Domain
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly HttpContext _httpContext;
 
@@ -99,8 +99,8 @@ namespace AppBusiness.Domain
                     topic.Title = model.Title;
                     topic.Body = model.Body;
                     topic.Status = ItemStatus.Active;
-                    topic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                    topic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    topic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    topic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                     // Insert topic into system.
                     _unitOfWork.Topics.Insert(topic);
@@ -169,7 +169,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 return topic;
 
-            topic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            topic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
             await _unitOfWork.CommitAsync(cancellationToken);

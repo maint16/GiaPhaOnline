@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using AppBusiness.Interfaces;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Services
 {

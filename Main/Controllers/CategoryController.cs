@@ -36,12 +36,12 @@ namespace Main.Controllers
         public CategoryController(
             IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
+            IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
+            IBaseEncryptionService encryptionService,
             IAppProfileService profileService,
             IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) :
-            base(unitOfWork, mapper, timeService,
+            base(unitOfWork, mapper, baseTimeService,
                 relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
