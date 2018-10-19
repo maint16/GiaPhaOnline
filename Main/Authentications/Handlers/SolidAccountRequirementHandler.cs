@@ -30,7 +30,7 @@ namespace Main.Authentications.Handlers
         public SolidAccountRequirementHandler(
             IAppUnitOfWork unitOfWork,
             IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
-            IValueCacheService<int, User> profileCacheService)
+            IBaseKeyValueCacheService<int, User> profileCacheService)
         {
             _unitOfWork = unitOfWork;
             _profileService = profileService;
@@ -148,7 +148,7 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Service which is for caching user information.
         /// </summary>
-        private readonly IValueCacheService<int, User> _profileCacheService;
+        private readonly IBaseKeyValueCacheService<int, User> _profileCacheService;
 
         #endregion
     }

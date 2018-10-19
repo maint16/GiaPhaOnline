@@ -38,7 +38,7 @@ namespace AppBusiness.Domain
         public UserDomain(IBaseEncryptionService encryptionService,
             IAppUnitOfWork unitOfWork,
             IExternalAuthenticationService externalAuthenticationService,
-            IValueCacheService<int, User> profileCacheService,
+            IBaseKeyValueCacheService<int, User> profileCacheService,
             IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
             IVgyService vgyService,
@@ -78,7 +78,7 @@ namespace AppBusiness.Domain
         /// <summary>
         ///     Service which is for handling profile caching.
         /// </summary>
-        private readonly IValueCacheService<int, User> _profileCacheService;
+        private readonly IBaseKeyValueCacheService<int, User> _profileCacheService;
 
         private readonly IVgyService _vgyService;
 

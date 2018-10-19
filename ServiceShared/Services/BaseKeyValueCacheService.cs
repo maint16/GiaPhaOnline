@@ -2,12 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using AppBusiness.Interfaces;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Services
+namespace ServiceShared.Services
 {
-    public class ValueCacheBaseService<TKey, TValue> : IValueCacheService<TKey, TValue>
+    public class BaseKeyValueCacheService<TKey, TValue> : IBaseKeyValueCacheService<TKey, TValue>
     {
         #region Properties
 
@@ -23,7 +22,7 @@ namespace Main.Services
         /// <summary>
         ///     Initialize service with specific settings.
         /// </summary>
-        public ValueCacheBaseService()
+        public BaseKeyValueCacheService()
         {
             _pairs = new ConcurrentDictionary<TKey, KeyValuePair<TValue, DateTime?>>();
         }

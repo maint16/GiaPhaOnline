@@ -309,7 +309,7 @@ namespace Main
             services.AddScoped<ICaptchaService, CaptchaService>();
 
             // Store user information in cache
-            services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
+            services.AddSingleton<IBaseKeyValueCacheService<int, User>, ProfileCacheService>();
             services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
 
             // Initialize real-time notification service as single instance.

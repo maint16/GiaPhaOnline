@@ -72,7 +72,7 @@ namespace Main.Controllers
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<UserController> logger,
             IVgyService vgyService,
-            IValueCacheService<int, User> profileCacheService,
+            IBaseKeyValueCacheService<int, User> profileCacheService,
             ICaptchaService captchaService,
             IRealTimeService realTimeService,
             IUserDomain userDomain) : base(

@@ -1,9 +1,10 @@
 ﻿using AppDb.Models.Entities;
 using Main.Interfaces.Services.RealTime;
+using ServiceShared.Services;
 
 namespace Main.Services
 {
-    public class RealTimeConnectionCacheService : ValueCacheBaseService<string, User>, IRealTimeConnectionCacheService
+    public class RealTimeConnectionCacheService : BaseKeyValueCacheService<string, User>, IRealTimeConnectionCacheService
     {
         #region Methods
 

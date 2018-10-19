@@ -111,7 +111,7 @@ namespace AuthenticationMicroService
             services.AddScoped<IBaseRelationalDbService, BaseRelationalDbService>();
 
             // Store user information in cache
-            services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
+            services.AddSingleton<IBaseKeyValueCacheService<int, User>, ProfileCacheService>();
         }
 
         #endregion

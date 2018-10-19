@@ -28,7 +28,7 @@ namespace AuthenticationMicroService.Controllers
         /// <param name="userDomain"></param>
         public UserController(
             ICaptchaService captchaService,
-            IValueCacheService<int, User> profileCacheService,
+            IBaseKeyValueCacheService<int, User> profileCacheService,
             IUserDomain userDomain)
         {
             _captchaService = captchaService;

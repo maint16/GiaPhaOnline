@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServiceShared.Interfaces.Services
 {
-    public interface IValueCacheService<TKey, TValue>
+    public interface IBaseKeyValueCacheService<TKey, TValue>
     {
         #region Methods
 

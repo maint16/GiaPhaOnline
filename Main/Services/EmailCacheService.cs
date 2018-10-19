@@ -3,13 +3,14 @@ using System.IO;
 using Main.Interfaces.Services;
 using Main.Models;
 using Microsoft.AspNetCore.Hosting;
+using ServiceShared.Services;
 
 namespace Main.Services
 {
     /// <summary>
     ///     Service for email caching.
     /// </summary>
-    public class EmailCacheService : ValueCacheBaseService<string, EmailCacheOption>, IEmailCacheService
+    public class EmailCacheService : BaseKeyValueCacheService<string, EmailCacheOption>, IEmailCacheService
     {
         #region Properties
 
