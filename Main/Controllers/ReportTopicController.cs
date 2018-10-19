@@ -30,9 +30,9 @@ namespace Main.Controllers
             ITimeService timeService,
             IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IProfileService identityService, ITopicReportDomain topicReportDomain) : base(unitOfWork, mapper,
+            IAppProfileService profileService, ITopicReportDomain topicReportDomain) : base(unitOfWork, mapper,
             timeService,
-            relationalDbService, identityService)
+            relationalDbService, profileService)
         {
             _topicReportDomain = topicReportDomain;
         }

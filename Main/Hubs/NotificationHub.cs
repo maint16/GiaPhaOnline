@@ -25,14 +25,14 @@ namespace Main.Hubs
         ///     Initialize hub with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
-        /// <param name="identityService"></param>
+        /// <param name="profileService"></param>
         /// <param name="timeService"></param>
         /// <param name="realTimeService"></param>
-        public NotificationHub(IAppUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+        public NotificationHub(IAppUnitOfWork unitOfWork, IAppProfileService profileService, ITimeService timeService,
             IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;
-            _identityService = identityService;
+            _profileService = profileService;
             _timeService = timeService;
             _realTimeService = realTimeService;
         }
@@ -46,7 +46,7 @@ namespace Main.Hubs
         /// </summary>
         private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly ITimeService _timeService;
 
@@ -72,7 +72,7 @@ namespace Main.Hubs
             #region Save connection id to database
 
             // Get profle
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Check whether connection id has been saved to this user.
             var signalrConnections = _unitOfWork.SignalrConnections.Search();

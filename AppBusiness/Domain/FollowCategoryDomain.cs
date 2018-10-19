@@ -13,7 +13,6 @@ using AppShared.ViewModels.FollowCategory;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
@@ -24,14 +23,13 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public FollowCategoryDomain(IAppUnitOfWork unitOfWork, IProfileService identityService,
+        public FollowCategoryDomain(IAppUnitOfWork unitOfWork, IAppProfileService profileService,
             ITimeService timeService,
-            IHttpContextAccessor httpContextAccessor, IBaseRelationalDbService relationalDbService)
+            IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
-            _identityService = identityService;
+            _profileService = profileService;
             _timeService = timeService;
-            _httpContext = httpContextAccessor.HttpContext;
             _relationalDbService = relationalDbService;
         }
 
@@ -41,9 +39,7 @@ namespace AppBusiness.Domain
 
         private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly HttpContext _httpContext;
-
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly ITimeService _timeService;
 
@@ -78,7 +74,7 @@ namespace AppBusiness.Domain
             #region Check whether user already followed category or not
 
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find follow categories.
             var followCategories = _unitOfWork.FollowingCategories.Search();
@@ -121,7 +117,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find categories by using specific conditions.
             var followCategories = _unitOfWork.FollowingCategories.Search();
@@ -189,7 +185,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<FollowCategory> GetFollowingCategories(SearchFollowCategoryViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Search for posts.
             var followCategories = _unitOfWork.FollowingCategories.Search();

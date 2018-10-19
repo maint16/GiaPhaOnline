@@ -25,13 +25,13 @@ namespace AppBusiness.Domain
         #region Constructors
 
         public TopicReportDomain(IAppUnitOfWork unitOfWork, ITimeService timeService,
-            IHttpContextAccessor httpContextAccessor, IProfileService identityService,
+            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService,
             IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
             _timeService = timeService;
             _httpContext = httpContextAccessor.HttpContext;
-            _identityService = identityService;
+            _profileService = profileService;
             _relationalDbService = relationalDbService;
         }
 
@@ -45,7 +45,7 @@ namespace AppBusiness.Domain
 
         private readonly HttpContext _httpContext;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly IBaseRelationalDbService _relationalDbService;
 
@@ -73,7 +73,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Report topic intialization.
             var reportTopic = new ReportTopic();
@@ -104,7 +104,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all report topic in database.
             var reportTopics = _unitOfWork.ReportTopics.Search();
@@ -180,7 +180,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<ReportTopic> GetTopicReports(SearchReportTopicViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Whether user is admin or not.
             var bIsUserAdmin = profile != null && profile.Role == UserRole.Admin;

@@ -39,10 +39,10 @@ namespace Main.Controllers
             ITimeService timeService,
             IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IProfileService identityService,
+            IAppProfileService profileService,
             IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) :
             base(unitOfWork, mapper, timeService,
-                relationalDbService, identityService)
+                relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
             _categoryDomain = categoryDomain;

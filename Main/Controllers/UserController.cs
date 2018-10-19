@@ -13,7 +13,6 @@ using AppShared.Resources;
 using AppShared.ViewModels.Users;
 using AutoMapper;
 using ClientShared.Enumerations;
-using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -24,6 +23,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 using SkiaSharp;
@@ -44,7 +44,7 @@ namespace Main.Controllers
         /// <param name="timeService"></param>
         /// <param name="relationalDbService"></param>
         /// <param name="encryptionService"></param>
-        /// <param name="identityService"></param>
+        /// <param name="profileService"></param>
         /// <param name="systemTimeService"></param>
         /// <param name="externalAuthenticationService"></param>
         /// <param name="sendMailService"></param>
@@ -63,7 +63,7 @@ namespace Main.Controllers
             ITimeService timeService,
             IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IProfileService identityService,
+            IAppProfileService profileService,
             ITimeService systemTimeService,
             IExternalAuthenticationService externalAuthenticationService,
             ISendMailService sendMailService,
@@ -77,10 +77,10 @@ namespace Main.Controllers
             IRealTimeService realTimeService,
             IUserDomain userDomain) : base(
             unitOfWork, mapper, timeService,
-            relationalDbService, identityService)
+            relationalDbService, profileService)
         {
             _logger = logger;
-            _identityService = identityService;
+            _profileService = profileService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _captchaService = captchaService;
@@ -216,7 +216,7 @@ namespace Main.Controllers
         public async Task<IActionResult> FindProfile([FromRoute] int? id)
         {
             // Get requester identity.
-            var profile = IdentityService.GetProfile();
+            var profile = ProfileService.GetProfile();
 
             var loadUserCondition = new SearchUserViewModel();
             loadUserCondition.Ids = new HashSet<int>();
@@ -433,7 +433,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
             var userId = id < 0 ? profile.Id : id;
             await _userDomain.ChangePasswordAsync(userId, model);
 
@@ -452,7 +452,7 @@ namespace Main.Controllers
             [FromBody] ChangeUserStatusViewModel model)
         {
             // Find requester profile.
-            var profile = IdentityService.GetProfile();
+            var profile = ProfileService.GetProfile();
 
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
             if (profile.Id == id)
@@ -503,7 +503,7 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             // Get request profile.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             if (profile == null || profile.Role != UserRole.Admin)
                 condition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
@@ -537,7 +537,7 @@ namespace Main.Controllers
             #region Change user profile photo
 
             // Get requester profile.
-            var profile = IdentityService.GetProfile();
+            var profile = ProfileService.GetProfile();
             if (model.UserId == null)
                 model.UserId = profile.Id;
 
@@ -618,7 +618,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Instance which is for accessing identity attached in request.
         /// </summary>
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         /// <summary>
         ///     Send email service

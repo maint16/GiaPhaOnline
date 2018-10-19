@@ -29,13 +29,13 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public CategoryDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor,
+            ITimeService timeService, IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
             IVgyService vgyService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _timeService = timeService;
-            _identityService = identityService;
+            _profileService = profileService;
             _httpContext = httpContextAccessor.HttpContext;
             _vgyService = vgyService;
         }
@@ -64,7 +64,7 @@ namespace AppBusiness.Domain
 
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             #region Add category
 
@@ -103,7 +103,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all category in database.
             var categories = _unitOfWork.Categories.Search();
@@ -153,7 +153,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find categories by using specific conditions.
             var categories = _unitOfWork.Categories.Search();
@@ -296,7 +296,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<Category> GetCategories(SearchCategoryViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             #region Search for information
 
@@ -402,7 +402,7 @@ namespace AppBusiness.Domain
 
         private readonly ITimeService _timeService;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly HttpContext _httpContext;
 

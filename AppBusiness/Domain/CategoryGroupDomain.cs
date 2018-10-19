@@ -24,11 +24,11 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public CategoryGroupDomain(IProfileService identityService, ITimeService timeService,
+        public CategoryGroupDomain(IAppProfileService profileService, ITimeService timeService,
             IBaseRelationalDbService relationalDbService, IAppUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor)
         {
-            _identityService = identityService;
+            _profileService = profileService;
             _timeService = timeService;
             _relationalDbService = relationalDbService;
             _unitOfWork = unitOfWork;
@@ -39,7 +39,7 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly ITimeService _timeService;
 
@@ -73,7 +73,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.CategoryGroupCannotConflict, HttpStatusCode.Conflict);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Category group intialization.
             categoryGroup = new CategoryGroup();
@@ -191,7 +191,7 @@ namespace AppBusiness.Domain
             SearchCategoryGroupViewModel condition)
         {
             // Find identity in request.
-            var identity = _identityService.GetProfile();
+            var identity = _profileService.GetProfile();
 
             // Get all category groups
             var categoryGroups = _unitOfWork.CategoryGroups.Search();

@@ -45,7 +45,7 @@ namespace AuthenticationDb.Repositories
         }
 
         /// <summary>
-        /// Search data with specific conditions.
+        ///     Search data with specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -55,12 +55,13 @@ namespace AuthenticationDb.Repositories
         }
 
         /// <summary>
-        /// Get the first or default value.
+        ///     Get the first or default value.
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             return _dbSet.FirstOrDefaultAsync(condition, cancellationToken);
         }

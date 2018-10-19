@@ -8,13 +8,13 @@ using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppShared.ViewModels.Reply;
 using AutoMapper;
-using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
@@ -23,7 +23,7 @@ using ServiceShared.Interfaces.Services;
 namespace Main.Controllers
 {
     [Route("api/[controller]")]
-    public class ReplyController : ApiBaseController
+    public class ReplyController : Controller
     {
         #region Constructors
 
@@ -31,13 +31,10 @@ namespace Main.Controllers
             IAppUnitOfWork unitOfWork,
             IMapper mapper,
             ITimeService timeService,
-            IBaseRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
-            IProfileService identityService,
+            IAppProfileService profileService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger<ReplyController> logger, IReplyDomain replyDomain) : base(unitOfWork, mapper, timeService,
-            relationalDbService, identityService)
+            ILogger<ReplyController> logger, IReplyDomain replyDomain)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
@@ -117,37 +114,9 @@ namespace Main.Controllers
 
             #endregion
 
-            try
-            {
-                // Update reply information.
-                var reply = await _replyDomain.EditReplyAsync(id, info);
-
-                var users = UnitOfWork.Accounts.Search();
-                users = users.Where(x => x.Id == reply.OwnerId);
-                var user = await users.FirstOrDefaultAsync();
-                if (user != null)
-                {
-                    var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
-
-                    if (emailTemplate != null)
-                    {
-                        await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
-                            emailTemplate.Subject,
-                            emailTemplate.Content, true, CancellationToken.None);
-
-                        _logger.LogInformation($"Sent message to {user.Email} with subject {emailTemplate.Subject}");
-                    }
-                }
-
-                return Ok(reply);
-            }
-            catch (Exception exception)
-            {
-                if (!(exception is NotModifiedException))
-                    throw;
-
-                return Ok();
-            }
+            // Update reply information.
+            var reply = await _replyDomain.EditReplyAsync(id, info);
+            return Ok(reply);
         }
 
         /// <summary>

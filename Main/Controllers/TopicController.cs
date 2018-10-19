@@ -37,7 +37,7 @@ namespace Main.Controllers
             ITimeService timeService,
             IBaseRelationalDbService relationalDbService,
             IEncryptionService encryptionService,
-            IProfileService identityService,
+            IAppProfileService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
             IRealTimeService realTimeService,

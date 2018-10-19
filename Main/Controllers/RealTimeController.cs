@@ -8,12 +8,12 @@ using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppShared.Resources;
 using AppShared.ViewModels.RealTime;
-using Main.Authentications.ActionFilters;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.PushNotification;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 
 namespace Main.Controllers
@@ -23,7 +23,7 @@ namespace Main.Controllers
     {
         #region Constructor
 
-        public RealTimeController(IAppUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+        public RealTimeController(IAppUnitOfWork unitOfWork, IAppProfileService identityService, ITimeService timeService,
             IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;
@@ -45,7 +45,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Instance to manage identity
         /// </summary>
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _identityService;
 
         private readonly ITimeService _timeService;
 

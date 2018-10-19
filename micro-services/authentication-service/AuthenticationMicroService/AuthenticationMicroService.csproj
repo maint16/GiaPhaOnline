@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Authentications\ActionFilters\" />
     <Folder Include="ViewModels\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

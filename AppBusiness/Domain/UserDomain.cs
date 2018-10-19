@@ -23,9 +23,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
+using ServiceShared.Models;
 using SkiaSharp;
 using VgySdk.Interfaces;
 using VgySdk.Models;
+using SortDirection = ClientShared.Enumerations.SortDirection;
 
 namespace AppBusiness.Domain
 {

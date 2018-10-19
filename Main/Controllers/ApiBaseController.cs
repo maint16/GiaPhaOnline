@@ -17,15 +17,15 @@ namespace Main.Controllers
         /// <param name="mapper"></param>
         /// <param name="timeService"></param>
         /// <param name="relationalDbService"></param>
-        /// <param name="identityService"></param>
+        /// <param name="profileService"></param>
         public ApiBaseController(IAppUnitOfWork unitOfWork, IMapper mapper, ITimeService timeService,
-            IBaseRelationalDbService relationalDbService, IProfileService identityService)
+            IBaseRelationalDbService relationalDbService, IAppProfileService profileService)
         {
             UnitOfWork = unitOfWork;
             Mapper = mapper;
             TimeService = timeService;
             RelationalDbService = relationalDbService;
-            IdentityService = identityService;
+            ProfileService = profileService;
         }
 
         #endregion
@@ -55,7 +55,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Service which handles identity get/set.
         /// </summary>
-        protected IProfileService IdentityService;
+        protected IAppProfileService ProfileService;
 
         #endregion
     }

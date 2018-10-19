@@ -4,14 +4,10 @@ using System.Threading.Tasks;
 using AuthenticationBusiness.Interfaces.Domains;
 using AuthenticationDb.Models.Entities;
 using AuthenticationMicroService.Interfaces.Services;
-using AuthenticationMicroService.Models.Jwt;
 using AuthenticationShared.Resources;
 using AuthenticationShared.ViewModels.User;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -19,40 +15,22 @@ using ServiceShared.Models;
 namespace AuthenticationMicroService.Controllers
 {
     [Route("api/[controller]")]
-    public class UserController : ApiBaseController
+    public class UserController : Controller
     {
         #region Constructors
 
         /// <summary>
         ///     Initiate controller with injectors.
         /// </summary>
-        /// <param name="unitOfWork"></param>
-        /// <param name="mapper"></param>
-        /// <param name="timeService"></param>
-        /// <param name="relationalDbService"></param>
-        /// <param name="identityService"></param>
         /// <param name="captchaService"></param>
-        /// <param name="jwtConfigurationOptions"></param>
         /// <param name="profileCacheService"></param>
         /// <param name="userDomain"></param>
         public UserController(
-            IBaseUnitOfWork unitOfWork,
-            IMapper mapper,
-            ITimeService timeService,
-            IBaseRelationalDbService relationalDbService,
-            IIdentityService identityService,
             ICaptchaService captchaService,
-            IOptions<JwtConfiguration> jwtConfigurationOptions,
             IValueCacheService<int, User> profileCacheService,
-            IUserDomain userDomain) : base(unitOfWork, mapper, timeService, relationalDbService, identityService)
+            IUserDomain userDomain)
         {
-            _unitOfWork = unitOfWork;
-            _systemTimeService = timeService;
-            _databaseFunction = relationalDbService;
-            _identityService = identityService;
             _captchaService = captchaService;
-            _jwtConfiguration = jwtConfigurationOptions.Value;
-            _profileCacheService = profileCacheService;
             _userDomain = userDomain;
         }
 
@@ -61,39 +39,9 @@ namespace AuthenticationMicroService.Controllers
         #region Properties
 
         /// <summary>
-        ///     Instance for accessing database.
-        /// </summary>
-        private readonly IBaseUnitOfWork _unitOfWork;
-
-        /// <summary>
-        ///     System time service
-        /// </summary>
-        private readonly ITimeService _systemTimeService;
-
-        /// <summary>
-        ///     Provide access to generic database functions.
-        /// </summary>
-        private readonly IBaseRelationalDbService _databaseFunction;
-
-        /// <summary>
-        ///     Instance which is for accessing identity attached in request.
-        /// </summary>
-        private readonly IIdentityService _identityService;
-
-        /// <summary>
         ///     Service which is for checking captcha.
         /// </summary>
         private readonly ICaptchaService _captchaService;
-
-        /// <summary>
-        ///     Configuration information of JWT.
-        /// </summary>
-        private readonly JwtConfiguration _jwtConfiguration;
-
-        /// <summary>
-        ///     Service which is for handling profile caching.
-        /// </summary>
-        private readonly IValueCacheService<int, User> _profileCacheService;
 
         /// <summary>
         ///     Service which is for handling user.

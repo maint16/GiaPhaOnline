@@ -29,7 +29,7 @@ namespace Main.Controllers
         /// <param name="timeService"></param>
         /// <param name="databaseFunction"></param>
         /// <param name="followCategoryDomain"></param>
-        public FollowCategoryController(IAppUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
+        public FollowCategoryController(IAppUnitOfWork unitOfWork, IMapper mapper, IAppProfileService identityService,
             ITimeService timeService, IBaseRelationalDbService databaseFunction,
             IFollowCategoryDomain followCategoryDomain)
         {

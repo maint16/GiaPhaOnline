@@ -42,7 +42,7 @@
     <PackageReference Include="PusherServer" Version="4.1.0" />
     <PackageReference Include="Sendgrid" Version="9.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="SkiaSharp" Version="1.60.3" />
     <PackageReference Include="VgySDK" Version="1.0.1" />
@@ -66,6 +66,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Authentications\ActionFilters\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

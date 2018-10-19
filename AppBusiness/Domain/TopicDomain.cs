@@ -25,11 +25,11 @@ namespace AppBusiness.Domain
         #region Constructors
 
         public TopicDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IProfileService identityService, ITimeService timeService, IHttpContextAccessor httpContextAccessor)
+            IAppProfileService profileService, ITimeService timeService, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
-            _identityService = identityService;
+            _profileService = profileService;
             _timeService = timeService;
             _httpContextAccessor = httpContextAccessor;
             _httpContext = httpContextAccessor.HttpContext;
@@ -43,7 +43,7 @@ namespace AppBusiness.Domain
 
         private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -78,7 +78,7 @@ namespace AppBusiness.Domain
             #endregion
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
@@ -137,7 +137,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all topics in database.
             var topics = _unitOfWork.Topics.Search();
@@ -186,7 +186,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find topics by using specific conditions.
             var topics = _unitOfWork.Topics.Search();
@@ -312,7 +312,7 @@ namespace AppBusiness.Domain
             }
 
             // Search conditions which are based on roles.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
             if (profile != null && profile.Role == UserRole.Admin)
             {
                 var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();

@@ -25,12 +25,12 @@ namespace AppBusiness.Domain
         #region Constructor
 
         public TopicReplyDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IHttpContextAccessor httpContextAccessor, IProfileService identityService, ITimeService timeService)
+            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService, ITimeService timeService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _httpContext = httpContextAccessor.HttpContext;
-            _identityService = identityService;
+            _profileService = profileService;
             _timeService = timeService;
         }
 
@@ -44,7 +44,7 @@ namespace AppBusiness.Domain
 
         private readonly HttpContext _httpContext;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly ITimeService _timeService;
 
@@ -71,7 +71,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
@@ -141,7 +141,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all replies in database.
             var replies = _unitOfWork.Replies.Search();
@@ -183,7 +183,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find replies by using specific conditions.
             var replies = _unitOfWork.Replies.Search();
@@ -241,7 +241,7 @@ namespace AppBusiness.Domain
             var replies = _unitOfWork.Replies.Search();
 
             // Get profile of requester.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Id have been defined.
             var ids = condition.Ids;

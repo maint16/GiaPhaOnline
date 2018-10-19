@@ -26,13 +26,13 @@ namespace AppBusiness.Domain
 
         public FollowTopicDomain(IAppUnitOfWork unitOfWork, ITimeService timeService,
             IBaseRelationalDbService relationalDbService, IHttpContextAccessor httpContextAccessor,
-            IProfileService identityService)
+            IAppProfileService profileService)
         {
             _unitOfWork = unitOfWork;
             _timeService = timeService;
             _relationalDbService = relationalDbService;
             _httpContext = httpContextAccessor.HttpContext;
-            _identityService = identityService;
+            _profileService = profileService;
         }
 
         #endregion
@@ -47,7 +47,7 @@ namespace AppBusiness.Domain
 
         private readonly HttpContext _httpContext;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         #endregion
 
@@ -63,7 +63,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get profile.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find topics.
             var topics = _unitOfWork.Topics.Search();
@@ -112,7 +112,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find topics by using specific conditions.
             var followTopics = _unitOfWork.FollowingTopics.Search();
@@ -167,7 +167,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<FollowTopic> GetFollowTopics(SearchFollowTopicViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Search for follow topics.
             var followTopics = _unitOfWork.FollowingTopics.Search();
