@@ -57,7 +57,7 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
-        [HttpDelete("")]
+        [HttpDelete("{categoryId}")]
         public async Task<IActionResult> StopFollowingCategory([FromRoute] int categoryId)
         {
             var deleteFollowingCategoryModel = new DeleteFollowCategoryViewModel();

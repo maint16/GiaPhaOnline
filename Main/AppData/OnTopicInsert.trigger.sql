@@ -4,6 +4,7 @@ AFTER INSERT ON Topic
 WHEN NEW.Status = 1
 BEGIN
 
+    -- Update / Insert category summary.
     UPDATE CategorySummary
     SET TotalPost = TotalPost + 1,
         LastTopicId = NEW.Id,
@@ -13,6 +14,5 @@ BEGIN
         
     INSERT OR IGNORE INTO CategorySummary(CategoryId, TotalPost, TotalFollower, LastTopicId, LastTopicTitle, LastTopicCreatedTime)
     VALUES(NEW.CategoryId, 1, 0, NEW.Id, NEW.Title, NEW.CreatedTime);
-    
 END
 

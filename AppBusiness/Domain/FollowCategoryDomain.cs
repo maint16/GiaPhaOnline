@@ -225,6 +225,7 @@ namespace AppBusiness.Domain
             {
                 // Normal users can his/her followed categories.
                 followCategories = followCategories.Where(x => x.FollowerId == profile.Id);
+                followCategories = followCategories.Where(x => x.Status == FollowStatus.Following);
             }
 
             // Created time has been defined.
