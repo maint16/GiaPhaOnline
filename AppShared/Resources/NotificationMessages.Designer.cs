@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------
 
 namespace AppShared.Resources {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -36,7 +39,7 @@ namespace AppShared.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shared.Resources.NotificationMessages", typeof(NotificationMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AppShared.Resources.NotificationMessages", typeof(NotificationMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

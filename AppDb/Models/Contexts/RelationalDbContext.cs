@@ -418,12 +418,6 @@ namespace AppDb.Models.Contexts
         {
             var categorySummary = modelBuilder.Entity<CategorySummary>();
             categorySummary.HasKey(x => x.CategoryId);
-
-            categorySummary.HasOne(x => x.Category).WithOne(x => x.CategorySummary)
-                .HasForeignKey<CategorySummary>(x => x.CategoryId);
-
-            categorySummary.HasOne(x => x.LastTopic).WithOne(x => x.CategorySummary)
-                .HasForeignKey<CategorySummary>(x => x.LastTopicId);
         }
 
         /// <summary>

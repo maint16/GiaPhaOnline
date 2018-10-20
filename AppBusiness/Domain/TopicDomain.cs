@@ -80,50 +80,30 @@ namespace AppBusiness.Domain
             // Find identity from request.
             var profile = _profileService.GetProfile();
 
-            using (var transaction = _unitOfWork.BeginTransactionScope())
-            {
-                try
-                {
-                    #region Add topic
+            #region Add topic
 
-                    // Topic intialization.
-                    var topic = new Topic();
+            // Topic intialization.
+            var topic = new Topic();
 
 #if USE_IN_MEMORY
             topic.Id = await _unitOfWork.Topics.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
                            .FirstOrDefaultAsync(cancellationToken) + 1;
 #endif
-                    topic.OwnerId = profile.Id;
-                    topic.CategoryId = category.Id;
-                    topic.CategoryGroupId = category.CategoryGroupId;
-                    topic.Title = model.Title;
-                    topic.Body = model.Body;
-                    topic.Status = ItemStatus.Active;
-                    topic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                    topic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            topic.OwnerId = profile.Id;
+            topic.CategoryId = category.Id;
+            topic.CategoryGroupId = category.CategoryGroupId;
+            topic.Title = model.Title;
+            topic.Body = model.Body;
+            topic.Status = ItemStatus.Active;
+            topic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            topic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-                    // Insert topic into system.
-                    _unitOfWork.Topics.Insert(topic);
+            // Insert topic into system.
+            _unitOfWork.Topics.Insert(topic);
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return topic;
 
-                    #endregion
-
-                    #region Add topic summary
-
-                    var topicSummary = new TopicSummary(topic.Id, 0, 0);
-                    _unitOfWork.TopicSummaries.Insert(topicSummary);
-
-                    #endregion
-
-                    await _unitOfWork.CommitAsync(cancellationToken);
-                    transaction.Commit();
-                    return topic;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            #endregion
         }
 
         /// <summary>
@@ -214,7 +194,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadTopicCondition = new SearchTopicViewModel();
-            loadTopicCondition.Ids = new HashSet<int> {id};
+            loadTopicCondition.Ids = new HashSet<int> { id };
             loadTopicCondition.Pagination = new Pagination(1, 1);
 
             return await GetTopics(loadTopicCondition).FirstOrDefaultAsync(cancellationToken);

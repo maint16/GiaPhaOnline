@@ -52,6 +52,7 @@ namespace Main.Controllers
             _realTimeService = realTimeService;
             _notificationMessageDomain = notificationMessageDomain;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         #endregion

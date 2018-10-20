@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AppBusiness.Domain;
+﻿using AppBusiness.Domain;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppBusiness.Services;
@@ -33,6 +30,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,6 +43,9 @@ using ServiceShared.Extensions;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 using ServiceShared.Services;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using VgySdk.Interfaces;
 using VgySdk.Service;
 
@@ -121,10 +122,10 @@ namespace Main
             // Add cors configuration to service configuration.
             services.AddCors(options => { options.AddPolicy("AllowAll", corsBuilder.Build()); });
             services.AddOptions();
-
+            
             // This can be removed after https://github.com/aspnet/IISIntegration/issues/371
             var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-
+            
             authenticationBuilder.AddJwtBearer(o =>
             {
                 // You also need to update /wwwroot/app/scripts/app.js
@@ -264,7 +265,23 @@ namespace Main
             sqlConnection = Configuration.GetConnectionString(AppConfigKeyConstant.SqliteConnectionString);
             services.AddDbContext<RelationalDbContext>(
                 options => options.UseSqlite(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
-            services.AddScoped<DbContext, RelationalDbContext>();
+#elif USE_SQLITE_INMEMORY
+            sqlConnection = Configuration.GetConnectionString(AppConfigKeyConstant.SqliteConnectionString);
+            //services.AddDbContext<RelationalDbContext>(
+            //    options => options.UseSqlite(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
+            //services.AddScoped<DbContext, RelationalDbContext>();
+
+            var sandboxConnection = new SqliteConnection("Data Source=:memory:");
+            sandboxConnection.Open();
+
+            using (var physicalConnection = new SqliteConnection(sqlConnection))
+            {
+                physicalConnection.Open();
+                physicalConnection.BackupDatabase(sandboxConnection);
+            }
+
+            services.AddDbContext<RelationalDbContext>(
+                options => options.UseSqlite(sandboxConnection, b => b.MigrationsAssembly(nameof(Main))));
 #elif USE_AZURE_SQL
             sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(
@@ -288,8 +305,10 @@ namespace Main
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
             services.AddDbContext<RelationalDbContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(Main))));
-            services.AddScoped<DbContext, RelationalDbContext>();
 #endif
+
+            // Add scoped.
+            services.AddScoped<DbContext, RelationalDbContext>();
 
             // Injections configuration.
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -332,8 +351,7 @@ namespace Main
             services.AddScoped<IFollowCategoryDomain, FollowCategoryDomain>();
             services.AddScoped<IUserDomain, UserDomain>();
             services.AddScoped<INotificationMessageDomain, NotificationMessageDomain>();
-
-
+            
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>) Configuration.GetSection("emailCache")
                 .Get(typeof(Dictionary<string, EmailCacheOption>));

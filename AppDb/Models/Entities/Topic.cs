@@ -93,10 +93,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public ICollection<ReportTopic> ReportTopics { get; set; }
-
-        [JsonIgnore]
-        public virtual CategorySummary CategorySummary { get; set; }
-
+        
         [JsonIgnore]
         public virtual TopicSummary TopicSummary { get; set; }
 
