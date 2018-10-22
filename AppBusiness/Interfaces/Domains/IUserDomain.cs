@@ -125,6 +125,14 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Add | edit user signature asynchronously.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<User> AddUserSignatureAsync(AddUserSignatureViewModel model, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         ///     From user information to generate user json web token.
         /// </summary>
         /// <param name="user"></param>

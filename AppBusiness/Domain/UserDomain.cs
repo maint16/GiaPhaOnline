@@ -41,6 +41,7 @@ namespace AppBusiness.Domain
             IBaseKeyValueCacheService<int, User> profileCacheService,
             IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
+            IAppProfileService profileService,
             IVgyService vgyService,
             IOptions<ApplicationSetting> applicationSettingOptions,
             IOptions<AppJwtModel> appJwt)
@@ -54,6 +55,7 @@ namespace AppBusiness.Domain
             _appJwt = appJwt.Value;
             _profileCacheService = profileCacheService;
             _vgyService = vgyService;
+            _profileService = profileService;
         }
 
         #endregion
@@ -61,7 +63,6 @@ namespace AppBusiness.Domain
         #region Properties
 
         private readonly IBaseEncryptionService _encryptionService;
-
 
         private readonly IAppUnitOfWork _unitOfWork;
 
@@ -74,6 +75,8 @@ namespace AppBusiness.Domain
         private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly AppJwtModel _appJwt;
+
+        private readonly IAppProfileService _profileService;
 
         /// <summary>
         ///     Service which is for handling profile caching.
@@ -580,6 +583,34 @@ namespace AppBusiness.Domain
 
             var submitPasswordResetResult = new SubmitPasswordResetResultModel();
             return submitPasswordResetResult;
+        }
+
+        /// <summary>
+        ///     Add/edit user signature.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<User> AddUserSignatureAsync(AddUserSignatureViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var profile = _profileService.GetProfile();
+            if (profile == null)
+                throw new Exception("No profile is found");
+
+            var userId = model.UserId;
+            if (profile.Role == UserRole.User || model.UserId == null)
+                userId = profile.Id;
+
+            var users = _unitOfWork.Accounts.Search(x => x.Id == userId && x.Status == UserStatus.Available);
+            var user = await users.FirstOrDefaultAsync(cancellationToken);
+
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, HttpMessages.AccountIsNotFound);
+
+            user.Signature = model.Signature;
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return user;
         }
 
         /// <summary>

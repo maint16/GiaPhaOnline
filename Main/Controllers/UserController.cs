@@ -100,7 +100,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("basic-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public virtual async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             #region Request param validation
 
@@ -144,7 +144,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("google-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
+        public virtual async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
         {
             #region Request params validation
 
@@ -176,7 +176,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("facebook-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
+        public virtual async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
         {
             #region Request parameters validation
 
@@ -213,7 +213,7 @@ namespace Main.Controllers
         [HttpGet("personal-profile/{id}")]
         [HttpGet("{id}")]
         [ByPassAuthorization]
-        public async Task<IActionResult> FindProfile([FromRoute] int? id)
+        public virtual async Task<IActionResult> FindProfile([FromRoute] int? id)
         {
             // Get requester identity.
             var profile = ProfileService.GetProfile();
@@ -246,7 +246,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [Route("basic-register")]
         [AllowAnonymous]
-        public async Task<IActionResult> BasicRegister([FromBody] RegisterAccountViewModel model)
+        public virtual async Task<IActionResult> BasicRegister([FromBody] RegisterAccountViewModel model)
         {
             #region Request parameters validation
 
@@ -321,7 +321,7 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [Route("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        public virtual async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
             #region Request parameters validation
 
@@ -380,7 +380,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("submit-password-reset")]
         [AllowAnonymous]
-        public async Task<IActionResult> SubmitPasswordReset([FromBody] SubmitPasswordResetViewModel model)
+        public virtual async Task<IActionResult> SubmitPasswordReset([FromBody] SubmitPasswordResetViewModel model)
         {
             #region Request parameters validation
 
@@ -396,7 +396,7 @@ namespace Main.Controllers
             #endregion
 
             // Submit password reset.
-            var submitPasswordResetResult = await _userDomain.SubmitPasswordResetAsync(model);
+            await _userDomain.SubmitPasswordResetAsync(model);
 
             #region Send email
 
@@ -418,7 +418,8 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("change-password/{id}")]
-        public async Task<IActionResult> ChangePassword([FromRoute] int id, [FromBody] ChangePasswordViewModel model)
+        public virtual async Task<IActionResult> ChangePassword([FromRoute] int id,
+            [FromBody] ChangePasswordViewModel model)
         {
             #region Request parameters validation
 
@@ -448,7 +449,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPut("status/{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id,
+        public virtual async Task<IActionResult> ChangeUserStatus([FromRoute] int id,
             [FromBody] ChangeUserStatusViewModel model)
         {
             // Find requester profile.
@@ -491,7 +492,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
+        public virtual async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
         {
             if (condition == null)
             {
@@ -519,7 +520,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("upload-avatar")]
         //[Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel model)
+        public virtual async Task<IActionResult> UploadAvatar(UploadPhotoViewModel model)
         {
             #region Request parameters validation
 
@@ -573,7 +574,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("resend-activation-code")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResendAccountActivationCode(
+        public virtual async Task<IActionResult> ResendAccountActivationCode(
             [FromBody] RequestUserActivationCodeViewModel model)
         {
             #region Request parameters validation
@@ -604,6 +605,27 @@ namespace Main.Controllers
             #endregion
 
             return Ok();
+        }
+
+        /// <summary>
+        ///     Add | edit user signature.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("signature")]
+        public virtual async Task<IActionResult> AddEditUserSignatureAsync([FromBody] AddUserSignatureViewModel model)
+        {
+            if (model == null)
+            {
+                model = new AddUserSignatureViewModel();
+                TryValidateModel(model);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userDomain.AddUserSignatureAsync(model);
+            return Ok(user);
         }
 
         #endregion

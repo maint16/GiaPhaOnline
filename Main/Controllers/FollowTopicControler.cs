@@ -43,8 +43,8 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="topicId"></param>
         /// <returns></returns>
-        [HttpPost("")]
-        public async Task<IActionResult> FollowTopic([FromQuery] int topicId)
+        [HttpPost("{topicId}")]
+        public async Task<IActionResult> FollowTopic([FromRoute] int topicId)
         {
             var addFollowTopic = new AddFollowTopicViewModel();
             addFollowTopic.TopicId = topicId;
@@ -58,7 +58,7 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="topicId"></param>
         /// <returns></returns>
-        [HttpDelete("")]
+        [HttpDelete("{topicId}")]
         public async Task<IActionResult> StopFollowingTopic([FromRoute] int topicId)
         {
             var deleteFollowTopicModel = new DeleteFollowTopicViewModel();
