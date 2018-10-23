@@ -85,6 +85,7 @@ namespace Main
 
             // Set hosting environment.
             HostingEnvironment = env;
+
         }
 
         /// <summary>
@@ -111,6 +112,13 @@ namespace Main
             var jwtBearerSettings = servicesProvider.GetService<IOptions<AppJwtModel>>().Value;
             var fcmOption = servicesProvider.GetService<IOptions<FcmOption>>().Value;
 
+            //#if DEBUG
+            //            var dbContext = servicesProvider.GetService<DbContext>();
+            //            var sqlReader = dbContext.Database.ExecuteSqlQuery("select sqlite_version();");
+            //            sqlReader.Read();
+            //            var value = sqlReader.DbDataReader[0];
+            //#endif
+
             // Cors configuration.
             var corsBuilder = new CorsPolicyBuilder();
             corsBuilder.AllowAnyHeader();
@@ -122,10 +130,10 @@ namespace Main
             // Add cors configuration to service configuration.
             services.AddCors(options => { options.AddPolicy("AllowAll", corsBuilder.Build()); });
             services.AddOptions();
-            
+
             // This can be removed after https://github.com/aspnet/IISIntegration/issues/371
             var authenticationBuilder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-            
+
             authenticationBuilder.AddJwtBearer(o =>
             {
                 // You also need to update /wwwroot/app/scripts/app.js
@@ -183,7 +191,7 @@ namespace Main
             }));
 
             services.AddAuthorization(x => x.AddPolicy(PolicyConstant.IsAdminPolicy,
-                builder => { builder.AddRequirements(new RoleRequirement(new[] {UserRole.Admin})); }));
+                builder => { builder.AddRequirements(new RoleRequirement(new[] { UserRole.Admin })); }));
 
             #endregion
 
@@ -281,7 +289,8 @@ namespace Main
             }
 
             services.AddDbContext<RelationalDbContext>(
-                options => options.UseSqlite(sandboxConnection, b => b.MigrationsAssembly(nameof(Main))));
+                options => options.UseSqlite(sandboxConnection, b => b.MigrationsAssembly(nameof(Main)))
+                .EnableSensitiveDataLogging());
 #elif USE_AZURE_SQL
             sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");
             services.AddDbContext<RelationalDatabaseContext>(
@@ -351,9 +360,9 @@ namespace Main
             services.AddScoped<IFollowCategoryDomain, FollowCategoryDomain>();
             services.AddScoped<IUserDomain, UserDomain>();
             services.AddScoped<INotificationMessageDomain, NotificationMessageDomain>();
-            
+
             // Get email cache option.
-            var emailCacheOption = (Dictionary<string, EmailCacheOption>) Configuration.GetSection("emailCache")
+            var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache")
                 .Get(typeof(Dictionary<string, EmailCacheOption>));
             var emailCacheService = new EmailCacheService();
             emailCacheService.HostingEnvironment = HostingEnvironment;

@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 using SkiaSharp;
@@ -200,6 +201,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> LoadCategories([FromBody] SearchCategoryViewModel condition)
         {
             #region Parameters validation
@@ -225,6 +227,7 @@ namespace Main.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> LoadCategoryUsingId([FromRoute] int id)
         {
             var loadCategoryCondition = new SearchCategoryViewModel();

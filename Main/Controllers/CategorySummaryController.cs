@@ -2,6 +2,7 @@
 using AppBusiness.Interfaces.Domains;
 using AppShared.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
+using ServiceShared.Authentications.ActionFilters;
 
 namespace Main.Controllers
 {
@@ -31,6 +32,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> SearchCategorySummaries(
             [FromBody] SearchCategorySummaryViewModel condition)
         {

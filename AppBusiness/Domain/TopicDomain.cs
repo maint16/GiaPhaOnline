@@ -293,16 +293,21 @@ namespace AppBusiness.Domain
 
             // Search conditions which are based on roles.
             var profile = _profileService.GetProfile();
-            if (profile != null && profile.Role == UserRole.Admin)
+            if (profile != null)
             {
-                var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();
-                if (statuses != null && statuses.Count > 0)
-                    topics = topics.Where(x => condition.Statuses.Contains(x.Status));
+                if (profile.Role == UserRole.Admin)
+                {
+                    var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();
+                    if (statuses != null && statuses.Count > 0)
+                        topics = topics.Where(x => condition.Statuses.Contains(x.Status));
+                }
+                else
+                    topics = topics.Where(x => x.Status == ItemStatus.Active || (x.Status == ItemStatus.Disabled && x.OwnerId == profile.Id));
             }
             else
             {
                 topics = topics.Where(x =>
-                    x.Status == ItemStatus.Active || x.Status == ItemStatus.Disabled && x.OwnerId == profile.Id);
+                    x.Status == ItemStatus.Active);
             }
 
             return topics;

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces.Domains;
 using AppShared.ViewModels.Topic;
 using Microsoft.AspNetCore.Mvc;
+using ServiceShared.Authentications.ActionFilters;
 
 namespace Main.Controllers
 {
@@ -32,6 +33,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> SearchTopicSummaries([FromBody] SearchTopicSummaryViewModel condition)
         {
             if (condition == null)

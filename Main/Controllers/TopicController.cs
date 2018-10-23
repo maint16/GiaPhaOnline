@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 
@@ -245,6 +246,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public async Task<IActionResult> LoadTopics([FromBody] SearchTopicViewModel condition)
         {
             #region Parameters validation

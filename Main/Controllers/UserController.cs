@@ -492,6 +492,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
         {
             if (condition == null)

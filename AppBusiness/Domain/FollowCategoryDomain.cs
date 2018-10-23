@@ -121,6 +121,7 @@ namespace AppBusiness.Domain
 
             // Find categories by using specific conditions.
             var followCategories = _unitOfWork.FollowingCategories.Search();
+            
             followCategories =
                 followCategories.Where(x => x.CategoryId == model.CategoryId && x.FollowerId == profile.Id);
 

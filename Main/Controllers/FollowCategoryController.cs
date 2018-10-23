@@ -45,8 +45,8 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("")]
-        public async Task<IActionResult> FollowCategory([FromQuery] AddFollowCategoryViewModel model)
+        [HttpPost("{categoryId}")]
+        public async Task<IActionResult> FollowCategory([FromRoute] AddFollowCategoryViewModel model)
         {
             var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(model);
             return Ok(followCategory);
