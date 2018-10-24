@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ServiceShared\ServiceShared.csproj" />
     <ProjectReference Include="..\AuthenticationModel\AuthenticationModel.csproj" />
   </ItemGroup>
 

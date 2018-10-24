@@ -9,15 +9,15 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.NotificationMessage;
+using ClientShared.Enumerations;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.NotificationMessage;
 
 namespace AppBusiness.Domain
 {
@@ -25,11 +25,11 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public NotificationMessageDomain(ITimeService timeService, IUnitOfWork unitOfWork,
-            IRelationalDbService relationalDbService, IProfileService profileService,
+        public NotificationMessageDomain(IBaseTimeService baseTimeService, IAppUnitOfWork unitOfWork,
+            IBaseRelationalDbService relationalDbService, IAppProfileService profileService,
             IHttpContextAccessor httpContextAccessor)
         {
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _profileService = profileService;
@@ -40,13 +40,13 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly IProfileService _profileService;
+        private readonly IAppProfileService _profileService;
 
         private readonly HttpContext _httpContext;
 
@@ -64,7 +64,8 @@ namespace AppBusiness.Domain
         /// <returns></returns>
         public virtual async Task<NotificationMessage> AddNotificationMessageAsync<T>(
             AddNotificationMessageModel<T> model,
-            CancellationToken cancellationToken = default(CancellationToken), bool bIsExpressionSupressed = default (bool))
+            CancellationToken cancellationToken = default(CancellationToken),
+            bool bIsExpressionSupressed = default(bool))
         {
             try
             {
@@ -73,7 +74,7 @@ namespace AppBusiness.Domain
                 notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
                 notificationMessage.Message = model.Message;
                 notificationMessage.Status = NotificationStatus.Unseen;
-                notificationMessage.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                notificationMessage.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 _unitOfWork.NotificationMessages.Insert(notificationMessage);
                 await _unitOfWork.CommitAsync(cancellationToken);
@@ -109,12 +110,13 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Get 
+        ///     Get
         /// </summary>
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<NotificationMessage> MarkNotificationMessageAsSeen(Guid id, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<NotificationMessage> MarkNotificationMessageAsSeen(Guid id,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var notificationMessage = await GetNotificationMessageUsingId(id, cancellationToken);
             if (notificationMessage == null)

@@ -13,19 +13,21 @@ using AppBusiness.Models.Users;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Models;
+using AppShared.Resources;
+using AppShared.ViewModels.Jwt;
+using AppShared.ViewModels.Users;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Jwt;
-using Shared.ViewModels.Users;
+using ServiceShared.Models;
 using SkiaSharp;
 using VgySdk.Interfaces;
 using VgySdk.Models;
+using SortDirection = ClientShared.Enumerations.SortDirection;
 
 namespace AppBusiness.Domain
 {
@@ -33,12 +35,13 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public UserDomain(IEncryptionService encryptionService,
-            IUnitOfWork unitOfWork,
+        public UserDomain(IBaseEncryptionService encryptionService,
+            IAppUnitOfWork unitOfWork,
             IExternalAuthenticationService externalAuthenticationService,
-            IValueCacheService<int, User> profileCacheService,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseKeyValueCacheService<int, User> profileCacheService,
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService,
+            IAppProfileService profileService,
             IVgyService vgyService,
             IOptions<ApplicationSetting> applicationSettingOptions,
             IOptions<AppJwtModel> appJwt)
@@ -46,37 +49,39 @@ namespace AppBusiness.Domain
             _encryptionService = encryptionService;
             _unitOfWork = unitOfWork;
             _externalAuthenticationService = externalAuthenticationService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _applicationSettings = applicationSettingOptions.Value;
             _relationalDbService = relationalDbService;
             _appJwt = appJwt.Value;
             _profileCacheService = profileCacheService;
             _vgyService = vgyService;
+            _profileService = profileService;
         }
 
         #endregion
 
         #region Properties
 
-        private readonly IEncryptionService _encryptionService;
+        private readonly IBaseEncryptionService _encryptionService;
 
-
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly IExternalAuthenticationService _externalAuthenticationService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly ApplicationSetting _applicationSettings;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly AppJwtModel _appJwt;
+
+        private readonly IAppProfileService _profileService;
 
         /// <summary>
         ///     Service which is for handling profile caching.
         /// </summary>
-        private readonly IValueCacheService<int, User> _profileCacheService;
+        private readonly IBaseKeyValueCacheService<int, User> _profileCacheService;
 
         private readonly IVgyService _vgyService;
 
@@ -164,7 +169,7 @@ namespace AppBusiness.Domain
                 user.Nickname = profile.Name;
                 user.Role = UserRole.User;
                 user.Photo = profile.Picture;
-                user.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                user.JoinedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 user.Type = UserKind.Google;
                 user.Status = UserStatus.Available;
 
@@ -220,7 +225,7 @@ namespace AppBusiness.Domain
                 user.Email = profile.Email;
                 user.Nickname = profile.FullName;
                 user.Role = UserRole.User;
-                user.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                user.JoinedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 user.Type = UserKind.Facebook;
                 user.Status = UserStatus.Available;
 
@@ -267,7 +272,7 @@ namespace AppBusiness.Domain
             var activationToken = new ActivationToken();
             activationToken.OwnerId = user.Id;
             activationToken.Code = Guid.NewGuid().ToString("D");
-            activationToken.IssuedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            activationToken.IssuedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
             activationToken.ExpiredTime = activationToken.IssuedTime + 3600;
             _unitOfWork.ActivationTokens.Insert(activationToken);
 
@@ -297,7 +302,7 @@ namespace AppBusiness.Domain
                         condition.Sort.Property);
             else
                 users = _relationalDbService.Sort(users, SortDirection.Decending,
-                    AccountSort.JoinedTime);
+                    UserSort.JoinedTime);
 
             // Result initialization.
             var loadUsersResult = new SearchResult<IList<User>>();
@@ -345,8 +350,8 @@ namespace AppBusiness.Domain
             token.OwnerId = user.Id;
             //token.Type = TokenType.AccountReactiveCode;
             token.Code = Guid.NewGuid().ToString("D");
-            token.IssuedTime = _timeService.DateTimeUtcToUnix(systemTime);
-            token.ExpiredTime = _timeService.DateTimeUtcToUnix(expiration);
+            token.IssuedTime = _baseTimeService.DateTimeUtcToUnix(systemTime);
+            token.ExpiredTime = _baseTimeService.DateTimeUtcToUnix(expiration);
 
             // Save token into database.
             _unitOfWork.AccessTokens.Insert(token);
@@ -518,8 +523,8 @@ namespace AppBusiness.Domain
             var activationToken = new ActivationToken();
             activationToken.Code = Guid.NewGuid().ToString("D");
             activationToken.OwnerId = user.Id;
-            activationToken.IssuedTime = _timeService.DateTimeUtcToUnix(systemTime);
-            activationToken.ExpiredTime = _timeService.DateTimeUtcToUnix(expiration);
+            activationToken.IssuedTime = _baseTimeService.DateTimeUtcToUnix(systemTime);
+            activationToken.ExpiredTime = _baseTimeService.DateTimeUtcToUnix(expiration);
 
             // Add token into database
             _unitOfWork.ActivationTokens.Insert(activationToken);
@@ -553,7 +558,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.AccountIsNotFound, HttpStatusCode.NotFound);
 
             // Find active token.
-            var epochSystemTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            var epochSystemTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
             var activationTokens = _unitOfWork.ActivationTokens.Search(x =>
                 x.ExpiredTime < epochSystemTime && x.OwnerId == user.Id && x.Code.Equals(model.ActivationCode));
 
@@ -578,6 +583,34 @@ namespace AppBusiness.Domain
 
             var submitPasswordResetResult = new SubmitPasswordResetResultModel();
             return submitPasswordResetResult;
+        }
+
+        /// <summary>
+        ///     Add/edit user signature.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<User> AddUserSignatureAsync(AddUserSignatureViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var profile = _profileService.GetProfile();
+            if (profile == null)
+                throw new Exception("No profile is found");
+
+            var userId = model.UserId;
+            if (profile.Role == UserRole.User || model.UserId == null)
+                userId = profile.Id;
+
+            var users = _unitOfWork.Accounts.Search(x => x.Id == userId && x.Status == UserStatus.Available);
+            var user = await users.FirstOrDefaultAsync(cancellationToken);
+
+            if (user == null)
+                throw new ApiException(HttpStatusCode.NotFound, HttpMessages.AccountIsNotFound);
+
+            user.Signature = model.Signature;
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return user;
         }
 
         /// <summary>
@@ -611,7 +644,7 @@ namespace AppBusiness.Domain
             var jwt = new JwtViewModel();
             jwt.AccessToken = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
             jwt.LifeTime = _appJwt.LifeTime;
-            jwt.Expiration = _timeService.DateTimeUtcToUnix(jwtExpiration);
+            jwt.Expiration = _baseTimeService.DateTimeUtcToUnix(jwtExpiration);
 
             //_profileCacheService.Add(user.Id, user, LifeTimeConstant.JwtLifeTime);
             return jwt;

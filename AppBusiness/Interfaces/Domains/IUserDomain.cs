@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Models.Users;
 using AppDb.Models.Entities;
-using Shared.Models;
-using Shared.ViewModels.Jwt;
-using Shared.ViewModels.Users;
+using AppShared.ViewModels.Jwt;
+using AppShared.ViewModels.Users;
+using ClientShared.Models;
 using SkiaSharp;
 
 namespace AppBusiness.Interfaces.Domains
@@ -123,6 +123,14 @@ namespace AppBusiness.Interfaces.Domains
         /// <returns></returns>
         Task<SubmitPasswordResetResultModel> SubmitPasswordResetAsync(SubmitPasswordResetViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Add | edit user signature asynchronously.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<User> AddUserSignatureAsync(AddUserSignatureViewModel model, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     From user information to generate user json web token.

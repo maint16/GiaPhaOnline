@@ -10,11 +10,11 @@ using AuthenticationBusiness.Interfaces;
 using AuthenticationBusiness.Interfaces.Domains;
 using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Entities;
-using AuthenticationModel.Enumerations;
 using AuthenticationModel.Models;
 using AuthenticationShared.Resources;
 using AuthenticationShared.ViewModels.Jwt;
 using AuthenticationShared.ViewModels.User;
+using ClientShared.Enumerations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -25,43 +25,23 @@ namespace AuthenticationBusiness.Domains
 {
     public class UserDomain : IUserDomain
     {
-        #region Properties
-
-        private readonly IEncryptionService _encryptionService;
-
-        private readonly HttpContext _httpContext;
-
-        private readonly IExternalAuthenticationService _externalAuthenticationService;
-
-        private readonly IUnitOfWork _unitOfWork;
-
-        private readonly ITimeService _timeService;
-
-        //private readonly ApplicationSetting _applicationSettings;
-
-        private readonly IRelationalDbService _relationalDbService;
-
-        private readonly AppJwtModel _appJwt;
-
-        #endregion
-
         #region Constructors
 
-        public UserDomain(IEncryptionService encryptionService,
-            IUnitOfWork unitOfWork,
+        public UserDomain(IBaseEncryptionService encryptionService,
+            IAuthenticationUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
             IExternalAuthenticationService externalAuthenticationService,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService,
             IOptions<AppJwtModel> appJwt
             //ApplicationSetting applicationSettings
-            )
+        )
         {
             _encryptionService = encryptionService;
             _unitOfWork = unitOfWork;
             _httpContext = httpContextAccessor.HttpContext;
             _externalAuthenticationService = externalAuthenticationService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             //_applicationSettings = applicationSettings;
             _relationalDbService = relationalDbService;
             _appJwt = appJwt.Value;
@@ -69,24 +49,46 @@ namespace AuthenticationBusiness.Domains
 
         #endregion
 
+        #region Properties
+
+        private readonly IBaseEncryptionService _encryptionService;
+
+        private readonly HttpContext _httpContext;
+
+        private readonly IExternalAuthenticationService _externalAuthenticationService;
+
+        private readonly IAuthenticationUnitOfWork _unitOfWork;
+
+        private readonly IBaseTimeService _baseTimeService;
+
+        //private readonly ApplicationSetting _applicationSettings;
+
+        private readonly IBaseRelationalDbService _relationalDbService;
+
+        private readonly AppJwtModel _appJwt;
+
+        #endregion
+
         #region Methods
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<User> LoginAsync(LoginViewModel model, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<User> LoginAsync(LoginViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             // Hash the password first.
             var hashedPassword = _encryptionService.Md5Hash(model.Password);
 
             // Search for account which is active and information is correct.
-            var users = _unitOfWork.Accounts.Search();
+            var users = _unitOfWork.Users.Search();
             users = users.Where(x =>
                 x.Email.Equals(model.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) && x.Type == UserKind.Basic);
+                x.Password.Equals(hashedPassword, StringComparison.InvariantCultureIgnoreCase) &&
+                x.Type == UserKind.Basic);
 
             // Find the first account in database.
             var user = await users.FirstOrDefaultAsync(cancellationToken);
@@ -119,7 +121,7 @@ namespace AuthenticationBusiness.Domains
                 throw new ApiException(HttpMessages.GoogleCodeIsInvalid, HttpStatusCode.Forbidden);
 
             // Find accounts by searching for email address.
-            var users = _unitOfWork.Accounts.Search();
+            var users = _unitOfWork.Users.Search();
             users = users.Where(x => x.Email.Equals(profile.Email));
 
             // Get the first matched account.
@@ -149,12 +151,12 @@ namespace AuthenticationBusiness.Domains
                 user.Nickname = profile.Name;
                 user.Role = UserRole.User;
                 user.Photo = profile.Picture;
-                user.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                user.JoinedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 user.Type = UserKind.Google;
                 user.Status = UserStatus.Available;
 
                 // Add account to database.
-                _unitOfWork.Accounts.Insert(user);
+                _unitOfWork.Users.Insert(user);
                 await _unitOfWork.CommitAsync(cancellationToken);
             }
             return user;
@@ -181,7 +183,7 @@ namespace AuthenticationBusiness.Domains
 
 
             // Find accounts by searching for email address.
-            var accounts = _unitOfWork.Accounts.Search();
+            var accounts = _unitOfWork.Users.Search();
             accounts = accounts.Where(x => x.Email.Equals(profile.Email));
 
             // Get the first matched account.
@@ -205,11 +207,11 @@ namespace AuthenticationBusiness.Domains
                 account.Email = profile.Email;
                 account.Nickname = profile.FullName;
                 account.Role = UserRole.User;
-                account.JoinedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                account.JoinedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 account.Type = UserKind.Facebook;
 
                 // Add account to database.
-                _unitOfWork.Accounts.Insert(account);
+                _unitOfWork.Users.Insert(account);
                 await _unitOfWork.CommitAsync(cancellationToken);
             }
 
@@ -247,7 +249,7 @@ namespace AuthenticationBusiness.Domains
             var jwt = new JwtViewModel();
             jwt.AccessToken = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
             jwt.LifeTime = _appJwt.LifeTime;
-            jwt.Expiration = _timeService.DateTimeUtcToUnix(jwtExpiration);
+            jwt.Expiration = _baseTimeService.DateTimeUtcToUnix(jwtExpiration);
 
             //_profileCacheService.Add(user.Id, user, LifeTimeConstant.JwtLifeTime);
             return jwt;

@@ -9,8 +9,10 @@ using AppBusiness.Models.Users;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppModel.Models;
+using AppShared.Resources;
+using AppShared.ViewModels.Users;
 using AutoMapper;
-using Main.Authentications.ActionFilters;
+using ClientShared.Enumerations;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -21,12 +23,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
-using Shared.Enumerations;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Users;
 using SkiaSharp;
 using VgySdk.Interfaces;
 
@@ -42,11 +41,11 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
-        /// <param name="timeService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="relationalDbService"></param>
         /// <param name="encryptionService"></param>
-        /// <param name="identityService"></param>
-        /// <param name="systemTimeService"></param>
+        /// <param name="profileService"></param>
+        /// <param name="systemBaseTimeService"></param>
         /// <param name="externalAuthenticationService"></param>
         /// <param name="sendMailService"></param>
         /// <param name="emailCacheService"></param>
@@ -59,13 +58,13 @@ namespace Main.Controllers
         /// <param name="realTimeService"></param>
         /// <param name="userDomain"></param>
         public UserController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
-            IProfileService identityService,
-            ITimeService systemTimeService,
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService,
+            IBaseEncryptionService encryptionService,
+            IAppProfileService profileService,
+            IBaseTimeService systemBaseTimeService,
             IExternalAuthenticationService externalAuthenticationService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
@@ -73,15 +72,15 @@ namespace Main.Controllers
             IOptions<ApplicationSetting> applicationSettings,
             ILogger<UserController> logger,
             IVgyService vgyService,
-            IValueCacheService<int, User> profileCacheService,
+            IBaseKeyValueCacheService<int, User> profileCacheService,
             ICaptchaService captchaService,
             IRealTimeService realTimeService,
             IUserDomain userDomain) : base(
-            unitOfWork, mapper, timeService,
-            relationalDbService, identityService)
+            unitOfWork, mapper, baseTimeService,
+            relationalDbService, profileService)
         {
             _logger = logger;
-            _identityService = identityService;
+            _profileService = profileService;
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _captchaService = captchaService;
@@ -101,7 +100,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("basic-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public virtual async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             #region Request param validation
 
@@ -145,7 +144,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("google-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
+        public virtual async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel info)
         {
             #region Request params validation
 
@@ -177,7 +176,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("facebook-login")]
         [AllowAnonymous]
-        public async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
+        public virtual async Task<IActionResult> FacebookLogin([FromBody] FacebookLoginViewModel info)
         {
             #region Request parameters validation
 
@@ -214,10 +213,10 @@ namespace Main.Controllers
         [HttpGet("personal-profile/{id}")]
         [HttpGet("{id}")]
         [ByPassAuthorization]
-        public async Task<IActionResult> FindProfile([FromRoute] int? id)
+        public virtual async Task<IActionResult> FindProfile([FromRoute] int? id)
         {
             // Get requester identity.
-            var profile = IdentityService.GetProfile();
+            var profile = ProfileService.GetProfile();
 
             var loadUserCondition = new SearchUserViewModel();
             loadUserCondition.Ids = new HashSet<int>();
@@ -247,7 +246,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [Route("basic-register")]
         [AllowAnonymous]
-        public async Task<IActionResult> BasicRegister([FromBody] RegisterAccountViewModel model)
+        public virtual async Task<IActionResult> BasicRegister([FromBody] RegisterAccountViewModel model)
         {
             #region Request parameters validation
 
@@ -322,7 +321,7 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [Route("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        public virtual async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
             #region Request parameters validation
 
@@ -381,7 +380,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("submit-password-reset")]
         [AllowAnonymous]
-        public async Task<IActionResult> SubmitPasswordReset([FromBody] SubmitPasswordResetViewModel model)
+        public virtual async Task<IActionResult> SubmitPasswordReset([FromBody] SubmitPasswordResetViewModel model)
         {
             #region Request parameters validation
 
@@ -397,7 +396,7 @@ namespace Main.Controllers
             #endregion
 
             // Submit password reset.
-            var submitPasswordResetResult = await _userDomain.SubmitPasswordResetAsync(model);
+            await _userDomain.SubmitPasswordResetAsync(model);
 
             #region Send email
 
@@ -419,7 +418,8 @@ namespace Main.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("change-password/{id}")]
-        public async Task<IActionResult> ChangePassword([FromRoute] int id, [FromBody] ChangePasswordViewModel model)
+        public virtual async Task<IActionResult> ChangePassword([FromRoute] int id,
+            [FromBody] ChangePasswordViewModel model)
         {
             #region Request parameters validation
 
@@ -434,7 +434,7 @@ namespace Main.Controllers
 
             #endregion
 
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
             var userId = id < 0 ? profile.Id : id;
             await _userDomain.ChangePasswordAsync(userId, model);
 
@@ -449,11 +449,11 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPut("status/{id}")]
         [Authorize(Policy = PolicyConstant.IsAdminPolicy)]
-        public async Task<IActionResult> ChangeUserStatus([FromRoute] int id,
+        public virtual async Task<IActionResult> ChangeUserStatus([FromRoute] int id,
             [FromBody] ChangeUserStatusViewModel model)
         {
             // Find requester profile.
-            var profile = IdentityService.GetProfile();
+            var profile = ProfileService.GetProfile();
 
             // User id is the same as the requester id. This is not allowed because user cannot change his/her account status.
             if (profile.Id == id)
@@ -492,7 +492,8 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
+        [ByPassAuthorization]
+        public virtual async Task<IActionResult> LoadUsers([FromBody] SearchUserViewModel condition)
         {
             if (condition == null)
             {
@@ -504,7 +505,7 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             // Get request profile.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             if (profile == null || profile.Role != UserRole.Admin)
                 condition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
@@ -520,7 +521,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("upload-avatar")]
         //[Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadAvatar(UploadPhotoViewModel model)
+        public virtual async Task<IActionResult> UploadAvatar(UploadPhotoViewModel model)
         {
             #region Request parameters validation
 
@@ -538,7 +539,7 @@ namespace Main.Controllers
             #region Change user profile photo
 
             // Get requester profile.
-            var profile = IdentityService.GetProfile();
+            var profile = ProfileService.GetProfile();
             if (model.UserId == null)
                 model.UserId = profile.Id;
 
@@ -574,7 +575,7 @@ namespace Main.Controllers
         /// <returns></returns>
         [HttpPost("resend-activation-code")]
         [AllowAnonymous]
-        public async Task<IActionResult> ResendAccountActivationCode(
+        public virtual async Task<IActionResult> ResendAccountActivationCode(
             [FromBody] RequestUserActivationCodeViewModel model)
         {
             #region Request parameters validation
@@ -607,6 +608,27 @@ namespace Main.Controllers
             return Ok();
         }
 
+        /// <summary>
+        ///     Add | edit user signature.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("signature")]
+        public virtual async Task<IActionResult> AddEditUserSignatureAsync([FromBody] AddUserSignatureViewModel model)
+        {
+            if (model == null)
+            {
+                model = new AddUserSignatureViewModel();
+                TryValidateModel(model);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userDomain.AddUserSignatureAsync(model);
+            return Ok(user);
+        }
+
         #endregion
 
         #region Properties
@@ -619,7 +641,7 @@ namespace Main.Controllers
         /// <summary>
         ///     Instance which is for accessing identity attached in request.
         /// </summary>
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         /// <summary>
         ///     Send email service

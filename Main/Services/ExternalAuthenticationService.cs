@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppModel.Models.ExternalAuthentication;
 using Main.Constants;
-using Main.Interfaces.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 

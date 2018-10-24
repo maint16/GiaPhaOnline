@@ -1,8 +1,9 @@
 ﻿using AppDb.Models.Entities;
+using ServiceShared.Services;
 
 namespace Main.Services
 {
-    public class ProfileCacheService : ValueCacheBaseService<int, User>
+    public class ProfileCacheService : BaseKeyValueCacheService<int, User>
     {
     }
 }

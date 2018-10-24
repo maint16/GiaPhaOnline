@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ClientShared.Enumerations;
 using Newtonsoft.Json;
-using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -31,7 +31,7 @@ namespace AppDb.Models.Entities
         ///     Owner of notification
         /// </summary>
         public int OwnerId { get; set; }
-        
+
         /// <summary>
         ///     Status of notification
         /// </summary>
@@ -60,7 +60,8 @@ namespace AppDb.Models.Entities
         {
         }
 
-        public NotificationMessage(int ownerId, NotificationStatus status, double createdTime, string extraInfo, string message)
+        public NotificationMessage(int ownerId, NotificationStatus status, double createdTime, string extraInfo,
+            string message)
         {
             OwnerId = ownerId;
             Status = status;

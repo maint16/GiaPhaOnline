@@ -2,10 +2,10 @@
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
+using AppShared.ViewModels.FollowTopic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
-using Shared.ViewModels.FollowTopic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,12 +27,9 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
-        /// <param name="identityService"></param>
-        /// <param name="timeService"></param>
-        /// <param name="databaseFunction"></param>
+        /// <param name="profileService"></param>
         /// <param name="followTopicDomain"></param>
-        public FollowTopicControler(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction, IFollowTopicDomain followTopicDomain)
+        public FollowTopicControler(IAppUnitOfWork unitOfWork, IMapper mapper, IAppProfileService profileService, IFollowTopicDomain followTopicDomain)
         {
             _followTopicDomain = followTopicDomain;
         }
@@ -46,8 +43,8 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="topicId"></param>
         /// <returns></returns>
-        [HttpPost("")]
-        public async Task<IActionResult> FollowTopic([FromQuery] int topicId)
+        [HttpPost("{topicId}")]
+        public async Task<IActionResult> FollowTopic([FromRoute] int topicId)
         {
             var addFollowTopic = new AddFollowTopicViewModel();
             addFollowTopic.TopicId = topicId;
@@ -61,7 +58,7 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="topicId"></param>
         /// <returns></returns>
-        [HttpDelete("")]
+        [HttpDelete("{topicId}")]
         public async Task<IActionResult> StopFollowingTopic([FromRoute] int topicId)
         {
             var deleteFollowTopicModel = new DeleteFollowTopicViewModel();

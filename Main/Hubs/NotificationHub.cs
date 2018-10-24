@@ -25,15 +25,15 @@ namespace Main.Hubs
         ///     Initialize hub with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
-        /// <param name="identityService"></param>
-        /// <param name="timeService"></param>
+        /// <param name="profileService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="realTimeService"></param>
-        public NotificationHub(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+        public NotificationHub(IAppUnitOfWork unitOfWork, IAppProfileService profileService, IBaseTimeService baseTimeService,
             IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;
-            _identityService = identityService;
-            _timeService = timeService;
+            _profileService = profileService;
+            _baseTimeService = baseTimeService;
             _realTimeService = realTimeService;
         }
 
@@ -44,11 +44,11 @@ namespace Main.Hubs
         /// <summary>
         ///     Unit of work.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IRealTimeService _realTimeService;
 
@@ -72,7 +72,7 @@ namespace Main.Hubs
             #region Save connection id to database
 
             // Get profle
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Check whether connection id has been saved to this user.
             var signalrConnections = _unitOfWork.SignalrConnections.Search();
@@ -82,7 +82,7 @@ namespace Main.Hubs
             {
                 signalrConnection = new SignalrConnection();
                 signalrConnection.ClientId = connectionId;
-                signalrConnection.LastActivityTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                signalrConnection.LastActivityTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
                 signalrConnection.UserId = profile.Id;
                 _unitOfWork.SignalrConnections.Insert(signalrConnection);
             }

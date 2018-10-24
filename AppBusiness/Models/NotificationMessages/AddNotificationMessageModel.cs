@@ -5,10 +5,10 @@
         #region Properties
 
         /// <summary>
-        /// Notification message owner.
+        ///     Notification message owner.
         /// </summary>
         public int OwnerId { get; set; }
-        
+
         public T ExtraInfo { get; set; }
 
         public string Message { get; set; }
@@ -29,6 +29,5 @@
         }
 
         #endregion
-        
     }
 }

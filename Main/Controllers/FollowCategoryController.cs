@@ -2,10 +2,10 @@
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
+using AppShared.ViewModels.FollowCategory;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
-using Shared.ViewModels.FollowCategory;
 
 namespace Main.Controllers
 {
@@ -26,11 +26,12 @@ namespace Main.Controllers
         /// <param name="unitOfWork"></param>
         /// <param name="mapper"></param>
         /// <param name="identityService"></param>
-        /// <param name="timeService"></param>
+        /// <param name="baseTimeService"></param>
         /// <param name="databaseFunction"></param>
         /// <param name="followCategoryDomain"></param>
-        public FollowCategoryController(IUnitOfWork unitOfWork, IMapper mapper, IProfileService identityService,
-            ITimeService timeService, IRelationalDbService databaseFunction, IFollowCategoryDomain followCategoryDomain)
+        public FollowCategoryController(IAppUnitOfWork unitOfWork, IMapper mapper, IAppProfileService identityService,
+            IBaseTimeService baseTimeService, IBaseRelationalDbService databaseFunction,
+            IFollowCategoryDomain followCategoryDomain)
         {
             _followCategoryDomain = followCategoryDomain;
         }
@@ -44,8 +45,8 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        [HttpPost("")]
-        public async Task<IActionResult> FollowCategory([FromQuery] AddFollowCategoryViewModel model)
+        [HttpPost("{categoryId}")]
+        public async Task<IActionResult> FollowCategory([FromRoute] AddFollowCategoryViewModel model)
         {
             var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(model);
             return Ok(followCategory);
@@ -56,7 +57,7 @@ namespace Main.Controllers
         /// </summary>
         /// <param name="categoryId"></param>
         /// <returns></returns>
-        [HttpDelete("")]
+        [HttpDelete("{categoryId}")]
         public async Task<IActionResult> StopFollowingCategory([FromRoute] int categoryId)
         {
             var deleteFollowingCategoryModel = new DeleteFollowCategoryViewModel();

@@ -8,15 +8,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.Reply;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Reply;
 
 namespace AppBusiness.Domain
 {
@@ -24,29 +24,29 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public TopicReplyDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
-            IHttpContextAccessor httpContextAccessor, IProfileService identityService, ITimeService timeService)
+        public TopicReplyDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
+            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService, IBaseTimeService baseTimeService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
             _httpContext = httpContextAccessor.HttpContext;
-            _identityService = identityService;
-            _timeService = timeService;
+            _profileService = profileService;
+            _baseTimeService = baseTimeService;
         }
 
         #endregion
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly HttpContext _httpContext;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         #endregion
 
@@ -71,7 +71,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             using (var transaction = _unitOfWork.BeginTransactionScope())
             {
@@ -94,8 +94,8 @@ namespace AppBusiness.Domain
                     reply.CategoryGroupId = topic.CategoryGroupId;
                     reply.Content = model.Content;
                     reply.Status = ItemStatus.Active;
-                    reply.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                    reply.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    reply.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                    reply.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                     // Insert reply into system.
                     _unitOfWork.Replies.Insert(reply);
@@ -104,7 +104,8 @@ namespace AppBusiness.Domain
 
                     #region Update topic summary
 
-                    var topicSummary = await _unitOfWork.TopicSummaries.Search(x => x.TopicId == reply.TopicId).FirstOrDefaultAsync(cancellationToken);
+                    var topicSummary = await _unitOfWork.TopicSummaries.Search(x => x.TopicId == reply.TopicId)
+                        .FirstOrDefaultAsync(cancellationToken);
                     if (topicSummary == null)
                     {
                         topicSummary = new TopicSummary(reply.TopicId, 0, 1);
@@ -140,7 +141,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all replies in database.
             var replies = _unitOfWork.Replies.Search();
@@ -161,11 +162,11 @@ namespace AppBusiness.Domain
                 reply.Content = model.Content;
                 bHasInformationChanged = true;
             }
-            
+
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 
-            reply.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reply.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -182,7 +183,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find replies by using specific conditions.
             var replies = _unitOfWork.Replies.Search();
@@ -240,7 +241,7 @@ namespace AppBusiness.Domain
             var replies = _unitOfWork.Replies.Search();
 
             // Get profile of requester.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Id have been defined.
             var ids = condition.Ids;

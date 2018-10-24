@@ -4,15 +4,15 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using Main.Authentications.ActionFilters;
+using ClientShared.Enumerations;
 using Main.Authentications.Requirements;
 using Main.Constants;
-using Main.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Shared.Enumerations;
+using ServiceShared.Authentications.ActionFilters;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Authentications.Handlers
 {
@@ -24,16 +24,16 @@ namespace Main.Authentications.Handlers
         ///     Initiate requirement handler with injectors.
         /// </summary>
         /// <param name="unitOfWork"></param>
-        /// <param name="identityService"></param>
+        /// <param name="profileService"></param>
         /// <param name="httpContextAccessor"></param>
         /// <param name="profileCacheService"></param>
         public SolidAccountRequirementHandler(
-            IUnitOfWork unitOfWork,
-            IProfileService identityService, IHttpContextAccessor httpContextAccessor,
-            IValueCacheService<int, User> profileCacheService)
+            IAppUnitOfWork unitOfWork,
+            IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
+            IBaseKeyValueCacheService<int, User> profileCacheService)
         {
             _unitOfWork = unitOfWork;
-            _identityService = identityService;
+            _profileService = profileService;
             _httpContextAccessor = httpContextAccessor;
             _profileCacheService = profileCacheService;
         }
@@ -78,7 +78,7 @@ namespace Main.Authentications.Handlers
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
                 {
-                    _identityService.BypassAuthorizationFilter(context, requirement);
+                    _profileService.BypassAuthorizationFilter(context, requirement);
                     return;
                 }
 
@@ -93,7 +93,7 @@ namespace Main.Authentications.Handlers
             {
                 //ClaimsIdentity(account);
                 // Update claim identity.
-                _identityService.SetProfile(account);
+                _profileService.SetProfile(account);
                 context.Succeed(requirement);
                 return;
             }
@@ -112,7 +112,7 @@ namespace Main.Authentications.Handlers
                 // Method or controller authorization can be by passed.
                 if (authorizationFilterContext.Filters.Any(x => x is ByPassAuthorizationAttribute))
                 {
-                    _identityService.BypassAuthorizationFilter(context, requirement);
+                    _profileService.BypassAuthorizationFilter(context, requirement);
                     return;
                 }
 
@@ -122,7 +122,7 @@ namespace Main.Authentications.Handlers
 
             // Add the newly found account to cache for faster querying.
             _profileCacheService.Add(iId, account, LifeTimeConstant.ProfileCacheLifeTime);
-            _identityService.SetProfile(account);
+            _profileService.SetProfile(account);
             context.Succeed(requirement);
         }
 
@@ -133,12 +133,12 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Provides functions to access to database.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     Provides functions to access service which handles identity businesses.
         /// </summary>
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         /// <summary>
         ///     Context accessor.
@@ -148,7 +148,7 @@ namespace Main.Authentications.Handlers
         /// <summary>
         ///     Service which is for caching user information.
         /// </summary>
-        private readonly IValueCacheService<int, User> _profileCacheService;
+        private readonly IBaseKeyValueCacheService<int, User> _profileCacheService;
 
         #endregion
     }

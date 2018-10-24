@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using Shared.Models;
-using Shared.ViewModels.CategoryGroup;
+using AppShared.ViewModels.CategoryGroup;
+using ClientShared.Models;
 
 namespace AppBusiness.Interfaces.Domains
 {

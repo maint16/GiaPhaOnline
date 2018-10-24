@@ -8,15 +8,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.CategoryGroup;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.CategoryGroup;
 
 namespace AppBusiness.Domain
 {
@@ -24,11 +24,12 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public CategoryGroupDomain(IProfileService identityService, ITimeService timeService,
-            IRelationalDbService relationalDbService, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        public CategoryGroupDomain(IAppProfileService profileService, IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService, IAppUnitOfWork unitOfWork,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _identityService = identityService;
-            _timeService = timeService;
+            _profileService = profileService;
+            _baseTimeService = baseTimeService;
             _relationalDbService = relationalDbService;
             _unitOfWork = unitOfWork;
             _httpContext = httpContextAccessor.HttpContext;
@@ -38,13 +39,13 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         private readonly HttpContext _httpContext;
 
@@ -72,7 +73,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.CategoryGroupCannotConflict, HttpStatusCode.Conflict);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Category group intialization.
             categoryGroup = new CategoryGroup();
@@ -86,8 +87,8 @@ namespace AppBusiness.Domain
             categoryGroup.Name = model.Name;
             categoryGroup.Description = model.Description;
             categoryGroup.Status = ItemStatus.Active;
-            categoryGroup.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            categoryGroup.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert category group into system.
             _unitOfWork.CategoryGroups.Insert(categoryGroup);
@@ -147,7 +148,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 
-            categoryGroup.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            categoryGroup.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
             await _unitOfWork.CommitAsync(cancellationToken);
             return categoryGroup;
         }
@@ -190,7 +191,7 @@ namespace AppBusiness.Domain
             SearchCategoryGroupViewModel condition)
         {
             // Find identity in request.
-            var identity = _identityService.GetProfile();
+            var identity = _profileService.GetProfile();
 
             // Get all category groups
             var categoryGroups = _unitOfWork.CategoryGroups.Search();

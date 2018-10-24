@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.ViewModels.RealTime;
+using ClientShared.Enumerations;
 using Main.Constants.RealTime;
 using Main.Hubs;
 using Main.Interfaces.Services;
@@ -15,8 +17,6 @@ using Main.Models.PushNotification.Notification;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Shared.Enumerations;
-using Shared.ViewModels.RealTime;
 
 namespace Main.Services.RealTime
 {
@@ -29,7 +29,7 @@ namespace Main.Services.RealTime
         /// </summary>
         public RealTimeService(IHubContext<NotificationHub> notificationHubContext,
             ICloudMessagingService fcmService,
-            IUnitOfWork unitOfWork)
+            IAppUnitOfWork unitOfWork)
         {
             _notificationHubContext = notificationHubContext;
             _cloudMessagingService = fcmService;
@@ -53,7 +53,7 @@ namespace Main.Services.RealTime
         /// <summary>
         ///     Unit of work.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         #endregion
 

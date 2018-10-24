@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using Shared.Models;
-using Shared.ViewModels.Reply;
+using AppShared.ViewModels.Reply;
+using ClientShared.Models;
 
 namespace AppBusiness.Interfaces.Domains
 {

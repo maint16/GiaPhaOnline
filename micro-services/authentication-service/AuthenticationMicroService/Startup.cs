@@ -1,10 +1,6 @@
-﻿using AuthenticationBusiness.Interfaces;
-using AuthenticationBusiness.Services;
-using AuthenticationDb.Interfaces;
-using AuthenticationDb.Interfaces.Repositories;
+﻿using AuthenticationDb.Interfaces;
 using AuthenticationDb.Models.Contexts;
 using AuthenticationDb.Models.Entities;
-using AuthenticationDb.Repositories;
 using AuthenticationDb.Services;
 using AuthenticationMicroService.Interfaces.Services;
 using AuthenticationMicroService.Services;
@@ -13,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ServiceShared.Interfaces.Services;
+using ServiceShared.Services;
 
 namespace AuthenticationMicroService
 {
@@ -102,21 +100,20 @@ namespace AuthenticationMicroService
             });
 #else
             sqlConnection = Configuration.GetConnectionString("sqlServerConnectionString");
-            services.AddDbContext<RelationalDbContext>(options => options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(AuthenticationMicroService))));
+            services.AddDbContext<RelationalDbContext>(options =>
+                options.UseSqlServer(sqlConnection, b => b.MigrationsAssembly(nameof(AuthenticationMicroService))));
             services.AddScoped<DbContext, RelationalDbContext>();
 #endif
 
             // Injections configuration.
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IRelationalDbService, RelationalDbService>();
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<IAuthenticationUnitOfWork, AuthenticationUnitOfWork>();
+            services.AddScoped<IBaseRelationalDbService, BaseRelationalDbService>();
 
             // Store user information in cache
-            services.AddSingleton<IValueCacheService<int, User>, ProfileCacheService>();
+            services.AddSingleton<IBaseKeyValueCacheService<int, User>, ProfileCacheService>();
         }
 
         #endregion
-
-
     }
 }

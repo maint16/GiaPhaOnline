@@ -5,18 +5,18 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.CategoryGroup;
 using AutoMapper;
-using Main.Authentications.ActionFilters;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Resources;
-using Shared.ViewModels.CategoryGroup;
 
 namespace Main.Controllers
 {
@@ -26,14 +26,14 @@ namespace Main.Controllers
         #region Constructures
 
         public CategoryGroupController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
-            IProfileService identityService, IRealTimeService realTimeService,
-            ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, timeService,
-            relationalDbService, identityService)
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService,
+            IBaseEncryptionService encryptionService,
+            IAppProfileService profileService, IRealTimeService realTimeService,
+            ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, baseTimeService,
+            relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
             _categoryGroupService = categoryGroupService;

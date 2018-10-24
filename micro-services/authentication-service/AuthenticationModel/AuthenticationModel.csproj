@@ -10,6 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ClientShared\ClientShared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.IdentityModel.Tokens">
       <HintPath>C:\Users\Public.LPP00090147A\.nuget\packages\microsoft.identitymodel.tokens\5.1.0\lib\netstandard1.4\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>

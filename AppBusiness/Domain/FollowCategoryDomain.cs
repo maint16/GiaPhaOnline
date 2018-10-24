@@ -8,15 +8,14 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using Microsoft.AspNetCore.Http;
+using AppShared.Resources;
+using AppShared.ViewModels.FollowCategory;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.FollowCategory;
 
 namespace AppBusiness.Domain
 {
@@ -24,13 +23,13 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public FollowCategoryDomain(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
-            IHttpContextAccessor httpContextAccessor, IRelationalDbService relationalDbService)
+        public FollowCategoryDomain(IAppUnitOfWork unitOfWork, IAppProfileService profileService,
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
-            _identityService = identityService;
-            _timeService = timeService;
-            _httpContext = httpContextAccessor.HttpContext;
+            _profileService = profileService;
+            _baseTimeService = baseTimeService;
             _relationalDbService = relationalDbService;
         }
 
@@ -38,15 +37,13 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly HttpContext _httpContext;
+        private readonly IAppProfileService _profileService;
 
-        private readonly IProfileService _identityService;
+        private readonly IBaseTimeService _baseTimeService;
 
-        private readonly ITimeService _timeService;
-
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         #endregion
 
@@ -77,7 +74,7 @@ namespace AppBusiness.Domain
             #region Check whether user already followed category or not
 
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find follow categories.
             var followCategories = _unitOfWork.FollowingCategories.Search();
@@ -99,7 +96,7 @@ namespace AppBusiness.Domain
                 followCategory.FollowerId = profile.Id;
                 followCategory.CategoryId = model.CategoryId;
                 followCategory.Status = FollowStatus.Following;
-                followCategory.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                followCategory.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
                 _unitOfWork.FollowingCategories.Insert(followCategory);
@@ -120,10 +117,11 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find categories by using specific conditions.
             var followCategories = _unitOfWork.FollowingCategories.Search();
+            
             followCategories =
                 followCategories.Where(x => x.CategoryId == model.CategoryId && x.FollowerId == profile.Id);
 
@@ -188,7 +186,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<FollowCategory> GetFollowingCategories(SearchFollowCategoryViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Search for posts.
             var followCategories = _unitOfWork.FollowingCategories.Search();
@@ -228,6 +226,7 @@ namespace AppBusiness.Domain
             {
                 // Normal users can his/her followed categories.
                 followCategories = followCategories.Where(x => x.FollowerId == profile.Id);
+                followCategories = followCategories.Where(x => x.Status == FollowStatus.Following);
             }
 
             // Created time has been defined.

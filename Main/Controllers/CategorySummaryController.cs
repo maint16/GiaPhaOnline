@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using AppBusiness.Interfaces.Domains;
+using AppShared.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
-using Shared.ViewModels.Category;
+using ServiceShared.Authentications.ActionFilters;
 
 namespace Main.Controllers
 {
@@ -26,12 +27,14 @@ namespace Main.Controllers
         #region Methods
 
         /// <summary>
-        /// Get category summaries using specific conditions.
+        ///     Get category summaries using specific conditions.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
-        public virtual async Task<IActionResult> SearchCategorySummaries([FromBody] SearchCategorySummaryViewModel condition)
+        [ByPassAuthorization]
+        public virtual async Task<IActionResult> SearchCategorySummaries(
+            [FromBody] SearchCategorySummaryViewModel condition)
         {
             if (condition == null)
             {
@@ -45,8 +48,6 @@ namespace Main.Controllers
             var loadCategorySummariesResult = await _categoryDomain.SearchCategorySummariesAsync(condition);
             return Ok(loadCategorySummariesResult);
         }
-
-
 
         #endregion
     }

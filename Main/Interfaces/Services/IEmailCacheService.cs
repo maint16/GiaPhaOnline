@@ -1,9 +1,9 @@
-﻿using AppBusiness.Interfaces;
-using Main.Models;
+﻿using Main.Models;
+using ServiceShared.Interfaces.Services;
 
 namespace Main.Interfaces.Services
 {
-    public interface IEmailCacheService : IValueCacheService<string, EmailCacheOption>
+    public interface IEmailCacheService : IBaseKeyValueCacheService<string, EmailCacheOption>
     {
     }
 }

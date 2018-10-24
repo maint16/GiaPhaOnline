@@ -2,11 +2,11 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AppDb.Models.Entities;
-using Main.Authentications.ActionFilters;
 using Main.Authentications.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
+using ServiceShared.Authentications.ActionFilters;
 
 namespace Main.Authentications.Handlers
 {

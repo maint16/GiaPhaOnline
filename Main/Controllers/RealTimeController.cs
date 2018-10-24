@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using Main.Authentications.ActionFilters;
+using AppShared.Resources;
+using AppShared.ViewModels.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
 using Main.Models.PushNotification;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
-using Shared.Resources;
-using Shared.ViewModels.RealTime;
 
 namespace Main.Controllers
 {
@@ -23,12 +23,12 @@ namespace Main.Controllers
     {
         #region Constructor
 
-        public RealTimeController(IUnitOfWork unitOfWork, IProfileService identityService, ITimeService timeService,
+        public RealTimeController(IAppUnitOfWork unitOfWork, IAppProfileService identityService, IBaseTimeService baseTimeService,
             IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;
             _identityService = identityService;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _realTimeService = realTimeService;
             _cloudMessagingService = cloudMessagingService;
         }
@@ -40,14 +40,14 @@ namespace Main.Controllers
         /// <summary>
         ///     Instance to manage database connection.
         /// </summary>
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
         ///     Instance to manage identity
         /// </summary>
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _identityService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly IRealTimeService _realTimeService;
 
@@ -102,7 +102,7 @@ namespace Main.Controllers
             var userDeviceToken = new UserDeviceToken();
             userDeviceToken.DeviceId = model.DeviceId;
             userDeviceToken.UserId = profile.Id;
-            userDeviceToken.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            userDeviceToken.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             _unitOfWork.UserDeviceTokens.Insert(userDeviceToken);
             await _unitOfWork.CommitAsync();

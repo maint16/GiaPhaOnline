@@ -8,15 +8,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.Topic;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Topic;
 
 namespace AppBusiness.Domain
 {
@@ -24,13 +24,13 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public TopicDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
-            IProfileService identityService, ITimeService timeService, IHttpContextAccessor httpContextAccessor)
+        public TopicDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
+            IAppProfileService profileService, IBaseTimeService baseTimeService, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
-            _identityService = identityService;
-            _timeService = timeService;
+            _profileService = profileService;
+            _baseTimeService = baseTimeService;
             _httpContextAccessor = httpContextAccessor;
             _httpContext = httpContextAccessor.HttpContext;
         }
@@ -39,15 +39,15 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly HttpContext _httpContext;
 
@@ -78,53 +78,32 @@ namespace AppBusiness.Domain
             #endregion
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
-            using (var transaction = _unitOfWork.BeginTransactionScope())
-            {
+            #region Add topic
 
-                try
-                {
-                    #region Add topic
-
-                    // Topic intialization.
-                    var topic = new Topic();
+            // Topic intialization.
+            var topic = new Topic();
 
 #if USE_IN_MEMORY
             topic.Id = await _unitOfWork.Topics.Search().OrderByDescending(x => x.Id).Select(x => x.Id)
                            .FirstOrDefaultAsync(cancellationToken) + 1;
 #endif
-                    topic.OwnerId = profile.Id;
-                    topic.CategoryId = category.Id;
-                    topic.CategoryGroupId = category.CategoryGroupId;
-                    topic.Title = model.Title;
-                    topic.Body = model.Body;
-                    topic.Status = ItemStatus.Active;
-                    topic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-                    topic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            topic.OwnerId = profile.Id;
+            topic.CategoryId = category.Id;
+            topic.CategoryGroupId = category.CategoryGroupId;
+            topic.Title = model.Title;
+            topic.Body = model.Body;
+            topic.Status = ItemStatus.Active;
+            topic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            topic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
-                    // Insert topic into system.
-                    _unitOfWork.Topics.Insert(topic);
+            // Insert topic into system.
+            _unitOfWork.Topics.Insert(topic);
+            await _unitOfWork.CommitAsync(cancellationToken);
+            return topic;
 
-                    #endregion
-
-                    #region Add topic summary
-
-                    var topicSummary = new TopicSummary(topic.Id, 0, 0);
-                    _unitOfWork.TopicSummaries.Insert(topicSummary);
-
-                    #endregion
-                    
-                    await _unitOfWork.CommitAsync(cancellationToken);
-                    transaction.Commit();
-                    return topic;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
+            #endregion
         }
 
         /// <summary>
@@ -138,7 +117,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all topics in database.
             var topics = _unitOfWork.Topics.Search();
@@ -170,7 +149,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 return topic;
 
-            topic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            topic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -187,7 +166,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find topics by using specific conditions.
             var topics = _unitOfWork.Topics.Search();
@@ -250,17 +229,19 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<SearchResult<IList<TopicSummary>>> SearchTopicSummaries(SearchTopicSummaryViewModel condition, CancellationToken cancellationToken)
+        public async Task<SearchResult<IList<TopicSummary>>> SearchTopicSummaries(SearchTopicSummaryViewModel condition,
+            CancellationToken cancellationToken)
         {
             var topicSummaries = GetTopicSummaries(condition);
             var loadTopicSummariesResult = new SearchResult<IList<TopicSummary>>();
             loadTopicSummariesResult.Total = await topicSummaries.CountAsync(cancellationToken);
-            loadTopicSummariesResult.Records = await _relationalDbService.Paginate(topicSummaries, condition.Pagination).ToListAsync(cancellationToken);
+            loadTopicSummariesResult.Records = await _relationalDbService.Paginate(topicSummaries, condition.Pagination)
+                .ToListAsync(cancellationToken);
             return loadTopicSummariesResult;
         }
 
@@ -311,24 +292,29 @@ namespace AppBusiness.Domain
             }
 
             // Search conditions which are based on roles.
-            var profile = _identityService.GetProfile();
-            if (profile != null && profile.Role == UserRole.Admin)
+            var profile = _profileService.GetProfile();
+            if (profile != null)
             {
-                var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();
-                if (statuses != null && statuses.Count > 0)
-                    topics = topics.Where(x => condition.Statuses.Contains(x.Status));
+                if (profile.Role == UserRole.Admin)
+                {
+                    var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();
+                    if (statuses != null && statuses.Count > 0)
+                        topics = topics.Where(x => condition.Statuses.Contains(x.Status));
+                }
+                else
+                    topics = topics.Where(x => x.Status == ItemStatus.Active || (x.Status == ItemStatus.Disabled && x.OwnerId == profile.Id));
             }
             else
             {
                 topics = topics.Where(x =>
-                    x.Status == ItemStatus.Active || x.Status == ItemStatus.Disabled && x.OwnerId == profile.Id);
+                    x.Status == ItemStatus.Active);
             }
 
             return topics;
         }
 
         /// <summary>
-        /// Get topic summaries using specific condition.
+        ///     Get topic summaries using specific condition.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>

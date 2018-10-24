@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using ClientShared.Enumerations;
 using Newtonsoft.Json;
-using Shared.Enumerations;
 
 namespace AppDb.Models.Entities
 {
@@ -93,10 +93,7 @@ namespace AppDb.Models.Entities
         /// </summary>
         [JsonIgnore]
         public ICollection<ReportTopic> ReportTopics { get; set; }
-
-        [JsonIgnore]
-        public virtual CategorySummary CategorySummary { get; set; }
-
+        
         [JsonIgnore]
         public virtual TopicSummary TopicSummary { get; set; }
 

@@ -83,7 +83,7 @@ namespace AppDb.Models.Contexts
         public virtual DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
         /// <summary>
-        /// Category summaries.
+        ///     Category summaries.
         /// </summary>
         public virtual DbSet<CategorySummary> CategorySummaries { get; set; }
 
@@ -411,23 +411,17 @@ namespace AppDb.Models.Contexts
         }
 
         /// <summary>
-        /// Add category summary table.
+        ///     Add category summary table.
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected virtual void AddCategorySummaryTable(ModelBuilder modelBuilder)
         {
             var categorySummary = modelBuilder.Entity<CategorySummary>();
             categorySummary.HasKey(x => x.CategoryId);
-
-            categorySummary.HasOne(x => x.Category).WithOne(x => x.CategorySummary)
-                .HasForeignKey<CategorySummary>(x => x.CategoryId);
-
-            categorySummary.HasOne(x => x.LastTopic).WithOne(x => x.CategorySummary)
-                .HasForeignKey<CategorySummary>(x => x.LastTopicId);
         }
 
         /// <summary>
-        /// Add topic summary table.
+        ///     Add topic summary table.
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected virtual void AddTopicSummaryTable(ModelBuilder modelBuilder)

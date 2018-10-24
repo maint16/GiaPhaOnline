@@ -4,7 +4,7 @@ using ServiceShared.Interfaces.Services;
 
 namespace ServiceShared.Services
 {
-    public class EncryptionService : IEncryptionService
+    public class EncryptionService : IBaseEncryptionService
     {
         /// <summary>
         /// </summary>

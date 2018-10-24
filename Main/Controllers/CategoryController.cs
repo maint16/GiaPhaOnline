@@ -7,7 +7,11 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.Category;
 using AutoMapper;
+using ClientShared.Enumerations;
+using ClientShared.Models;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services.RealTime;
@@ -18,12 +22,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
-using Shared.Enumerations;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Category;
 using SkiaSharp;
 
 namespace Main.Controllers
@@ -34,15 +35,15 @@ namespace Main.Controllers
         #region Constructors
 
         public CategoryController(
-            IUnitOfWork unitOfWork,
+            IAppUnitOfWork unitOfWork,
             IMapper mapper,
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
-            IProfileService identityService,
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService,
+            IBaseEncryptionService encryptionService,
+            IAppProfileService profileService,
             IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) :
-            base(unitOfWork, mapper, timeService,
-                relationalDbService, identityService)
+            base(unitOfWork, mapper, baseTimeService,
+                relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
             _categoryDomain = categoryDomain;
@@ -200,6 +201,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> LoadCategories([FromBody] SearchCategoryViewModel condition)
         {
             #region Parameters validation
@@ -225,6 +227,7 @@ namespace Main.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
+        [ByPassAuthorization]
         public virtual async Task<IActionResult> LoadCategoryUsingId([FromRoute] int id)
         {
             var loadCategoryCondition = new SearchCategoryViewModel();

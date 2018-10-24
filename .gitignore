@@ -59,3 +59,7 @@
 /micro-services/authentication-service/AuthenticationBusiness/bin
 /ServiceShared/obj
 /ServiceShared/bin
+/AppShared/obj
+/AppShared/bin
+/ClientShared/obj
+/ClientShared/bin

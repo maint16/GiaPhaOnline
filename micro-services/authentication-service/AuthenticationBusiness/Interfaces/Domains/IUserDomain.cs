@@ -11,7 +11,7 @@ namespace AuthenticationBusiness.Interfaces.Domains
         #region Methods
 
         /// <summary>
-        /// Find user login information in system.
+        ///     Find user login information in system.
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>

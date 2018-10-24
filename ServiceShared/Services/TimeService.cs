@@ -3,7 +3,7 @@ using ServiceShared.Interfaces.Services;
 
 namespace ServiceShared.Services
 {
-    public class TimeService : ITimeService
+    public class BaseTimeService : IBaseTimeService
     {
         /// <summary>
         ///     Calculate the unix time from UTC DateTime.
@@ -29,7 +29,7 @@ namespace ServiceShared.Services
 
         private readonly DateTime _utcDateTime;
 
-        public TimeService()
+        public BaseTimeService()
         {
             _utcDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }

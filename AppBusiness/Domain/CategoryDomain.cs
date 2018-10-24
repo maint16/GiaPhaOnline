@@ -9,15 +9,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.Category;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Category;
 using SkiaSharp;
 using VgySdk.Interfaces;
 using VgySdk.Models;
@@ -28,13 +28,14 @@ namespace AppBusiness.Domain
     {
         #region Constructor
 
-        public CategoryDomain(IUnitOfWork unitOfWork, IRelationalDbService relationalDbService,
-            ITimeService timeService, IProfileService identityService, IHttpContextAccessor httpContextAccessor, IVgyService vgyService)
+        public CategoryDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
+            IBaseTimeService baseTimeService, IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
+            IVgyService vgyService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
-            _timeService = timeService;
-            _identityService = identityService;
+            _baseTimeService = baseTimeService;
+            _profileService = profileService;
             _httpContext = httpContextAccessor.HttpContext;
             _vgyService = vgyService;
         }
@@ -63,7 +64,7 @@ namespace AppBusiness.Domain
 
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             #region Add category
 
@@ -78,8 +79,8 @@ namespace AppBusiness.Domain
             category.Name = model.Name;
             category.Description = model.Description;
             category.Status = ItemStatus.Active;
-            category.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            category.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            category.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert category into system.
             _unitOfWork.Categories.Insert(category);
@@ -102,7 +103,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all category in database.
             var categories = _unitOfWork.Categories.Search();
@@ -133,7 +134,7 @@ namespace AppBusiness.Domain
 
             if (bHasInformationChanged)
             {
-                category.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                category.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Commit changes to database.
                 await _unitOfWork.CommitAsync(cancellationToken);
@@ -152,7 +153,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find categories by using specific conditions.
             var categories = _unitOfWork.Categories.Search();
@@ -209,19 +210,20 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadCategoryCondition = new SearchCategoryViewModel();
-            loadCategoryCondition.Ids = new HashSet<int> { id };
+            loadCategoryCondition.Ids = new HashSet<int> {id};
             loadCategoryCondition.Pagination = new Pagination(1, 1);
 
             return await GetCategories(loadCategoryCondition).FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(SearchCategorySummaryViewModel condition,
+        public virtual async Task<SearchResult<IList<CategorySummary>>> SearchCategorySummariesAsync(
+            SearchCategorySummaryViewModel condition,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var categorySummaries = GetCategorySummaries(condition);
@@ -235,7 +237,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <param name="categoryId"></param>
         /// <param name="photo"></param>
@@ -278,7 +280,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Summarize category information asynchronously.
+        ///     Summarize category information asynchronously.
         /// </summary>
         /// <returns></returns>
         public Task SummarizeCategory()
@@ -294,7 +296,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<Category> GetCategories(SearchCategoryViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             #region Search for information
 
@@ -370,7 +372,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// Get category summaries using specific condition.
+        ///     Get category summaries using specific condition.
         /// </summary>
         /// <param name="condition"></param>
         /// <returns></returns>
@@ -394,13 +396,13 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         private readonly HttpContext _httpContext;
 

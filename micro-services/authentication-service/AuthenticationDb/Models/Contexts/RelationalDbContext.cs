@@ -56,7 +56,7 @@ namespace AuthenticationDb.Models.Contexts
         #region Tables initialization
 
         /// <summary>
-        /// Initialize account table.
+        ///     Initialize account table.
         /// </summary>
         /// <param name="modelBuilder"></param>
         private void AddUserTable(ModelBuilder modelBuilder)
@@ -72,6 +72,5 @@ namespace AuthenticationDb.Models.Contexts
         }
 
         #endregion
-
     }
 }

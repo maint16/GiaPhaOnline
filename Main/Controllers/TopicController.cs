@@ -8,7 +8,10 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.Topic;
 using AutoMapper;
+using ClientShared.Enumerations;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
@@ -18,12 +21,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
-using Shared.Enumerations;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.Topic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -35,15 +35,16 @@ namespace Main.Controllers
         #region Constructors
 
         public TopicController(
-            ITimeService timeService,
-            IRelationalDbService relationalDbService,
-            IEncryptionService encryptionService,
-            IProfileService identityService,
+            IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService,
+            IBaseEncryptionService encryptionService,
+            IAppProfileService identityService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
             IRealTimeService realTimeService,
             ILogger<TopicController> logger,
-            ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper, IUnitOfWork unitOfWork)
+            ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper,
+            IAppUnitOfWork unitOfWork)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
@@ -52,6 +53,7 @@ namespace Main.Controllers
             _realTimeService = realTimeService;
             _notificationMessageDomain = notificationMessageDomain;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         #endregion
@@ -77,10 +79,10 @@ namespace Main.Controllers
 
         private readonly ITopicDomain _topicDomain;
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
         /// <summary>
-        /// Real time service
+        ///     Real time service
         /// </summary>
         private readonly IRealTimeService _realTimeService;
 
@@ -158,7 +160,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -203,7 +205,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -217,7 +219,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.DeleteTopic, topic,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.DeleteTopic, topic,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -228,7 +230,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = topic;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 
@@ -244,6 +246,7 @@ namespace Main.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpPost("search")]
+        [ByPassAuthorization]
         public async Task<IActionResult> LoadTopics([FromBody] SearchTopicViewModel condition)
         {
             #region Parameters validation

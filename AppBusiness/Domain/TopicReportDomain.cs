@@ -8,15 +8,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.ReportTopic;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.ReportTopic;
 
 namespace AppBusiness.Domain
 {
@@ -24,14 +24,14 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public TopicReportDomain(IUnitOfWork unitOfWork, ITimeService timeService,
-            IHttpContextAccessor httpContextAccessor, IProfileService identityService,
-            IRelationalDbService relationalDbService)
+        public TopicReportDomain(IAppUnitOfWork unitOfWork, IBaseTimeService baseTimeService,
+            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService,
+            IBaseRelationalDbService relationalDbService)
         {
             _unitOfWork = unitOfWork;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _httpContext = httpContextAccessor.HttpContext;
-            _identityService = identityService;
+            _profileService = profileService;
             _relationalDbService = relationalDbService;
         }
 
@@ -39,15 +39,15 @@ namespace AppBusiness.Domain
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
         private readonly HttpContext _httpContext;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         #endregion
 
@@ -73,7 +73,7 @@ namespace AppBusiness.Domain
                 throw new ApiException(HttpMessages.TopicNotFound, HttpStatusCode.NotFound);
 
             // Find identity from request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Report topic intialization.
             var reportTopic = new ReportTopic();
@@ -82,8 +82,8 @@ namespace AppBusiness.Domain
             reportTopic.ReporterId = profile.Id;
             reportTopic.Reason = model.Reason;
             reportTopic.Status = ItemStatus.Active;
-            reportTopic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            reportTopic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reportTopic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reportTopic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Insert report topic into system.
             _unitOfWork.ReportTopics.Insert(reportTopic);
@@ -104,7 +104,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Get all report topic in database.
             var reportTopics = _unitOfWork.ReportTopics.Search();
@@ -135,7 +135,7 @@ namespace AppBusiness.Domain
             if (!bHasInformationChanged)
                 throw new NotModifiedException();
 
-            reportTopic.LastModifiedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+            reportTopic.LastModifiedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
             // Commit changes to database.
             await _unitOfWork.CommitAsync(cancellationToken);
@@ -180,7 +180,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<ReportTopic> GetTopicReports(SearchReportTopicViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Whether user is admin or not.
             var bIsUserAdmin = profile != null && profile.Role == UserRole.Admin;

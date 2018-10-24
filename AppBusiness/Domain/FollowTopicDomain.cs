@@ -8,15 +8,15 @@ using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppShared.Resources;
+using AppShared.ViewModels.FollowTopic;
+using ClientShared.Enumerations;
+using ClientShared.Enumerations.Order;
+using ClientShared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
-using Shared.Enumerations;
-using Shared.Enumerations.Order;
-using Shared.Models;
-using Shared.Resources;
-using Shared.ViewModels.FollowTopic;
 
 namespace AppBusiness.Domain
 {
@@ -24,30 +24,30 @@ namespace AppBusiness.Domain
     {
         #region Constructors
 
-        public FollowTopicDomain(IUnitOfWork unitOfWork, ITimeService timeService,
-            IRelationalDbService relationalDbService, IHttpContextAccessor httpContextAccessor,
-            IProfileService identityService)
+        public FollowTopicDomain(IAppUnitOfWork unitOfWork, IBaseTimeService baseTimeService,
+            IBaseRelationalDbService relationalDbService, IHttpContextAccessor httpContextAccessor,
+            IAppProfileService profileService)
         {
             _unitOfWork = unitOfWork;
-            _timeService = timeService;
+            _baseTimeService = baseTimeService;
             _relationalDbService = relationalDbService;
             _httpContext = httpContextAccessor.HttpContext;
-            _identityService = identityService;
+            _profileService = profileService;
         }
 
         #endregion
 
         #region Properties
 
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        private readonly ITimeService _timeService;
+        private readonly IBaseTimeService _baseTimeService;
 
-        private readonly IRelationalDbService _relationalDbService;
+        private readonly IBaseRelationalDbService _relationalDbService;
 
         private readonly HttpContext _httpContext;
 
-        private readonly IProfileService _identityService;
+        private readonly IAppProfileService _profileService;
 
         #endregion
 
@@ -63,7 +63,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Get profile.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find topics.
             var topics = _unitOfWork.Topics.Search();
@@ -91,7 +91,7 @@ namespace AppBusiness.Domain
                 followTopic.FollowerId = profile.Id;
                 followTopic.TopicId = model.TopicId;
                 followTopic.Status = FollowStatus.Following;
-                followTopic.CreatedTime = _timeService.DateTimeUtcToUnix(DateTime.UtcNow);
+                followTopic.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 // Insert to system.
                 _unitOfWork.FollowingTopics.Insert(followTopic);
@@ -112,7 +112,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // Find request identity.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Find topics by using specific conditions.
             var followTopics = _unitOfWork.FollowingTopics.Search();
@@ -167,7 +167,7 @@ namespace AppBusiness.Domain
         protected virtual IQueryable<FollowTopic> GetFollowTopics(SearchFollowTopicViewModel condition)
         {
             // Find identity in request.
-            var profile = _identityService.GetProfile();
+            var profile = _profileService.GetProfile();
 
             // Search for follow topics.
             var followTopics = _unitOfWork.FollowingTopics.Search();
@@ -207,6 +207,7 @@ namespace AppBusiness.Domain
             {
                 // Normal users can his/her followed categories.
                 followTopics = followTopics.Where(x => x.FollowerId == profile.Id);
+                followTopics = followTopics.Where(x => x.Status == FollowStatus.Following);
             }
 
             // Created time has been defined.

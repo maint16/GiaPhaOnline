@@ -5,7 +5,7 @@ namespace AppDb.Models.Entities
     public class CategorySummary
     {
         #region Properties
-        
+
         public int CategoryId { get; set; }
 
         public int TotalPost { get; set; }
@@ -15,7 +15,7 @@ namespace AppDb.Models.Entities
         public int LastTopicId { get; set; }
 
         public string LastTopicTitle { get; set; }
-        
+
         public double LastTopicCreatedTime { get; set; }
 
         #endregion
@@ -24,10 +24,7 @@ namespace AppDb.Models.Entities
 
         [JsonIgnore]
         public virtual Category Category { get; set; }
-
-        [JsonIgnore]
-        public virtual Topic LastTopic { get; set; }
-
+        
         #endregion
 
         #region Constructors
@@ -43,7 +40,8 @@ namespace AppDb.Models.Entities
             TotalFollower = totalFollower;
         }
 
-        public CategorySummary(int categoryId, int totalPost, int totalFollower, int lastTopicId, string lastTopicTitle, double lastTopicCreatedTime): this(categoryId, totalPost, totalFollower)
+        public CategorySummary(int categoryId, int totalPost, int totalFollower, int lastTopicId, string lastTopicTitle,
+            double lastTopicCreatedTime) : this(categoryId, totalPost, totalFollower)
         {
             CategoryId = categoryId;
             TotalPost = totalPost;
@@ -54,6 +52,5 @@ namespace AppDb.Models.Entities
         }
 
         #endregion
-
     }
 }

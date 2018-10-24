@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using AuthenticationDb.Interfaces.Repositories;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using ServiceShared.Interfaces.Services;
 
 namespace AuthenticationDb.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         #region Properties
 
@@ -22,7 +26,7 @@ namespace AuthenticationDb.Repositories
         ///     Initiate repository with database context wrapper.
         /// </summary>
         /// <param name="dbContext"></param>
-        public Repository(DbContext dbContext)
+        public BaseRepository(DbContext dbContext)
         {
             _dbSet = dbContext.Set<T>();
         }
@@ -38,6 +42,28 @@ namespace AuthenticationDb.Repositories
         public IQueryable<T> Search()
         {
             return _dbSet;
+        }
+
+        /// <summary>
+        ///     Search data with specific conditions.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public IQueryable<T> Search(Expression<Func<T, bool>> condition)
+        {
+            return _dbSet.Where(condition);
+        }
+
+        /// <summary>
+        ///     Get the first or default value.
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> condition,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return _dbSet.FirstOrDefaultAsync(condition, cancellationToken);
         }
 
         /// <summary>
