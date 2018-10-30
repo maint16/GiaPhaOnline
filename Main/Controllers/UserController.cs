@@ -31,7 +31,7 @@ using VgySdk.Interfaces;
 
 namespace Main.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class UserController : ApiBaseController
     {
         #region Constructors

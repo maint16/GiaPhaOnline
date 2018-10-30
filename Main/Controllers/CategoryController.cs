@@ -29,7 +29,7 @@ using SkiaSharp;
 
 namespace Main.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/category")]
     public class CategoryController : ApiBaseController
     {
         #region Constructors

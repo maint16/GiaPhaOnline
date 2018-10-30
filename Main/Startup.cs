@@ -46,6 +46,10 @@ using ServiceShared.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NJsonSchema;
+using NSwag;
+using NSwag.AspNetCore;
+using NSwag.SwaggerGeneration.Processors.Security;
 using VgySdk.Interfaces;
 using VgySdk.Service;
 
@@ -177,6 +181,9 @@ namespace Main
 
             services.AddHttpClient();
 
+            // Add swagger.
+            services.AddSwagger();
+
             #region Signalr builder
 
             // Add signalr service.
@@ -254,9 +261,27 @@ namespace Main
             // Enable cors.
             app.UseCors("AllowAll");
 
+            app.UseSwaggerUi3WithApiExplorer(settings =>
+            {
+                settings.GeneratorSettings.DefaultPropertyNameHandling =
+                    PropertyNameHandling.CamelCase;
+                
+
+                settings.GeneratorSettings.OperationProcessors.Add(new OperationSecurityScopeProcessor("API Key"));
+
+                settings.GeneratorSettings.DocumentProcessors.Add(new SecurityDefinitionAppender("API Key",
+                    new SwaggerSecurityScheme
+                    {
+                        Type = SwaggerSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        Description = "Copy 'Bearer ' + valid JWT token into field",
+                        In = SwaggerSecurityApiKeyLocation.Header
+                    }));
+            });
+
             // Use signalr connection.
             app.UseSignalR(x => { x.MapHub<NotificationHub>("/hub/notification"); });
-
+            
             // Enable MVC features.
             app.UseMvc();
         }
