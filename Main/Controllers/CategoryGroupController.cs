@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
 using AppShared.Resources;
@@ -32,11 +33,14 @@ namespace Main.Controllers
             IBaseRelationalDbService relationalDbService,
             IBaseEncryptionService encryptionService,
             IAppProfileService profileService, IRealTimeService realTimeService,
-            ICategoryGroupDomain categoryGroupService) : base(unitOfWork, mapper, baseTimeService,
+            ICategoryGroupDomain categoryGroupService,
+            INotificationMessageDomain notificationMessageDomain) : base(unitOfWork, mapper, baseTimeService,
             relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
             _categoryGroupService = categoryGroupService;
+            _mapper = mapper;
+            _notificationMessageDomain = notificationMessageDomain;
         }
 
         #endregion
@@ -46,6 +50,13 @@ namespace Main.Controllers
         private readonly IRealTimeService _realTimeService;
 
         private readonly ICategoryGroupDomain _categoryGroupService;
+
+        private readonly IMapper _mapper;
+
+        /// <summary>
+        /// Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
 
         #endregion
 
@@ -96,6 +107,15 @@ namespace Main.Controllers
 
             #endregion
 
+            #region Notification
+
+            var clonedCategoryGroup = _mapper.Map<CategoryGroup>(categoryGroup);
+
+            await _notificationMessageDomain.AddNotificationMessageAsync(
+                new AddNotificationMessageModel<CategoryGroup>(clonedCategoryGroup.CreatorId, clonedCategoryGroup,
+                    NotificationMessages.SomeoneCreatedCategoryGroup));
+
+            #endregion
 
             return Ok(categoryGroup);
         }

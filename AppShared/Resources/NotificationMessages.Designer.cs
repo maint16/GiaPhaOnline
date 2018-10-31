@@ -68,5 +68,14 @@ namespace AppShared.Resources {
                 return ResourceManager.GetString("SomeoneCommentedTopic", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_CREATED_CATEGORY_GROUP.
+        /// </summary>
+        public static string SomeoneCreatedCategoryGroup {
+            get {
+                return ResourceManager.GetString("SomeoneCreatedCategoryGroup", resourceCulture);
+            }
+        }
     }
 }
