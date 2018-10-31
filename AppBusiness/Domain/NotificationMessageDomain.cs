@@ -9,6 +9,7 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppModel.Enumerations;
 using AppShared.Resources;
 using AppShared.ViewModels.NotificationMessage;
 using ClientShared.Enumerations;
@@ -85,6 +86,61 @@ namespace AppBusiness.Domain
             {
                 if (bIsExpressionSupressed)
                     return null;
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// <inheritdoc />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="userGroup"></param>
+        /// <param name="model"></param>
+        /// <param name="bIsExceptionSuppressed"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task AddNotificationMessageToUserGroup<T>(UserGroup userGroup, AddUserGroupNotificationMessageModel<T> model,
+            bool bIsExceptionSuppressed = false, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            try
+            {
+                // Base on the user group, search for user.
+                var users = _unitOfWork.Accounts.Search(x => x.Status == UserStatus.Available);
+                switch (userGroup)
+                {
+                    case UserGroup.Admin:
+                        users = users.Where(x => x.Role == UserRole.Admin);
+                        break;
+                }
+
+                var ignoredUserIds = model.IgnoredUserIds;
+                if (model.IgnoredUserIds != null)
+                {
+                    ignoredUserIds = ignoredUserIds.Where(x => x > 0).ToHashSet();
+                    if (ignoredUserIds.Count > 0)
+                        users = users.Where(x => !ignoredUserIds.Contains(x.Id));
+                }
+
+                foreach (var user in users)
+                {
+                    var notificationMessage = new NotificationMessage();
+                    notificationMessage.OwnerId = user.Id;
+                    notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
+                    notificationMessage.Message = model.Message;
+                    notificationMessage.Status = NotificationStatus.Unseen;
+                    notificationMessage.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+
+                    _unitOfWork.NotificationMessages.Insert(notificationMessage);
+                }
+                
+                
+                await _unitOfWork.CommitAsync(cancellationToken);
+            }
+            catch
+            {
+                if (bIsExceptionSuppressed)
+                    return;
 
                 throw;
             }

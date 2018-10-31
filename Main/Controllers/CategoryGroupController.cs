@@ -6,12 +6,14 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppModel.Enumerations;
 using AppShared.Resources;
 using AppShared.ViewModels.CategoryGroup;
 using AutoMapper;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services.RealTime;
+using Main.Models.AdditionalMessageInfo;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,13 +36,14 @@ namespace Main.Controllers
             IBaseEncryptionService encryptionService,
             IAppProfileService profileService, IRealTimeService realTimeService,
             ICategoryGroupDomain categoryGroupService,
-            INotificationMessageDomain notificationMessageDomain) : base(unitOfWork, mapper, baseTimeService,
+            INotificationMessageDomain notificationMessageDomain, IAppProfileService appProfileService) : base(unitOfWork, mapper, baseTimeService,
             relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
             _categoryGroupService = categoryGroupService;
             _mapper = mapper;
             _notificationMessageDomain = notificationMessageDomain;
+            _appProfileService = appProfileService;
         }
 
         #endregion
@@ -58,6 +61,7 @@ namespace Main.Controllers
         /// </summary>
         private readonly INotificationMessageDomain _notificationMessageDomain;
 
+        private readonly IAppProfileService _appProfileService;
         #endregion
 
         #region Methods
@@ -84,7 +88,10 @@ namespace Main.Controllers
 
             #endregion
 
+            // Get requester profile.
+
             var categoryGroup = await _categoryGroupService.AddCategoryGroup(model);
+            var profile = _appProfileService.GetProfile();
 
             #region Real-time message broadcast
 
@@ -108,11 +115,12 @@ namespace Main.Controllers
             #endregion
 
             #region Notification
-
-            var clonedCategoryGroup = _mapper.Map<CategoryGroup>(categoryGroup);
-
-            await _notificationMessageDomain.AddNotificationMessageAsync(
-                new AddNotificationMessageModel<CategoryGroup>(clonedCategoryGroup.CreatorId, clonedCategoryGroup,
+            
+            var additionalInfo = new AddCategoryGroupAdditionalInfoModel();
+            additionalInfo.CategoryGroupName = model.Name;
+            additionalInfo.CreatorName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
+                new AddUserGroupNotificationMessageModel<AddCategoryGroupAdditionalInfoModel>(additionalInfo,
                     NotificationMessages.SomeoneCreatedCategoryGroup));
 
             #endregion

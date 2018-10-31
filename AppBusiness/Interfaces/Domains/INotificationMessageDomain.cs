@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Models.Entities;
+using AppModel.Enumerations;
 using AppShared.ViewModels.NotificationMessage;
 using ClientShared.Models;
 
@@ -25,6 +26,17 @@ namespace AppBusiness.Interfaces.Domains
             AddNotificationMessageModel<T> model,
             CancellationToken cancellationToken = default(CancellationToken),
             bool bIsExpressionSupressed = default(bool));
+
+        /// <summary>
+        /// Add notification message to a group of user.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="userGroup"></param>
+        /// <param name="model"></param>
+        /// <param name="bIsExceptionSuppressed"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task AddNotificationMessageToUserGroup<T>(UserGroup userGroup, AddUserGroupNotificationMessageModel<T> model, bool bIsExceptionSuppressed = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Get notification message using id.
