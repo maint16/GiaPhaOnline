@@ -120,4 +120,7 @@
   <data name="SomeoneCommentedTopic" xml:space="preserve">
     <value>SOMEONE_COMMENTED_TOPIC</value>
   </data>
+  <data name="SomeoneCreatedCategoryGroup" xml:space="preserve">
+    <value>MSG_SOMEONE_CREATED_CATEGORY_GROUP</value>
+  </data>
 </root>
