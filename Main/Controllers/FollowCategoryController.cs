@@ -1,9 +1,13 @@
 ﻿using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
+using AppModel.Enumerations;
+using AppShared.Resources;
 using AppShared.ViewModels.FollowCategory;
 using AutoMapper;
+using Main.Models.AdditionalMessageInfo.Category;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
 
@@ -15,6 +19,15 @@ namespace Main.Controllers
         #region Properties
 
         private readonly IFollowCategoryDomain _followCategoryDomain;
+
+        private readonly ICategoryDomain _categoryDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
+        /// <summary>
+        /// Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
 
         #endregion
 
@@ -29,11 +42,20 @@ namespace Main.Controllers
         /// <param name="baseTimeService"></param>
         /// <param name="databaseFunction"></param>
         /// <param name="followCategoryDomain"></param>
+        /// <param name="categoryDomain"></param>
+        /// <param name="appProfileService"></param>
+        /// <param name="notificationMessageDomain"></param>
         public FollowCategoryController(IAppUnitOfWork unitOfWork, IMapper mapper, IAppProfileService identityService,
             IBaseTimeService baseTimeService, IBaseRelationalDbService databaseFunction,
-            IFollowCategoryDomain followCategoryDomain)
+            IFollowCategoryDomain followCategoryDomain,
+            ICategoryDomain categoryDomain,
+            IAppProfileService appProfileService,
+            INotificationMessageDomain notificationMessageDomain)
         {
             _followCategoryDomain = followCategoryDomain;
+            _appProfileService = appProfileService;
+            _notificationMessageDomain = notificationMessageDomain;
+            _categoryDomain = categoryDomain;
         }
 
         #endregion
@@ -49,6 +71,23 @@ namespace Main.Controllers
         public async Task<IActionResult> FollowCategory([FromRoute] AddFollowCategoryViewModel model)
         {
             var followCategory = await _followCategoryDomain.AddFollowCategoryAsync(model);
+
+            var category = await _categoryDomain.GetCategoryUsingIdAsync(model.CategoryId);
+
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            #region Notification
+
+            var additionalInfo = new FollowCategoryAdditionalInfoModel();
+            additionalInfo.CategoryName = category.Name;
+            additionalInfo.FollowerName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
+                new AddUserGroupNotificationMessageModel<FollowCategoryAdditionalInfoModel>(additionalInfo,
+                    NotificationMessages.SomeoneFollowedCategory));
+
+            #endregion
+
             return Ok(followCategory);
         }
 

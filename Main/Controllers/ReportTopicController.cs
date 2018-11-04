@@ -2,9 +2,13 @@
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
+using AppModel.Enumerations;
+using AppShared.Resources;
 using AppShared.ViewModels.ReportTopic;
 using AutoMapper;
+using Main.Models.AdditionalMessageInfo.Topic;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
@@ -20,6 +24,15 @@ namespace Main.Controllers
 
         private readonly ITopicReportDomain _topicReportDomain;
 
+        private readonly ITopicDomain _topicDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
+        /// <summary>
+        /// Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
+
         #endregion
 
         #region Constructures
@@ -30,11 +43,16 @@ namespace Main.Controllers
             IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
             IBaseEncryptionService encryptionService,
-            IAppProfileService profileService, ITopicReportDomain topicReportDomain) : base(unitOfWork, mapper,
+            IAppProfileService profileService, ITopicReportDomain topicReportDomain,
+            ITopicDomain topicDomain,
+            INotificationMessageDomain notificationMessageDomain) : base(unitOfWork, mapper,
             baseTimeService,
             relationalDbService, profileService)
         {
             _topicReportDomain = topicReportDomain;
+            _appProfileService = profileService;
+            _topicDomain = topicDomain;
+            _notificationMessageDomain = notificationMessageDomain;
         }
 
         #endregion
@@ -59,6 +77,23 @@ namespace Main.Controllers
                 return BadRequest(ModelState);
 
             var topicReport = await _topicReportDomain.AddTopicReportAsync(model);
+
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            var topic = _topicDomain.GetTopicUsingIdAsync(model.TopicId);
+
+            #region Notification
+
+            var additionalInfo = new ReportTopicAdditionalInfoModel();
+            additionalInfo.TopicName = topic.Result.Title;
+            additionalInfo.ReporterName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
+                new AddUserGroupNotificationMessageModel<ReportTopicAdditionalInfoModel>(additionalInfo,
+                    NotificationMessages.SomeoneReportedTopic));
+
+            #endregion
+
             return Ok(topicReport);
         }
 

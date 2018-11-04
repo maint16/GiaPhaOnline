@@ -118,9 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SomeoneCommentedTopic" xml:space="preserve">
-    <value>SOMEONE_COMMENTED_TOPIC</value>
+    <value>MSG_SOMEONE_COMMENTED_TOPIC</value>
+  </data>
+  <data name="SomeoneCreatedCategory" xml:space="preserve">
+    <value>MSG_SOMEONE_CREATED_CATEGORY</value>
   </data>
   <data name="SomeoneCreatedCategoryGroup" xml:space="preserve">
     <value>MSG_SOMEONE_CREATED_CATEGORY_GROUP</value>
+  </data>
+  <data name="SomeoneCreatedTopic" xml:space="preserve">
+    <value>MSG_TOPIC_ADDED_IN_CATEGORY.</value>
+  </data>
+  <data name="SomeoneEditedCategory" xml:space="preserve">
+    <value>MSG_SOMEONE_EDITED_CATEGORY</value>
+  </data>
+  <data name="SomeoneEditedCategoryGroup" xml:space="preserve">
+    <value>MSG_SOMEONE_EDITED_CATEGORY_GROUP</value>
+  </data>
+  <data name="SomeoneFollowedCategory" xml:space="preserve">
+    <value>MSG_SOMEONE_FOLLOWED_CATEGORY</value>
+  </data>
+  <data name="SomeoneFollowedYourTopic" xml:space="preserve">
+    <value>MSG_SOMEONE_FOLLOW_YOUR_TOPIC</value>
+  </data>
+  <data name="SomeoneRepliedYourTopic" xml:space="preserve">
+    <value>MSG_SOMEONE_REPLIED_YOUR_TOPIC</value>
+  </data>
+  <data name="SomeoneReportedTopic" xml:space="preserve">
+    <value>MSG_SOMEONE_REPORTED_TOPIC</value>
   </data>
 </root>

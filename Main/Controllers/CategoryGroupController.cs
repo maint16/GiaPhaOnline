@@ -13,7 +13,7 @@ using AutoMapper;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services.RealTime;
-using Main.Models.AdditionalMessageInfo;
+using Main.Models.AdditionalMessageInfo.CategoryGroup;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -88,9 +88,9 @@ namespace Main.Controllers
 
             #endregion
 
-            // Get requester profile.
-
             var categoryGroup = await _categoryGroupService.AddCategoryGroup(model);
+
+            // Get requester profile.
             var profile = _appProfileService.GetProfile();
 
             #region Real-time message broadcast
@@ -158,6 +158,9 @@ namespace Main.Controllers
             {
                 var categoryGroup = await _categoryGroupService.EditCategoryGroup(id, model);
 
+
+                var profile = _appProfileService.GetProfile();
+
                 // Send real-time message to all admins.
                 var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
                     new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.EditCategoryGroup, categoryGroup,
@@ -174,6 +177,18 @@ namespace Main.Controllers
                     new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
                 await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+                #region Notification
+
+                var additionalInfo = new EditCategoryGroupAdditionalInfoModel();
+                additionalInfo.CategoryGroupName = model.Name;
+                additionalInfo.EditorName = profile.Nickname;
+                await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
+                    new AddUserGroupNotificationMessageModel<EditCategoryGroupAdditionalInfoModel>(additionalInfo,
+                        NotificationMessages.SomeoneEditedCategoryGroup));
+
+                #endregion
+
                 return Ok(categoryGroup);
             }
             catch (Exception exception)

@@ -112,6 +112,9 @@ namespace AppBusiness.Domain
                     case UserGroup.Admin:
                         users = users.Where(x => x.Role == UserRole.Admin);
                         break;
+                    case UserGroup.User:
+                        users = users.Where(x => x.Role == UserRole.User);
+                        break;
                 }
 
                 var ignoredUserIds = model.IgnoredUserIds;

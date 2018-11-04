@@ -1,11 +1,15 @@
 ﻿using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
+using AppModel.Enumerations;
+using AppShared.Resources;
 using AppShared.ViewModels.FollowTopic;
 using AutoMapper;
+using Main.Models.AdditionalMessageInfo.Category;
+using Main.Models.AdditionalMessageInfo.Topic;
 using Microsoft.AspNetCore.Mvc;
-using ServiceShared.Interfaces.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,6 +22,15 @@ namespace Main.Controllers
 
         private readonly IFollowTopicDomain _followTopicDomain;
 
+        private readonly ITopicDomain _topicDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
+        /// <summary>
+        /// Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
+
         #endregion
 
         #region Constructors
@@ -29,9 +42,21 @@ namespace Main.Controllers
         /// <param name="mapper"></param>
         /// <param name="profileService"></param>
         /// <param name="followTopicDomain"></param>
-        public FollowTopicControler(IAppUnitOfWork unitOfWork, IMapper mapper, IAppProfileService profileService, IFollowTopicDomain followTopicDomain)
+        /// <param name="topicDomain"></param>
+        /// <param name="appProfileService"></param>
+        /// <param name="notificationMessageDomain"></param>
+        public FollowTopicControler(IAppUnitOfWork unitOfWork,
+            IMapper mapper,
+            IAppProfileService profileService,
+            IFollowTopicDomain followTopicDomain,
+            ITopicDomain topicDomain,
+            IAppProfileService appProfileService,
+           INotificationMessageDomain notificationMessageDomain)
         {
             _followTopicDomain = followTopicDomain;
+            _appProfileService = appProfileService;
+            _notificationMessageDomain = notificationMessageDomain;
+            _topicDomain = topicDomain;
         }
 
         #endregion
@@ -49,6 +74,22 @@ namespace Main.Controllers
             var addFollowTopic = new AddFollowTopicViewModel();
             addFollowTopic.TopicId = topicId;
             var followTopic = await _followTopicDomain.AddFollowTopicAsync(addFollowTopic);
+
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            var topic = _topicDomain.GetTopicUsingIdAsync(topicId);
+
+            #region Notification
+
+            var additionalInfo = new FollowTopicAdditionalInfoModel();
+            additionalInfo.TopicName = topic.Result.Title;
+            additionalInfo.FollowerName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageAsync(
+                new AddNotificationMessageModel<FollowTopicAdditionalInfoModel>(topic.Result.OwnerId, additionalInfo,
+                    NotificationMessages.SomeoneFollowedYourTopic));
+
+            #endregion
 
             return Ok(followTopic);
         }
