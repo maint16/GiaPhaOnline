@@ -78,14 +78,55 @@ namespace AppBusiness.Domain
                 notificationMessage.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
 
                 _unitOfWork.NotificationMessages.Insert(notificationMessage);
+
                 await _unitOfWork.CommitAsync(cancellationToken);
 
                 return notificationMessage;
+
             }
             catch
             {
                 if (bIsExpressionSupressed)
                     return null;
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="bIsExpressionSupressed"></param>
+        /// <returns></returns>
+        public virtual async Task AddNotificationMessageToListUser<T>(
+            AddListUserNotificationMessageModel<T> model,
+            CancellationToken cancellationToken = default(CancellationToken),
+            bool bIsExpressionSupressed = default(bool))
+        {
+            try
+            {
+                foreach (var ownerId in model.OwnerIds)
+                {
+                    var notificationMessage = new NotificationMessage();
+                    notificationMessage.OwnerId = ownerId;
+                    notificationMessage.ExtraInfo = JsonConvert.SerializeObject(model.ExtraInfo);
+                    notificationMessage.Message = model.Message;
+                    notificationMessage.Status = NotificationStatus.Unseen;
+                    notificationMessage.CreatedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
+
+                    _unitOfWork.NotificationMessages.Insert(notificationMessage);
+                }
+
+                await _unitOfWork.CommitAsync(cancellationToken);
+
+            }
+            catch
+            {
+                if (bIsExpressionSupressed)
+                    return;
 
                 throw;
             }
@@ -136,8 +177,8 @@ namespace AppBusiness.Domain
 
                     _unitOfWork.NotificationMessages.Insert(notificationMessage);
                 }
-                
-                
+
+
                 await _unitOfWork.CommitAsync(cancellationToken);
             }
             catch

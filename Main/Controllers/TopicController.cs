@@ -8,7 +8,6 @@ using AppBusiness.Interfaces.Domains;
 using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
-using AppModel.Enumerations;
 using AppShared.Resources;
 using AppShared.ViewModels.Topic;
 using AutoMapper;
@@ -17,7 +16,6 @@ using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
-using Main.Models.AdditionalMessageInfo.Category;
 using Main.Models.AdditionalMessageInfo.Topic;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.Authorization;
@@ -140,18 +138,23 @@ namespace Main.Controllers
             // Add topic.
             var topic = await _topicDomain.AddTopicAsync(model, CancellationToken.None);
 
+            #region Notification
+
             // Get requester profile.
             var profile = _appProfileService.GetProfile();
 
-            var followCategory = _followCategoryDomain.GetFollowCategoryUsingIdAsync(model.CategoryId);
+            // Search for posts.
+            var followCategories = _unitOfWork.FollowingCategories.Search();
 
-            #region Notification
+            followCategories = followCategories.Where(x => x.CategoryId == model.CategoryId);
+
+            HashSet<int> followerIds = new HashSet<int>(followCategories.Select(x => x.FollowerId));
 
             var additionalInfo = new AddTopicAdditionalInfoModel();
             additionalInfo.TopicName = model.Title;
             additionalInfo.CreatorName = profile.Nickname;
-            await _notificationMessageDomain.AddNotificationMessageAsync(
-                new AddNotificationMessageModel<AddTopicAdditionalInfoModel>(followCategory.Result.FollowerId, additionalInfo,
+            await _notificationMessageDomain.AddNotificationMessageToListUser(
+                new AddListUserNotificationMessageModel<AddTopicAdditionalInfoModel>(followerIds, additionalInfo,
                     NotificationMessages.SomeoneCreatedTopic));
 
             #endregion
@@ -203,6 +206,47 @@ namespace Main.Controllers
                     _logger.LogInformation($"Sent message to {user.Email} with subject {emailTemplate.Subject}");
                 }
             }
+
+            #region Notification
+
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            // Search for follow topic.
+            var followTopics = _unitOfWork.FollowingTopics.Search();
+
+            followTopics = followTopics.Where(x => x.TopicId == id);
+
+            // Get all topic follower
+            var topicFollowers = followTopics.Select(x => x.FollowerId);
+
+            // Search for all reply
+            var replies = _unitOfWork.Replies.Search();
+
+            replies = replies.Where(x => x.TopicId == id);
+
+            var topicRepliers = replies.Select(x => x.OwnerId);
+
+            HashSet<int> followerIds = new HashSet<int>();
+
+            foreach (var topicFollower in topicFollowers)
+            {
+                followerIds.Add(topicFollower);
+            }
+
+            foreach (var topicReplier in topicRepliers)
+            {
+                followerIds.Add(topicReplier);
+            }
+
+            var additionalInfo = new AddTopicAdditionalInfoModel();
+            additionalInfo.TopicName = model.Title;
+            additionalInfo.CreatorName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToListUser(
+                new AddListUserNotificationMessageModel<AddTopicAdditionalInfoModel>(followerIds, additionalInfo,
+                    NotificationMessages.SomeoneCreatedTopic));
+
+            #endregion
 
             return Ok(topic);
         }

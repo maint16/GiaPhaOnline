@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
@@ -119,9 +120,12 @@ namespace Main.Controllers
             var additionalInfo = new AddCategoryGroupAdditionalInfoModel();
             additionalInfo.CategoryGroupName = model.Name;
             additionalInfo.CreatorName = profile.Nickname;
+
+            HashSet<int> ignoreUsers = new HashSet<int> {profile.Id};
+
             await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
                 new AddUserGroupNotificationMessageModel<AddCategoryGroupAdditionalInfoModel>(additionalInfo,
-                    NotificationMessages.SomeoneCreatedCategoryGroup));
+                    NotificationMessages.SomeoneCreatedCategoryGroup, ignoreUsers));
 
             #endregion
 
@@ -183,9 +187,12 @@ namespace Main.Controllers
                 var additionalInfo = new EditCategoryGroupAdditionalInfoModel();
                 additionalInfo.CategoryGroupName = model.Name;
                 additionalInfo.EditorName = profile.Nickname;
+
+                HashSet<int> ignoreUsers = new HashSet<int> { profile.Id };
+
                 await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
                     new AddUserGroupNotificationMessageModel<EditCategoryGroupAdditionalInfoModel>(additionalInfo,
-                        NotificationMessages.SomeoneEditedCategoryGroup));
+                        NotificationMessages.SomeoneEditedCategoryGroup, ignoreUsers));
 
                 #endregion
 

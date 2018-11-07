@@ -28,6 +28,19 @@ namespace AppBusiness.Interfaces.Domains
             bool bIsExpressionSupressed = default(bool));
 
         /// <summary>
+        ///     Add notification message list of user.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model"></param>
+        /// <param name="cancellationToken"></param>
+        /// <param name="bIsExpressionSupressed"></param>
+        /// <returns></returns>
+        Task AddNotificationMessageToListUser<T>(
+            AddListUserNotificationMessageModel<T> model,
+            CancellationToken cancellationToken = default(CancellationToken),
+            bool bIsExpressionSupressed = default(bool));
+
+        /// <summary>
         /// Add notification message to a group of user.
         /// </summary>
         /// <typeparam name="T"></typeparam>
