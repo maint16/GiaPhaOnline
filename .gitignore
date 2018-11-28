@@ -63,3 +63,16 @@
 /AppShared/bin
 /ClientShared/obj
 /ClientShared/bin
+/micro-services/main-service/MainBusiness/obj
+/micro-services/main-service/MainBusiness/bin
+/micro-services/main-service/MainDb/obj
+/micro-services/main-service/MainDb/bin
+/micro-services/main-service/MainMicroService/logs
+/micro-services/main-service/MainMicroService/obj
+/micro-services/main-service/MainMicroService/bin
+/micro-services/main-service/MainModel/obj
+/micro-services/main-service/MainModel/bin
+/micro-services/main-service/MainShared/obj
+/micro-services/main-service/MainShared/bin
+/micro-services/realtime-service/obj
+/micro-services/realtime-service/bin
