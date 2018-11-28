@@ -16,6 +16,7 @@ using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services;
 using Main.Interfaces.Services.RealTime;
+using Main.Models.AdditionalMessageInfo.Topic;
 using Main.Models.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,23 @@ namespace Main.Controllers
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="baseTimeService"></param>
+        /// <param name="relationalDbService"></param>
+        /// <param name="encryptionService"></param>
+        /// <param name="identityService"></param>
+        /// <param name="sendMailService"></param>
+        /// <param name="emailCacheService"></param>
+        /// <param name="realTimeService"></param>
+        /// <param name="logger"></param>
+        /// <param name="topicDomain"></param>
+        /// <param name="notificationMessageDomain"></param>
+        /// <param name="mapper"></param>
+        /// <param name="unitOfWork"></param>
+        /// <param name="appProfileService"></param>
+        /// <param name="followCategoryDomain"></param>
         public TopicController(
             IBaseTimeService baseTimeService,
             IBaseRelationalDbService relationalDbService,
@@ -44,7 +62,9 @@ namespace Main.Controllers
             IRealTimeService realTimeService,
             ILogger<TopicController> logger,
             ITopicDomain topicDomain, INotificationMessageDomain notificationMessageDomain, IMapper mapper,
-            IAppUnitOfWork unitOfWork)
+            IAppUnitOfWork unitOfWork,
+            IAppProfileService appProfileService,
+            IFollowCategoryDomain followCategoryDomain)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
@@ -54,6 +74,8 @@ namespace Main.Controllers
             _notificationMessageDomain = notificationMessageDomain;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _appProfileService = appProfileService;
+            _followCategoryDomain = followCategoryDomain;
         }
 
         #endregion
@@ -88,6 +110,10 @@ namespace Main.Controllers
 
         private readonly INotificationMessageDomain _notificationMessageDomain;
 
+        private readonly IFollowCategoryDomain _followCategoryDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
         #endregion
 
         #region Methods
@@ -112,14 +138,27 @@ namespace Main.Controllers
             // Add topic.
             var topic = await _topicDomain.AddTopicAsync(model, CancellationToken.None);
 
-            // Add notification
-            var clonedTopic = _mapper.Map<Topic>(topic);
-            clonedTopic.Title = null;
-            clonedTopic.Body = null;
+            #region Notification
 
-            await _notificationMessageDomain.AddNotificationMessageAsync(
-                new AddNotificationMessageModel<Topic>(clonedTopic.OwnerId, clonedTopic,
-                    NotificationMessages.SomeoneCommentedTopic));
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            // Search for posts.
+            var followCategories = _unitOfWork.FollowingCategories.Search();
+
+            followCategories = followCategories.Where(x => x.CategoryId == model.CategoryId);
+
+            HashSet<int> followerIds = new HashSet<int>(followCategories.Select(x => x.FollowerId));
+
+            var additionalInfo = new AddTopicAdditionalInfoModel();
+            additionalInfo.TopicName = model.Title;
+            additionalInfo.CreatorName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToListUser(
+                new AddListUserNotificationMessageModel<AddTopicAdditionalInfoModel>(followerIds, additionalInfo,
+                    NotificationMessages.SomeoneCreatedTopic));
+
+            #endregion
+
             return Ok(topic);
         }
 
@@ -160,13 +199,54 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
                     _logger.LogInformation($"Sent message to {user.Email} with subject {emailTemplate.Subject}");
                 }
             }
+
+            #region Notification
+
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            // Search for follow topic.
+            var followTopics = _unitOfWork.FollowingTopics.Search();
+
+            followTopics = followTopics.Where(x => x.TopicId == id);
+
+            // Get all topic follower
+            var topicFollowers = followTopics.Select(x => x.FollowerId);
+
+            // Search for all reply
+            var replies = _unitOfWork.Replies.Search();
+
+            replies = replies.Where(x => x.TopicId == id);
+
+            var topicRepliers = replies.Select(x => x.OwnerId);
+
+            HashSet<int> followerIds = new HashSet<int>();
+
+            foreach (var topicFollower in topicFollowers)
+            {
+                followerIds.Add(topicFollower);
+            }
+
+            foreach (var topicReplier in topicRepliers)
+            {
+                followerIds.Add(topicReplier);
+            }
+
+            var additionalInfo = new AddTopicAdditionalInfoModel();
+            additionalInfo.TopicName = model.Title;
+            additionalInfo.CreatorName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToListUser(
+                new AddListUserNotificationMessageModel<AddTopicAdditionalInfoModel>(followerIds, additionalInfo,
+                    NotificationMessages.SomeoneCreatedTopic));
+
+            #endregion
 
             return Ok(topic);
         }
@@ -205,7 +285,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -219,7 +299,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.DeleteTopic, topic,
+                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.DeleteTopic, topic,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -230,7 +310,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = topic;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
+                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 

@@ -2,14 +2,14 @@
 
 namespace AppBusiness.Models.NotificationMessages
 {
-    public class AddNotificationMessageModel<T>
+    public class AddListUserNotificationMessageModel<T>
     {
         #region Properties
 
         /// <summary>
         ///     Notification message owner.
         /// </summary>
-        public int OwnerId { get; set; }
+        public HashSet<int> OwnerIds { get; set; }
 
         public T ExtraInfo { get; set; }
 
@@ -19,13 +19,13 @@ namespace AppBusiness.Models.NotificationMessages
 
         #region Constructor
 
-        public AddNotificationMessageModel()
+        public AddListUserNotificationMessageModel()
         {
         }
 
-        public AddNotificationMessageModel(int ownerId, T extraInfo, string message)
+        public AddListUserNotificationMessageModel(HashSet<int> ownerIds, T extraInfo, string message)
         {
-            OwnerId = ownerId;
+            OwnerIds = ownerIds;
             ExtraInfo = extraInfo;
             Message = message;
         }

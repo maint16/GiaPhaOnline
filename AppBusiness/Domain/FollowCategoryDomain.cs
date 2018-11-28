@@ -140,6 +140,22 @@ namespace AppBusiness.Domain
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public virtual async Task<FollowCategory> GetFollowCategoryUsingIdAsync(int categoryId,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var loadFollowCategoryCondition = new SearchFollowCategoryViewModel();
+            loadFollowCategoryCondition.CategoryIds = new HashSet<int> { categoryId };
+            loadFollowCategoryCondition.Pagination = new Pagination(1, 1);
+
+            return await GetFollowingCategories(loadFollowCategoryCondition).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        ///     <inheritdoc />
+        /// </summary>
         /// <param name="condition"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

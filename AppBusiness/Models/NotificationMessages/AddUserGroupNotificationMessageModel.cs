@@ -26,6 +26,13 @@ namespace AppBusiness.Models.NotificationMessages
             Message = message;
         }
 
+        public AddUserGroupNotificationMessageModel(T extraInfo, string message, HashSet<int> ignoredUserIds)
+        {
+            ExtraInfo = extraInfo;
+            Message = message;
+            IgnoredUserIds = ignoredUserIds;
+        }
+
         #endregion
     }
 }

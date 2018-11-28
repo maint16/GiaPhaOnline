@@ -30,6 +30,15 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        ///     Search follow category using category id.
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<FollowCategory> GetFollowCategoryUsingIdAsync(int categoryId,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         ///     Search follow categories using specific conditions.
         /// </summary>
         /// <param name="condition"></param>

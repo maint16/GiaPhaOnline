@@ -61,11 +61,20 @@ namespace AppShared.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SOMEONE_COMMENTED_TOPIC.
+        ///   Looks up a localized string similar to MSG_SOMEONE_COMMENTED_TOPIC.
         /// </summary>
         public static string SomeoneCommentedTopic {
             get {
                 return ResourceManager.GetString("SomeoneCommentedTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_CREATED_CATEGORY.
+        /// </summary>
+        public static string SomeoneCreatedCategory {
+            get {
+                return ResourceManager.GetString("SomeoneCreatedCategory", resourceCulture);
             }
         }
         
@@ -75,6 +84,69 @@ namespace AppShared.Resources {
         public static string SomeoneCreatedCategoryGroup {
             get {
                 return ResourceManager.GetString("SomeoneCreatedCategoryGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_TOPIC_ADDED_IN_CATEGORY..
+        /// </summary>
+        public static string SomeoneCreatedTopic {
+            get {
+                return ResourceManager.GetString("SomeoneCreatedTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_EDITED_CATEGORY.
+        /// </summary>
+        public static string SomeoneEditedCategory {
+            get {
+                return ResourceManager.GetString("SomeoneEditedCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_EDITED_CATEGORY_GROUP.
+        /// </summary>
+        public static string SomeoneEditedCategoryGroup {
+            get {
+                return ResourceManager.GetString("SomeoneEditedCategoryGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_FOLLOWED_CATEGORY.
+        /// </summary>
+        public static string SomeoneFollowedCategory {
+            get {
+                return ResourceManager.GetString("SomeoneFollowedCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_FOLLOW_YOUR_TOPIC.
+        /// </summary>
+        public static string SomeoneFollowedYourTopic {
+            get {
+                return ResourceManager.GetString("SomeoneFollowedYourTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_REPLIED_YOUR_TOPIC.
+        /// </summary>
+        public static string SomeoneRepliedYourTopic {
+            get {
+                return ResourceManager.GetString("SomeoneRepliedYourTopic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSG_SOMEONE_REPORTED_TOPIC.
+        /// </summary>
+        public static string SomeoneReportedTopic {
+            get {
+                return ResourceManager.GetString("SomeoneReportedTopic", resourceCulture);
             }
         }
     }

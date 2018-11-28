@@ -1,4 +1,4 @@
-﻿namespace Main.Models.AdditionalMessageInfo
+﻿namespace Main.Models.AdditionalMessageInfo.CategoryGroup
 {
     public class AddCategoryGroupAdditionalInfoModel
     {

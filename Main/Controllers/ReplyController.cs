@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
+using AppShared.Resources;
 using AppShared.ViewModels.Reply;
 using AutoMapper;
 using Main.Constants;
 using Main.Interfaces.Services;
+using Main.Models.AdditionalMessageInfo.Topic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ServiceShared.Authentications.ActionFilters;
-using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -34,12 +31,19 @@ namespace Main.Controllers
             IAppProfileService profileService,
             ISendMailService sendMailService,
             IEmailCacheService emailCacheService,
-            ILogger<ReplyController> logger, IReplyDomain replyDomain)
+            ILogger<ReplyController> logger,
+            IReplyDomain replyDomain,
+            ITopicDomain topicDomain,
+            IAppProfileService appProfileService,
+            INotificationMessageDomain notificationMessageDomain)
         {
             _sendMailService = sendMailService;
             _emailCacheService = emailCacheService;
             _logger = logger;
             _replyDomain = replyDomain;
+            _topicDomain = topicDomain;
+            _appProfileService = appProfileService;
+            _notificationMessageDomain = notificationMessageDomain;
         }
 
         #endregion
@@ -61,7 +65,16 @@ namespace Main.Controllers
         /// </summary>
         private readonly ILogger _logger;
 
+        private readonly IAppProfileService _appProfileService;
+
         private readonly IReplyDomain _replyDomain;
+
+        private readonly ITopicDomain _topicDomain;
+
+        /// <summary>
+        /// Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
 
         #endregion
 
@@ -89,6 +102,23 @@ namespace Main.Controllers
             #endregion
 
             var topicReply = await _replyDomain.AddReplyAsync(model);
+
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
+            var topic = _topicDomain.GetTopicUsingIdAsync(model.TopicId);
+
+            #region Notification
+
+            var additionalInfo = new ReplyTopicAdditionalInfoModel();
+            additionalInfo.TopicName = topic.Result.Title;
+            additionalInfo.ReplierName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageAsync(
+                new AddNotificationMessageModel<ReplyTopicAdditionalInfoModel>(topic.Result.OwnerId, additionalInfo,
+                    NotificationMessages.SomeoneRepliedYourTopic));
+
+            #endregion
+
             return Ok(topicReply);
         }
 

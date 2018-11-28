@@ -5,8 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppBusiness.Interfaces;
 using AppBusiness.Interfaces.Domains;
+using AppBusiness.Models.NotificationMessages;
 using AppDb.Interfaces;
 using AppDb.Models.Entities;
+using AppModel.Enumerations;
 using AppShared.Resources;
 using AppShared.ViewModels.Category;
 using AutoMapper;
@@ -15,6 +17,7 @@ using ClientShared.Models;
 using Main.Constants;
 using Main.Constants.RealTime;
 using Main.Interfaces.Services.RealTime;
+using Main.Models.AdditionalMessageInfo.Category;
 using Main.Models.RealTime;
 using Main.ViewModels.Category;
 using Microsoft.AspNetCore.Authorization;
@@ -41,13 +44,17 @@ namespace Main.Controllers
             IBaseRelationalDbService relationalDbService,
             IBaseEncryptionService encryptionService,
             IAppProfileService profileService,
-            IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger) :
+            IRealTimeService realTimeService, ICategoryDomain categoryDomain, ILogger<CategoryController> logger,
+            INotificationMessageDomain notificationMessageDomain,
+            IAppProfileService appProfileService) :
             base(unitOfWork, mapper, baseTimeService,
                 relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
             _categoryDomain = categoryDomain;
             _logger = logger;
+            _notificationMessageDomain = notificationMessageDomain;
+            _appProfileService = appProfileService;
         }
 
         #endregion
@@ -59,6 +66,13 @@ namespace Main.Controllers
         private readonly ICategoryDomain _categoryDomain;
 
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
+
+        private readonly IAppProfileService _appProfileService;
 
         #endregion
 
@@ -101,6 +115,9 @@ namespace Main.Controllers
 
             var category = await _categoryDomain.AddCategoryAsync(model);
 
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
             #region Real-time message broadcast
 
             // Send real-time message to all admins.
@@ -119,6 +136,17 @@ namespace Main.Controllers
                 new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+            #endregion
+
+            #region Notification
+
+            var additionalInfo = new AddCategoryAdditionalInfoModel();
+            additionalInfo.CategoryName = model.Name;
+            additionalInfo.CreatorName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
+                new AddUserGroupNotificationMessageModel<AddCategoryAdditionalInfoModel>(additionalInfo,
+                    NotificationMessages.SomeoneCreatedCategory));
 
             #endregion
 
@@ -152,6 +180,9 @@ namespace Main.Controllers
             // Edit category asynchronously.
             var category = await _categoryDomain.EditCategoryAsync(id, model);
 
+            // Get requester profile.
+            var profile = _appProfileService.GetProfile();
+
             #region Real-time message broadcast
 
             // Send real-time message to all admins.
@@ -170,6 +201,17 @@ namespace Main.Controllers
                 new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
+
+            #endregion
+
+            #region Notification
+
+            var additionalInfo = new EditCategoryAdditionalInfoModel();
+            additionalInfo.CategoryName = model.Name;
+            additionalInfo.EditorName = profile.Nickname;
+            await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
+                new AddUserGroupNotificationMessageModel<EditCategoryAdditionalInfoModel>(additionalInfo,
+                    NotificationMessages.SomeoneEditedCategory));
 
             #endregion
 
