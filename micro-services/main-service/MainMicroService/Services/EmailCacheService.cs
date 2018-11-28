@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Main.Interfaces.Services;
-using Main.Models;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Models;
 using Microsoft.AspNetCore.Hosting;
 using ServiceShared.Services;
 
-namespace Main.Services
+namespace MainMicroService.Services
 {
     /// <summary>
     ///     Service for email caching.

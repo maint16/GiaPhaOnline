@@ -1,7 +1,7 @@
-﻿using Main.Models;
+﻿using MainMicroService.Models;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Interfaces.Services
+namespace MainMicroService.Interfaces.Services
 {
     public interface IEmailCacheService : IBaseKeyValueCacheService<string, EmailCacheOption>
     {

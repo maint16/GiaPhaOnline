@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels.Jwt
+﻿namespace MainShared.ViewModels.Jwt
 {
     public class JwtViewModel
     {

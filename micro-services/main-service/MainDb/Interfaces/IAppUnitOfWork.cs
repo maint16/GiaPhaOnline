@@ -1,7 +1,7 @@
-﻿using AppDb.Models.Entities;
+﻿using MainDb.Models.Entities;
 using ServiceShared.Interfaces.Services;
 
-namespace AppDb.Interfaces
+namespace MainDb.Interfaces
 {
     public interface IAppUnitOfWork : IBaseUnitOfWork
     {

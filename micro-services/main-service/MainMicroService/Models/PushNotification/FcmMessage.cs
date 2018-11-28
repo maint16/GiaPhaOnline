@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Main.Models.PushNotification.Notification;
+using MainMicroService.Models.PushNotification.Notification;
 
-namespace Main.Models.PushNotification
+namespace MainMicroService.Models.PushNotification
 {
     public class FcmMessage<T>
     {

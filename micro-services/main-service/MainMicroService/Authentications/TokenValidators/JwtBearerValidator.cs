@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Main.Authentications.TokenValidators
+namespace MainMicroService.Authentications.TokenValidators
 {
     public class JwtBearerValidator : ISecurityTokenValidator
     {

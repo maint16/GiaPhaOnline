@@ -1,4 +1,4 @@
-﻿namespace Main.Constants.RealTime
+﻿namespace MainMicroService.Constants.RealTime
 {
     public class RealTimeEventConstant
     {

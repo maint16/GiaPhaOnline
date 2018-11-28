@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Main.Models.PushNotification.Notification
+namespace MainMicroService.Models.PushNotification.Notification
 {
     public class AddDeviceToGroupResponse
     {

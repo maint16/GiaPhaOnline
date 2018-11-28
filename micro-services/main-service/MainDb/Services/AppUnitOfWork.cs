@@ -1,10 +1,10 @@
-﻿using AppDb.Interfaces;
-using AppDb.Models.Entities;
+﻿using MainDb.Interfaces;
+using MainDb.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Services;
 
-namespace AppDb.Services
+namespace MainDb.Services
 {
     public class AppUnitOfWork : BaseUnitOfWork, IAppUnitOfWork
     {
@@ -13,12 +13,14 @@ namespace AppDb.Services
         /// <summary>
         ///     Initiate unit of work with database context provided by Entity Framework.
         /// </summary>
-        public AppUnitOfWork(DbContext dbContext, IBaseRepository<User> accounts, IBaseRepository<CategoryGroup> categoryGroups,
+        public AppUnitOfWork(DbContext dbContext, IBaseRepository<User> accounts,
+            IBaseRepository<CategoryGroup> categoryGroups,
             IBaseRepository<Category> categories, IBaseRepository<FollowCategory> followingCategories,
             IBaseRepository<Reply> replies, IBaseRepository<Topic> topics, IBaseRepository<FollowTopic> followingTopics,
             IBaseRepository<ReportTopic> reportTopics, IBaseRepository<NotificationMessage> notificationMessages,
             IBaseRepository<ActivationToken> activationTokens, IBaseRepository<AccessToken> accessTokens,
-            IBaseRepository<SignalrConnection> signalrConnections, IBaseRepository<UserRealTimeGroup> userRealTimeGroups,
+            IBaseRepository<SignalrConnection> signalrConnections,
+            IBaseRepository<UserRealTimeGroup> userRealTimeGroups,
             IBaseRepository<UserDeviceToken> userDeviceTokens, IBaseRepository<CategorySummary> categorySummaries,
             IBaseRepository<TopicSummary> topicSummaries) : base(dbContext)
         {

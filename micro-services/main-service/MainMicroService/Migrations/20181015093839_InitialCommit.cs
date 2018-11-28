@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Main.Migrations
+namespace MainMicroService.Migrations
 {
     public partial class InitialCommit : Migration
     {

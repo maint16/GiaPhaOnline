@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Models.Entities;
-using AppShared.ViewModels.ReportTopic;
 using ClientShared.Models;
+using MainDb.Models.Entities;
+using MainShared.ViewModels.ReportTopic;
 
-namespace AppBusiness.Interfaces.Domains
+namespace MainBusiness.Interfaces.Domains
 {
     public interface ITopicReportDomain
     {

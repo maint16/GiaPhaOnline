@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.NotificationMessage
+namespace MainShared.ViewModels.NotificationMessage
 {
     public class GetNotificationMessageViewModel
     {

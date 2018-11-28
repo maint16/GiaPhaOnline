@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.Users
+namespace MainShared.ViewModels.Users
 {
     public class ForgotPasswordViewModel
     {

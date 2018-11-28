@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Models.Users;
-using AppDb.Models.Entities;
-using AppShared.ViewModels.Jwt;
-using AppShared.ViewModels.Users;
 using ClientShared.Models;
+using MainBusiness.Models.Users;
+using MainDb.Models.Entities;
+using MainShared.ViewModels.Jwt;
+using MainShared.ViewModels.Users;
 using SkiaSharp;
 
-namespace AppBusiness.Interfaces.Domains
+namespace MainBusiness.Interfaces.Domains
 {
     public interface IUserDomain
     {
@@ -125,12 +125,13 @@ namespace AppBusiness.Interfaces.Domains
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Add | edit user signature asynchronously.
+        ///     Add | edit user signature asynchronously.
         /// </summary>
         /// <param name="model"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<User> AddUserSignatureAsync(AddUserSignatureViewModel model, CancellationToken cancellationToken = default(CancellationToken));
+        Task<User> AddUserSignatureAsync(AddUserSignatureViewModel model,
+            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     From user information to generate user json web token.

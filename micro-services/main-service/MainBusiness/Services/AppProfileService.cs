@@ -1,11 +1,11 @@
-﻿using AppBusiness.Interfaces;
-using AppDb.Models.Entities;
+﻿using MainBusiness.Interfaces;
+using MainDb.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using ServiceShared.Models;
 using ServiceShared.Services;
 
-namespace AppBusiness.Services
+namespace MainBusiness.Services
 {
     public class AppProfileService : BaseProfileService, IAppProfileService
     {

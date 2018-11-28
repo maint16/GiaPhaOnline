@@ -4,17 +4,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Interfaces;
-using AppShared.ViewModels.RealTime;
-using Main.Constants;
-using Main.Constants.RealTime;
-using Main.Interfaces.Services;
-using Main.Models.PushNotification;
-using Main.Models.PushNotification.Notification;
+using MainDb.Interfaces;
+using MainMicroService.Constants;
+using MainMicroService.Constants.RealTime;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Models.PushNotification;
+using MainMicroService.Models.PushNotification.Notification;
+using MainShared.ViewModels.RealTime;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Main.Services.RealTime
+namespace MainMicroService.Services.RealTime
 {
     public class FcmService : ICloudMessagingService
     {

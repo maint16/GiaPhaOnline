@@ -1,40 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppModel.Enumerations;
-using AppShared.Resources;
-using AppShared.ViewModels.ReportTopic;
 using AutoMapper;
-using Main.Models.AdditionalMessageInfo.Topic;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainMicroService.Models.AdditionalMessageInfo.Topic;
+using MainModel.Enumerations;
+using MainShared.Resources;
+using MainShared.ViewModels.ReportTopic;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/report-topic")]
     public class ReportTopicController : ApiBaseController
     {
-        #region Properties
-
-        private readonly ITopicReportDomain _topicReportDomain;
-
-        private readonly ITopicDomain _topicDomain;
-
-        private readonly IAppProfileService _appProfileService;
-
-        /// <summary>
-        /// Notification message
-        /// </summary>
-        private readonly INotificationMessageDomain _notificationMessageDomain;
-
-        #endregion
-
         #region Constructures
 
         public ReportTopicController(
@@ -54,6 +39,21 @@ namespace Main.Controllers
             _topicDomain = topicDomain;
             _notificationMessageDomain = notificationMessageDomain;
         }
+
+        #endregion
+
+        #region Properties
+
+        private readonly ITopicReportDomain _topicReportDomain;
+
+        private readonly ITopicDomain _topicDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
+        /// <summary>
+        ///     Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
 
         #endregion
 

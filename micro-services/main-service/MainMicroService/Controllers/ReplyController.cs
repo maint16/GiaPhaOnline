@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppShared.Resources;
-using AppShared.ViewModels.Reply;
 using AutoMapper;
-using Main.Constants;
-using Main.Interfaces.Services;
-using Main.Models.AdditionalMessageInfo.Topic;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainMicroService.Constants;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Models.AdditionalMessageInfo.Topic;
+using MainShared.Resources;
+using MainShared.ViewModels.Reply;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ using ServiceShared.Interfaces.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/[controller]")]
     public class ReplyController : Controller
@@ -72,7 +72,7 @@ namespace Main.Controllers
         private readonly ITopicDomain _topicDomain;
 
         /// <summary>
-        /// Notification message
+        ///     Notification message
         /// </summary>
         private readonly INotificationMessageDomain _notificationMessageDomain;
 

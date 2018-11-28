@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using ClientShared.Enumerations;
 using ClientShared.Models;
 
-namespace AppShared.ViewModels.NotificationMessage
+namespace MainShared.ViewModels.NotificationMessage
 {
     public class SearchNotificationMessageViewModel
     {

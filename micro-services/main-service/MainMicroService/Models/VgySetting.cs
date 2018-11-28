@@ -1,4 +1,4 @@
-﻿namespace Main.Models
+﻿namespace MainMicroService.Models
 {
     public class VgySetting
     {

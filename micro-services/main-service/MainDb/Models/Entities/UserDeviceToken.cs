@@ -1,4 +1,4 @@
-﻿namespace AppDb.Models.Entities
+﻿namespace MainDb.Models.Entities
 {
     public class UserDeviceToken
     {

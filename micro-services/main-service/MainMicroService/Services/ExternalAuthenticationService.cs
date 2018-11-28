@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppModel.Models.ExternalAuthentication;
-using Main.Constants;
+using MainBusiness.Interfaces;
+using MainMicroService.Constants;
+using MainModel.Models.ExternalAuthentication;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace Main.Services
+namespace MainMicroService.Services
 {
     public class ExternalAuthenticationService : IExternalAuthenticationService
     {

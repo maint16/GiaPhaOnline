@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace AppShared.ViewModels.RealTime
+namespace MainShared.ViewModels.RealTime
 {
     public class FcmPushMessageResponseViewModel
     {

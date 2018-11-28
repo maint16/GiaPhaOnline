@@ -1,4 +1,4 @@
-﻿namespace Main.Models.PushNotification
+﻿namespace MainMicroService.Models.PushNotification
 {
     public class FcmOption
     {

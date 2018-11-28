@@ -1,4 +1,4 @@
-﻿namespace Main.Models.AdditionalMessageInfo.CategoryGroup
+﻿namespace MainMicroService.Models.AdditionalMessageInfo.CategoryGroup
 {
     public class EditCategoryGroupAdditionalInfoModel
     {

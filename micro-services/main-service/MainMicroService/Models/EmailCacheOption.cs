@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Main.Models
+namespace MainMicroService.Models
 {
     public class EmailCacheOption
     {

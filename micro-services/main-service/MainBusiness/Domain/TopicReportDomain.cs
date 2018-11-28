@@ -4,21 +4,21 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.ReportTopic;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainShared.Resources;
+using MainShared.ViewModels.ReportTopic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class TopicReportDomain : ITopicReportDomain
     {

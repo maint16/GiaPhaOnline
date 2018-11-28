@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Models.Entities;
-using Main.Models.RealTime;
+using MainDb.Models.Entities;
+using MainMicroService.Models.RealTime;
 
-namespace Main.Interfaces.Services.RealTime
+namespace MainMicroService.Interfaces.Services.RealTime
 {
     public interface IRealTimeService
     {

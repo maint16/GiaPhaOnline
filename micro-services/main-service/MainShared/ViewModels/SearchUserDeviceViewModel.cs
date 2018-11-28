@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels
+﻿namespace MainShared.ViewModels
 {
     public class SearchUserDeviceViewModel
     {

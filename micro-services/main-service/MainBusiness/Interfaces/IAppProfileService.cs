@@ -1,7 +1,7 @@
-﻿using AppDb.Models.Entities;
+﻿using MainDb.Models.Entities;
 using ServiceShared.Interfaces.Services;
 
-namespace AppBusiness.Interfaces
+namespace MainBusiness.Interfaces
 {
     public interface IAppProfileService : IBaseProfileService
     {

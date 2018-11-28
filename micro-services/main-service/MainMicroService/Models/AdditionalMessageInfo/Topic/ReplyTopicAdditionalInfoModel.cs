@@ -1,4 +1,4 @@
-﻿namespace Main.Models.AdditionalMessageInfo.Topic
+﻿namespace MainMicroService.Models.AdditionalMessageInfo.Topic
 {
     public class ReplyTopicAdditionalInfoModel
     {

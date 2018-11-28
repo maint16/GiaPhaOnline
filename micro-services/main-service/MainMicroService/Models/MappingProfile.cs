@@ -1,8 +1,8 @@
-﻿using AppDb.Models.Entities;
-using AppShared.ViewModels.Users;
-using AutoMapper;
+﻿using AutoMapper;
+using MainDb.Models.Entities;
+using MainShared.ViewModels.Users;
 
-namespace Main.Models
+namespace MainMicroService.Models
 {
     public class MappingProfile : Profile
     {

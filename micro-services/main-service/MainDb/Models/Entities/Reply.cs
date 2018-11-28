@@ -1,6 +1,6 @@
 ﻿using ClientShared.Enumerations;
 
-namespace AppDb.Models.Entities
+namespace MainDb.Models.Entities
 {
     public class Reply
     {

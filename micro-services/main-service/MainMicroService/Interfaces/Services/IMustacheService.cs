@@ -1,4 +1,4 @@
-﻿namespace Main.Interfaces.Services
+﻿namespace MainMicroService.Interfaces.Services
 {
     public interface IMustacheService
     {

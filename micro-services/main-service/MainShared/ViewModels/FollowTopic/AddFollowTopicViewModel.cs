@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels.FollowTopic
+﻿namespace MainShared.ViewModels.FollowTopic
 {
     public class AddFollowTopicViewModel
     {

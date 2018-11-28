@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using AppBusiness.Interfaces.Domains;
-using AppShared.ViewModels.Category;
+using MainBusiness.Interfaces.Domains;
+using MainShared.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Authentications.ActionFilters;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/category-summary")]
     public class CategorySummaryController : Controller

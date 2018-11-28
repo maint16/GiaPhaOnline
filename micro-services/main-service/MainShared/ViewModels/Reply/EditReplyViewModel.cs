@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.Reply
+namespace MainShared.ViewModels.Reply
 {
     public class EditReplyViewModel
     {

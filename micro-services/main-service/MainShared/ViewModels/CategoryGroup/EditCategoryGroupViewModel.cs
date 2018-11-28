@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ClientShared.Enumerations;
 
-namespace AppShared.ViewModels.CategoryGroup
+namespace MainShared.ViewModels.CategoryGroup
 {
     public class EditCategoryGroupViewModel
     {

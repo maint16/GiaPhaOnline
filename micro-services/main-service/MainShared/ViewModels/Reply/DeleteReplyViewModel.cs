@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels.Reply
+﻿namespace MainShared.ViewModels.Reply
 {
     public class DeleteReplyViewModel
     {

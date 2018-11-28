@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.Topic
+namespace MainShared.ViewModels.Topic
 {
     public class AddTopicViewModel
     {

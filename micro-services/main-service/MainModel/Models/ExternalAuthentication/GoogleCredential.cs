@@ -1,4 +1,4 @@
-﻿namespace AppModel.Models.ExternalAuthentication
+﻿namespace MainModel.Models.ExternalAuthentication
 {
     public class GoogleCredential
     {

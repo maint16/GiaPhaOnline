@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppShared.ViewModels.NotificationMessage;
 using ClientShared.Models;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Models.Entities;
+using MainModel.Enumerations;
+using MainShared.ViewModels.NotificationMessage;
 
-namespace AppBusiness.Interfaces.Domains
+namespace MainBusiness.Interfaces.Domains
 {
     public interface INotificationMessageDomain
     {
@@ -41,7 +41,7 @@ namespace AppBusiness.Interfaces.Domains
             bool bIsExpressionSupressed = default(bool));
 
         /// <summary>
-        /// Add notification message to a group of user.
+        ///     Add notification message to a group of user.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="userGroup"></param>
@@ -49,7 +49,8 @@ namespace AppBusiness.Interfaces.Domains
         /// <param name="bIsExceptionSuppressed"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task AddNotificationMessageToUserGroup<T>(UserGroup userGroup, AddUserGroupNotificationMessageModel<T> model, bool bIsExceptionSuppressed = false, CancellationToken cancellationToken = default(CancellationToken));
+        Task AddNotificationMessageToUserGroup<T>(UserGroup userGroup, AddUserGroupNotificationMessageModel<T> model,
+            bool bIsExceptionSuppressed = false, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         ///     Get notification message using id.

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppShared.Resources;
-using AppShared.ViewModels.NotificationMessage;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainShared.Resources;
+using MainShared.ViewModels.NotificationMessage;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Models;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/notification-message")]
     public class NotificationMessageController : Controller

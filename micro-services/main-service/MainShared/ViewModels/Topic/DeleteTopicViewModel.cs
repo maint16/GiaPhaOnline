@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels.Topic
+﻿namespace MainShared.ViewModels.Topic
 {
     public class DeleteTopicViewModel
     {

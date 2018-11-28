@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
 using ClientShared.Enumerations;
-using Main.Authentications.Requirements;
-using Main.Constants;
+using MainBusiness.Interfaces;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Authentications.Requirements;
+using MainMicroService.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Authentications.Handlers
+namespace MainMicroService.Authentications.Handlers
 {
     public class SolidAccountRequirementHandler : AuthorizationHandler<SolidAccountRequirement>
     {

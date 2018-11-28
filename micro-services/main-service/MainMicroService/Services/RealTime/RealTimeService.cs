@@ -4,21 +4,21 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.ViewModels.RealTime;
 using ClientShared.Enumerations;
-using Main.Constants.RealTime;
-using Main.Hubs;
-using Main.Interfaces.Services;
-using Main.Interfaces.Services.RealTime;
-using Main.Models.PushNotification;
-using Main.Models.PushNotification.Notification;
-using Main.Models.RealTime;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Constants.RealTime;
+using MainMicroService.Hubs;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models.PushNotification;
+using MainMicroService.Models.PushNotification.Notification;
+using MainMicroService.Models.RealTime;
+using MainShared.ViewModels.RealTime;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Main.Services.RealTime
+namespace MainMicroService.Services.RealTime
 {
     public class RealTimeService : IRealTimeService
     {

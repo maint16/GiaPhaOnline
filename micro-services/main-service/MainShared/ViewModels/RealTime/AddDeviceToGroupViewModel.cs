@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.RealTime
+namespace MainShared.ViewModels.RealTime
 {
 #if DEBUG
     public class AddDeviceToGroupViewModel

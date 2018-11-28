@@ -7,18 +7,18 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.Users;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Models;
-using AppShared.Resources;
-using AppShared.ViewModels.Jwt;
-using AppShared.ViewModels.Users;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.Users;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainModel.Models;
+using MainShared.Resources;
+using MainShared.ViewModels.Jwt;
+using MainShared.ViewModels.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ServiceShared.Exceptions;
@@ -29,7 +29,7 @@ using VgySdk.Interfaces;
 using VgySdk.Models;
 using SortDirection = ClientShared.Enumerations.SortDirection;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class UserDomain : IUserDomain
     {

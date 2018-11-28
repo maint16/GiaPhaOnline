@@ -1,4 +1,4 @@
-﻿namespace Main.Models.AdditionalMessageInfo.Category
+﻿namespace MainMicroService.Models.AdditionalMessageInfo.Category
 {
     public class FollowCategoryAdditionalInfoModel
     {

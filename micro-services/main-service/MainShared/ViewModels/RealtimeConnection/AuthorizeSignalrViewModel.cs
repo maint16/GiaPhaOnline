@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.RealtimeConnection
+namespace MainShared.ViewModels.RealtimeConnection
 {
     public class AuthorizeSignalrViewModel
     {

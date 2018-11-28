@@ -4,23 +4,23 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppShared.Resources;
-using AppShared.ViewModels.NotificationMessage;
 using ClientShared.Enumerations;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainModel.Enumerations;
+using MainShared.Resources;
+using MainShared.ViewModels.NotificationMessage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class NotificationMessageDomain : INotificationMessageDomain
     {
@@ -82,7 +82,6 @@ namespace AppBusiness.Domain
                 await _unitOfWork.CommitAsync(cancellationToken);
 
                 return notificationMessage;
-
             }
             catch
             {
@@ -121,7 +120,6 @@ namespace AppBusiness.Domain
                 }
 
                 await _unitOfWork.CommitAsync(cancellationToken);
-
             }
             catch
             {
@@ -133,7 +131,7 @@ namespace AppBusiness.Domain
         }
 
         /// <summary>
-        /// <inheritdoc />
+        ///     <inheritdoc />
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="userGroup"></param>
@@ -141,7 +139,8 @@ namespace AppBusiness.Domain
         /// <param name="bIsExceptionSuppressed"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public virtual async Task AddNotificationMessageToUserGroup<T>(UserGroup userGroup, AddUserGroupNotificationMessageModel<T> model,
+        public virtual async Task AddNotificationMessageToUserGroup<T>(UserGroup userGroup,
+            AddUserGroupNotificationMessageModel<T> model,
             bool bIsExceptionSuppressed = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             try

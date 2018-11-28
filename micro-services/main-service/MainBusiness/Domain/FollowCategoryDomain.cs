@@ -4,20 +4,20 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.FollowCategory;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainShared.Resources;
+using MainShared.ViewModels.FollowCategory;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class FollowCategoryDomain : IFollowCategoryDomain
     {
@@ -121,7 +121,7 @@ namespace AppBusiness.Domain
 
             // Find categories by using specific conditions.
             var followCategories = _unitOfWork.FollowingCategories.Search();
-            
+
             followCategories =
                 followCategories.Where(x => x.CategoryId == model.CategoryId && x.FollowerId == profile.Id);
 
@@ -147,7 +147,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadFollowCategoryCondition = new SearchFollowCategoryViewModel();
-            loadFollowCategoryCondition.CategoryIds = new HashSet<int> { categoryId };
+            loadFollowCategoryCondition.CategoryIds = new HashSet<int> {categoryId};
             loadFollowCategoryCondition.Pagination = new Pagination(1, 1);
 
             return await GetFollowingCategories(loadFollowCategoryCondition).FirstOrDefaultAsync(cancellationToken);

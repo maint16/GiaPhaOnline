@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace Main.Attributes
+namespace MainMicroService.Attributes
 {
     public class ApiExceptionFilter : IExceptionFilter
     {

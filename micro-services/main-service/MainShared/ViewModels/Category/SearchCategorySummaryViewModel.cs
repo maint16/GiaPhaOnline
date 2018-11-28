@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ClientShared.Models;
 
-namespace AppShared.ViewModels.Category
+namespace MainShared.ViewModels.Category
 {
     public class SearchCategorySummaryViewModel
     {

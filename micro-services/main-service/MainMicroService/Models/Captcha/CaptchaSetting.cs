@@ -1,4 +1,4 @@
-﻿namespace Main.Models.Captcha
+﻿namespace MainMicroService.Models.Captcha
 {
     public class CaptchaSetting
     {

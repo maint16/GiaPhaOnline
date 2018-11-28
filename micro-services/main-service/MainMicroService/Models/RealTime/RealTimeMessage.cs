@@ -1,4 +1,4 @@
-﻿namespace Main.Models.RealTime
+﻿namespace MainMicroService.Models.RealTime
 {
     public class RealTimeMessage<T>
     {

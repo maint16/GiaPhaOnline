@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 
-namespace Main
+namespace MainMicroService
 {
     public class Program
     {

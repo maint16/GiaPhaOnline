@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Models.Entities;
-using AppShared.ViewModels.Category;
 using ClientShared.Models;
+using MainDb.Models.Entities;
+using MainShared.ViewModels.Category;
 using SkiaSharp;
 
-namespace AppBusiness.Interfaces.Domains
+namespace MainBusiness.Interfaces.Domains
 {
     public interface ICategoryDomain
     {

@@ -1,38 +1,21 @@
 ﻿using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppModel.Enumerations;
-using AppShared.Resources;
-using AppShared.ViewModels.FollowTopic;
 using AutoMapper;
-using Main.Models.AdditionalMessageInfo.Category;
-using Main.Models.AdditionalMessageInfo.Topic;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainMicroService.Models.AdditionalMessageInfo.Topic;
+using MainShared.Resources;
+using MainShared.ViewModels.FollowTopic;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/follow-topic")]
     public class FollowTopicControler : Controller
     {
-        #region Properties
-
-        private readonly IFollowTopicDomain _followTopicDomain;
-
-        private readonly ITopicDomain _topicDomain;
-
-        private readonly IAppProfileService _appProfileService;
-
-        /// <summary>
-        /// Notification message
-        /// </summary>
-        private readonly INotificationMessageDomain _notificationMessageDomain;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -51,13 +34,28 @@ namespace Main.Controllers
             IFollowTopicDomain followTopicDomain,
             ITopicDomain topicDomain,
             IAppProfileService appProfileService,
-           INotificationMessageDomain notificationMessageDomain)
+            INotificationMessageDomain notificationMessageDomain)
         {
             _followTopicDomain = followTopicDomain;
             _appProfileService = appProfileService;
             _notificationMessageDomain = notificationMessageDomain;
             _topicDomain = topicDomain;
         }
+
+        #endregion
+
+        #region Properties
+
+        private readonly IFollowTopicDomain _followTopicDomain;
+
+        private readonly ITopicDomain _topicDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
+        /// <summary>
+        ///     Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
 
         #endregion
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Main.Authentications.Requirements
+namespace MainMicroService.Authentications.Requirements
 {
     public class SolidAccountRequirement : IAuthorizationRequirement
     {

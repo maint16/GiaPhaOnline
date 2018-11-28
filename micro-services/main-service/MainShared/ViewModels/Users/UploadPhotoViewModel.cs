@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace AppShared.ViewModels.Users
+namespace MainShared.ViewModels.Users
 {
     public class UploadPhotoViewModel
     {

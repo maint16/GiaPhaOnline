@@ -1,6 +1,6 @@
 ﻿using SendGrid.Helpers.Mail;
 
-namespace Main.Models
+namespace MainMicroService.Models
 {
     public class SendGridSetting
     {

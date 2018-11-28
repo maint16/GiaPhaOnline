@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AppDb.Models.Entities
+namespace MainDb.Models.Entities
 {
     public class AccessToken
     {

@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.Topic;
 using AutoMapper;
 using ClientShared.Enumerations;
-using Main.Constants;
-using Main.Constants.RealTime;
-using Main.Interfaces.Services;
-using Main.Interfaces.Services.RealTime;
-using Main.Models.AdditionalMessageInfo.Topic;
-using Main.Models.RealTime;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Constants;
+using MainMicroService.Constants.RealTime;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models.AdditionalMessageInfo.Topic;
+using MainMicroService.Models.RealTime;
+using MainShared.Resources;
+using MainShared.ViewModels.Topic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +28,7 @@ using ServiceShared.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/[controller]")]
     public class TopicController : Controller
@@ -36,7 +36,6 @@ namespace Main.Controllers
         #region Constructors
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="baseTimeService"></param>
         /// <param name="relationalDbService"></param>
@@ -148,7 +147,7 @@ namespace Main.Controllers
 
             followCategories = followCategories.Where(x => x.CategoryId == model.CategoryId);
 
-            HashSet<int> followerIds = new HashSet<int>(followCategories.Select(x => x.FollowerId));
+            var followerIds = new HashSet<int>(followCategories.Select(x => x.FollowerId));
 
             var additionalInfo = new AddTopicAdditionalInfoModel();
             additionalInfo.TopicName = model.Title;
@@ -199,7 +198,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -227,17 +226,13 @@ namespace Main.Controllers
 
             var topicRepliers = replies.Select(x => x.OwnerId);
 
-            HashSet<int> followerIds = new HashSet<int>();
+            var followerIds = new HashSet<int>();
 
             foreach (var topicFollower in topicFollowers)
-            {
                 followerIds.Add(topicFollower);
-            }
 
             foreach (var topicReplier in topicRepliers)
-            {
                 followerIds.Add(topicReplier);
-            }
 
             var additionalInfo = new AddTopicAdditionalInfoModel();
             additionalInfo.TopicName = model.Title;
@@ -285,7 +280,7 @@ namespace Main.Controllers
                 var emailTemplate = _emailCacheService.Read(EmailTemplateConstant.DeleteTopic);
                 if (emailTemplate != null)
                 {
-                    await _sendMailService.SendAsync(new HashSet<string> { user.Email }, null, null,
+                    await _sendMailService.SendAsync(new HashSet<string> {user.Email}, null, null,
                         emailTemplate.Subject,
                         emailTemplate.Content, true, CancellationToken.None);
 
@@ -299,7 +294,7 @@ namespace Main.Controllers
 
             // Send real-time message to all admins.
             var broadcastRealTimeMessageTask = _realTimeService.SendRealTimeMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, RealTimeEventConstant.DeleteTopic, topic,
+                new[] {RealTimeGroupConstant.Admin}, RealTimeEventConstant.DeleteTopic, topic,
                 CancellationToken.None);
 
             // Send push notification to all admin.
@@ -310,7 +305,7 @@ namespace Main.Controllers
             realTimeMessage.AdditionalInfo = topic;
 
             var broadcastPushMessageTask = _realTimeService.SendPushMessageToGroupsAsync(
-                new[] { RealTimeGroupConstant.Admin }, collapseKey, realTimeMessage);
+                new[] {RealTimeGroupConstant.Admin}, collapseKey, realTimeMessage);
 
             await Task.WhenAll(broadcastRealTimeMessageTask, broadcastPushMessageTask);
 

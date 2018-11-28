@@ -3,7 +3,7 @@ using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
 
-namespace AppShared.ViewModels.Users
+namespace MainShared.ViewModels.Users
 {
     public class SearchUserViewModel
     {

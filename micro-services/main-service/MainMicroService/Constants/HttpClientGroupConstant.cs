@@ -1,4 +1,4 @@
-﻿namespace Main.Constants
+﻿namespace MainMicroService.Constants
 {
     public class HttpClientGroupConstant
     {

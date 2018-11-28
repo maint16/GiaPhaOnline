@@ -5,15 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.Category;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainShared.Resources;
+using MainShared.ViewModels.Category;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
@@ -22,14 +22,15 @@ using SkiaSharp;
 using VgySdk.Interfaces;
 using VgySdk.Models;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class CategoryDomain : ICategoryDomain
     {
         #region Constructor
 
         public CategoryDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IBaseTimeService baseTimeService, IAppProfileService profileService, IHttpContextAccessor httpContextAccessor,
+            IBaseTimeService baseTimeService, IAppProfileService profileService,
+            IHttpContextAccessor httpContextAccessor,
             IVgyService vgyService)
         {
             _unitOfWork = unitOfWork;

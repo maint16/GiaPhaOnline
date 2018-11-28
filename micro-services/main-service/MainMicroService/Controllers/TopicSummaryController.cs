@@ -1,11 +1,11 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces.Domains;
-using AppShared.ViewModels.Topic;
+using MainBusiness.Interfaces.Domains;
+using MainShared.ViewModels.Topic;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Authentications.ActionFilters;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/topic-summary")]
     public class TopicSummaryController : Controller

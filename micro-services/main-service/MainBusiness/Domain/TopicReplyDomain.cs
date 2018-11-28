@@ -4,28 +4,29 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.Reply;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainShared.Resources;
+using MainShared.ViewModels.Reply;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class TopicReplyDomain : IReplyDomain
     {
         #region Constructor
 
         public TopicReplyDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService, IBaseTimeService baseTimeService)
+            IHttpContextAccessor httpContextAccessor, IAppProfileService profileService,
+            IBaseTimeService baseTimeService)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;

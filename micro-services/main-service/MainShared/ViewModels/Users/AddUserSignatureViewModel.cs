@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.Users
+namespace MainShared.ViewModels.Users
 {
     public class AddUserSignatureViewModel
     {
@@ -9,7 +9,7 @@ namespace AppShared.ViewModels.Users
         public int? UserId { get; set; }
 
         /// <summary>
-        /// User signature.
+        ///     User signature.
         /// </summary>
         [Required]
         public string Signature { get; set; }

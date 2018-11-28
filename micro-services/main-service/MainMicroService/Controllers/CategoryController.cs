@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppShared.Resources;
-using AppShared.ViewModels.Category;
 using AutoMapper;
 using ClientShared.Enumerations;
 using ClientShared.Models;
-using Main.Constants;
-using Main.Constants.RealTime;
-using Main.Interfaces.Services.RealTime;
-using Main.Models.AdditionalMessageInfo.Category;
-using Main.Models.RealTime;
-using Main.ViewModels.Category;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Constants;
+using MainMicroService.Constants.RealTime;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models.AdditionalMessageInfo.Category;
+using MainMicroService.Models.RealTime;
+using MainMicroService.ViewModels.Category;
+using MainModel.Enumerations;
+using MainShared.Resources;
+using MainShared.ViewModels.Category;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 using SkiaSharp;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/category")]
     public class CategoryController : ApiBaseController
@@ -68,7 +68,7 @@ namespace Main.Controllers
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Notification message
+        ///     Notification message
         /// </summary>
         private readonly INotificationMessageDomain _notificationMessageDomain;
 

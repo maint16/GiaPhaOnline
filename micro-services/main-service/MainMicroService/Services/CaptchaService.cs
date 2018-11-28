@@ -1,11 +1,11 @@
 ﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Main.Interfaces.Services;
-using Main.Models.Captcha;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Models.Captcha;
 using Microsoft.Extensions.Options;
 
-namespace Main.Services
+namespace MainMicroService.Services
 {
     public class CaptchaService : ICaptchaService
     {

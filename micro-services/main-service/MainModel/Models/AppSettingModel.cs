@@ -1,4 +1,4 @@
-﻿namespace AppModel.Models
+﻿namespace MainModel.Models
 {
     public class ApplicationSetting
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AppBusiness.Models.NotificationMessages
+namespace MainBusiness.Models.NotificationMessages
 {
     public class AddUserGroupNotificationMessageModel<T>
     {

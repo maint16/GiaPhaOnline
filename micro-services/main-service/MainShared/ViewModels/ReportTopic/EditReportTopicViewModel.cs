@@ -1,6 +1,6 @@
 ﻿using ClientShared.Enumerations;
 
-namespace AppShared.ViewModels.ReportTopic
+namespace MainShared.ViewModels.ReportTopic
 {
     public class EditReportTopicViewModel
     {

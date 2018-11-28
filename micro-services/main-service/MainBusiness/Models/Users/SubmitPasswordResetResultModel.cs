@@ -1,4 +1,4 @@
-﻿namespace AppBusiness.Models.Users
+﻿namespace MainBusiness.Models.Users
 {
     public class SubmitPasswordResetResultModel
     {

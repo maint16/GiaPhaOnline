@@ -1,6 +1,6 @@
 ﻿using ClientShared.Enumerations;
 
-namespace AppShared.ViewModels.Users
+namespace MainShared.ViewModels.Users
 {
     public class ChangeUserStatusViewModel
     {

@@ -1,5 +1,4 @@
 ﻿using AuthenticationDb.Models.Entities;
-using ServiceShared.Interfaces.Services;
 using ServiceShared.Services;
 
 namespace AuthenticationMicroService.Services

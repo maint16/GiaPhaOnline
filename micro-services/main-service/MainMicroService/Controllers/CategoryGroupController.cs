@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Enumerations;
-using AppShared.Resources;
-using AppShared.ViewModels.CategoryGroup;
 using AutoMapper;
-using Main.Constants;
-using Main.Constants.RealTime;
-using Main.Interfaces.Services.RealTime;
-using Main.Models.AdditionalMessageInfo.CategoryGroup;
-using Main.Models.RealTime;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Constants;
+using MainMicroService.Constants.RealTime;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models.AdditionalMessageInfo.CategoryGroup;
+using MainMicroService.Models.RealTime;
+using MainModel.Enumerations;
+using MainShared.Resources;
+using MainShared.ViewModels.CategoryGroup;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/category-group")]
     public class CategoryGroupController : ApiBaseController
@@ -37,7 +37,8 @@ namespace Main.Controllers
             IBaseEncryptionService encryptionService,
             IAppProfileService profileService, IRealTimeService realTimeService,
             ICategoryGroupDomain categoryGroupService,
-            INotificationMessageDomain notificationMessageDomain, IAppProfileService appProfileService) : base(unitOfWork, mapper, baseTimeService,
+            INotificationMessageDomain notificationMessageDomain, IAppProfileService appProfileService) : base(
+            unitOfWork, mapper, baseTimeService,
             relationalDbService, profileService)
         {
             _realTimeService = realTimeService;
@@ -58,11 +59,12 @@ namespace Main.Controllers
         private readonly IMapper _mapper;
 
         /// <summary>
-        /// Notification message
+        ///     Notification message
         /// </summary>
         private readonly INotificationMessageDomain _notificationMessageDomain;
 
         private readonly IAppProfileService _appProfileService;
+
         #endregion
 
         #region Methods
@@ -116,12 +118,12 @@ namespace Main.Controllers
             #endregion
 
             #region Notification
-            
+
             var additionalInfo = new AddCategoryGroupAdditionalInfoModel();
             additionalInfo.CategoryGroupName = model.Name;
             additionalInfo.CreatorName = profile.Nickname;
 
-            HashSet<int> ignoreUsers = new HashSet<int> {profile.Id};
+            var ignoreUsers = new HashSet<int> {profile.Id};
 
             await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
                 new AddUserGroupNotificationMessageModel<AddCategoryGroupAdditionalInfoModel>(additionalInfo,
@@ -188,7 +190,7 @@ namespace Main.Controllers
                 additionalInfo.CategoryGroupName = model.Name;
                 additionalInfo.EditorName = profile.Nickname;
 
-                HashSet<int> ignoreUsers = new HashSet<int> { profile.Id };
+                var ignoreUsers = new HashSet<int> {profile.Id};
 
                 await _notificationMessageDomain.AddNotificationMessageToUserGroup(UserGroup.Admin,
                     new AddUserGroupNotificationMessageModel<EditCategoryGroupAdditionalInfoModel>(additionalInfo,

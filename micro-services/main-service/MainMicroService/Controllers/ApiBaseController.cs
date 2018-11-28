@@ -1,10 +1,10 @@
-﻿using AppBusiness.Interfaces;
-using AppDb.Interfaces;
-using AutoMapper;
+﻿using AutoMapper;
+using MainBusiness.Interfaces;
+using MainDb.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     public class ApiBaseController : Controller
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AppShared.ViewModels.CategoryGroup
+namespace MainShared.ViewModels.CategoryGroup
 {
     public class AddCategoryGroupViewModel
     {

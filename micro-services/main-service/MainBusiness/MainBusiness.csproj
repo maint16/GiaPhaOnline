@@ -12,10 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AppDb\AppDb.csproj" />
-    <ProjectReference Include="..\AppModel\AppModel.csproj" />
-    <ProjectReference Include="..\AppShared\AppShared.csproj" />
-    <ProjectReference Include="..\ServiceShared\ServiceShared.csproj" />
+    <ProjectReference Include="..\MainDb\MainDb.csproj" />
+    <ProjectReference Include="..\MainModel\MainModel.csproj" />
+    <ProjectReference Include="..\MainShared\MainShared.csproj" />
   </ItemGroup>
 
 </Project>

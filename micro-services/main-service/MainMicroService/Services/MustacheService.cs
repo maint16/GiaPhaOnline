@@ -1,7 +1,7 @@
-﻿using Main.Interfaces.Services;
+﻿using MainMicroService.Interfaces.Services;
 using Mustache;
 
-namespace Main.Services
+namespace MainMicroService.Services
 {
     public class MustacheService : IMustacheService
     {

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AppDb.Models.Entities;
-using AppShared.ViewModels.Topic;
 using ClientShared.Models;
+using MainDb.Models.Entities;
+using MainShared.ViewModels.Topic;
 
-namespace AppBusiness.Interfaces.Domains
+namespace MainBusiness.Interfaces.Domains
 {
     public interface ITopicDomain
     {

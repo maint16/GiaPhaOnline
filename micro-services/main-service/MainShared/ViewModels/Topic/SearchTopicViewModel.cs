@@ -3,7 +3,7 @@ using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
 
-namespace AppShared.ViewModels.Topic
+namespace MainShared.ViewModels.Topic
 {
     public class SearchTopicViewModel
     {

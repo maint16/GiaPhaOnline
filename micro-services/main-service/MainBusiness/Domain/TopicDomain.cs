@@ -4,28 +4,29 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.Topic;
 using ClientShared.Enumerations;
 using ClientShared.Enumerations.Order;
 using ClientShared.Models;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainShared.Resources;
+using MainShared.ViewModels.Topic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Exceptions;
 using ServiceShared.Interfaces.Services;
 
-namespace AppBusiness.Domain
+namespace MainBusiness.Domain
 {
     public class TopicDomain : ITopicDomain
     {
         #region Constructors
 
         public TopicDomain(IAppUnitOfWork unitOfWork, IBaseRelationalDbService relationalDbService,
-            IAppProfileService profileService, IBaseTimeService baseTimeService, IHttpContextAccessor httpContextAccessor)
+            IAppProfileService profileService, IBaseTimeService baseTimeService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _relationalDbService = relationalDbService;
@@ -194,7 +195,7 @@ namespace AppBusiness.Domain
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var loadTopicCondition = new SearchTopicViewModel();
-            loadTopicCondition.Ids = new HashSet<int> { id };
+            loadTopicCondition.Ids = new HashSet<int> {id};
             loadTopicCondition.Pagination = new Pagination(1, 1);
 
             return await GetTopics(loadTopicCondition).FirstOrDefaultAsync(cancellationToken);
@@ -294,7 +295,6 @@ namespace AppBusiness.Domain
             // Search conditions which are based on roles.
             var profile = _profileService.GetProfile();
             if (profile != null)
-            {
                 if (profile.Role == UserRole.Admin)
                 {
                     var statuses = condition.Statuses?.Where(x => Enum.IsDefined(typeof(UserRole), x)).ToHashSet();
@@ -302,13 +302,13 @@ namespace AppBusiness.Domain
                         topics = topics.Where(x => condition.Statuses.Contains(x.Status));
                 }
                 else
-                    topics = topics.Where(x => x.Status == ItemStatus.Active || (x.Status == ItemStatus.Disabled && x.OwnerId == profile.Id));
-            }
+                {
+                    topics = topics.Where(x =>
+                        x.Status == ItemStatus.Active || x.Status == ItemStatus.Disabled && x.OwnerId == profile.Id);
+                }
             else
-            {
                 topics = topics.Where(x =>
                     x.Status == ItemStatus.Active);
-            }
 
             return topics;
         }

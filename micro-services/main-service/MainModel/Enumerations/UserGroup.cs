@@ -1,4 +1,4 @@
-﻿namespace AppModel.Enumerations
+﻿namespace MainModel.Enumerations
 {
     public enum UserGroup
     {

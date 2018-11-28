@@ -1,9 +1,16 @@
 ﻿using Newtonsoft.Json;
 
-namespace AppDb.Models.Entities
+namespace MainDb.Models.Entities
 {
     public class CategorySummary
     {
+        #region Relationships
+
+        [JsonIgnore]
+        public virtual Category Category { get; set; }
+
+        #endregion
+
         #region Properties
 
         public int CategoryId { get; set; }
@@ -18,13 +25,6 @@ namespace AppDb.Models.Entities
 
         public double LastTopicCreatedTime { get; set; }
 
-        #endregion
-
-        #region Relationships
-
-        [JsonIgnore]
-        public virtual Category Category { get; set; }
-        
         #endregion
 
         #region Constructors

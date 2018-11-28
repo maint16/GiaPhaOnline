@@ -1,5 +1,5 @@
 ﻿using AuthenticationDb.Models.Entities;
-using AuthenticationMicroService.Interfaces;
+using AuthenticationMicroService.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using ServiceShared.Models;

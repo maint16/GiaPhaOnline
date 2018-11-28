@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using AppShared.Resources;
+using MainShared.Resources;
 
-namespace AppShared.ViewModels
+namespace MainShared.ViewModels
 {
     public class AddDeviceViewModel
     {

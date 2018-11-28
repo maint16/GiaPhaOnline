@@ -1,27 +1,30 @@
-﻿using AppBusiness.Domain;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Services;
-using AppDb.Interfaces;
-using AppDb.Models.Contexts;
-using AppDb.Models.Entities;
-using AppDb.Services;
-using AppModel.Models;
-using AppModel.Models.ExternalAuthentication;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using ClientShared.Enumerations;
-using Main.Authentications.Handlers;
-using Main.Authentications.Requirements;
-using Main.Authentications.TokenValidators;
-using Main.Constants;
-using Main.Hubs;
-using Main.Interfaces.Services;
-using Main.Interfaces.Services.RealTime;
-using Main.Models;
-using Main.Models.Captcha;
-using Main.Models.PushNotification;
-using Main.Services;
-using Main.Services.RealTime;
+using MainBusiness.Domain;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Services;
+using MainDb.Interfaces;
+using MainDb.Models.Contexts;
+using MainDb.Models.Entities;
+using MainDb.Services;
+using MainMicroService.Authentications.Handlers;
+using MainMicroService.Authentications.Requirements;
+using MainMicroService.Authentications.TokenValidators;
+using MainMicroService.Constants;
+using MainMicroService.Hubs;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models;
+using MainMicroService.Models.Captcha;
+using MainMicroService.Models.PushNotification;
+using MainMicroService.Services;
+using MainMicroService.Services.RealTime;
+using MainModel.Models;
+using MainModel.Models.ExternalAuthentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -38,22 +41,19 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using NJsonSchema;
+using NSwag;
+using NSwag.AspNetCore;
+using NSwag.SwaggerGeneration.Processors.Security;
 using Serilog;
 using ServiceShared.Extensions;
 using ServiceShared.Interfaces.Services;
 using ServiceShared.Models;
 using ServiceShared.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NJsonSchema;
-using NSwag;
-using NSwag.AspNetCore;
-using NSwag.SwaggerGeneration.Processors.Security;
 using VgySdk.Interfaces;
 using VgySdk.Service;
 
-namespace Main
+namespace MainMicroService
 {
     public class Startup
     {
@@ -314,7 +314,7 @@ namespace Main
             }
 
             services.AddDbContext<RelationalDbContext>(
-                options => options.UseSqlite(sandboxConnection, b => b.MigrationsAssembly(nameof(Main)))
+                options => options.UseSqlite(sandboxConnection, b => b.MigrationsAssembly(nameof(MainMicroService)))
                 .EnableSensitiveDataLogging());
 #elif USE_AZURE_SQL
             sqlConnection = Configuration.GetConnectionString("azureSqlServerConnectionString");

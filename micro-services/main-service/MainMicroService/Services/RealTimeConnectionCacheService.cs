@@ -1,10 +1,11 @@
-﻿using AppDb.Models.Entities;
-using Main.Interfaces.Services.RealTime;
+﻿using MainDb.Models.Entities;
+using MainMicroService.Interfaces.Services.RealTime;
 using ServiceShared.Services;
 
-namespace Main.Services
+namespace MainMicroService.Services
 {
-    public class RealTimeConnectionCacheService : BaseKeyValueCacheService<string, User>, IRealTimeConnectionCacheService
+    public class RealTimeConnectionCacheService : BaseKeyValueCacheService<string, User>,
+        IRealTimeConnectionCacheService
     {
         #region Methods
 

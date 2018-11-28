@@ -76,3 +76,5 @@
 /micro-services/main-service/MainShared/bin
 /micro-services/realtime-service/obj
 /micro-services/realtime-service/bin
+/micro-services/main-service/MainBusiness/AppBusiness.csproj.user
+/micro-services/main-service/MainMicroService/Main.csproj.user

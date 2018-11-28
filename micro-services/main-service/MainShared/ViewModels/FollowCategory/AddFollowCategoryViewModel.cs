@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels.FollowCategory
+﻿namespace MainShared.ViewModels.FollowCategory
 {
     public class AddFollowCategoryViewModel
     {

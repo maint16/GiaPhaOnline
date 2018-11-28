@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Main.HostedServices
+namespace MainMicroService.HostedServices
 {
     public class SummarizeCategoryHostedService : IHostedService
     {

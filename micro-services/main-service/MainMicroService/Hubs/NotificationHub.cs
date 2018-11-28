@@ -5,16 +5,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using Main.Constants;
-using Main.Interfaces.Services.RealTime;
+using MainBusiness.Interfaces;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Constants;
+using MainMicroService.Interfaces.Services.RealTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Hubs
+namespace MainMicroService.Hubs
 {
     [Authorize(PolicyConstant.DefaultSignalRPolicyName)]
     public class NotificationHub : Hub
@@ -28,7 +28,8 @@ namespace Main.Hubs
         /// <param name="profileService"></param>
         /// <param name="baseTimeService"></param>
         /// <param name="realTimeService"></param>
-        public NotificationHub(IAppUnitOfWork unitOfWork, IAppProfileService profileService, IBaseTimeService baseTimeService,
+        public NotificationHub(IAppUnitOfWork unitOfWork, IAppProfileService profileService,
+            IBaseTimeService baseTimeService,
             IRealTimeService realTimeService)
         {
             _unitOfWork = unitOfWork;

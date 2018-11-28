@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Main.Interfaces.Services;
-using Main.Models;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 
-namespace Main.Services
+namespace MainMicroService.Services
 {
     public class SendGridService : ISendMailService
     {

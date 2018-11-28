@@ -2,11 +2,11 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AppShared.ViewModels.RealTime;
-using Main.Models.PushNotification;
-using Main.Models.PushNotification.Notification;
+using MainMicroService.Models.PushNotification;
+using MainMicroService.Models.PushNotification.Notification;
+using MainShared.ViewModels.RealTime;
 
-namespace Main.Interfaces.Services
+namespace MainMicroService.Interfaces.Services
 {
     public interface ICloudMessagingService
     {

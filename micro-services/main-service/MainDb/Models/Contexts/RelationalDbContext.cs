@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AppDb.Models.Entities;
+using MainDb.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace AppDb.Models.Contexts
+namespace MainDb.Models.Contexts
 {
     public class RelationalDbContext : DbContext
     {

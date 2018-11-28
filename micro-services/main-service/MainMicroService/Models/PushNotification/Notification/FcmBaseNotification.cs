@@ -1,4 +1,4 @@
-namespace Main.Models.PushNotification.Notification
+namespace MainMicroService.Models.PushNotification.Notification
 {
     /// <summary>
     ///     Base class of FCM Notification.

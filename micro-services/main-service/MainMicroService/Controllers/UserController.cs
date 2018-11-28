@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.Users;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppModel.Models;
-using AppShared.Resources;
-using AppShared.ViewModels.Users;
 using AutoMapper;
 using ClientShared.Enumerations;
-using Main.Constants;
-using Main.Constants.RealTime;
-using Main.Interfaces.Services;
-using Main.Interfaces.Services.RealTime;
-using Main.Models.RealTime;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.Users;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Constants;
+using MainMicroService.Constants.RealTime;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models.RealTime;
+using MainModel.Models;
+using MainShared.Resources;
+using MainShared.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +29,7 @@ using ServiceShared.Models;
 using SkiaSharp;
 using VgySdk.Interfaces;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/user")]
     public class UserController : ApiBaseController

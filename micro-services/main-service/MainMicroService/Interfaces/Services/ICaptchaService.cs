@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Main.Interfaces.Services
+namespace MainMicroService.Interfaces.Services
 {
     public interface ICaptchaService
     {

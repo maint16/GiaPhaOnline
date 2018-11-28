@@ -2,7 +2,6 @@
 using AuthenticationDb.Models.Contexts;
 using AuthenticationDb.Models.Entities;
 using AuthenticationDb.Services;
-using AuthenticationMicroService.Interfaces.Services;
 using AuthenticationMicroService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

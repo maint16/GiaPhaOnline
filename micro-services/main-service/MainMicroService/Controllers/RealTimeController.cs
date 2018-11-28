@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppDb.Interfaces;
-using AppDb.Models.Entities;
-using AppShared.Resources;
-using AppShared.ViewModels.RealTime;
-using Main.Interfaces.Services;
-using Main.Interfaces.Services.RealTime;
-using Main.Models.PushNotification;
+using MainBusiness.Interfaces;
+using MainDb.Interfaces;
+using MainDb.Models.Entities;
+using MainMicroService.Interfaces.Services;
+using MainMicroService.Interfaces.Services.RealTime;
+using MainMicroService.Models.PushNotification;
+using MainShared.Resources;
+using MainShared.ViewModels.RealTime;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceShared.Authentications.ActionFilters;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/real-time")]
     public class RealTimeController : Controller
     {
         #region Constructor
 
-        public RealTimeController(IAppUnitOfWork unitOfWork, IAppProfileService identityService, IBaseTimeService baseTimeService,
+        public RealTimeController(IAppUnitOfWork unitOfWork, IAppProfileService identityService,
+            IBaseTimeService baseTimeService,
             IRealTimeService realTimeService, ICloudMessagingService cloudMessagingService)
         {
             _unitOfWork = unitOfWork;

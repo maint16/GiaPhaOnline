@@ -1,36 +1,21 @@
 ﻿using System.Threading.Tasks;
-using AppBusiness.Interfaces;
-using AppBusiness.Interfaces.Domains;
-using AppBusiness.Models.NotificationMessages;
-using AppDb.Interfaces;
-using AppModel.Enumerations;
-using AppShared.Resources;
-using AppShared.ViewModels.FollowCategory;
 using AutoMapper;
-using Main.Models.AdditionalMessageInfo.Category;
+using MainBusiness.Interfaces;
+using MainBusiness.Interfaces.Domains;
+using MainBusiness.Models.NotificationMessages;
+using MainDb.Interfaces;
+using MainMicroService.Models.AdditionalMessageInfo.Category;
+using MainModel.Enumerations;
+using MainShared.Resources;
+using MainShared.ViewModels.FollowCategory;
 using Microsoft.AspNetCore.Mvc;
 using ServiceShared.Interfaces.Services;
 
-namespace Main.Controllers
+namespace MainMicroService.Controllers
 {
     [Route("api/follow-category")]
     public class FollowCategoryController : Controller
     {
-        #region Properties
-
-        private readonly IFollowCategoryDomain _followCategoryDomain;
-
-        private readonly ICategoryDomain _categoryDomain;
-
-        private readonly IAppProfileService _appProfileService;
-
-        /// <summary>
-        /// Notification message
-        /// </summary>
-        private readonly INotificationMessageDomain _notificationMessageDomain;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -57,6 +42,21 @@ namespace Main.Controllers
             _notificationMessageDomain = notificationMessageDomain;
             _categoryDomain = categoryDomain;
         }
+
+        #endregion
+
+        #region Properties
+
+        private readonly IFollowCategoryDomain _followCategoryDomain;
+
+        private readonly ICategoryDomain _categoryDomain;
+
+        private readonly IAppProfileService _appProfileService;
+
+        /// <summary>
+        ///     Notification message
+        /// </summary>
+        private readonly INotificationMessageDomain _notificationMessageDomain;
 
         #endregion
 

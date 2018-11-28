@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using AppDb.Models.Entities;
 using ClientShared.Enumerations;
+using MainDb.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppDb.Models.Contexts
+namespace MainDb.Models.Contexts
 {
     public class InMemoryRelationalDbContext : RelationalDbContext
     {

@@ -1,4 +1,4 @@
-﻿namespace AppShared.ViewModels.RealTime
+﻿namespace MainShared.ViewModels.RealTime
 {
     public class CloudMessagingTokenInfoViewModel
     {
