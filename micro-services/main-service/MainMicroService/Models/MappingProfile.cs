@@ -16,7 +16,7 @@ namespace MainMicroService.Models
             // Post mapping.
             //CreateMap<AddPostViewModel, Post>();
             CreateMap<LoginViewModel, LoginViewModel>();
-            CreateMap<Topic, Topic>();
+         
         }
 
         #endregion

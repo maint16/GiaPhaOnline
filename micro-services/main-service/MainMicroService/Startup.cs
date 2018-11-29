@@ -15,14 +15,10 @@ using MainMicroService.Authentications.Handlers;
 using MainMicroService.Authentications.Requirements;
 using MainMicroService.Authentications.TokenValidators;
 using MainMicroService.Constants;
-using MainMicroService.Hubs;
 using MainMicroService.Interfaces.Services;
-using MainMicroService.Interfaces.Services.RealTime;
 using MainMicroService.Models;
 using MainMicroService.Models.Captcha;
-using MainMicroService.Models.PushNotification;
 using MainMicroService.Services;
-using MainMicroService.Services.RealTime;
 using MainModel.Models;
 using MainModel.Models.ExternalAuthentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -106,7 +102,6 @@ namespace MainMicroService
             services.Configure<ApplicationSetting>(Configuration.GetSection(nameof(ApplicationSetting)));
             services.Configure<GoogleCredential>(Configuration.GetSection(AppConfigKeyConstant.GoogleCredential));
             services.Configure<FacebookCredential>(Configuration.GetSection(AppConfigKeyConstant.FacebookCredential));
-            services.Configure<FcmOption>(Configuration.GetSection(AppConfigKeyConstant.AppFirebase));
             services.Configure<SendGridSetting>(Configuration.GetSection(AppConfigKeyConstant.AppSendGrid));
             //services.Configure<PusherSetting>(Configuration.GetSection(nameof(PusherSetting)));
             services.Configure<CaptchaSetting>(Configuration.GetSection(nameof(CaptchaSetting)));
@@ -114,14 +109,7 @@ namespace MainMicroService
             // Build a service provider.
             var servicesProvider = services.BuildServiceProvider();
             var jwtBearerSettings = servicesProvider.GetService<IOptions<AppJwtModel>>().Value;
-            var fcmOption = servicesProvider.GetService<IOptions<FcmOption>>().Value;
-
-            //#if DEBUG
-            //            var dbContext = servicesProvider.GetService<DbContext>();
-            //            var sqlReader = dbContext.Database.ExecuteSqlQuery("select sqlite_version();");
-            //            sqlReader.Read();
-            //            var value = sqlReader.DbDataReader[0];
-            //#endif
+           
 
             // Cors configuration.
             var corsBuilder = new CorsPolicyBuilder();
@@ -172,13 +160,7 @@ namespace MainMicroService
             // Add automaper configuration.
             services.AddAutoMapper(options => options.AddProfile(typeof(MappingProfile)));
 
-            // Add HttpClient factory.
-            services.AddHttpClient(HttpClientGroupConstant.FcmService, x =>
-            {
-                x.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={fcmOption.ServerKey}");
-                x.DefaultRequestHeaders.TryAddWithoutValidation("project_id", fcmOption.SenderId);
-            });
-
+           
             services.AddHttpClient();
 
             // Add swagger.
@@ -279,9 +261,7 @@ namespace MainMicroService
                     }));
             });
 
-            // Use signalr connection.
-            app.UseSignalR(x => { x.MapHub<NotificationHub>("/hub/notification"); });
-            
+          
             // Enable MVC features.
             app.UseMvc();
         }
@@ -352,8 +332,7 @@ namespace MainMicroService
             services.AddScoped<IBaseEncryptionService, EncryptionService>();
             services.AddScoped<IAppProfileService, AppProfileService>();
             services.AddScoped<IBaseTimeService, BaseTimeService>();
-            services.AddScoped<ICloudMessagingService, FcmService>();
-            //            services.AddScoped<INotifyService, NotifyService>();
+            
             services.AddScoped<ISendMailService, SendGridService>();
             services.AddScoped<IMustacheService, MustacheService>();
             services.AddScoped<IExternalAuthenticationService, ExternalAuthenticationService>();
@@ -363,10 +342,7 @@ namespace MainMicroService
 
             // Store user information in cache
             services.AddSingleton<IBaseKeyValueCacheService<int, User>, ProfileCacheService>();
-            services.AddSingleton<IRealTimeConnectionCacheService, RealTimeConnectionCacheService>();
-
-            // Initialize real-time notification service as single instance.
-            services.AddSingleton<IRealTimeService, RealTimeService>();
+           
 
             // Initialize vgy service.
             services.AddScoped<IVgyService, VgyService>();
@@ -375,17 +351,11 @@ namespace MainMicroService
             services.AddScoped<IAuthorizationHandler, SolidAccountRequirementHandler>();
             services.AddScoped<IAuthorizationHandler, RoleRequirementHandler>();
 
-            services.AddScoped<ITopicDomain, TopicDomain>();
-            services.AddScoped<ICategoryDomain, CategoryDomain>();
-            services.AddScoped<ICategoryGroupDomain, CategoryGroupDomain>();
-            services.AddScoped<ITopicReportDomain, TopicReportDomain>();
-            services.AddScoped<IReplyDomain, TopicReplyDomain>();
+            
             services.AddScoped<IUserDomain, UserDomain>();
-            services.AddScoped<IFollowTopicDomain, FollowTopicDomain>();
-            services.AddScoped<IFollowCategoryDomain, FollowCategoryDomain>();
+           
             services.AddScoped<IUserDomain, UserDomain>();
-            services.AddScoped<INotificationMessageDomain, NotificationMessageDomain>();
-
+           
             // Get email cache option.
             var emailCacheOption = (Dictionary<string, EmailCacheOption>)Configuration.GetSection("emailCache")
                 .Get(typeof(Dictionary<string, EmailCacheOption>));

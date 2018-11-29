@@ -40,15 +40,7 @@ namespace MainBusiness.Interfaces.Domains
         Task<User> FacebookLoginAsync(FacebookLoginViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
-        /// <summary>
-        ///     Register user information basically.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<BasicRegisterResultModel> BasicRegisterAsync(RegisterAccountViewModel model,
-            CancellationToken cancellationToken = default(CancellationToken));
-
+       
         /// <summary>
         ///     Search for users using specific conditions.
         /// </summary>
@@ -65,15 +57,6 @@ namespace MainBusiness.Interfaces.Domains
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task<User> SearchUserAsync(SearchUserViewModel model,
-            CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        ///     Forgot password asynchronously.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<ForgotPasswordResultModel> RequestPasswordResetAsync(ForgotPasswordViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -106,24 +89,7 @@ namespace MainBusiness.Interfaces.Domains
         Task<User> ChangeUserStatus(int id, ChangeUserStatusViewModel model,
             CancellationToken cancellationToken = default(CancellationToken));
 
-        /// <summary>
-        ///     Generate user activation token asynchronously.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<GenerateUserActivationTokenResult> RequestUserActivationTokenAsync(
-            RequestUserActivationCodeViewModel model, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        ///     Submit password reset asynchronously.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<SubmitPasswordResetResultModel> SubmitPasswordResetAsync(SubmitPasswordResetViewModel model,
-            CancellationToken cancellationToken = default(CancellationToken));
-
+      
         /// <summary>
         ///     Add | edit user signature asynchronously.
         /// </summary>

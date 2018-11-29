@@ -6,6 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\**" />
+    <Compile Remove="Interfaces\Repositories\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <EmbeddedResource Remove="Interfaces\Repositories\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Extensions\**" />
+    <None Remove="Interfaces\Repositories\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Models\Entities\Categorization.cs" />
     <Compile Remove="Models\Entities\CommentNotification.cs" />
     <Compile Remove="Models\Entities\CommentReport.cs" />
@@ -24,12 +36,6 @@
     <ProjectReference Include="..\..\..\ServiceShared\ServiceShared.csproj" />
     <ProjectReference Include="..\MainModel\MainModel.csproj" />
     <ProjectReference Include="..\MainShared\MainShared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="Interfaces\Repositories\" />
-    <Folder Include="Repositories\" />
   </ItemGroup>
 
 </Project>

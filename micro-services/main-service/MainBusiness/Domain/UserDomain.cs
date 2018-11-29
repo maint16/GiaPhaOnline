@@ -237,53 +237,7 @@ namespace MainBusiness.Domain
             return user;
         }
 
-        /// <summary>
-        ///     Register a basic account.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public virtual async Task<BasicRegisterResultModel> BasicRegisterAsync(RegisterAccountViewModel model,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // Search for duplicated accounts.
-            var users = _unitOfWork.Accounts.Search();
-            users = users.Where(
-                x => x.Email.Equals(model.Email, StringComparison.InvariantCultureIgnoreCase));
-
-            // Find the first matched account.
-            var user = await users.FirstOrDefaultAsync(cancellationToken);
-
-            // Account exists in system.
-            if (user != null)
-                throw new ApiException(HttpMessages.AccountIsInUse, HttpStatusCode.Conflict);
-
-            var transaction = _unitOfWork.BeginTransactionScope();
-
-            // Initiate account with specific information.
-            user = new User();
-            user.Email = model.Email;
-            user.Password = _encryptionService.Md5Hash(model.Password);
-            user.Nickname = model.Nickname;
-
-            // Add account into database.
-            _unitOfWork.Accounts.Insert(user);
-
-            var activationToken = new ActivationToken();
-            activationToken.OwnerId = user.Id;
-            activationToken.Code = Guid.NewGuid().ToString("D");
-            activationToken.IssuedTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            activationToken.ExpiredTime = activationToken.IssuedTime + 3600;
-            _unitOfWork.ActivationTokens.Insert(activationToken);
-
-            // Commit the transaction.
-            _unitOfWork.Commit();
-            transaction.Commit();
-
-            var basicRegisterResult = new BasicRegisterResultModel(user.Email, activationToken.Code, user.Nickname);
-            return basicRegisterResult;
-        }
-
+        
         /// <summary>
         ///     Search users using specific conditions.
         /// </summary>
@@ -324,45 +278,7 @@ namespace MainBusiness.Domain
             return await GetUsers(condition).FirstOrDefaultAsync(cancellationToken);
         }
 
-        /// <summary>
-        ///     Request for password change token.
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public virtual async Task<ForgotPasswordResultModel> RequestPasswordResetAsync(ForgotPasswordViewModel model,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var loadUserCondition = new SearchUserViewModel();
-            loadUserCondition.Emails = new HashSet<string> {model.Email};
-            loadUserCondition.Statuses = new HashSet<UserStatus> {UserStatus.Available};
-
-            var user = await GetUsers(loadUserCondition).FirstOrDefaultAsync(cancellationToken);
-            if (user == null)
-                throw new ApiException(HttpMessages.AccountIsNotFound, HttpStatusCode.NotFound);
-
-            // Find current system time.
-            var systemTime = DateTime.UtcNow;
-            var expiration = systemTime.AddSeconds(_applicationSettings.PasswordResetTokenLifeTime);
-
-            // Initiate token.
-            var token = new AccessToken();
-            token.OwnerId = user.Id;
-            //token.Type = TokenType.AccountReactiveCode;
-            token.Code = Guid.NewGuid().ToString("D");
-            token.IssuedTime = _baseTimeService.DateTimeUtcToUnix(systemTime);
-            token.ExpiredTime = _baseTimeService.DateTimeUtcToUnix(expiration);
-
-            // Save token into database.
-            _unitOfWork.AccessTokens.Insert(token);
-            await _unitOfWork.CommitAsync(cancellationToken);
-
-            var forgotPasswordResult = new ForgotPasswordResultModel();
-            forgotPasswordResult.Email = user.Email;
-            forgotPasswordResult.Token = token.Code;
-            return forgotPasswordResult;
-        }
-
+       
         /// <summary>
         ///     <inheritdoc />
         /// </summary>
@@ -491,100 +407,7 @@ namespace MainBusiness.Domain
             return user;
         }
 
-        /// <summary>
-        ///     <inheritdoc />
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public virtual async Task<GenerateUserActivationTokenResult> RequestUserActivationTokenAsync(
-            RequestUserActivationCodeViewModel model, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            #region Search for user
-
-            var user = await _unitOfWork.Accounts.FirstOrDefaultAsync(
-                x => x.Email.Equals(model.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                     x.Status == UserStatus.Pending && x.Type == UserKind.Basic, cancellationToken);
-            if (user == null)
-                throw new ApiException(HttpMessages.AccountIsNotFound, HttpStatusCode.NotFound);
-
-            #endregion
-
-            #region Token generation
-
-            // Find the existing token.
-            var activationTokens = _unitOfWork.ActivationTokens.Search(x => x.OwnerId == user.Id);
-            _unitOfWork.ActivationTokens.Remove(activationTokens);
-
-            // Find current system time.
-            var systemTime = DateTime.UtcNow;
-            var expiration = systemTime.AddSeconds(_applicationSettings.PasswordResetTokenLifeTime);
-
-            var activationToken = new ActivationToken();
-            activationToken.Code = Guid.NewGuid().ToString("D");
-            activationToken.OwnerId = user.Id;
-            activationToken.IssuedTime = _baseTimeService.DateTimeUtcToUnix(systemTime);
-            activationToken.ExpiredTime = _baseTimeService.DateTimeUtcToUnix(expiration);
-
-            // Add token into database
-            _unitOfWork.ActivationTokens.Insert(activationToken);
-
-            // Save changes asychronously.
-            await _unitOfWork.CommitAsync(cancellationToken);
-
-            #endregion
-
-            var addActivationTokenResult = new GenerateUserActivationTokenResult();
-            return addActivationTokenResult;
-        }
-
-        /// <summary>
-        ///     <inheritdoc />
-        /// </summary>
-        /// <param name="model"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public virtual async Task<SubmitPasswordResetResultModel> SubmitPasswordResetAsync(
-            SubmitPasswordResetViewModel model,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            #region Search users & activation code.
-
-            // Find active accounts.
-            var user = await _unitOfWork.Accounts.FirstOrDefaultAsync(
-                x => x.Email.Equals(model.Email, StringComparison.InvariantCultureIgnoreCase) &&
-                     x.Status == UserStatus.Available, cancellationToken);
-            if (user == null)
-                throw new ApiException(HttpMessages.AccountIsNotFound, HttpStatusCode.NotFound);
-
-            // Find active token.
-            var epochSystemTime = _baseTimeService.DateTimeUtcToUnix(DateTime.UtcNow);
-            var activationTokens = _unitOfWork.ActivationTokens.Search(x =>
-                x.ExpiredTime < epochSystemTime && x.OwnerId == user.Id && x.Code.Equals(model.ActivationCode));
-
-            if (!await activationTokens.AnyAsync(cancellationToken))
-                throw new ApiException(HttpMessages.ActivationCodeNotFound, HttpStatusCode.NotFound);
-
-            #endregion
-
-            #region Information change
-
-            // Hash the password.
-            var hashedPassword = _encryptionService.Md5Hash(model.Password);
-
-            // Delete all found tokens.
-            _unitOfWork.ActivationTokens.Remove(activationTokens);
-            user.Password = hashedPassword;
-
-            // Commit changes.
-            await _unitOfWork.CommitAsync(cancellationToken);
-
-            #endregion
-
-            var submitPasswordResetResult = new SubmitPasswordResetResultModel();
-            return submitPasswordResetResult;
-        }
-
+      
         /// <summary>
         ///     Add/edit user signature.
         /// </summary>

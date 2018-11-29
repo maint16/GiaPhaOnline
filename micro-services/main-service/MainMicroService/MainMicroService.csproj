@@ -16,9 +16,13 @@
 
   <ItemGroup>
     <Compile Remove="logs\**" />
+    <Compile Remove="wwwroot\**" />
     <Content Remove="logs\**" />
+    <Content Remove="wwwroot\**" />
     <EmbeddedResource Remove="logs\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
     <None Remove="logs\**" />
+    <None Remove="wwwroot\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +30,6 @@
     <Compile Remove="Interfaces\Services\ITemporaryValueCacheService.cs" />
     <Compile Remove="Models\PusherSetting.cs" />
     <Compile Remove="Models\RealTimeNotification.cs" />
-    <Compile Remove="Services\RealTime\PusherService.cs" />
     <Compile Remove="Services\TemporaryValueCacheService.cs" />
   </ItemGroup>
 
@@ -69,7 +72,7 @@
 
   <ItemGroup>
     <Folder Include="Authentications\ActionFilters\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
